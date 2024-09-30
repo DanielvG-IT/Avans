@@ -1,13 +1,13 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+# This workflow will build a .NET solution and run tests
+# For more information, see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: .NET
+name: .NET Build and Test
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
@@ -15,14 +15,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      # Restore dependencies for the solution
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: "L1Q1 Project Smart Energy"
+
+      # Build the solution
+      - name: Build solution
+        run: dotnet build --no-restore --configuration Release
+        working-directory: "L1Q1 Project Smart Energy"
+
+      # Run tests for the solution
+      - name: Run tests
+        run: dotnet test --no-build --verbosity normal
+        working-directory: "L1Q1 Project Smart Energy"
