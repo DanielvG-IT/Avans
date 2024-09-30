@@ -1,8 +1,4 @@
-# AvansSchool
-
-THE Github repo for all my projects made for my bachelor at Avans University of Applied Science!
-
-## PROJECT SMART ENERGY (L1Q1)
+# PROJECT SMART ENERGY (L1Q1)
 
 In dit project gaan we aan de slag met het maken en installeren van een Smart Meter Gateway in onze eigen meterkast. We solderen de hardware en flashen de software zelf, waarna de elektriciteits- en gasmeter automatisch elke 5 minuten gegevens doorstuurt naar een server van het Lectoraat Smart Energy. Vervolgens gaan we deze gegevens weergeven en analyseren door middel van Blazor en C#.
 
