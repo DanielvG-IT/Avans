@@ -1,0 +1,12 @@
+# UITWERKING OPDRACHT
+
+## SmartMeterGateway
+
+Network: 192.168.1.30/24
+EMON19V01-98E15B-16405E
+
+### Top 3 Varianten
+
+1. Variant F (GEKOZEN!)
+2. Variant B
+3. Variant C
