@@ -7,13 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="InfluxDB.Client" Version="4.15.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Measurements\" />
     <Folder Include="Measurements\Models\" />
     <Folder Include="Measurements\Repository\" />
+    <PackageReference Include="InfluxDB.Client" Version="4.15.0" />
   </ItemGroup>
 
 </Project>

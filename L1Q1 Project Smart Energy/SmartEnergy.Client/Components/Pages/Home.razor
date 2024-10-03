@@ -1,6 +1,5 @@
 ﻿@page "/"
-@attribute [StreamRendering]
-@inject IMeasurementRepository measurementRepository;
+
 
 <PageTitle>Home</PageTitle>
 
@@ -12,57 +11,4 @@
   rapportages en real-time data monitor je eenvoudig je verbruik en bespaar je op energie.
 </p>
 
-@if (analyticsMeasurements == null) {<p><em>Data wordt opgehaald...</em></p>}
-else {
-<div class="main-content">
-  <div class="energy-graph">
-    <p>Some nice graph</p>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Timestamp (UTC)</th>
-                <th>Location ID</th>
-                <th>Sensor</th>
-                <th>Value</th>
-                <th>Unit</th>
-                <th>Price (energy only)</th>
-                <th>Temperature</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var measurement in analyticsMeasurements)
-            {
-                <tr>
-                    <td>@measurement.Timestamp</td>
-                    <td>@measurement.LocationId</td>
-                    <td>@measurement.Sensor</td>
-                    <td>@measurement.Value</td>
-                    <td>@measurement.Unit</td>
-                    <td>@measurement.EnergyPrice</td>
-                    <td>@measurement.Temperature</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-  </div>
-</div>
-}
-
-
-@code {
-  decimal detectieVermogenkWh = 3.5M;
-  int meterId = 10019163;
-  int numberOfDays = 5;
-  string aggegationWindow = "5m";
-  decimal prijsCatagorieVast = 0.25M;
-  decimal prijsCatagorieDynamisch = 0.5M;
-
-
-  private List<Measurement>? analyticsMeasurements;
-    protected override async Task OnInitializedAsync() 
-    {
-    analyticsMeasurements = await this.measurementRepository.GetEnergyConsumed(meterId, numberOfDays, aggegationWindow);
-    }
-
-
-}
+<button><a href="/uitwerking">Ga naar mijn uitwerking</a></button>

@@ -64,13 +64,13 @@ Wanneer je aan deze applicatie gaat werken, kun je Visual Studio Code gebruiken.
 
 ### Debug
 
-- **Voordeel:** Een browser wordt geopend met de applicatie, en breakpoints worden geraakt, wat het debuggen van back-end code eenvoudiger maakt.
-- **Nadeel:** Na een codewijziging moet je de debug-sessie opnieuw starten.
+-   **Voordeel:** Een browser wordt geopend met de applicatie, en breakpoints worden geraakt, wat het debuggen van back-end code eenvoudiger maakt.
+-   **Nadeel:** Na een codewijziging moet je de debug-sessie opnieuw starten.
 
 ### Hot Reload
 
-- **Voordeel:** Een browser wordt geopend met de applicatie, en zodra je code aanpast, wordt de browser automatisch ververst.
-- **Nadeel:** Breakpoints worden niet geraakt.
+-   **Voordeel:** Een browser wordt geopend met de applicatie, en zodra je code aanpast, wordt de browser automatisch ververst.
+-   **Nadeel:** Breakpoints worden niet geraakt.
 
 ## Werken met Visual Studio of JetBrains Rider
 
