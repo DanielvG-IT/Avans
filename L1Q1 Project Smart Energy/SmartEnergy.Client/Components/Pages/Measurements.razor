@@ -8,7 +8,7 @@
 
 <p>Dit component toont hoe data getoond kan worden. De data die wordt getoond is van een voorgeprogrammeerde Smart Meter in combinatie met data van het lectoraat Smart Energy (energieprijzen, temperaturen). Pas de code aan om de data van jouw meter te tonen </p>
 
-@if (measurements == null)
+@if (currentPowerData == null)
 {
     <p><em>Data wordt geladen...</em></p>
 }
@@ -33,7 +33,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var measurement in measurements)
+            @foreach (var measurement in currentPowerData)
             {
                 <tr>
                     <td>@measurement.Timestamp</td>
@@ -54,7 +54,10 @@ else
     executed and the measurementRepository is used to retrieve the data from the Influx Database.
     Feel free to adapt the code and tweak this to your needs. */
 
-    private List<Measurement>? measurements;
+    private List<Measurement>? currentPowerData;
+    private List<Measurement>? energyData;
+    private List<Measurement>? gasData;
+    private List<Measurement>? consumptionData;
 
     protected override async Task OnInitializedAsync()
     {
@@ -75,9 +78,9 @@ else
         one for the gas consumption and another one for the absolute power usage. All of the possible method calls
         are listed below and you can select the one that meets your needs/requirements. */
         
-        measurements = await this.measurementRepository.GetEnergyConsumed(meterId, numberOfDays, aggegationWindow);
-        // measurements = await this.measurementRepository.GetEnergyProduced(meterId, numberOfDays, aggegationWindow);
-        // measurements = await this.measurementRepository.GetGasDelivered(meterId, numberOfDays, aggegationWindow);
-        // measurements = await this.measurementRepository.GetPower(meterId, numberOfDays, aggegationWindow);
+        consumptionData = await this.measurementRepository.GetEnergyConsumed(meterId, numberOfDays, aggegationWindow);
+        energyData = await this.measurementRepository.GetEnergyProduced(meterId, numberOfDays, aggegationWindow);
+        gasData = await this.measurementRepository.GetGasDelivered(meterId, numberOfDays, aggegationWindow);
+        currentPowerData = await this.measurementRepository.GetPower(meterId, numberOfDays, aggegationWindow);
     }
 }

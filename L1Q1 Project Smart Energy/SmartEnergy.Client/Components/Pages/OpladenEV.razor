@@ -2,62 +2,55 @@
 @attribute [StreamRendering]
 @inject IMeasurementRepository measurementRepository;
 
-<PageTitle>Uitwerking</PageTitle>
+<PageTitle>Opaden EV</PageTitle>
+<h1>Opaden EV (variant F)</h1>
+<p>U kunt hier gedetailleerde informatie vinden over de energieverbruikspatronen en de kosten die gepaard gaan met het opladen van elektrische voertuigen. De gegevens worden in real-time bijgewerkt om u de meest actuele informatie te bieden. 
+  <br/> Daarnaast kunt u grafieken en tabellen bekijken die inzicht geven in de laadsessies over verschillende tijdsperioden. Dit helpt u om trends te herkennen en uw energieverbruik efficiënter te beheren.</p>
 
-@if (analyticsMeasurements == null) {<p><bold>Data wordt opgehaald...</bold></p>}
-else {
-<div class="main-content">
-  <div class="energy-graph">
-    <p>Some nice graph</p>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Timestamp (UTC)</th>
-                <th>Location ID</th>
-                <th>Sensor</th>
-                <th>Value</th>
-                <th>Unit</th>
-                <th>Price (energy only)</th>
-                <th>Temperature</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var measurement in analyticsMeasurements)
-            {
-                <tr>
-                    <td>@measurement.Timestamp</td>
-                    <td>@measurement.LocationId</td>
-                    <td>@measurement.Sensor</td>
-                    <td>@measurement.Value</td>
-                    <td>@measurement.Unit</td>
-                    <td>@measurement.EnergyPrice</td>
-                    <td>@measurement.Temperature</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+@if (currentPowerData == null)
+{
+  <div class="spinner-border text-dark" role="status">
+    <span class="visually-hidden">Data wordt opgehaald...</span>
   </div>
-</div>
+}
+else
+{
+  <div class="main-content">
+    <div class="laadsessies" style="padding-top: 1rem;">
+      <p>In deze div komt een mooi tabelleke met laadsessies</p>
+    </div>
+    <div class="energy-graph">
+      <p>Some nice graph</p>
+    </div>
+  </div>
 }
 
 
 @code {
-  decimal detectieVermogenkWh = 3.5M;
+  double detectieVermogenkWh = 3.5D;
   int meterId = 10019163;
   int numberOfDays = 1;
   string aggegationWindow = "5m";
   decimal prijsCatagorieVast = 0.25M;
   decimal prijsCatagorieDynamisch = 0.5M;
+  private List<Measurement>? currentPowerData;
+
+  protected override async Task OnInitializedAsync()
+  {
+    currentPowerData = await this.measurementRepository.GetPower(meterId, numberOfDays, aggegationWindow);
+  }
 
 
-  private List<Measurement>? analyticsMeasurements;
-    protected override async Task OnInitializedAsync() 
-    {
-    analyticsMeasurements = await this.measurementRepository.GetEnergyConsumed(meterId, numberOfDays, aggegationWindow);
-    }
+  /*
 
-/*
-When analyticsMeasurements.Value is higher that 3 for 20 seconds (2 meterings). Display alert (boodstrap) at the top.
-*/
+Pseudocode:
+  When analyticsMeasurements.Value is higher that 3 for 20 seconds (2 meterings). Display alert (boodstrap) at the top.
 
+Alert HTML (add C# for dynamic):
+  <div class="alert alert-success" role="alert">A simple success alert—check it out!</div>
+
+C#:
+  decimal laadsessie = 0;
+  prijsLaadsessie += measurement.EnergyPrice
+  */
 }
