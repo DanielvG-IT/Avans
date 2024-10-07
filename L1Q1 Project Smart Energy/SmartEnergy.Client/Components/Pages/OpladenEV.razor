@@ -21,6 +21,16 @@ else
     </div>
     <div class="energy-graph">
       <p>Some nice graph</p>
+      <table>
+        <tbody>
+            @foreach (Laadsessie sessie in Laadsessies)
+            {
+                <tr>
+                    <td>@sessie.duurLaadsessie</td>
+                </tr>
+            }
+          </tbody>
+        </table>
     </div>
   </div>
 }
@@ -39,7 +49,16 @@ else
   {
     currentPowerData = await this.measurementRepository.GetPower(meterId, numberOfDays, aggegationWindow);
   }
+  decimal prijsLaadsessie = default;
+  int duurLaadsessie = default;
+  double totaalkWhLaadsessie = default;
+  string startLaadsessie;
+  string stopLaadsessie;
 
+  private List<Laadsessie>? Laadsessies;
+
+
+    
 
   /*
 
@@ -50,7 +69,12 @@ Alert HTML (add C# for dynamic):
   <div class="alert alert-success" role="alert">A simple success alert—check it out!</div>
 
 C#:
-  decimal laadsessie = 0;
-  prijsLaadsessie += measurement.EnergyPrice
+  decimal prijsLaadsessie = default;
+  int duurLaadsessie = default;
+  double totaalkWhLaadsessie = default;
+  string startLaadsessie;
+  string stopLaadsessie;
+
+  private List<Laadsessie>? consumptionData;
   */
 }
