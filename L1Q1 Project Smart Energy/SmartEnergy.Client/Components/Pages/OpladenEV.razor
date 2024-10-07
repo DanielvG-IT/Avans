@@ -56,5 +56,8 @@ else {
     analyticsMeasurements = await this.measurementRepository.GetEnergyConsumed(meterId, numberOfDays, aggegationWindow);
     }
 
+/*
+When analyticsMeasurements.Value is higher that 3 for 20 seconds (2 meterings). Display alert (boodstrap) at the top.
+*/
 
 }
