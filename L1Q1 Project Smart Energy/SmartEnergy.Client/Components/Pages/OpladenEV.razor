@@ -29,6 +29,10 @@ else
           <input type="text" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="3500" aria-label="3500" aria-describedby="button-addon2" @bind="detectieVermogenW">
           <label for="floatingInputValue">Detectiepunt (Watt)</label>
         </div>
+        <div class="form-floating mb-3" style="width: 11rem; height: 4rem; padding-right: 1rem;">
+          <input type="text" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="3500" aria-label="3500" aria-describedby="button-addon2" @bind="numberOfDays">
+          <label for="floatingInputValue">Aantal dagen</label>
+        </div>
         <button class="btn btn-primary" type="submit" onclick="javascript:window.location.reload()">Refresh</button>
       </div>
       @if (Laadsessies != null) 
@@ -73,28 +77,33 @@ else
   // Variable for database connection
   double detectieVermogenW = 3500D;
   int meterId = 10019163;
-  int numberOfDays = 1;
+  int numberOfDays = 30;
   string aggegationWindow = "5m";
   private List<Measurement>? currentPowerData;
 
 // Variable for LaadsessieDetectie
-  decimal prijsCatagorieVast = 0.25M;
+  double prijsCatagorieVast = 0.25D;
   bool prijsCategorie = default; // true = dynamisch   false = vast
-  private List<Laadsessie>? Laadsessies;
-  
+  private List<Laadsessie> Laadsessies = new List<Laadsessie>();
 
 protected override async Task OnInitializedAsync()
   {
     currentPowerData = await this.measurementRepository.GetPower(meterId, numberOfDays, aggegationWindow);
-  
-    double totaalkWhLaadsessie = default;
-    decimal prijsLaadsessie = default;
+    
     bool laadsessieActief = default;
-    TimeSpan duurLaadsessie;
-    DateTime startLaadsessie;
-    DateTime stopLaadsessie;
+    double totaalkWhLaadsessie = default;
+    double prijsLaadsessie = default;
+    TimeSpan duurLaadsessie = default;
+    DateTime startLaadsessie = default;
+    DateTime stopLaadsessie = default;
 
     foreach(var measurement in currentPowerData) {
+    // Error handeling
+      if (currentPowerData == null) {Console.Error.WriteLine("Geen meetgegevens ontvangen."); return;}
+      if (measurement.Value.Value == null) {Console.Error.WriteLine("Measurement of Value is null."); continue;}
+    
+
+    // Algoritme laadsessie detectie
       if(measurement.Value.Value > detectieVermogenW && laadsessieActief == false) {
         startLaadsessie = measurement.Timestamp;
         laadsessieActief = true;
@@ -102,25 +111,31 @@ protected override async Task OnInitializedAsync()
       }
       else if(measurement.Value.Value > detectieVermogenW) {
         // schrijf code dat prijs optelt, watt optelt
+        if(prijsCategorie == true) {prijsLaadsessie += measurement.EnergyPrice.Value;}
+        else if(prijsCategorie == false) {prijsLaadsessie += (measurement.Value.Value / 1000) * prijsCatagorieVast;}
+        else {prijsLaadsessie += (measurement.Value.Value / 1000) * prijsCatagorieVast; Console.Error.WriteLine("Geen prijsdata ontvangen. Gebruikt de vaste waarde!");} //Error handeling
+        totaalkWhLaadsessie += measurement.Value.Value;
       }
 
       else if(measurement.Value < detectieVermogenW && laadsessieActief == true) {
         // schrijf code dat alles opslaat in de lijst. Duur kan worden berekend met DateTime.Subtract(startLaadsessie, stopLaadsessie)
+        stopLaadsessie = measurement.Timestamp;
+        duurLaadsessie = stopLaadsessie.Subtract(startLaadsessie);
+
+        var singleLaadsessie = new Laadsessie(startLaadsessie, stopLaadsessie, duurLaadsessie, prijsLaadsessie, totaalkWhLaadsessie);
+        Laadsessies.Add(singleLaadsessie);
+
+        laadsessieActief = default;
+        laadsessieActief = default;
+        totaalkWhLaadsessie = default;
+        prijsLaadsessie = default;
+        duurLaadsessie = default;
+        startLaadsessie = default;
+        stopLaadsessie = default;
       }
-      
       else {
-        // Handelt errors af!
+        continue;
       }
     }
-  
-  
   }
-
-/* 
-Pseudocode:
-  When analyticsMeasurements.Value is higher than 3500 for 2 meterings. Add information into list Laadsessies with model Laadsessie. 
-}
-
-
-*/
 }
