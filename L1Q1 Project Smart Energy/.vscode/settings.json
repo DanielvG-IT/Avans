@@ -1,0 +1,13 @@
+{
+    "[razor]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": null,
+        "editor.formatOnPaste": false
+    },
+
+    "[aspnetcorerazor]": {
+        "editor.defaultFormatter": null,
+        "editor.formatOnPaste": false,
+        "editor.formatOnSave": false
+    }
+}

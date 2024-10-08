@@ -5,7 +5,7 @@
 <PageTitle>Opaden EV</PageTitle>
 <h1>Opaden EV (variant F)</h1>
 <p>U kunt hier gedetailleerde informatie vinden over de energieverbruikspatronen en de kosten die gepaard gaan met het opladen van elektrische voertuigen. De gegevens worden in real-time bijgewerkt om u de meest actuele informatie te bieden. 
-  <br/> Daarnaast kunt u grafieken en tabellen bekijken die inzicht geven in de laadsessies over verschillende tijdsperioden. Dit helpt u om trends te herkennen en uw energieverbruik efficiënter te beheren.</p>
+  <br/> Daarnaast kunt u grafieken en tabellen bekijken die inzicht geven in de laadsessies over verschillende tijdsperioden. Dit helpt u om trends te herkennen en uw energieverbruik efficiënter te beheren.</p><hr>
 
 @if (currentPowerData == null)
 {
@@ -15,66 +15,112 @@
 }
 else
 {
-  <div class="main-content">
-    <div class="laadsessies" style="padding-top: 1rem;">
-      <p>In deze div komt een mooi tabelleke met laadsessies</p>
+  <div class="main-content" style="width: 100%;">
+    <div class="laadsessies" style="padding-top: 0.5rem; width: 100%;">
+      <div style="display: flex; height: 4rem;">
+        <div class="btn-group" role="group" aria-label="Basic radio toggle button group" style="padding-right: 1rem;">
+          <input type="radio" class="btn-check" name="btnVast" id="btnVast1" autocomplete="off" checked>
+          <label class="btn btn-outline-primary d-flex justify-content-center align-items-center @(prijsCategorie == false ? "active" : "")" for="btnVast1" @onclick="() => prijsCategorie = false">Vast</label>
+          <input type="radio" class="btn-check" name="btnDynamisch" id="btnDynamisch2" autocomplete="off">
+          <label class="btn btn-outline-primary d-flex justify-content-center align-items-center @(prijsCategorie == true ? "active" : "")" 
+           for="btnDynamisch2" @onclick="() => prijsCategorie = true">Dynamisch</label>
+        </div>
+        <div class="form-floating mb-3" style="width: 11rem; height: 4rem; padding-right: 1rem;">
+          <input type="text" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="3500" aria-label="3500" aria-describedby="button-addon2" @bind="detectieVermogenW">
+          <label for="floatingInputValue">Detectiepunt (Watt)</label>
+        </div>
+        <button class="btn btn-primary" type="submit" onclick="javascript:window.location.reload()">Refresh</button>
+      </div>
+      @if (Laadsessies != null) 
+      {
+        <table class="table table-striped">
+          <tbody>
+            @foreach (Laadsessie sessie in Laadsessies)
+            {
+              <thead>
+                <tr>
+                  <th scope="col">Start</th>
+                  <th scope="col">Stop</th>
+                  <th scope="col">Duration</th>
+                  <th scope="col">Used kWh</th>
+                  <th scope="col">Price</th>
+                </tr>
+              </thead>
+                <tr scope="row">
+                    <td>@sessie.Start</td>
+                    <td>@sessie.Stop</td>
+                    <td>@sessie.Duur</td>
+                    <td>@sessie.TotaalKWh</td>
+                    <td>@sessie.Prijs</td>
+                </tr>}
+          </tbody>
+        </table>
+      }
+      else 
+      {
+        <p style="padding-top: 2rem;">Helaas geen laadsessies beschikbaar. Probeer de pagina opnieuw te laden!</p>
+      }
     </div>
     <div class="energy-graph">
       <p>Some nice graph</p>
-      <table>
-        <tbody>
-            @foreach (Laadsessie sessie in Laadsessies)
-            {
-                <tr>
-                    <td>@sessie.duurLaadsessie</td>
-                </tr>
-            }
-          </tbody>
-        </table>
+      
     </div>
   </div>
 }
 
 
 @code {
-  double detectieVermogenkWh = 3.5D;
+  // Variable for database connection
+  double detectieVermogenW = 3500D;
   int meterId = 10019163;
   int numberOfDays = 1;
   string aggegationWindow = "5m";
-  decimal prijsCatagorieVast = 0.25M;
-  decimal prijsCatagorieDynamisch = 0.5M;
   private List<Measurement>? currentPowerData;
 
-  protected override async Task OnInitializedAsync()
+// Variable for LaadsessieDetectie
+  decimal prijsCatagorieVast = 0.25M;
+  bool prijsCategorie = default; // true = dynamisch   false = vast
+  private List<Laadsessie>? Laadsessies;
+  
+
+protected override async Task OnInitializedAsync()
   {
     currentPowerData = await this.measurementRepository.GetPower(meterId, numberOfDays, aggegationWindow);
+  
+    double totaalkWhLaadsessie = default;
+    decimal prijsLaadsessie = default;
+    bool laadsessieActief = default;
+    TimeSpan duurLaadsessie;
+    DateTime startLaadsessie;
+    DateTime stopLaadsessie;
+
+    foreach(var measurement in currentPowerData) {
+      if(measurement.Value.Value > detectieVermogenW && laadsessieActief == false) {
+        startLaadsessie = measurement.Timestamp;
+        laadsessieActief = true;
+        
+      }
+      else if(measurement.Value.Value > detectieVermogenW) {
+        // schrijf code dat prijs optelt, watt optelt
+      }
+
+      else if(measurement.Value < detectieVermogenW && laadsessieActief == true) {
+        // schrijf code dat alles opslaat in de lijst. Duur kan worden berekend met DateTime.Subtract(startLaadsessie, stopLaadsessie)
+      }
+      
+      else {
+        // Handelt errors af!
+      }
+    }
+  
+  
   }
-  decimal prijsLaadsessie = default;
-  int duurLaadsessie = default;
-  double totaalkWhLaadsessie = default;
-  string startLaadsessie;
-  string stopLaadsessie;
 
-  private List<Laadsessie>? Laadsessies;
-
-
-    
-
-  /*
-
+/* 
 Pseudocode:
-  When analyticsMeasurements.Value is higher that 3 for 20 seconds (2 meterings). Display alert (boodstrap) at the top.
+  When analyticsMeasurements.Value is higher than 3500 for 2 meterings. Add information into list Laadsessies with model Laadsessie. 
+}
 
-Alert HTML (add C# for dynamic):
-  <div class="alert alert-success" role="alert">A simple success alert—check it out!</div>
 
-C#:
-  decimal prijsLaadsessie = default;
-  int duurLaadsessie = default;
-  double totaalkWhLaadsessie = default;
-  string startLaadsessie;
-  string stopLaadsessie;
-
-  private List<Laadsessie>? consumptionData;
-  */
+*/
 }
