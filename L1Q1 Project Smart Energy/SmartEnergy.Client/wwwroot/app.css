@@ -33,6 +33,7 @@ h1:focus {
 .navbar-dark,
 .top-row {
     background: black;
+    z-index: 5;
 }
 
 .valid.modified:not([type='checkbox']) {

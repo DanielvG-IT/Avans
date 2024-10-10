@@ -1,5 +1,7 @@
 ﻿@page "/"
 @attribute [StreamRendering]
+@using ApexCharts
+@rendermode InteractiveServer
 @inject IMeasurementRepository measurementRepository;
 
 <PageTitle>Home</PageTitle>
@@ -12,22 +14,30 @@
   rapportages en real-time data monitor je eenvoudig je verbruik en bespaar je op energie.
 </p>
 
-<div class="card-container" style="display: flex; width: 100%; justify-content: center; align-self: center; gap: 2.5rem; padding-top: 1rem;">
+<div class="card-container" style="display: flex; width: 100%; justify-content: center; align-self: center; gap: 2.5rem; marig-top: 1rem;">
   <div class="card" style="width: 20rem;">
     <div style="display: flex; align-items: center; justify-content: center; tekst-align: center;">
       <img src="assets/PowerGrid.png" style="width: 40%; height: auto;" class="card-img-top" alt="Power Grid Icon">
     </div>
     <div class="card-body">
       <h5 class="card-title">Verbruik</h5>
-      <p class="card-text">Uw stroomverbruik van de afgelopen @numberOfDays dagen:</p>
-      @if(opgewektZonnepanelen == 0) {
-      <div class="spinner-border text-dark" style="padding-top: 1.5rem" role="status">
-        <span class="visually-hidden">Data wordt opgehaald...</span>
+      <p class="card-text">Uw stroomverbruik van het net van de afgelopen @numberOfDays dagen:</p>
+      <div style="display: flex; justify-content: center;">
+        <h3>
+          <span style=" display: flex; background-color: orangered !important; color: white !important; justify-content: center; width: fit-content;" class="badge text-bg-secondary">
+            @if(verbruiktThuis == 0) 
+            {
+              <div class="spinner-border text-dark" style="padding-top: 1.5rem" role="status">
+                <span class="visually-hidden">Data wordt opgehaald...</span>
+              </div>
+            } 
+            else
+            {
+              <span>@verbruiktThuis kWh</span>
+            }
+          </span>
+        </h3>
       </div>
-      } 
-      else {
-      <h3><span style=" display: flex; background-color: orangered !important; color: white !important; align-items: center; justify-content: center; text-align: center; line-height: 1.5;" class="badge text-bg-secondary">@verbruiktThuis kWh</span></h3>
-      }
     </div>
   </div>
   <div class="card" style="width: 20rem;">
@@ -37,14 +47,22 @@
     <div class="card-body">
       <h5 class="card-title">Opgewekt</h5>
       <p class="card-text">Uw opgewekte stroom van de afgelopen @numberOfDays dagen:</p>
-      @if(opgewektZonnepanelen == 0) {
-      <div class="spinner-border text-dark" style="padding-top: 1.5rem" role="status">
-        <span class="visually-hidden">Data wordt opgehaald...</span>
+      <div style="display: flex; justify-content: center;">
+        <h3>
+          <span style=" display: flex; background-color: lightgreen !important; color: white !important;" class="badge text-bg-secondary">
+            @if(opgewektZonnepanelen == 0) 
+            {
+              <div class="spinner-border text-dark" style="padding-top: 1.5rem" role="status">
+                <span class="visually-hidden">Data wordt opgehaald...</span>
+              </div>
+            } 
+            else 
+            {
+              <span>@opgewektZonnepanelen kWh</span>
+            }
+          </span>
+        </h3>
       </div>
-      } 
-      else {
-      <h3><span style=" display: flex; background-color: orangered !important; color: white !important; align-items: center; justify-content: center; text-align: center; line-height: 1.5;" class="badge text-bg-secondary">@opgewektZonnepanelen kWh</span></h3>
-      }
     </div>
   </div>
   <div class="card" style="width: 20rem;">
@@ -53,10 +71,62 @@
     </div>
     <div class="card-body">
       <h5 class="card-title">Opladen EV</h5>
-      <p class="card-text">Op deze pagina staat de uitwerking van variant F. Op deze pagina staat informatie met betrekking tot de laadsessies.</p>
+      <p class="card-text">Op deze pagina staat informatie met betrekking tot de laadsessies.</p>
       <div style="display: flex; justify-content: center; align-items: flex-end; text-align: center;">
         <a href="/opladen-ev" class="btn btn-primary">Ga naar uitwerking</a>
       </div>
+    </div>
+  </div>
+</div>
+<div class="grafiekContainer" style="display: flex; width: 100%; justify-content: center; align-self: center; margin-top: 1rem; margin-bottom: 2rem; gap: 2rem;">
+  <div class="grafiek-card card">
+    <div class="card-body">
+      <h5 class="card-title">Energie consumed laatste @numberOfDays dagen</h5>
+      @if(energyConsumedData == null)
+      {
+        <div class="spinner-border text-dark" style="padding-top: 1.5rem" role="status">
+          <span class="visually-hidden">Data wordt opgehaald...</span>
+        </div>
+      }
+      else 
+      {
+        <div class="DeGrafiek" style="display: flex; height: 30vh; width: 20vw;">
+          <ApexChart TItem="Measurement">
+            <ApexPointSeries TItem="Measurement"
+                Items="energyConsumedData"
+                Name="Verbruik"
+                SeriesType="SeriesType.Line"
+                XValue="@(e => e.Timestamp)"
+                YValue="@(e => (decimal?)e.Value)"
+                />
+          </ApexChart>
+        </div>
+      }
+    </div>
+  </div>
+  <div class="grafiek-card card" style="width: 20vw; height: auto;">
+    <div class="card-body">
+      <h5 class="card-title">Energie Produced laatste @numberOfDays dagen</h5>
+      @if(energyProducedData == null) 
+      {
+        <div class="spinner-border text-dark" style="padding-top: 1.5rem" role="status">
+          <span class="visually-hidden">Data wordt opgehaald...</span>
+        </div>
+      }
+      else 
+      {
+        <div class="DeGrafiek" style="display: flex; height: fit-content; width: 20vw;">
+          <ApexChart TItem="Measurement">
+          <ApexPointSeries TItem="Measurement"
+              Items="energyProducedData"
+              Name="Opgewekt"
+              SeriesType="SeriesType.Line"
+              XValue="@(e => e.Timestamp)"
+              YValue="@(e => (decimal?)e.Value)" 
+              />
+          </ApexChart>
+        </div>
+      }
     </div>
   </div>
 </div>
@@ -64,28 +134,23 @@
 @code {
 // Variables for database connection
   int meterId = 10019163;
-  int numberOfDays = 30;
-  string aggegationWindow = "5m";
+  int numberOfDays = 7;
+  string aggegationWindow = "1h";
   private List<Measurement>? energyConsumedData;
   private List<Measurement>? energyProducedData;
 
 // Variables for algoritm
-  int aantalMeetingenConsumed;
-  int aantalMeetingenProduced;
   double verbruiktThuis;
   double opgewektZonnepanelen;
 
 
   protected override async Task OnInitializedAsync()
   {
-  // Get data from database
+  // Get data from database for cards and graphs
     energyConsumedData = await this.measurementRepository.GetEnergyConsumed(meterId, numberOfDays, aggegationWindow);
     energyProducedData = await this.measurementRepository.GetEnergyProduced(meterId, numberOfDays, aggegationWindow);
-    aantalMeetingenConsumed = energyConsumedData.Count();
-    aantalMeetingenProduced = energyProducedData.Count();
-
-
-  // Calculate the energy used this month
+  
+  // Calculate the energy used this numberOfDays
     foreach(var measurement in energyConsumedData) 
     {
       if (energyConsumedData != null && energyConsumedData.Count > 1)
@@ -94,7 +159,7 @@
       }
     }
 
-  // Calculate the energy produced this month
+  // Calculate the energy produced this numberOfDays
     foreach(var measurement in energyProducedData) 
     {
       if (energyProducedData != null && energyProducedData.Count > 1)

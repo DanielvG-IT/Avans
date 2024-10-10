@@ -1,46 +1,48 @@
 ﻿@page "/opladen-ev"
 @attribute [StreamRendering]
+@rendermode InteractiveServer
 @inject IMeasurementRepository measurementRepository;
+@using ApexCharts;
 
 <PageTitle>Opaden EV</PageTitle>
 <h1>Opaden EV (variant F)</h1>
 <p>U kunt hier gedetailleerde informatie vinden over de energieverbruikspatronen en de kosten die gepaard gaan met het opladen van elektrische voertuigen. De gegevens worden in real-time bijgewerkt om u de meest actuele informatie te bieden. 
   <br/> Daarnaast kunt u grafieken en tabellen bekijken die inzicht geven in de laadsessies over verschillende tijdsperioden. Dit helpt u om trends te herkennen en uw energieverbruik efficiënter te beheren.</p><hr>
-
-@if (currentPowerData == null)
-{
-  <div class="spinner-border text-dark" role="status">
-    <span class="visually-hidden">Data wordt opgehaald...</span>
-  </div>
-}
-else
-{
-  <div class="main-content" style="width: 100%;">
-    <div class="laadsessies" style="padding-top: 0.5rem; width: 100%;">
-      <div style="display: flex; height: 4rem;">
-        <div class="btn-group" role="group" aria-label="Basic radio toggle button group" style="padding-right: 1rem;">
-          <input type="radio" class="btn-check" name="btnVast" id="btnVast1" autocomplete="off" checked>
-          <label class="btn btn-outline-primary d-flex justify-content-center align-items-center @(prijsCategorie == false ? "active" : "")" for="btnVast1" @onclick="() => prijsCategorie = false">Vast</label>
-          <input type="radio" class="btn-check" name="btnDynamisch" id="btnDynamisch2" autocomplete="off">
-          <label class="btn btn-outline-primary d-flex justify-content-center align-items-center @(prijsCategorie == true ? "active" : "")" 
-           for="btnDynamisch2" @onclick="() => prijsCategorie = true">Dynamisch</label>
-        </div>
-        <div class="form-floating mb-3" style="width: 11rem; height: 4rem; padding-right: 1rem;">
-          <input type="text" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="3500" aria-label="3500" aria-describedby="button-addon2" @bind="detectieVermogenW">
-          <label for="floatingInputValue">Detectiepunt (Watt)</label>
-        </div>
-        <div class="form-floating mb-3" style="width: 11rem; height: 4rem; padding-right: 1rem;">
-          <input type="text" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="3500" aria-label="3500" aria-describedby="button-addon2" @bind="numberOfDays">
-          <label for="floatingInputValue">Aantal dagen</label>
-        </div>
-        <button class="btn btn-primary" type="submit" onclick="javascript:window.location.reload()">Refresh</button>
+<div class="main-content" style="width: 100%;">
+  <div class="laadsessies" style="margin-top: 0.5rem; width: 100%;">
+    <div class="button-row-container" style="display: flex; height: 4rem; gap: 1rem;">
+      <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+        <input type="radio" class="btn-check" name="prijsType" id="btnDynamisch" autocomplete="off" @checked="prijsCategorie == true">
+        <label class="btn btn-outline-primary d-flex justify-content-center align-items-center" for="btnDynamisch" @onclick="() => prijsCategorie = true">Dynamisch</label>
+        <input type="radio" class="btn-check" name="prijsType" id="btnVast" autocomplete="off" @checked="prijsCategorie == false">
+        <label class="btn btn-outline-primary d-flex justify-content-center align-items-center" for="btnVast" @onclick="() => prijsCategorie = false">Vast</label>
       </div>
-      @if (Laadsessies != null) 
+      <div class="form-floating mb-3" style="width: 11rem; height: 4rem;">
+        <input type="number" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="3500" aria-label="3500" aria-describedby="button-addon2" @bind="detectieVermogenW">
+        <label for="floatingInputValue">Detectiepunt (Watt)</label>
+      </div>
+      <div class="form-floating mb-3" style="width: 11rem; height: 4rem;">
+        <input type="number" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="3500" aria-label="3500" aria-describedby="button-addon2" @bind="numberOfDays">
+        <label for="floatingInputValue">Aantal dagen</label>
+      </div>
+      <button class="btn btn-primary" type="submit" @onclick="LoadDataAsync">Refresh</button>
+    </div>
+    @if (currentPowerData == null)
+    {
+      <div class="spinner-border text-dark" style="margin-top: 1rem;" role="status">
+        <span class="visually-hidden">Data wordt opgehaald...</span>
+      </div>
+    }
+    else
+    {
+      @if(Laadsessies == null) 
       {
-        <table class="table table-striped">
+        <p style="margin-top: 2rem;">Helaas geen laadsessies beschikbaar. Probeer de pagina opnieuw te laden!</p>
+      }
+      else
+      {<div style="margin-top: 1rem;">
+        <table class="table">
           <tbody>
-            @foreach (Laadsessie sessie in Laadsessies)
-            {
               <thead>
                 <tr>
                   <th scope="col">Start</th>
@@ -50,27 +52,23 @@ else
                   <th scope="col">Price</th>
                 </tr>
               </thead>
+              @foreach (Laadsessie sessie in Laadsessies)
+                {
                 <tr scope="row">
                     <td>@sessie.Start</td>
                     <td>@sessie.Stop</td>
                     <td>@sessie.Duur</td>
                     <td>@sessie.TotaalKWh</td>
                     <td>@sessie.Prijs</td>
-                </tr>}
-          </tbody>
-        </table>
-      }
-      else 
-      {
-        <p style="padding-top: 2rem;">Helaas geen laadsessies beschikbaar. Probeer de pagina opnieuw te laden!</p>
-      }
+                </tr>
+                }
+            </tbody>
+          </table>
+        </div>
+      }      
+    }
     </div>
-    <div class="energy-graph">
-      <p>Some nice graph</p>
-      
-    </div>
-  </div>
-}
+  </div> 
 
 
 @code {
@@ -83,51 +81,70 @@ else
 
 // Variable for LaadsessieDetectie
   double prijsCatagorieVast = 0.25D;
-  bool prijsCategorie = default; // true = dynamisch   false = vast
+  bool prijsCategorie = true; // true = dynamisch   false = vast
   private List<Laadsessie> Laadsessies = new List<Laadsessie>();
 
 protected override async Task OnInitializedAsync()
+{
+  await LoadDataAsync(); 
+}
+
+private double CalculatePrice(Measurement measurement, bool prijsCategorie, double prijsCatagorieVast) 
+{
+  double prijs = 0;
+
+  if (prijsCategorie == true)
   {
-    currentPowerData = await this.measurementRepository.GetPower(meterId, numberOfDays, aggegationWindow);
-    
+    prijs += measurement.EnergyPrice.Value;
+  }
+  else 
+  {
+    prijs += (measurement.Value.Value / 1000) * prijsCatagorieVast;
+  }
+  
+  return prijs;
+}
+
+private async Task LoadDataAsync()
+{
     bool laadsessieActief = default;
     double totaalkWhLaadsessie = default;
+    double totaalWattLaadsessie = default;
     double prijsLaadsessie = default;
     TimeSpan duurLaadsessie = default;
     DateTime startLaadsessie = default;
     DateTime stopLaadsessie = default;
+    currentPowerData = await this.measurementRepository.GetPowerUsed(meterId, numberOfDays, aggegationWindow);
+    Laadsessies = new List<Laadsessie>();
 
+  // Algoritme laadsessie detectie
     foreach(var measurement in currentPowerData) {
-    // Error handeling
-      if (currentPowerData == null) {Console.Error.WriteLine("Geen meetgegevens ontvangen."); return;}
-      if (measurement.Value.Value == null) {Console.Error.WriteLine("Measurement of Value is null."); continue;}
-    
-
-    // Algoritme laadsessie detectie
-      if(measurement.Value.Value > detectieVermogenW && laadsessieActief == false) {
+      if(measurement.Value.Value > detectieVermogenW && laadsessieActief == false) 
+      {
         startLaadsessie = measurement.Timestamp;
         laadsessieActief = true;
-        
+        prijsLaadsessie += CalculatePrice(measurement, prijsCategorie, prijsCatagorieVast);
+        totaalWattLaadsessie += measurement.Value.Value;
       }
-      else if(measurement.Value.Value > detectieVermogenW) {
-        // schrijf code dat prijs optelt, watt optelt
-        if(prijsCategorie == true) {prijsLaadsessie += measurement.EnergyPrice.Value;}
-        else if(prijsCategorie == false) {prijsLaadsessie += (measurement.Value.Value / 1000) * prijsCatagorieVast;}
-        else {prijsLaadsessie += (measurement.Value.Value / 1000) * prijsCatagorieVast; Console.Error.WriteLine("Geen prijsdata ontvangen. Gebruikt de vaste waarde!");} //Error handeling
-        totaalkWhLaadsessie += measurement.Value.Value;
+      else if(measurement.Value.Value > detectieVermogenW) 
+      {
+        prijsLaadsessie += CalculatePrice(measurement, prijsCategorie, prijsCatagorieVast);
+        totaalWattLaadsessie += measurement.Value.Value;
       }
-
-      else if(measurement.Value < detectieVermogenW && laadsessieActief == true) {
-        // schrijf code dat alles opslaat in de lijst. Duur kan worden berekend met DateTime.Subtract(startLaadsessie, stopLaadsessie)
+      else if(measurement.Value < detectieVermogenW && laadsessieActief == true) 
+      {
         stopLaadsessie = measurement.Timestamp;
         duurLaadsessie = stopLaadsessie.Subtract(startLaadsessie);
+        
+        // Calculate the used kiloWattHour
+        totaalkWhLaadsessie = totaalWattLaadsessie / 1000;
 
-        var singleLaadsessie = new Laadsessie(startLaadsessie, stopLaadsessie, duurLaadsessie, prijsLaadsessie, totaalkWhLaadsessie);
+        var singleLaadsessie = new Laadsessie(startLaadsessie, stopLaadsessie, duurLaadsessie, totaalkWhLaadsessie, prijsLaadsessie);
         Laadsessies.Add(singleLaadsessie);
-
-        laadsessieActief = default;
+        
         laadsessieActief = default;
         totaalkWhLaadsessie = default;
+        totaalWattLaadsessie = default;
         prijsLaadsessie = default;
         duurLaadsessie = default;
         startLaadsessie = default;
@@ -137,5 +154,6 @@ protected override async Task OnInitializedAsync()
         continue;
       }
     }
+    await InvokeAsync(StateHasChanged);
   }
 }
