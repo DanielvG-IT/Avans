@@ -90,6 +90,128 @@ public class InfluxMeasurementRepository : IMeasurementRepository
         Console.WriteLine("Time consumed for API Call: " + startTime.ElapsedMilliseconds + "ms");
         return measurements;
     }
+    public async Task<List<Measurement>> GetPowerProduced(int meterId, int daysToRetrieve, string aggregationWindow)
+    {
+        var measurements = new List<Measurement>();
+        // A stopwatch is used so we can monitor the time it took to retrieve and process the data from the influx database
+        var startTime = Stopwatch.StartNew();
+
+        // This is an influx query. Influx processes this and returns the data based on the parameter you provide in the query
+        string query =
+            $"from(bucket: \"p1-smartmeters\")" +
+            $"  |> range(start: {getStartDate(daysToRetrieve)}, stop: now())" +
+            $"  |> filter(fn: (r) => r[\"signature\"] == \"{getFullMeterIdInHex(meterId)}\")" +
+            $"  |> filter(fn: (r) => r[\"_field\"] == \"power_consumed\" or r[\"_field\"] == \"power_produced\")" +
+            $"  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")" +
+            $"  |> map(fn: (r) => ({{r with _value: r.power_produced}}))" +
+            $"  |> aggregateWindow(every: {aggregationWindow}, fn: mean, createEmpty: false)" +
+            $"  |> yield(name: \"mean\")";
+
+        // Enable or disable next line if you want to see or hide the query that is executed
+        // Console.WriteLine(query);
+
+        // retrieve the temperature and price data to enrich measurements with this information
+        var energyPrices = await EnrichMeasurementsWithEnergyPrice(daysToRetrieve);
+        var temperatures = await EnrichMeasurementsWithTemperature(daysToRetrieve, aggregationWindow);
+
+        // Make an API Call to the Influx server to retrieve the data requested by the query
+        var fluxTables = await _client.GetQueryApi().QueryAsync(query);
+
+        // Make an API Call to the Influx server to retrieve the data requested by the query. Loop over the results by
+        // reading all fluxTables (most likely one) and process all records (results) in that fluxTable. These records
+        // are then converted to Measurement object and stored in the measurements list.
+        foreach (var table in fluxTables)
+        {
+            foreach (var record in table.Records)
+            {
+                // Get the right fields we need from the record and store it in a local variable for later use
+                DateTime dateTime = ((NodaTime.Instant)record.GetValueByKey("_time")).ToDateTimeUtc();
+                string locationId = (string)record.GetValueByKey("signature");
+                double value = (double)record.GetValueByKey("_value") * 1000;
+
+                // round up to the full hour so we can lookup the energy price for the hourly slot
+                DateTime dateTimeRounded = dateTime.AddMinutes(dateTime.Minute * -1).AddSeconds(dateTime.Second * -1);
+
+                // We use the earlier fetched data to set energyprice and temperature on the retrieved date/time of the measurement data
+                energyPrices.TryGetValue(dateTimeRounded.Ticks, out var energyPrice);
+                temperatures.TryGetValue(dateTime.Ticks, out var temperature);
+
+                // Create a new Measurement object and add it to the list.
+                var singleMeasurement = new Measurement(dateTime, locationId, Sensor.power, Math.Round(value, 0), Unit.Watt, energyPrice, temperature);
+                measurements.Add(singleMeasurement);
+            }
+        }
+
+        // Print the time it has taken to query and process the data before returning the list of measurements
+        Console.WriteLine("Time consumed for API Call: " + startTime.ElapsedMilliseconds + "ms");
+        return measurements;
+    }
+
+    /// <summary>
+    /// Shared method with common implementation for querying the influx database.
+    /// </summary>
+    /// <param name="meterId">Decimal representation of the Hexadecimal ID of the P1 meter to retrieve data from</param>
+    /// <param name="daysToRetrieve">Number of days to retrieve from the dataset. Range: 1 (only today) up to 30 (one month)</param>
+    /// <param name="aggregationWindow">The time window for the aggregation of the measurements in seconds, minutes, hours or days.</param>
+    /// <param name="sensor">Type of data to retrieve from the influx database</param>
+    /// <param name="unit">The unit of representation that is linked to the <c>sensor</c> information</param>
+    /// <returns></returns>
+    public async Task<List<Measurement>> GetPowerUsed(int meterId, int daysToRetrieve, string aggregationWindow)
+    {
+        var measurements = new List<Measurement>();
+        // A stopwatch is used so we can monitor the time it took to retrieve and process the data from the influx database
+        var startTime = Stopwatch.StartNew();
+
+        // This is an influx query. Influx processes this and returns the data based on the parameter you provide in the query
+        string query =
+            $"from(bucket: \"p1-smartmeters\")" +
+            $"  |> range(start: {getStartDate(daysToRetrieve)}, stop: now())" +
+            $"  |> filter(fn: (r) => r[\"signature\"] == \"{getFullMeterIdInHex(meterId)}\")" +
+            $"  |> filter(fn: (r) => r[\"_field\"] == \"power_consumed\" or r[\"_field\"] == \"power_produced\")" +
+            $"  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")" +
+            $"  |> map(fn: (r) => ({{r with _value: r.power_consumed}}))" +
+            $"  |> aggregateWindow(every: {aggregationWindow}, fn: mean, createEmpty: false)" +
+            $"  |> yield(name: \"mean\")";
+
+        // Enable or disable next line if you want to see or hide the query that is executed
+        // Console.WriteLine(query);
+
+        // retrieve the temperature and price data to enrich measurements with this information
+        var energyPrices = await EnrichMeasurementsWithEnergyPrice(daysToRetrieve);
+        var temperatures = await EnrichMeasurementsWithTemperature(daysToRetrieve, aggregationWindow);
+
+        // Make an API Call to the Influx server to retrieve the data requested by the query
+        var fluxTables = await _client.GetQueryApi().QueryAsync(query);
+
+        // Make an API Call to the Influx server to retrieve the data requested by the query. Loop over the results by
+        // reading all fluxTables (most likely one) and process all records (results) in that fluxTable. These records
+        // are then converted to Measurement object and stored in the measurements list.
+        foreach (var table in fluxTables)
+        {
+            foreach (var record in table.Records)
+            {
+                // Get the right fields we need from the record and store it in a local variable for later use
+                DateTime dateTime = ((NodaTime.Instant)record.GetValueByKey("_time")).ToDateTimeUtc();
+                string locationId = (string)record.GetValueByKey("signature");
+                double value = (double)record.GetValueByKey("_value") * 1000;
+
+                // round up to the full hour so we can lookup the energy price for the hourly slot
+                DateTime dateTimeRounded = dateTime.AddMinutes(dateTime.Minute * -1).AddSeconds(dateTime.Second * -1);
+
+                // We use the earlier fetched data to set energyprice and temperature on the retrieved date/time of the measurement data
+                energyPrices.TryGetValue(dateTimeRounded.Ticks, out var energyPrice);
+                temperatures.TryGetValue(dateTime.Ticks, out var temperature);
+
+                // Create a new Measurement object and add it to the list.
+                var singleMeasurement = new Measurement(dateTime, locationId, Sensor.power, Math.Round(value, 0), Unit.Watt, energyPrice, temperature);
+                measurements.Add(singleMeasurement);
+            }
+        }
+
+        // Print the time it has taken to query and process the data before returning the list of measurements
+        Console.WriteLine("Time consumed for API Call: " + startTime.ElapsedMilliseconds + "ms");
+        return measurements;
+    }
 
     /// <summary>
     /// Shared method with common implementation for querying the influx database.
