@@ -84,7 +84,7 @@ else
 
         /* Number of days to retrieve, ajust according to your needs/requirements. */
 
-        int numberOfDays = 3;
+        int numberOfDays = 7;
 
 
 
@@ -114,7 +114,7 @@ else
 
         //gasData = await this.measurementRepository.GetGasDelivered(meterId, numberOfDays, aggegationWindow);
 
-        currentPowerData = await this.measurementRepository.GetPower(meterId, numberOfDays, aggegationWindow);
+        currentPowerData = await this.measurementRepository.GetPowerUsed(meterId, numberOfDays, aggegationWindow);
 
     }
 }

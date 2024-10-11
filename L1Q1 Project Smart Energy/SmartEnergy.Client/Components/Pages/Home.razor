@@ -78,56 +78,36 @@
     </div>
   </div>
 </div>
-<div class="grafiekContainer" style="display: flex; width: 100%; justify-content: center; align-self: center; margin-top: 1rem; margin-bottom: 2rem; gap: 2rem;">
-  <div class="grafiek-card card">
-    <div class="card-body">
-      <h5 class="card-title">Energie consumed laatste @numberOfDays dagen</h5>
-      @if(energyConsumedData == null)
-      {
-        <div class="spinner-border text-dark" style="padding-top: 1.5rem" role="status">
-          <span class="visually-hidden">Data wordt opgehaald...</span>
-        </div>
-      }
-      else 
-      {
-        <div class="DeGrafiek" style="display: flex; height: 30vh; width: 20vw;">
-          <ApexChart TItem="Measurement">
-            <ApexPointSeries TItem="Measurement"
-                Items="energyConsumedData"
-                Name="Verbruik"
-                SeriesType="SeriesType.Line"
-                XValue="@(e => e.Timestamp)"
-                YValue="@(e => (decimal?)e.Value)"
-                />
-          </ApexChart>
-        </div>
-      }
-    </div>
-  </div>
-  <div class="grafiek-card card" style="width: 20vw; height: auto;">
-    <div class="card-body">
-      <h5 class="card-title">Energie Produced laatste @numberOfDays dagen</h5>
-      @if(energyProducedData == null) 
-      {
-        <div class="spinner-border text-dark" style="padding-top: 1.5rem" role="status">
-          <span class="visually-hidden">Data wordt opgehaald...</span>
-        </div>
-      }
-      else 
-      {
-        <div class="DeGrafiek" style="display: flex; height: fit-content; width: 20vw;">
-          <ApexChart TItem="Measurement">
+<div class="grafiek-card card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin-top: 1rem; margin-bottom: 2rem;;">
+  <div class="card-body">
+    <h5 class="card-title">Energie consumed laatste @numberOfDays dagen</h5>
+    @if(energyConsumedData == null)
+    {
+      <div class="spinner-border text-dark" style="padding-top: 1.5rem" role="status">
+        <span class="visually-hidden">Data wordt opgehaald...</span>
+      </div>
+    }
+    else 
+    {
+      <div class="DeGrafiek" style="width: 55vw; height: auto;">
+        <ApexChart TItem="Measurement">
           <ApexPointSeries TItem="Measurement"
-              Items="energyProducedData"
-              Name="Opgewekt"
+              Items="PowerConsumed"
+              Name="Verbruik"
               SeriesType="SeriesType.Line"
               XValue="@(e => e.Timestamp)"
-              YValue="@(e => (decimal?)e.Value)" 
+              YValue="@(e => (decimal?)e.Value)"
               />
-          </ApexChart>
-        </div>
-      }
-    </div>
+          <ApexPointSeries TItem="Measurement"
+            Items="PowerProduced"
+            Name="Opgewekt"
+            SeriesType="SeriesType.Line"
+            XValue="@(e => e.Timestamp)"
+            YValue="@(e => (decimal?)e.Value)" 
+            />
+        </ApexChart>
+      </div>
+    }
   </div>
 </div>
 
@@ -138,6 +118,8 @@
   string aggegationWindow = "1h";
   private List<Measurement>? energyConsumedData;
   private List<Measurement>? energyProducedData;
+  private List<Measurement>? PowerConsumed;
+  private List<Measurement>? PowerProduced;
 
 // Variables for algoritm
   double verbruiktThuis;
@@ -149,6 +131,8 @@
   // Get data from database for cards and graphs
     energyConsumedData = await this.measurementRepository.GetEnergyConsumed(meterId, numberOfDays, aggegationWindow);
     energyProducedData = await this.measurementRepository.GetEnergyProduced(meterId, numberOfDays, aggegationWindow);
+    PowerProduced = await this.measurementRepository.GetPowerProduced(meterId, numberOfDays, aggegationWindow);
+    PowerConsumed = await this.measurementRepository.GetPowerUsed(meterId, numberOfDays, aggegationWindow);
   
   // Calculate the energy used this numberOfDays
     foreach(var measurement in energyConsumedData) 

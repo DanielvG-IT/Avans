@@ -127,7 +127,7 @@ public class InfluxMeasurementRepository : IMeasurementRepository
                 // Get the right fields we need from the record and store it in a local variable for later use
                 DateTime dateTime = ((NodaTime.Instant)record.GetValueByKey("_time")).ToDateTimeUtc();
                 string locationId = (string)record.GetValueByKey("signature");
-                double value = (double)record.GetValueByKey("_value") * 1000;
+                double value = (double)record.GetValueByKey("_value") * 1000 * -1;
 
                 // round up to the full hour so we can lookup the energy price for the hourly slot
                 DateTime dateTimeRounded = dateTime.AddMinutes(dateTime.Minute * -1).AddSeconds(dateTime.Second * -1);

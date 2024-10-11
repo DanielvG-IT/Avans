@@ -1,4 +1,4 @@
-﻿@page "/opladen-ev"
+@page "/opladen-ev-power"
 @attribute [StreamRendering]
 @rendermode InteractiveServer
 @inject IMeasurementRepository measurementRepository;
@@ -17,11 +17,11 @@
         <label class="btn btn-outline-primary d-flex justify-content-center align-items-center" for="btnVast" @onclick="() => prijsCategorie = false">Vast</label>
       </div>
       <div class="form-floating mb-3" style="width: 11rem; height: 4rem;">
-        <input type="number" min="3500" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="3500" aria-label="3500" aria-describedby="button-addon2" @bind="detectieVermogenW">
-        <label for="floatingInputValue">Detectiepunt (Watt)</label>
+        <input type="number" min="2" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="3" aria-label="3" aria-describedby="button-addon2" @bind="detectieVermogenW">
+        <label for="floatingInputValue">Detectiepunt (kWh)</label>
       </div>
       <div class="form-floating mb-3" style="width: 11rem; height: 4rem;">
-        <input type="number" min="1" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="3500" aria-label="3500" aria-describedby="button-addon2" @bind="numberOfDays">
+        <input type="number" min="1" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="30" aria-label="30" aria-describedby="button-addon2" @bind="numberOfDays">
         <label for="floatingInputValue">Aantal dagen</label>
       </div>
       <button class="btn btn-primary" type="submit" @onclick="LoadDataAsync">Refresh</button>
@@ -61,7 +61,6 @@
                     <td>@sessie.Prijs</td>
                   </tr>
                 </tbody>
-
                 }
           </table>
         </div>
@@ -73,7 +72,7 @@
 
 @code {
   // Variable for database connection
-  double detectieVermogenW = 3500D;
+  double detectieVermogenW = 3D;
   int meterId = 10019163;
   int numberOfDays = 30;
   string aggegationWindow = "5m";
@@ -93,29 +92,28 @@ private double CalculatePrice(Measurement measurement, bool prijsCategorie, doub
 {
   double prijs = 0;
 
-  if (prijsCategorie == true) { prijs += measurement.EnergyPrice.Value; }
-  
-  else { prijs += (measurement.Value.Value / 1000) * prijsCatagorieVast; }
+  if (prijsCategorie == true)
+  {
+    prijs += measurement.EnergyPrice.Value;
+  }
+  else 
+  {
+    prijs += measurement.Value.Value * prijsCatagorieVast;
+  }
   
   return prijs;
-}
-
-private double CalculatekWh(Measurement measurement) {
-      // TODO: Make the calculation to kWh actualy work correct
-          // Maybe switch aggerateWindow to 1h for less acurate data but already in Wh
-          // Mabye switch to GetEnergyConsumed for data already in kWh but way less accurate data because of rounding!
-          return measurement.Value.Value / 1000;
 }
 
 private async Task LoadDataAsync()
 {
     bool laadsessieActief = default;
     double totaalkWhLaadsessie = default;
+    double totaalWattLaadsessie = default;
     double prijsLaadsessie = default;
     TimeSpan duurLaadsessie = default;
     DateTime startLaadsessie = default;
     DateTime stopLaadsessie = default;
-    currentPowerData = await this.measurementRepository.GetPowerUsed(meterId, numberOfDays, aggegationWindow);
+    currentPowerData = await this.measurementRepository.GetEnergyConsumed(meterId, numberOfDays, aggegationWindow);
     Laadsessies = new List<Laadsessie>();
 
   // Algoritme laadsessie detectie
@@ -125,15 +123,13 @@ private async Task LoadDataAsync()
         startLaadsessie = measurement.Timestamp;
         laadsessieActief = true;
         prijsLaadsessie += CalculatePrice(measurement, prijsCategorie, prijsCatagorieVast);
-        totaalkWhLaadsessie += CalculatekWh(measurement); 
+        totaalkWhLaadsessie += measurement.Value.Value;
       }
-
       else if(measurement.Value.Value > detectieVermogenW) 
       {
         prijsLaadsessie += CalculatePrice(measurement, prijsCategorie, prijsCatagorieVast);
-        totaalkWhLaadsessie += CalculatekWh(measurement); 
+        totaalkWhLaadsessie += measurement.Value.Value;
       }
-
       else if(measurement.Value < detectieVermogenW && laadsessieActief == true) 
       {
         stopLaadsessie = measurement.Timestamp;
@@ -149,7 +145,6 @@ private async Task LoadDataAsync()
         startLaadsessie = default;
         stopLaadsessie = default;
       }
-
       else {
         continue;
       }
