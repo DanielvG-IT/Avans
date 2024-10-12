@@ -80,7 +80,7 @@
 </div>
 <div class="grafiek-card card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin-top: 1rem; margin-bottom: 2rem;;">
   <div class="card-body">
-    <h5 class="card-title">Energie consumed laatste @numberOfDays dagen</h5>
+    <h5 class="card-title">Energie consumptie vs energie opwekking laatste @numberOfDays dagen</h5>
     @if(energyConsumedData == null)
     {
       <div class="spinner-border text-dark" style="padding-top: 1.5rem" role="status">
@@ -124,6 +124,7 @@
 // Variables for algoritm
   double verbruiktThuis;
   double opgewektZonnepanelen;
+  double totaalkWhVerbruikt;
 
 
   protected override async Task OnInitializedAsync()
@@ -134,7 +135,7 @@
     PowerProduced = await this.measurementRepository.GetPowerProduced(meterId, numberOfDays, aggegationWindow);
     PowerConsumed = await this.measurementRepository.GetPowerUsed(meterId, numberOfDays, aggegationWindow);
   
-  // Calculate the energy used this numberOfDays
+    // Calculate the energy used this numberOfDays
     foreach(var measurement in energyConsumedData) 
     {
       if (energyConsumedData != null && energyConsumedData.Count > 1)

@@ -11,10 +11,10 @@
   <div class="laadsessies" style="margin-top: 0.5rem; width: 100%;">
     <div class="button-row-container" style="display: flex; height: 4rem; gap: 1rem;">
       <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-        <input type="radio" class="btn-check" name="prijsType" id="btnDynamisch" autocomplete="off" @checked="prijsCategorie == true">
-        <label class="btn btn-outline-primary d-flex justify-content-center align-items-center" for="btnDynamisch" @onclick="() => prijsCategorie = true">Dynamisch</label>
-        <input type="radio" class="btn-check" name="prijsType" id="btnVast" autocomplete="off" @checked="prijsCategorie == false">
-        <label class="btn btn-outline-primary d-flex justify-content-center align-items-center" for="btnVast" @onclick="() => prijsCategorie = false">Vast</label>
+        <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" checked />
+        <label class="btn btn-outline-primary d-flex justify-content-center align-items-center" for="btnradio2" @onclick="() => prijsCategorieDynamisch = false" checked>Vast</label>
+        <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" />
+        <label class="btn btn-outline-primary d-flex justify-content-center align-items-center" for="btnradio1" @onclick="() => prijsCategorieDynamisch = true">Dynamisch</label>
       </div>
       <div class="form-floating mb-3" style="width: 11rem; height: 4rem;">
         <input type="number" min="3500" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="3500" aria-label="3500" aria-describedby="button-addon2" @bind="detectieVermogenW">
@@ -24,15 +24,17 @@
         <input type="number" min="1" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="3500" aria-label="3500" aria-describedby="button-addon2" @bind="numberOfDays">
         <label for="floatingInputValue">Aantal dagen</label>
       </div>
+      <div class="form-floating mb-3" style="width: 11rem; height: 4rem;">
+        <input type="number" min="0" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="5" aria-label="5" aria-describedby="button-addon2" @bind="minimumduur">
+        <label for="floatingInputValue">minimumduur (minuten)</label>
+      </div>
+      <div class="form-floating mb-3" style="width: 11rem; height: 4rem;">
+        <input type="number" min="0" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="0,25" aria-label="0,25" aria-describedby="button-addon2" @bind="prijsCatagorieVast">
+        <label for="floatingInputValue">Prijs per kWh (Euro)</label>
+      </div>
       <button class="btn btn-primary" type="submit" @onclick="LoadDataAsync">Refresh</button>
     </div>
-    @if (currentPowerData == null)
-    {
-      <div class="spinner-border text-dark" style="margin-top: 1rem;" role="status">
-        <span class="visually-hidden">Data wordt opgehaald...</span>
-      </div>
-    }
-    else
+    @if (currentPowerData != null)
     {
       @if(Laadsessies.Count == 0 || Laadsessies == null) 
       {
@@ -57,8 +59,8 @@
                     <td>@sessie.Start</td>
                     <td>@sessie.Stop</td>
                     <td>@sessie.Duur</td>
-                    <td>@sessie.TotaalKWh</td>
-                    <td>@sessie.Prijs</td>
+                    <td>@sessie.TotaalKWh.ToString("F2") kWh</td>
+                    <td>@sessie.Prijs.ToString("C")</td>
                   </tr>
                 </tbody>
 
@@ -66,6 +68,15 @@
           </table>
         </div>
       }      
+    }
+    else
+    {
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; width: 100%;">
+        <p style="margin-top: 1rem;">Calculating</p>
+        <div class="spinner-border text-dark" role="status">
+          <span class="visually-hidden">Data wordt opgehaald...</span>
+        </div>
+      </div> 
     }
     </div>
   </div> 
@@ -76,12 +87,13 @@
   double detectieVermogenW = 3500D;
   int meterId = 10019163;
   int numberOfDays = 30;
-  string aggegationWindow = "5m";
+  string aggegationWindow = "20s";
   private List<Measurement>? currentPowerData;
 
 // Variable for LaadsessieDetectie
+  int minimumduur = 5;
   double prijsCatagorieVast = 0.25D;
-  bool prijsCategorie = true; // true = dynamisch   false = vast
+  bool prijsCategorieDynamisch = false;
   private List<Laadsessie> Laadsessies = new List<Laadsessie>();
 
 protected override async Task OnInitializedAsync()
@@ -89,26 +101,9 @@ protected override async Task OnInitializedAsync()
   await LoadDataAsync(); 
 }
 
-private double CalculatePrice(Measurement measurement, bool prijsCategorie, double prijsCatagorieVast) 
-{
-  double prijs = 0;
-
-  if (prijsCategorie == true) { prijs += measurement.EnergyPrice.Value; }
-  
-  else { prijs += (measurement.Value.Value / 1000) * prijsCatagorieVast; }
-  
-  return prijs;
-}
-
-private double CalculatekWh(Measurement measurement) {
-      // TODO: Make the calculation to kWh actualy work correct
-          // Maybe switch aggerateWindow to 1h for less acurate data but already in Wh
-          // Mabye switch to GetEnergyConsumed for data already in kWh but way less accurate data because of rounding!
-          return measurement.Value.Value / 1000;
-}
-
 private async Task LoadDataAsync()
 {
+    Laadsessies = new List<Laadsessie>();
     bool laadsessieActief = default;
     double totaalkWhLaadsessie = default;
     double prijsLaadsessie = default;
@@ -116,7 +111,6 @@ private async Task LoadDataAsync()
     DateTime startLaadsessie = default;
     DateTime stopLaadsessie = default;
     currentPowerData = await this.measurementRepository.GetPowerUsed(meterId, numberOfDays, aggegationWindow);
-    Laadsessies = new List<Laadsessie>();
 
   // Algoritme laadsessie detectie
     foreach(var measurement in currentPowerData) {
@@ -124,23 +118,37 @@ private async Task LoadDataAsync()
       {
         startLaadsessie = measurement.Timestamp;
         laadsessieActief = true;
-        prijsLaadsessie += CalculatePrice(measurement, prijsCategorie, prijsCatagorieVast);
-        totaalkWhLaadsessie += CalculatekWh(measurement); 
+        prijsLaadsessie += measurement.EnergyPrice.Value;
+        totaalkWhLaadsessie += measurement.Value.Value * (1 / 180D) / 1000;
+
       }
 
       else if(measurement.Value.Value > detectieVermogenW) 
       {
-        prijsLaadsessie += CalculatePrice(measurement, prijsCategorie, prijsCatagorieVast);
-        totaalkWhLaadsessie += CalculatekWh(measurement); 
+        prijsLaadsessie += measurement.EnergyPrice.Value;
+        totaalkWhLaadsessie += measurement.Value.Value * (1D / 180D) / 1000D;
       }
 
       else if(measurement.Value < detectieVermogenW && laadsessieActief == true) 
       {
         stopLaadsessie = measurement.Timestamp;
         duurLaadsessie = stopLaadsessie.Subtract(startLaadsessie);
-
-        var singleLaadsessie = new Laadsessie(startLaadsessie, stopLaadsessie, duurLaadsessie, totaalkWhLaadsessie, prijsLaadsessie);
-        Laadsessies.Add(singleLaadsessie);
+      
+      // Calculate prijs met vaste prijs
+        if(prijsCategorieDynamisch == false) 
+        {
+          prijsLaadsessie = totaalkWhLaadsessie * prijsCatagorieVast;
+        }
+        
+        prijsLaadsessie = Math.Round(prijsLaadsessie, 2);
+        totaalkWhLaadsessie = Math.Round(totaalkWhLaadsessie, 2);
+      
+      // Check minimum duration
+        if(duurLaadsessie.TotalMinutes >= minimumduur)
+        {
+          var singleLaadsessie = new Laadsessie(startLaadsessie, stopLaadsessie, duurLaadsessie, totaalkWhLaadsessie, prijsLaadsessie);
+          Laadsessies.Add(singleLaadsessie);
+        }
         
         laadsessieActief = default;
         totaalkWhLaadsessie = default;
