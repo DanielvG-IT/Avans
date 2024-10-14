@@ -21,7 +21,7 @@
         <label for="floatingInputValue">Detectiepunt (Watt)</label>
       </div>
       <div class="form-floating mb-3" style="width: 11rem; height: 4rem;">
-        <input type="number" min="1" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="3500" aria-label="3500" aria-describedby="button-addon2" @bind="numberOfDays">
+        <input type="number" min="1" max="30" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="3500" aria-label="3500" aria-describedby="button-addon2" @bind="numberOfDays">
         <label for="floatingInputValue">Aantal dagen</label>
       </div>
       <div class="form-floating mb-3" style="width: 11rem; height: 4rem;">
@@ -87,7 +87,7 @@
   double detectieVermogenW = 3500D;
   int meterId = 10019163;
   int numberOfDays = 30;
-  string aggegationWindow = "20s";
+  string aggegationWindow = "1m";
   private List<Measurement>? currentPowerData;
 
 // Variable for LaadsessieDetectie
@@ -118,15 +118,14 @@ private async Task LoadDataAsync()
       {
         startLaadsessie = measurement.Timestamp;
         laadsessieActief = true;
-        prijsLaadsessie += measurement.EnergyPrice.Value;
-        totaalkWhLaadsessie += measurement.Value.Value * (1 / 180D) / 1000;
-
+        totaalkWhLaadsessie += measurement.Value.Value * (1D / 60D) / 1000D;
+        prijsLaadsessie += measurement.EnergyPrice.Value * (measurement.Value.Value * (1D / 60D) / 1000D);
       }
 
       else if(measurement.Value.Value > detectieVermogenW) 
       {
-        prijsLaadsessie += measurement.EnergyPrice.Value;
-        totaalkWhLaadsessie += measurement.Value.Value * (1D / 180D) / 1000D;
+        totaalkWhLaadsessie += measurement.Value.Value * (1D / 60D) / 1000D;
+        prijsLaadsessie += measurement.EnergyPrice.Value * (measurement.Value.Value * (1D / 60D) / 1000D);
       }
 
       else if(measurement.Value < detectieVermogenW && laadsessieActief == true) 
