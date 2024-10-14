@@ -96,14 +96,14 @@
               Name="Verbruik"
               SeriesType="SeriesType.Line"
               XValue="@(e => e.Timestamp)"
-              YValue="@(e => (decimal?)e.Value)"
+              YValue="@(e => (decimal?)e.Value  * -1)"
               />
           <ApexPointSeries TItem="Measurement"
             Items="PowerProduced"
             Name="Opgewekt"
             SeriesType="SeriesType.Line"
             XValue="@(e => e.Timestamp)"
-            YValue="@(e => (decimal?)e.Value)" 
+            YValue="@(e => (decimal?)e.Value  * -1)" 
             />
         </ApexChart>
       </div>
