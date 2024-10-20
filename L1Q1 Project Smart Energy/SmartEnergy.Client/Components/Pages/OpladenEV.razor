@@ -122,7 +122,7 @@ private async Task LoadDataAsync()
         prijsLaadsessie += measurement.EnergyPrice.Value * (measurement.Value.Value * (1D / 60D) / 1000D);
       }
 
-      else if(measurement.Value.Value > detectieVermogenW) 
+      else if(measurement.Value.Value > detectieVermogenW && laadsessieActief == true) 
       {
         totaalkWhLaadsessie += measurement.Value.Value * (1D / 60D) / 1000D;
         prijsLaadsessie += measurement.EnergyPrice.Value * (measurement.Value.Value * (1D / 60D) / 1000D);
