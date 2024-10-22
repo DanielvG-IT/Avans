@@ -9,30 +9,34 @@
   <br/> Daarnaast kunt u grafieken en tabellen bekijken die inzicht geven in de laadsessies over verschillende tijdsperioden. Dit helpt u om trends te herkennen en uw energieverbruik efficiënter te beheren.</p><hr>
 <div class="main-content" style="width: 100%;">
   <div class="laadsessies" style="margin-top: 0.5rem; width: 100%;">
-    <div class="button-row-container" style="display: flex; height: 4rem; gap: 1rem;">
-      <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-        <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" checked />
-        <label class="btn btn-outline-primary d-flex justify-content-center align-items-center" for="btnradio2" @onclick="() => prijsCategorieDynamisch = false" checked>Vast</label>
-        <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" />
-        <label class="btn btn-outline-primary d-flex justify-content-center align-items-center" for="btnradio1" @onclick="() => prijsCategorieDynamisch = true">Dynamisch</label>
+    <div class="function-row-container" style="display: flex; align-items: center; text-align: center; justify-content: space-between; gap: 6rem;">
+      <div class="input-row-container" style="display: flex; height: 4rem; gap: 1rem;">
+        <div class="form-floating mb-3" style="width: 11rem; height: 4rem;">
+          <input type="number" min="3500" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="3500" aria-label="3500" aria-describedby="button-addon2" @bind="detectieVermogenW">
+          <label for="floatingInputValue">Detectiepunt (Watt)</label>
+        </div>
+        <div class="form-floating mb-3" style="width: 11rem; height: 4rem;">
+          <input type="number" min="1" max="30" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="3500" aria-label="3500" aria-describedby="button-addon2" @bind="numberOfDays">
+          <label for="floatingInputValue">Aantal dagen</label>
+        </div>
+        <div class="form-floating mb-3" style="width: 11rem; height: 4rem;">
+          <input type="number" min="0" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="5" aria-label="5" aria-describedby="button-addon2" @bind="minimumduur">
+          <label for="floatingInputValue">minimumduur (minuten)</label>
+        </div>
+        <div class="form-floating mb-3" style="width: 11rem; height: 4rem;">
+          <input type="number" min="0" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="0,25" aria-label="0,25" aria-describedby="button-addon2" @bind="prijsCatagorieVast">
+          <label for="floatingInputValue">Prijs per kWh (Euro)</label>
+        </div>
       </div>
-      <div class="form-floating mb-3" style="width: 11rem; height: 4rem;">
-        <input type="number" min="3500" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="3500" aria-label="3500" aria-describedby="button-addon2" @bind="detectieVermogenW">
-        <label for="floatingInputValue">Detectiepunt (Watt)</label>
+      <div class="button-row-container" style="display: flex; height: 3rem; gap: 1rem;" >
+        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+          <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" checked />
+          <label class="btn btn-outline-primary d-flex justify-content-center align-items-center" for="btnradio2" @onclick="() => prijsCategorieDynamisch = false" checked>Vast</label>
+          <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" />
+          <label class="btn btn-outline-primary d-flex justify-content-center align-items-center" for="btnradio1" @onclick="() => prijsCategorieDynamisch = true">Dynamisch</label>
+        </div>
+         <button class="btn btn-primary" type="submit" @onclick="LoadDataAsync">Refresh</button>
       </div>
-      <div class="form-floating mb-3" style="width: 11rem; height: 4rem;">
-        <input type="number" min="1" max="30" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="3500" aria-label="3500" aria-describedby="button-addon2" @bind="numberOfDays">
-        <label for="floatingInputValue">Aantal dagen</label>
-      </div>
-      <div class="form-floating mb-3" style="width: 11rem; height: 4rem;">
-        <input type="number" min="0" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="5" aria-label="5" aria-describedby="button-addon2" @bind="minimumduur">
-        <label for="floatingInputValue">minimumduur (minuten)</label>
-      </div>
-      <div class="form-floating mb-3" style="width: 11rem; height: 4rem;">
-        <input type="number" min="0" style="height: 4rem;" class="form-control" id="floatingInputValue" placeholder="0,25" aria-label="0,25" aria-describedby="button-addon2" @bind="prijsCatagorieVast">
-        <label for="floatingInputValue">Prijs per kWh (Euro)</label>
-      </div>
-      <button class="btn btn-primary" type="submit" @onclick="LoadDataAsync">Refresh</button>
     </div>
     @if (currentPowerData != null)
     {
