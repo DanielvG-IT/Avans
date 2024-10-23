@@ -5,8 +5,39 @@
 
 <PageTitle>Opaden EV</PageTitle>
 <h1>Opaden EV (variant F)</h1>
-<p>U kunt hier gedetailleerde informatie vinden over de energieverbruikspatronen en de kosten die gepaard gaan met het opladen van elektrische voertuigen. De gegevens worden in real-time bijgewerkt om u de meest actuele informatie te bieden. 
-  <br/> Daarnaast kunt u grafieken en tabellen bekijken die inzicht geven in de laadsessies over verschillende tijdsperioden. Dit helpt u om trends te herkennen en uw energieverbruik efficiënter te beheren.</p><hr>
+<p>
+  Hier vindt u gedetailleerde informatie over de energieverbruikspatronen en de kosten van het opladen van elektrische voertuigen. 
+  De gegevens worden in real-time bijgewerkt, zodat u altijd over de meest actuele informatie beschikt.
+  Daarnaast kunt u de tabel bekijken die inzicht geeft in laadsessies over verschillende tijdsperioden. 
+  Dit stelt u in staat om trends te herkennen en uw energieverbruik efficiënter te beheren.
+  <br /><br />
+  <button class="btn" style="text-decoration: underline; text-decoration-color: blue;" data-bs-toggle="modal" data-bs-target="#AlgoritmeUitleg">Meer informatie over het algoritme</button>
+</p>
+<div class="modal fade" id="AlgoritmeUitleg" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Algoritme informatie</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <P>Dit algoritme detecteert laadsessies op basis van energieverbruikdata. Het werkt als volgt:</P>
+
+        <ul>
+          <li>Data Inlezen: Meetgegevens worden opgehaald met een bepaald aggregatie-interval.</li><br />
+          <li>Laadsessie Start: Een laadsessie start wanneer het verbruik een ingestelde drempelwaarde overschrijdt.</li><br />
+          <li>Verbruik en Kosten: Tijdens de sessie wordt het totale verbruik in kWh en de kosten berekend. Kosten kunnen dynamisch of vast zijn.</li><br />
+          <li>Laadsessie Stop: De sessie eindigt wanneer het verbruik onder de drempel daalt en wordt alleen opgeslagen als de duur langer is dan 5 minuten.</li><br />
+      </ul>
+      <p>Het algoritme slaat alleen laadsessies op die voldoen aan de minimumduur en rondt de resultaten af voor opslag.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<hr>
 <div class="main-content" style="width: 100%;">
   <div class="laadsessies" style="margin-top: 0.5rem; width: 100%;">
     <div class="function-row-container" style="display: flex; align-items: center; text-align: center; justify-content: space-between; gap: 6rem;">
