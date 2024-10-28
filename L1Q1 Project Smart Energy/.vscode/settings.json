@@ -9,5 +9,11 @@
         "editor.defaultFormatter": null,
         "editor.formatOnPaste": false,
         "editor.formatOnSave": false
+    },
+
+    "[markdown]": {
+        "editor.defaultFormatter": null,
+        "editor.formatOnPaste": false,
+        "editor.formatOnSave": false
     }
 }

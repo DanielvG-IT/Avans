@@ -3,6 +3,7 @@
 ```mermaid
 
 flowchart TD
+    START([START]) --> Start
     Start["Initialize Variables"] --> Loop
     Loop["ForEach Loop through Measurements List"] --> CheckStart
     CheckStart{"Power > Threshold && laadsessieActief == false"}
