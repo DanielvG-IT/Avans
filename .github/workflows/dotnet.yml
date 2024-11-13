@@ -26,14 +26,14 @@ jobs:
       # Restore dependencies for the solution
       - name: Restore dependencies
         run: dotnet restore
-        working-directory: "Leerjaar 1/Q1 Project Smart Energy"
+        working-directory: "Leerjaar 1/Q1 Smart Energy"
 
       # Build the solution
       - name: Build solution
         run: dotnet build --no-restore --configuration Release
-        working-directory: "Leerjaar 1/Q1 Project Smart Energy"
+        working-directory: "Leerjaar 1/Q1 Smart Energy"
 
       # Run tests for the solution
       - name: Run tests
         run: dotnet test --no-build --verbosity normal
-        working-directory: "Leerjaar 1/Q1 Project Smart Energy"
+        working-directory: "Leerjaar 1/Q1 Smart Energy"
