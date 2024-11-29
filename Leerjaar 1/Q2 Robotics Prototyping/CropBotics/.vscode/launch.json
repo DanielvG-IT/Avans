@@ -6,10 +6,12 @@
     "configurations": [
         {
             "name": "Debug On Robot",
-            "type":"coreclr",
+            "type": "coreclr",
             "request": "launch",
             "program": "/opt/dotnet/dotnet",
-            "args": [ "/media/csprojects/${workspaceFolderBasename}/RobotProject.dll" ],
+            "args": [
+                "/media/csprojects/${workspaceFolderBasename}/RobotProject.dll"
+            ],
             "cwd": "/media/csprojects/${workspaceFolderBasename}",
             "justMyCode": false,
             "stopAtEntry": false,
@@ -18,9 +20,11 @@
             "pipeTransport": {
                 "pipeCwd": "${workspaceFolder}",
                 "pipeProgram": "ssh",
-                "pipeArgs": [ 
-                    "-o", "StrictHostKeychecking=no",
-                    "-o", "UserKnownHostsFile=/dev/null",
+                "pipeArgs": [
+                    "-o",
+                    "StrictHostKeychecking=no",
+                    "-o",
+                    "UserKnownHostsFile=/dev/null",
                     "rompi@${command:avans-statisticalrobot.connectedRobotIpAddress}"
                 ],
                 "debuggerPath": "/opt/vsdbg/vsdbg"
