@@ -142,7 +142,7 @@ public class SimpleMqttClient : IDisposable
     /// <summary>
     /// Wanneer het object wordt opgeruimd door de GC sluiten we de connectie
     /// </summary>
-    ~SimpleMqttClient() => _client.Dispose();
+    ~SimpleMqttClient() => Dispose();
 
     /// <summary>
     /// Maakt een instantie van een SimpleMqttClient geschikt voor gebruik met HiveMQ 
@@ -153,13 +153,13 @@ public class SimpleMqttClient : IDisposable
     {
         var mqttWrapper = new SimpleMqttClient(new()
         {
-            Host = "jouw-url.broker.hivemq.com", // maak eventueel een account aan bij hivemq als dit problemen geeft.
+            Host = "82460450721346f1b2b5f164a15671c9.s1.eu.hivemq.cloud", // maak eventueel een account aan bij hivemq als dit problemen geeft.
             Port = 8883,
             CleanStart = false, // <--- false, haalt al gebufferde meldingen ook op.
             ClientId = clientId, // Dit clientid moet uniek zijn binnen de broker
             TimeoutInMs = 5_000, // Standaard time-out bij het maken van een verbinding (5 seconden)
-            UserName = "jouw-gebruikersnaam",
-            Password = "jouw-wachtwoord"
+            UserName = "hivemq.webclient.1732899035765",
+            Password = "P107L9Dq;yYuMh>ceV#:"
         });
 
         return mqttWrapper;
