@@ -11,11 +11,4 @@
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="Utilities\*.cs" />
-    <Compile Include="Data\*.cs" />
-    <Compile Include="Models\*.cs" />
-    <Compile Include="Services\*.cs" />
-  </ItemGroup>
-
 </Project>
