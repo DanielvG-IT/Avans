@@ -142,7 +142,7 @@ public class SimpleMqttClient : IDisposable
     /// <summary>
     /// Wanneer het object wordt opgeruimd door de GC sluiten we de connectie
     /// </summary>
-    ~SimpleMqttClient() => _client.Dispose();
+    ~SimpleMqttClient() => Dispose();
 
     /// <summary>
     /// Maakt een instantie van een SimpleMqttClient geschikt voor gebruik met HiveMQ 
