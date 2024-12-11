@@ -6,7 +6,12 @@ The namingconvention is cropbotics/$Sensortype
 
 ## Topics
 
-### 1. `cropbotics/ultrasonic`
+### 1. `cropbotics/sensor/ultrasonic`
+
+-   **Description**: Publishes temperature data from the sensors.
+-   **Message Payload**: $sensordata \*C.
+
+### 1. `cropbotics/command/movement`
 
 -   **Description**: Publishes temperature data from the sensors.
 -   **Message Payload**: $sensordata \*C.

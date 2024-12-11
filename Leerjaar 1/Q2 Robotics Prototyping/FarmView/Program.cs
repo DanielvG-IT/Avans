@@ -1,4 +1,5 @@
 using FarmView.Components;
+using SimpleMqtt;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,21 +7,24 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+
+// Register DatabaseAccess component with Connection String
+var connectionString = "Server=aei-sql2.avans.nl,1443;Database=DB2226789;UID=ITI2226789;password=H7lcQ2F0;TrustServerCertificate=true;";
+builder.Services.AddSingleton<IDatabaseAccess, DatabaseAccess>(o => new DatabaseAccess(connectionString));
+
+
 // Register SimpleMqttClientConfiguration with options
-builder.Services.AddScoped(provider =>
+var simpleMqttClient = new SimpleMqttClient(new()
 {
-    var config = new SimpleMqtt.SimpleMqttClientConfiguration
-    {
-        ClientId = "blazor",
-        Host = "82460450721346f1b2b5f164a15671c9.s1.eu.hivemq.cloud",
-        Port = 8883,
-        UserName = "hivemq.webclient.1732899035765",
-        Password = "P107L9Dq;yYuMh>ceV#:"
-    };
-    return config;
+    Host = "82460450721346f1b2b5f164a15671c9.s1.eu.hivemq.cloud",
+    Port = 8443,
+    ClientId = "FarmView",
+    TimeoutInMs = 5_000,
+    UserName = "hivemq.webclient.1732899035765",
+    Password = "P107L9Dq;yYuMh>ceV#:"
 });
-builder.Services.AddScoped<SimpleMqtt.SimpleMqttClient>();
-builder.Services.AddScoped<SimpleMqtt.SimpleMqttMessage>();
+builder.Services.AddSingleton(simpleMqttClient);
+
 
 var app = builder.Build();
 
