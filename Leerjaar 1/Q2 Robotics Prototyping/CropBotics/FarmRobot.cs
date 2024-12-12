@@ -6,7 +6,7 @@ using Avans.StatisticalRobot;
 
 namespace CropBotics;
 
-public class FarmRobot : IUpdatable, IInitializable
+public class FarmRobot : IUpdatable, IInitializable, IWaitable
 {
   // Local vars for defining hardware 
   const int AlertLedPin = 5;
@@ -23,15 +23,25 @@ public class FarmRobot : IUpdatable, IInitializable
   private Led AlertLed = new(AlertLedPin);
 
 
+  // TODO: Implement state machine
+  public State CurrentState { get; private set; } = State.INIT;
+
+  public void SetState(State state)
+  {
+    CurrentState = state;
+  }
+
+
   public async Task Init()
   {
+    Robot.PlayNotes("g>g");
     await alertSystem.Init();
     await commsSystem.Init();
     await driveSystem.Init();
     await obstacleDetectionSystem.Init();
   }
 
-  public void Update()
+  public async void Update()
   {
     alertSystem.Update();
     commsSystem.Update();
@@ -39,12 +49,8 @@ public class FarmRobot : IUpdatable, IInitializable
     obstacleDetectionSystem.Update();
   }
 
-
-  // TODO: Implement state machine
-  public State CurrentState { get; private set; } = State.INIT;
-
-  public void SetState(State state)
+  public void Wait()
   {
-    CurrentState = state;
+    Thread.Sleep(200);
   }
 }

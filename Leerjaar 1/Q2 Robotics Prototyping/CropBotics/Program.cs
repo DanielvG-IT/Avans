@@ -1,7 +1,5 @@
-using System.Net.Http.Headers;
-using Avans.StatisticalRobot;
-
 namespace CropBotics;
+
 public class Program
 {
   public static async Task Main(string[] args)
@@ -10,15 +8,11 @@ public class Program
     FarmRobot robot = new();
     await robot.Init();
 
-
-
     while (true)
     {
-      /* 
+      // Update the robot then Wait to prevent the loop from running too fast
       robot.Update();
       robot.Wait();
-      */
-      await Task.Delay(200);
     }
   }
 }
