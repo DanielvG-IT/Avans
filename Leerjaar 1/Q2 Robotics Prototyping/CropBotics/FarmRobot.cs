@@ -22,15 +22,6 @@ namespace CropBotics
     private Led AlertLed = new(AlertLedPin);
 
 
-
-
-
-
-
-
-
-
-
     public Task Init()
     {
       throw new NotImplementedException();
@@ -42,17 +33,6 @@ namespace CropBotics
     }
 
     public enum State { INIT, STARTUP, READY, DRIVING, PAUSED, ERROR, EMERGENCY_STOP }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
