@@ -30,12 +30,18 @@ public class FarmRobot : IUpdatable, IInitializable
 
   public void Update()
   {
-    throw new NotImplementedException();
+    alertSystem.Update();
+    commsSystem.Update();
+    driveSystem.Update();
+    obstacleDetectionSystem.Update();
   }
 
+
+  // TODO: Implement state machine
   public State CurrentState { get; private set; } = State.INIT;
 
-
-
+  public void SetState(State state)
+  {
+    CurrentState = state;
+  }
 }
-
