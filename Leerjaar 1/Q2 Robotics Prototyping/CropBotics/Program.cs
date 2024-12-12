@@ -10,7 +10,7 @@ public class Program
 
     while (true)
     {
-      // Update the robot then Wait to prevent the loop from running too fast
+      // Update the robot, then Wait to prevent the loop from running too fast
       robot.Update();
       robot.Wait();
     }

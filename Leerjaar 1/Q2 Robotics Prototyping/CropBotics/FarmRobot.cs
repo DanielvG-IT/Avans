@@ -6,7 +6,7 @@ using Avans.StatisticalRobot;
 
 namespace CropBotics;
 
-public class FarmRobot : IUpdatable, IInitializable, IWaitable
+public class FarmRobot : IInitializable, IUpdatable, IWaitable
 {
   // Local vars for defining hardware 
   const int AlertLedPin = 5;
@@ -34,7 +34,11 @@ public class FarmRobot : IUpdatable, IInitializable, IWaitable
 
   public async Task Init()
   {
+    //Logging
+    Console.WriteLine($"CropBotics started at {DateTime.Now}");
     Robot.PlayNotes("g>g");
+
+    // Initialize systems
     await alertSystem.Init();
     await commsSystem.Init();
     await driveSystem.Init();
