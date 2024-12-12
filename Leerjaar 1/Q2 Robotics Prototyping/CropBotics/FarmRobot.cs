@@ -23,9 +23,12 @@ public class FarmRobot : IUpdatable, IInitializable
   private Led AlertLed = new(AlertLedPin);
 
 
-  public Task Init()
+  public async Task Init()
   {
-    throw new NotImplementedException();
+    await alertSystem.Init();
+    await commsSystem.Init();
+    await driveSystem.Init();
+    await obstacleDetectionSystem.Init();
   }
 
   public void Update()
