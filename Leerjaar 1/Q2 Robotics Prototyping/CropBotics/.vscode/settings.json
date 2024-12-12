@@ -1,6 +1,6 @@
 {
     "avans-statisticalrobot.connected-robot": "100000009200724c",
-    "cSpell.words": ["Avans", "Botics", "Initializable"],
+    "cSpell.words": ["Avans", "Botics", "Initializable", "Waitable"],
     "sqltools.connections": [
         {
             "mssqlOptions": {

@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "/opt/dotnet/dotnet",
             "args": [
-                "/media/csprojects/${workspaceFolderBasename}/RobotProject.dll"
+                "/media/csprojects/${workspaceFolderBasename}/CropBotics.dll"
             ],
             "cwd": "/media/csprojects/${workspaceFolderBasename}",
             "justMyCode": false,
