@@ -1,4 +1,21 @@
 {
     "avans-statisticalrobot.connected-robot": "100000009200724c",
-    "cSpell.words": ["Avans"]
+    "cSpell.words": ["Avans", "Botics", "Initializable"],
+    "sqltools.connections": [
+        {
+            "mssqlOptions": {
+                "appName": "SQLTools",
+                "useUTC": true,
+                "encrypt": true
+            },
+            "previewLimit": 50,
+            "server": "aei-sql2.avans.nl",
+            "port": 1443,
+            "driver": "MSSQL",
+            "username": "ITI2226789",
+            "password": "H7lcQ2F0",
+            "name": "Avans MSSQL",
+            "database": "DB2226789"
+        }
+    ]
 }
