@@ -26,14 +26,17 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable
   // TODO: Implement state machine
   public State CurrentState { get; private set; } = State.INIT;
 
-  public void SetState(State state)
+  public void SetState(State State)
   {
-    CurrentState = state;
+    CurrentState = State;
   }
 
 
   public async Task Init()
   {
+    // Initialize state
+    this.SetState(State.INIT);
+
     //Logging
     Console.WriteLine($"CropBotics started at {DateTime.Now}");
     Robot.PlayNotes("g>g");
@@ -43,6 +46,9 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable
     await commsSystem.Init();
     await driveSystem.Init();
     await obstacleDetectionSystem.Init();
+
+    // Update state
+    this.SetState(State.READY);
   }
 
   public async void Update()
