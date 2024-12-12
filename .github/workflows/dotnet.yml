@@ -23,17 +23,41 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      # Restore dependencies for the solution
-      - name: Restore dependencies
+      # Restore dependencies for the solutions
+      - name: Restore dependencies for Smart Energy
         run: dotnet restore
         working-directory: "Leerjaar 1/Q1 Smart Energy"
 
-      # Build the solution
-      - name: Build solution
+      - name: Restore dependencies for Robotics Prototyping CropBotics
+        run: dotnet restore
+        working-directory: "Leerjaar 1/Q2 Robotics Prototyping/CropBotics"
+
+      - name: Restore dependencies for Robotics Prototyping FarmView
+        run: dotnet restore
+        working-directory: "Leerjaar 1/Q2 Robotics Prototyping/FarmView"
+
+      # Build the solutions
+      - name: Build Smart Energy solution
         run: dotnet build --no-restore --configuration Release
         working-directory: "Leerjaar 1/Q1 Smart Energy"
 
-      # Run tests for the solution
-      - name: Run tests
+      - name: Build Robotics Prototyping CropBotics solution
+        run: dotnet build --no-restore --configuration Release
+        working-directory: "Leerjaar 1/Q2 Robotics Prototyping/CropBotics"
+
+      - name: Build Robotics Prototyping FarmView solution
+        run: dotnet build --no-restore --configuration Release
+        working-directory: "Leerjaar 1/Q2 Robotics Prototyping/FarmView"
+
+      # Run tests for the solutions
+      - name: Run tests for Smart Energy
         run: dotnet test --no-build --verbosity normal
         working-directory: "Leerjaar 1/Q1 Smart Energy"
+
+      - name: Run tests for Robotics Prototyping CropBotics
+        run: dotnet test --no-build --verbosity normal
+        working-directory: "Leerjaar 1/Q2 Robotics Prototyping/CropBotics"
+
+      - name: Run tests for Robotics Prototyping FarmView
+        run: dotnet test --no-build --verbosity normal
+        working-directory: "Leerjaar 1/Q2 Robotics Prototyping/FarmView"
