@@ -5,11 +5,11 @@ THE Github repo for all my projects made for my bachelor at Avans University of 
 
 ## 🚀 Projects Overview
 
-| Leerjaar + Module   | Project Name                           | Description                                | Status      |
-|---------------------|----------------------------------------|--------------------------------------------|-------------|
-| Leerjaar 1 Module 1 | Smart Energy                           | *[Insert project description]*             | Completed   |
-| Leerjaar 1 Module 2 | Robotisering voor duurzame landbouw    | *[Insert project description]*             | In Progress |
-| Leerjaar 1 Module 3 | ...                                    | ...                                        | ...         |
+| Leerjaar   | Module   | Project Name                           | Status      |
+|------------|----------|----------------------------------------|-------------|
+| Leerjaar 1 | Module 1 | Smart Energy                           | Completed   |
+| Leerjaar 1 | Module 2 | Robotisering voor duurzame landbouw    | In Progress |
+| Leerjaar 1 | Module 3 | ...                                    | ...         |
 
 
 ## ⚙️ Projects
