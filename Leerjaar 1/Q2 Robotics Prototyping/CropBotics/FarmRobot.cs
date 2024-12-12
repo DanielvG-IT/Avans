@@ -36,9 +36,9 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable
   // TODO Implement state machine
   public State CurrentState { get; private set; } = State.INIT;
 
-  public void SetState(State State)
+  public void SetState(State inputState)
   {
-    CurrentState = State;
+    CurrentState = inputState;
   }
 
 
