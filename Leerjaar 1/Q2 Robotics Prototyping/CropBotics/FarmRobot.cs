@@ -6,7 +6,7 @@ using Avans.StatisticalRobot;
 
 namespace CropBotics;
 
-public class FarmRobot : IInitializable, IUpdatable, IWaitable
+public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
 {
   public FarmRobot()
   {
@@ -16,7 +16,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable
 
     // Initializing systems
     alertSystem = new(this, AlertLed, emergencyStopButton);
-    commsSystem = new();
+    commsSystem = new(this);
     driveSystem = new();
     obstacleDetectionSystem = new();
   }
@@ -57,13 +57,12 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable
     await obstacleDetectionSystem.Init();
 
     // Update state
-    this.SetState(State.READY);
+    SetState(State.READY);
   }
 
-  public async void Update()
+  public void Update()
   {
     alertSystem.Update();
-    commsSystem.Update();
     driveSystem.Update();
     obstacleDetectionSystem.Update();
   }
@@ -71,5 +70,10 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable
   public void Wait()
   {
     Thread.Sleep(200);
+  }
+
+  public void HandleMessage(SimpleMqttMessage message)
+  {
+    Console.WriteLine($"Handling message: {message.Message}");
   }
 }

@@ -35,13 +35,14 @@ public class MqttProcessingService : IHostedService
     };
   }
 
-  public Task StartAsync(CancellationToken cancellationToken)
+  public async Task StartAsync(CancellationToken cancellationToken)
   {
-    throw new NotImplementedException();
+    await _mqttClient.SubscribeToTopic("cropbotics/#");
   }
 
   public Task StopAsync(CancellationToken cancellationToken)
   {
-    throw new NotImplementedException();
+    _mqttClient.Dispose();
+    return Task.CompletedTask;
   }
 }
