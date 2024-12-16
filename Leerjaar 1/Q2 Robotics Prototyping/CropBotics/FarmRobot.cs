@@ -18,6 +18,8 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
     alertSystem = new(this, AlertLed, emergencyStopButton);
     commsSystem = new(this);
     driveSystem = new();
+    lineFollowingSystem = new();
+    colourDetectionSystem = new();
     obstacleDetectionSystem = new();
   }
 
@@ -26,10 +28,12 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
   const int emergencyStopButtonPin = 6;
 
   // Local vars for including functions
-  private DriveSystem driveSystem;
-  private CommsSystem commsSystem;
-  private AlertSystem alertSystem;
-  private ObstacleDetectionSystem obstacleDetectionSystem;
+  private readonly AlertSystem alertSystem;
+  private readonly CommsSystem commsSystem;
+  private readonly DriveSystem driveSystem;
+  private readonly LineFollowingSystem lineFollowingSystem;
+  private readonly ColourDetectionSystem colourDetectionSystem;
+  private readonly ObstacleDetectionSystem obstacleDetectionSystem;
   Led AlertLed;
   Button emergencyStopButton;
 
@@ -45,7 +49,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
   public async Task Init()
   {
     // Initialize state
-    this.SetState(State.INIT);
+    SetState(State.INIT);
 
     //Logging
     Console.WriteLine($"CropBotics started at {DateTime.Now}");
@@ -64,6 +68,8 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
   {
     alertSystem.Update();
     driveSystem.Update();
+    lineFollowingSystem.Update();
+    colourDetectionSystem.Update();
     obstacleDetectionSystem.Update();
   }
 
