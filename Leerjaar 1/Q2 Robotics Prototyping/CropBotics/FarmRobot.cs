@@ -80,5 +80,43 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
   public void HandleMessage(SimpleMqttMessage message)
   {
     Console.WriteLine($"Handling message: {message.Message}");
+    switch (message.Message)
+    {
+      case "emergency_stop":
+        {
+          driveSystem.EmergencyStop();
+          break;
+        }
+      case "forward":
+        {
+          driveSystem.TargetSpeed = 0.75;
+          break;
+        }
+      case "backward":
+        {
+          driveSystem.TargetSpeed = -0.75;
+          break;
+        }
+      case "left":
+        {
+          // TODO Implement turning left via MQTT
+          break;
+        }
+      case "right":
+        {
+          // TODO Implement turning right via MQTT
+          break;
+        }
+      case "stop":
+        {
+          driveSystem.TargetSpeed = 0.0;
+          break;
+        }
+      default:
+        {
+          Console.WriteLine("ERROR: Unknown command received");
+          break;
+        }
+    }
   }
 }

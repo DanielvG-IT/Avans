@@ -33,7 +33,7 @@ public class DriveSystem : IUpdatable
     return (short)Math.Round(speed * 300);
   }
 
-  public void SetMotorSpeed()
+  private void SetMotorSpeed()
   {
     if (MotorsEnabled)
     {
@@ -55,12 +55,12 @@ public class DriveSystem : IUpdatable
     SetMotorSpeed();
   }
 
-  public void Turn()
+  private void Turn()
   {
     // TODO Implement turning left and right
   }
 
-  public void AdjustTrajectory()
+  private void AdjustTrajectory()
   {
     // TODO Implement adjusting slight left and right movements
   }
