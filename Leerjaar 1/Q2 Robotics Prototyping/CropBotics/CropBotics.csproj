@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avans.StatisticalRobot" Version="1.0.1" />
+    <PackageReference Include="Avans.StatisticalRobot" Version="1.0.4" />
     <PackageReference Include="HiveMQtt" Version="0.24.0" />
     <PackageReference Include="System.Device.Gpio" Version="3.2.0" />
   </ItemGroup>
