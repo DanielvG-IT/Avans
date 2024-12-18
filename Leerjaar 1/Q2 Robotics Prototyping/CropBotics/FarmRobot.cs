@@ -57,7 +57,6 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
 
     // Initialize systems
     await commsSystem.Init();
-    await driveSystem.Init();
     await obstacleDetectionSystem.Init();
 
     // Update state

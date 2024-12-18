@@ -3,7 +3,7 @@ using Avans.StatisticalRobot;
 
 namespace CropBotics.Functions;
 
-public class DriveSystem : IUpdatable, IInitializable
+public class DriveSystem : IUpdatable
 {
   private double _speedIncrease = 0.1;
   public double SpeedIncrease
@@ -60,11 +60,11 @@ public class DriveSystem : IUpdatable, IInitializable
     // TODO Implement turning left and right
   }
 
-
-  public Task Init()
+  public void AdjustTrajectory()
   {
-    throw new NotImplementedException();
+    // TODO Implement adjusting slight left and right movements
   }
+
 
   public void Update()
   {
