@@ -11,7 +11,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
   public FarmRobot()
   {
     // Initializing hardware
-    AlertLed = new(AlertLedPin);
+    AlertLed = new(AlertLedPin, AlertBlinkMilSec);
     emergencyStopButton = new(emergencyStopButtonPin);
 
     // Initializing systems
@@ -25,6 +25,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
 
   // Local vars for defining hardware 
   const int AlertLedPin = 5;
+  const int AlertBlinkMilSec = 5000;
   const int emergencyStopButtonPin = 6;
 
   // Local vars for including functions
@@ -34,7 +35,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
   private readonly LineFollowingSystem lineFollowingSystem;
   private readonly ColourDetectionSystem colourDetectionSystem;
   private readonly ObstacleDetectionSystem obstacleDetectionSystem;
-  Led AlertLed;
+  BlinkLed AlertLed;
   Button emergencyStopButton;
 
   // TODO Implement state machine
