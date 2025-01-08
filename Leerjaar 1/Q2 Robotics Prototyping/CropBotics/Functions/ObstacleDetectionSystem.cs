@@ -6,14 +6,14 @@ namespace CropBotics.Functions
   public class ObstacleDetectionSystem : IUpdatable, IInitializable
   {
 
-    public Task Init()
+    public async Task Init()
     {
-      throw new NotImplementedException();
+      Console.WriteLine("ObstacleDetectionSystem Init called.");
     }
 
     public void Update()
     {
-      throw new NotImplementedException();
+      Console.WriteLine("ObstacleDetectionSystem Update called.");
     }
 
   }

@@ -24,7 +24,7 @@ class CommsSystem : IInitializable
 
   public async Task Init()
   {
-    await _mqttClient.SubscribeToTopic("CropBotics/commands/#");
+    await _mqttClient.SubscribeToTopic(topicCommands);
     _mqttClient.OnMessageReceived += MessageCallback;
   }
 

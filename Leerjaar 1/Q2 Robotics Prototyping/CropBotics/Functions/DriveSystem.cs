@@ -68,6 +68,8 @@ public class DriveSystem : IUpdatable
 
   public void Update()
   {
+    double previousSpeed = _currentSpeed;
+
     if (_currentSpeed < _targetSpeed)
     {
       // Increase speed but don't exceed maximum of 1.0
@@ -95,6 +97,9 @@ public class DriveSystem : IUpdatable
       }
     }
 
-    SetMotorSpeed();
+    if (previousSpeed != _currentSpeed)
+    {
+      SetMotorSpeed();
+    }
   }
 }

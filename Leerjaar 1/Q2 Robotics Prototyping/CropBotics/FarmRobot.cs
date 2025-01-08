@@ -6,7 +6,7 @@ using Avans.StatisticalRobot;
 
 namespace CropBotics;
 
-public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
+public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler, IColourHandler
 {
   public FarmRobot()
   {
@@ -19,7 +19,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
     commsSystem = new(this);
     driveSystem = new();
     lineFollowingSystem = new();
-    colourDetectionSystem = new();
+    colourDetectionSystem = new(this);
     obstacleDetectionSystem = new();
   }
 
@@ -76,6 +76,35 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
   public void Wait()
   {
     Thread.Sleep(200);
+  }
+
+  public void HandleColour(Colour colour)
+  {
+    switch (colour)
+    {
+      // TODO Implement actions for each colour
+      case Colour.Red:
+        // GEROT FRUIT
+        break;
+      case Colour.Green:
+        // Healthy
+        break;
+      case Colour.Blue:
+        // Do something
+        break;
+      case Colour.Yellow:
+        // Do something
+        break;
+      case Colour.White:
+        // Do something
+        break;
+      case Colour.Black:
+        // Do something
+        break;
+      case Colour.Unknown:
+        // Do nothing
+        break;
+    }
   }
 
   public void HandleMessage(SimpleMqttMessage message)
