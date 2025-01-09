@@ -19,11 +19,11 @@ public class LineFollowingSystem : IUpdatable
     int state = _lineSensor.Watch();
     if (state == 0)
     {
-      // TODO Line is detected
+      // TODO Impelemt actions when Line is detected
     }
     else if (state == 1)
     {
-      // TODO Line is not detected
+      // TODO Impelemt actions when Line is Lost
     }
   }
 }
