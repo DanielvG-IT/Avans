@@ -16,7 +16,7 @@ public class MqttProcessingService : IHostedService
     {
       Console.WriteLine($"Incoming MQTT message on {args.Topic}:{args.Message}");
 
-      string pattern = @"cropbotics/sensor/(.*)";
+      string pattern = @"Cropbotics/sensor/(.*)";
       string input = args.Topic ?? string.Empty;
       Match match = Regex.Match(input, pattern);
 
@@ -37,7 +37,7 @@ public class MqttProcessingService : IHostedService
 
   public async Task StartAsync(CancellationToken cancellationToken)
   {
-    await _mqttClient.SubscribeToTopic("cropbotics/#");
+    await _mqttClient.SubscribeToTopic("Cropbotics/#");
   }
 
   public Task StopAsync(CancellationToken cancellationToken)
