@@ -27,6 +27,8 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler,
   const int alertLedPin = 5;
   const int AlertBlinkMilSec = 5000;
   const int emergencyStopButtonPin = 6;
+  private bool stopped = false;
+
 
   // Local vars for including functions
   private readonly AlertSystem alertSystem;
@@ -49,18 +51,10 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler,
 
   public async Task Init()
   {
-    // Initialize state
     SetState(State.INIT);
-
-    //Logging
     Console.WriteLine($"CropBotics started at {DateTime.Now}");
     Robot.PlayNotes("g>g");
-
-    // Initialize systems
     await commsSystem.Init();
-    await obstacleDetectionSystem.Init();
-
-    // Update state
     SetState(State.READY);
   }
 
@@ -71,6 +65,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler,
     lineFollowingSystem.Update();
     colourDetectionSystem.Update();
     obstacleDetectionSystem.Update();
+    HandleObsacle();
   }
 
   public void Wait()
@@ -154,4 +149,40 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler,
   {
     await commsSystem.SendMessage(topic, message);
   }
+
+  public async void HandleObsacle()
+  {
+    int distance = obstacleDetectionSystem.ObstacleDistance;
+    Console.WriteLine($"DEBUG: Distance {distance} cm");
+
+    if ((distance < 3 && !stopped) || alertSystem.EmergencyStop)
+    {
+      stopped = true;
+      driveSystem.EmergencyStop();
+      alertSystem.HandleAlert($"Emergency stop\nDistance {distance} cm");
+      alertSystem.EmergencyStop = true;
+    }
+    else if (distance >= 5 && stopped)
+    {
+      stopped = false;
+      alertSystem.EmergencyStop = false;
+    }
+
+    // Determine the target speed based on the distance to the nearest obstacle
+    if (distance >= 5 && distance < 15)
+    {
+      driveSystem.TargetSpeed = 0.1;
+    }
+    else if (distance >= 15 && distance < 40)
+    {
+      driveSystem.TargetSpeed = 0.2;
+    }
+    else if (distance >= 40)
+    {
+      driveSystem.TargetSpeed = 0.4;
+    }
+
+    Console.WriteLine($"DEBUG: Target speed {driveSystem.TargetSpeed}");
+  }
+
 }

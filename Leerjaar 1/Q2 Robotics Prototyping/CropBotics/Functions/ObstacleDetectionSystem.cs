@@ -3,7 +3,7 @@ using Avans.StatisticalRobot;
 
 namespace CropBotics.Functions
 {
-  public class ObstacleDetectionSystem : IUpdatable, IInitializable
+  public class ObstacleDetectionSystem : IUpdatable
   {
     const int UltrasonicPinNumber = 16;
     const int ScanIntervalMilliseconds = 500;
@@ -18,14 +18,16 @@ namespace CropBotics.Functions
       scanIntervalTimer = new PeriodTimer(ScanIntervalMilliseconds);
     }
 
-    public async Task Init()
-    {
-      Console.WriteLine("ObstacleDetectionSystem Init called.");
-    }
-
     public void Update()
     {
-      Console.WriteLine("ObstacleDetectionSystem Update called.");
+      // Don't measure at every call because it blocks all processing
+      // during the measurement; so use a timer that times out periodically
+      if (scanIntervalTimer.Check())
+      {
+        Robot.LEDs(0, 0, 255); // Flash the green LED on the Romi board
+        ObstacleDistance = distanceSensor.GetUltrasoneDistance();
+        Robot.LEDs(0, 0, 0);
+      }
     }
 
   }

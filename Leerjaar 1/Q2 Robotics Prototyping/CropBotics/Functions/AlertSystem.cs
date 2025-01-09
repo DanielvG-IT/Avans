@@ -39,6 +39,13 @@ public class AlertSystem : IUpdatable
       {
         HandleAlert("Emergency Stop was triggered");
         _farmRobot.SetState(State.EMERGENCY_STOP);
+        EmergencyStop = true;
+      }
+      else if (!EmergencyStop)
+      {
+        HandleAlert("Emergency Stop was released");
+        _farmRobot.SetState(State.PAUSED);
+        EmergencyStop = false;
       }
     }
     _emergencyButtonWasPressed = currentState;
