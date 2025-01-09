@@ -10,7 +10,7 @@ public class AlertSystem : IUpdatable
   private readonly BlinkLed _alertLed;
   private readonly Button _emergencyButton;
   private bool _emergencyButtonWasPressed;
-  public bool EmergencyStop { get; private set; }
+  public bool EmergencyStop { get; set; }
 
   public AlertSystem(FarmRobot farmRobot, BlinkLed led, Button button)
   {

@@ -149,7 +149,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler,
     await commsSystem.SendMessage(topic, message);
   }
 
-  public async void HandleObsacle()
+  public void HandleObsacle()
   {
     int distance = obstacleDetectionSystem.ObstacleDistance;
     Console.WriteLine($"DEBUG: Distance {distance} cm");
