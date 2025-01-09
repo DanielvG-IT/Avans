@@ -29,7 +29,7 @@
 
   protected override async Task OnInitializedAsync()
   {
-    await MQttClient.SubscribeToTopic("robot");
+    await MQttClient.SubscribeToTopic("CropBotics/#");
 
     MQttClient.OnMessageReceived += (sender, args) =>
     {
