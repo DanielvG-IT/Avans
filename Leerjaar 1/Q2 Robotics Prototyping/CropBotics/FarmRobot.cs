@@ -6,7 +6,7 @@ using Avans.StatisticalRobot;
 
 namespace CropBotics;
 
-public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler, IColourHandler
+public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
 {
   public FarmRobot()
   {
@@ -18,9 +18,9 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler,
     alertSystem = new(this, AlertLed, emergencyStopButton);
     commsSystem = new(this);
     driveSystem = new();
-    lineFollowingSystem = new();
-    colourDetectionSystem = new(this);
+    pixelDetectionSystem = new(this);
     obstacleDetectionSystem = new();
+
   }
 
   // Local vars for defining hardware 
@@ -34,8 +34,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler,
   private readonly AlertSystem alertSystem;
   private readonly CommsSystem commsSystem;
   private readonly DriveSystem driveSystem;
-  private readonly LineFollowingSystem lineFollowingSystem;
-  private readonly ColourDetectionSystem colourDetectionSystem;
+  private readonly PixelDetectionSystem pixelDetectionSystem;
   private readonly ObstacleDetectionSystem obstacleDetectionSystem;
   BlinkLed AlertLed;
   Button emergencyStopButton;
@@ -72,53 +71,47 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler,
     Thread.Sleep(200);
   }
 
-  public void HandleColour(Colour colour)
+
+  // Secundary functions for passing between systems
+  public async void SendMessage(string topic, string message)
   {
-    Console.WriteLine(colour);
-    switch (colour)
-    {
-      // TODO Implement actions for each colour
-      case Colour.Red:
-        break;
-      case Colour.Green:
-        // Healthy
-        break;
-      case Colour.Blue:
-        // Do something
-        break;
-      case Colour.Yellow:
-        // Do something
-        break;
-      case Colour.White:
-        // Do something
-        break;
-      case Colour.Black:
-        // Do something
-        break;
-      case Colour.Unknown:
-        // Do nothing
-        break;
-    }
+    await commsSystem.SendMessage(topic, message);
   }
 
   public void HandleMessage(SimpleMqttMessage message)
   {
     Console.WriteLine($"Handling message: {message.Message}");
+    if (alertSystem.EmergencyStop)
+    {
+      Console.WriteLine("ERROR: Emergency stop is active, ignoring message");
+      return;
+    }
+
     switch (message.Message)
     {
       case "emergency_stop":
         {
           driveSystem.EmergencyStop();
+          if (!alertSystem.EmergencyStop)
+          {
+            alertSystem.HandleAlert("Emergency stop was triggered");
+            alertSystem.EmergencyStop = true;
+          }
+          else if (alertSystem.EmergencyStop)
+          {
+            alertSystem.HandleAlert("Emergency stop was released");
+            alertSystem.EmergencyStop = false;
+          }
           break;
         }
       case "forward":
         {
-          driveSystem.TargetSpeed = 0.75;
+          driveSystem.TargetSpeed = 0.5;
           break;
         }
       case "backward":
         {
-          driveSystem.TargetSpeed = -0.75;
+          driveSystem.TargetSpeed = -0.5;
           break;
         }
       case "left":
@@ -142,11 +135,6 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler,
           break;
         }
     }
-  }
-
-  public async void SendMessage(string topic, string message)
-  {
-    await commsSystem.SendMessage(topic, message);
   }
 
   public void HandleObsacle()
