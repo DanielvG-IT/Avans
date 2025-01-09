@@ -17,11 +17,12 @@ builder.Services.AddSingleton<IDatabaseAccess, DatabaseAccess>(o => new Database
 var simpleMqttClient = new SimpleMqttClient(new()
 {
     Host = "82460450721346f1b2b5f164a15671c9.s1.eu.hivemq.cloud",
-    Port = 8443,
+    Port = 8883,
     ClientId = "FarmView",
-    TimeoutInMs = 5_000,
+    TimeoutInMs = 10_000,
     UserName = "hivemq.webclient.1732899035765",
-    Password = "P107L9Dq;yYuMh>ceV#:"
+    Password = "P107L9Dq;yYuMh>ceV#:",
+    CleanStart = true
 });
 builder.Services.AddSingleton(simpleMqttClient);
 
