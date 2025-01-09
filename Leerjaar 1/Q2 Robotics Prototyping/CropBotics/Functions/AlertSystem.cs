@@ -31,6 +31,13 @@ public class AlertSystem : IUpdatable
   {
     bool currentState = _emergencyButton.GetState() == "Pressed";
 
+    // Keep flashing led if emergency stop is active
+    if (EmergencyStop)
+    {
+      _alertLed.Update();
+    }
+
+    // Check if emergency button was pressed
     if (currentState && !_emergencyButtonWasPressed)
     {
       EmergencyStop = !EmergencyStop;
