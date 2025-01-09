@@ -11,7 +11,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler,
   public FarmRobot()
   {
     // Initializing hardware
-    AlertLed = new(AlertLedPin, AlertBlinkMilSec);
+    AlertLed = new(alertLedPin, AlertBlinkMilSec);
     emergencyStopButton = new(emergencyStopButtonPin);
 
     // Initializing systems
@@ -24,7 +24,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler,
   }
 
   // Local vars for defining hardware 
-  const int AlertLedPin = 5;
+  const int alertLedPin = 5;
   const int AlertBlinkMilSec = 5000;
   const int emergencyStopButtonPin = 6;
 
@@ -80,11 +80,11 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler,
 
   public void HandleColour(Colour colour)
   {
+    Console.WriteLine(colour);
     switch (colour)
     {
       // TODO Implement actions for each colour
       case Colour.Red:
-        // GEROT FRUIT
         break;
       case Colour.Green:
         // Healthy
@@ -148,5 +148,10 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler,
           break;
         }
     }
+  }
+
+  public async void SendMessage(string topic, string message)
+  {
+    await commsSystem.SendMessage(topic, message);
   }
 }

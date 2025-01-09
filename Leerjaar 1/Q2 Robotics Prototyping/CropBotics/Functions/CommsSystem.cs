@@ -35,9 +35,15 @@ class CommsSystem : IInitializable
     _messageHandler.HandleMessage(msg);
   }
 
-  public async Task SendState(string state)
+  // public async Task SendState(string state)
+  // {
+  //   Console.WriteLine($"Publishing alert state: topic={topicAlert}, msg={state}");
+  //   await _mqttClient.PublishMessage(state, topicAlert);
+  // }
+
+  public async Task SendMessage(string topic, string message)
   {
-    Console.WriteLine($"Publishing alert state: topic={topicAlert}, msg={state}");
-    await _mqttClient.PublishMessage(state, topicAlert);
+    Console.WriteLine($"Publishing message: topic={topic}, msg={message}");
+    await _mqttClient.PublishMessage(topic, message);
   }
 }
