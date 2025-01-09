@@ -14,6 +14,7 @@ public class AlertSystem : IUpdatable
 
   public AlertSystem(FarmRobot farmRobot, BlinkLed led, Button button)
   {
+    Console.WriteLine("DEBUG: AlertSystem constructor called");
     _alertLed = led;
     _farmRobot = farmRobot;
     _emergencyButton = button;

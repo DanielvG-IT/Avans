@@ -15,6 +15,7 @@ public class ColourDetectionSystem : IUpdatable
 
   public ColourDetectionSystem(IColourHandler colourHandler)
   {
+    Console.WriteLine("DEBUG: ColourDetectionSystem constructor called");
     // Initializing hardware
     _colourSensor = new(colourSensorAddress);
     _colourHandler = colourHandler;

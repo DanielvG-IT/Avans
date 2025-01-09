@@ -16,6 +16,7 @@ class CommsSystem : IInitializable
 
   public CommsSystem(IMessageHandler messageHandler)
   {
+    Console.WriteLine("DEBUG: CommsSystem constructor called");
     _mqttClient = SimpleMqttClient.CreateSimpleMqttClientForHiveMQ(clientId);
     _messageHandler = messageHandler;
   }
