@@ -24,7 +24,6 @@ public class AlertSystem : IUpdatable
   public void HandleAlert(string message)
   {
     Robot.PlayNotes("fd");
-    // TODO Implement Send message to webapp
     _farmRobot.SendMessage("CropBotics/alerts/#", message);
   }
 

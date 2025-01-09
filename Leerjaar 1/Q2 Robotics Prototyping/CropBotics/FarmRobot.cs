@@ -40,7 +40,6 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler,
   BlinkLed AlertLed;
   Button emergencyStopButton;
 
-  // TODO Implement state machine
   public State CurrentState { get; private set; } = State.INIT;
 
   public void SetState(State inputState)
