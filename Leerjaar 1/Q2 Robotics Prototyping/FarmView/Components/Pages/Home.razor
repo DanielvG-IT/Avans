@@ -6,73 +6,163 @@
 <PageTitle>Robot Data</PageTitle>
 
 <style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+  }
+
   .grid-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem;
+    padding: 1rem;
+  }
+
+  .card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
   }
 
   .pixel-container {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    justify-items: center;
+    gap: 10px;
+    margin-top: 1rem;
   }
 
   .pixel {
-    width: 25px;
-    height: 25px;
-    background-color: #ccc;
-    border: 1px solid #000;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: 8px;
+    color: #fff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .pixel:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-header {
+    background-color: #dc3545;
+    color: #fff;
+  }
+
+  .btn-close {
+    filter: invert(1);
+  }
+
+  .form-control {
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+
+  .btn {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
+  }
+
+  .btn:hover {
+    background-color: #0056b3;
   }
 </style>
 
+<div class="grid-container">
+  <!-- Summary card -->
+  <div class="card">
+    <h3 class="mb-3">Summary</h3>
+    <p>Quick overview of robot data and performance.</p>
+  </div>
+
+  <!-- Plant health card -->
+  <div class="card">
+    <h3 class="mb-3">Plant health</h3>
+    <input type="date" class="form-control" id="dateSelect" @bind="SelectedDate" @bind:event="onchange" />
+    <!-- Fix date changing updating records -->
+    <div class="pixel-container">
+      @for (int i = 9; i >= 1; i--)
+      {
+        <div id="pixel@i" class="pixel" style="background-color: @pixelColors[i-1];">
+          @i
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Performance Insights card -->
+  <div class="card">
+    <h3 class="mb-3">Performance Insights</h3>
+    <p>Visualize key performance indicators.</p>
+  </div>
+
+  <!-- Settings card -->
+  <div class="card">
+    <h3 class="mb-3">Settings</h3>
+    <p>Customize robot configurations and data.</p>
+  </div>
+</div>
+
 <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Error!</h1>
+        <h5 class="modal-title" id="exampleModalLabel">Error</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <!-- TODO Fix modal not showing when no records found -->
         <p>@errorMessage</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="grid-container">
-  <div class="p-3 border bg-light">Box 1</div>
-  <div class="p-3 border bg-light">
-    <div class="mb-3">
-      <label for="dateSelect" class="form-label">Select Date:</label>
-      <input type="date" class="form-control" id="dateSelect" @bind="selectedDate" @bind:event="oninput">
-    </div>
-    <div class="pixel-container">
-      <div class="pixel-grid">
-        @for (int i = 9; i >= 1; i--)
-        {
-          <div id="pixel@i" class="pixel" style="background-color: @pixelColors[i-1];">@i</div>
-        }
-      </div>
-    </div>
-  </div>
-  <div class="p-3 border bg-light">Box 3</div>
-  <div class="p-3 border bg-light">Box 4</div>
-</div>
-
 @code {
   private string[] pixelColors = Enumerable.Repeat("#555555", 9).ToArray();
-  private DateTime selectedDate = DateTime.Today;
+  private DateTime _selectedDate = DateTime.Today;
+  private DateTime SelectedDate
+  {
+    get => _selectedDate;
+    set
+    {
+      if (_selectedDate != value)
+      {
+        _selectedDate = value;
+        _ = GetPixelData(); // fetch new data whenever the date changes
+      }
+    }
+  }
   private string errorMessage = string.Empty;
   private bool firstRender = true;
 
-  // This method is called when the component is initialized
   protected override async Task OnInitializedAsync()
   {
     await GetPixelData();
   }
 
-  // This method is called after the component has been rendered
   protected override async Task OnAfterRenderAsync(bool firstRender)
   {
     if (firstRender)
@@ -83,24 +173,23 @@
       {
         await JS.InvokeVoidAsync("showErrorModal");
       }
-      else
-      {
-        await JS.InvokeVoidAsync("hideErrorModal");
-      }
     }
   }
 
-  // This method is called when the selected date changes
   private async Task GetPixelData()
   {
     try
     {
-      var result = await Task.Run(() => DatabaseAccess.ReadPixelData(selectedDate));
+      var result = await Task.Run(() => DatabaseAccess.ReadPixelData(_selectedDate));
 
-      if (!result.Any())
+      if (result.Count() == 0)
       {
         errorMessage = "No pixel data found for selected date";
         return;
+      }
+      else
+      {
+        errorMessage = string.Empty;
       }
 
       foreach (var item in result)
@@ -108,12 +197,11 @@
         int index = item.PixelNumber - 1;
         pixelColors[index] = item.PixelData switch
         {
-          "Green" => "#00FF00",
-          "Yellow" => "#FFFF00",
-          "Red" => "#FF0000",
+          "Green" => "#28a745",
+          "Yellow" => "#ffc107",
+          "Red" => "#dc3545",
           _ => "#555555"
         };
-        Console.WriteLine($"Setting pixel {item.PixelNumber} to {pixelColors[index]}");
       }
     }
     catch (Exception ex)
@@ -121,4 +209,28 @@
       errorMessage = $"Error: {ex.Message}";
     }
   }
+
+  // TODO Implement fetching commanddata
+  // private async Task GetCommandData() { }
+
+  //TODO Implement fetching sensordata
+  // private async Task GetSensorData() { }
+
+  // Implement fetching battery data
+  // private async Task GetBatteryData() { }
+
+  // Implement fetching status data
+  // private async Task GetStatusData() { }
+
+  // Implement robot controll (mqtt send)
+  // private async Task SendRobotCommand() { }
+
+  // Implement robot settings (mqtt send)
+  // private async Task SendRobotSettings() { }
+
+  private async Task OnDateChange()
+  {
+    await GetPixelData();
+  }
+
 }

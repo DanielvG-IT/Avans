@@ -32,8 +32,6 @@ public class MqttProcessingService : IHostedService
       {
         int pixelNumber = Convert.ToInt32(pixelMatch.Groups[1].Value);
         _databaseAccess.WritePixelData(mqttMessage, "pixel", pixelNumber);
-
-        // TODO: Display pixel on display or trigger reload that gets it from the database
       }
       else
       {
