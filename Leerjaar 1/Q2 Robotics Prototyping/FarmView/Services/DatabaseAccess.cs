@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Microsoft.Data.SqlClient;
 using SimpleMqtt;
 
@@ -9,13 +10,6 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
 {
   private string _connStr { get; set; } = connectionString;
 
-
-  /// <summary>
-  /// Reads the mqtt messages from the database.
-  /// </summary>
-  /// <remarks>
-  /// This method is responsible for getting sensor data from the database.
-  /// </remarks>
   public void ReadMqttData(string typeData)
   {
     bool isTypeSensor = typeData == "sensor";
@@ -58,20 +52,25 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
     }
   }
 
-
-
-  /// <summary>
-  /// Writes a mqtt message to the database.
-  /// </summary>
-  /// <remarks>
-  /// This method is responsible for persisting sensor data into the database.
-  /// Ensure that the data is correctly formatted and validated before calling this method.
-  /// </remarks>
   public void WriteMqttData(SimpleMqttMessage mqtt, string typeData)
   {
-    string? _topic = (string?)mqtt.Topic;
-    string? _data = (string?)mqtt.Message;
+    string? _topic = mqtt.Topic;
+    string? _data = mqtt.Message;
     bool isTypeSensor = typeData == "sensor";
+
+    if (_topic == null)
+    {
+      throw new ArgumentNullException(_topic, "Topic cannot be null");
+    }
+
+    var sensorTypeMatch = Regex.Match(_topic, @"cropbotics/sensor/(\w+)", RegexOptions.IgnoreCase);
+
+    if (!sensorTypeMatch.Success)
+    {
+      throw new ArgumentException("Invalid topic format for sensor data");
+    }
+
+    string sensorType = sensorTypeMatch.Groups[1].Value;
 
     using var connection = new SqlConnection(_connStr);
     {
@@ -88,7 +87,7 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
         var nameParam = isTypeSensor ? "@SensorName" : "@CommandName";
         var dataParam = isTypeSensor ? "@SensorData" : "@CommandData";
 
-        command.Parameters.AddWithValue(nameParam, _topic);
+        command.Parameters.AddWithValue(nameParam, sensorType);
         command.Parameters.AddWithValue("@DataTimestamp", DateTime.Now);
         command.Parameters.AddWithValue(dataParam, _data);
 
@@ -111,5 +110,64 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
     }
   }
 
+  public void WritePixelData(SimpleMqttMessage mqtt, string typeData, int pixelNumber)
+  {
+    using var connection = new SqlConnection(_connStr);
+    {
+      connection.Open();
+      var command = connection.CreateCommand();
+      command.Connection = connection;
+      try
+      {
+        command.CommandText = "INSERT INTO PixelHistory (PixelNumber, DataTimestamp, PixelData) VALUES (@PixelNumber, @DataTimestamp, @PixelData)";
 
+        command.Parameters.AddWithValue("@PixelNumber", pixelNumber);
+        command.Parameters.AddWithValue("@DataTimestamp", DateTime.Today);
+        command.Parameters.AddWithValue("@PixelData", mqtt.Message);
+        int nrOfRowsAffected = command.ExecuteNonQuery();
+        Console.WriteLine($"Added pixel data! Rows Affected: {nrOfRowsAffected}");
+
+        if (nrOfRowsAffected == 0)
+        {
+          throw new Exception($"{nrOfRowsAffected} rows affected!");
+        }
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"Error writing data to database: {ex}");
+      }
+      finally
+      {
+        connection.Close();
+      }
+    }
+  }
+
+  public List<Pixel> ReadPixelData(DateTime date)
+  {
+    var pixels = new List<Pixel>();
+    using var connection = new SqlConnection(_connStr);
+    {
+      connection.Open();
+      using var command = connection.CreateCommand();
+      command.CommandText = @"
+            SELECT PixelNumber, DataTimestamp, PixelData 
+            FROM PixelHistory 
+            WHERE CONVERT(date, DataTimestamp) = @DataTimestamp";
+      command.Parameters.AddWithValue("@DataTimestamp", date.Date);
+
+      using var reader = command.ExecuteReader();
+      while (reader.Read())
+      {
+        pixels.Add(new Pixel
+        {
+          PixelNumber = reader.GetInt32(0),
+          DataTimestamp = reader.GetDateTime(1),
+          PixelData = reader.GetString(2)
+        });
+      }
+      Console.WriteLine($"Found {pixels.Count} pixels for date {date.Date:yyyy-MM-dd}");
+      return pixels;
+    }
+  }
 }

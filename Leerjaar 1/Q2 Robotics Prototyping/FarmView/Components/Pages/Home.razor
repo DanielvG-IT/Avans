@@ -1,53 +1,124 @@
 ﻿@page "/"
 @inject SimpleMqtt.SimpleMqttClient MQttClient
+@inject IDatabaseAccess DatabaseAccess
+@inject IJSRuntime JS
 
 <PageTitle>Robot Data</PageTitle>
 
-<p>This page will display data about the robots.</p>
-
-<table class="table table-striped table-bordered" style="justify-content: center;">
-  <thead>
-    <tr>
-      <th>Message</th>
-      <th>Topic</th>
-    </tr>
-  </thead>
-  <tbody>
-    @foreach (var m in MessageList)
-    {
-      <tr>
-        <td>@m.messageInhoud</td>
-        <td>@m.MqttTopic</td>
-      </tr>
-    }
-  </tbody>
-</table>
-
-@code {
-
-  private List<Message> MessageList = new List<Message>();
-
-  protected override async Task OnInitializedAsync()
-  {
-    await MQttClient.SubscribeToTopic("CropBotics/#");
-
-    MQttClient.OnMessageReceived += (sender, args) =>
-    {
-      var message = new Message
-        {
-          messageInhoud = args.Message,
-          MqttTopic = args.Topic
-        };
-      MessageList.Add(message);
-
-      InvokeAsync(StateHasChanged);
-    };
-
+<style>
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
   }
 
-  private class Message
+  .pixel-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .pixel {
+    width: 25px;
+    height: 25px;
+    background-color: #ccc;
+    border: 1px solid #000;
+  }
+</style>
+
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Error!</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>@errorMessage</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="grid-container">
+  <div class="p-3 border bg-light">Box 1</div>
+  <div class="p-3 border bg-light">
+    <div class="mb-3">
+      <label for="dateSelect" class="form-label">Select Date:</label>
+      <input type="date" class="form-control" id="dateSelect" @bind="selectedDate" @bind:event="oninput">
+    </div>
+    <div class="pixel-container">
+      <div class="pixel-grid">
+        @for (int i = 9; i >= 1; i--)
+        {
+          <div id="pixel@i" class="pixel" style="background-color: @pixelColors[i-1];">@i</div>
+        }
+      </div>
+    </div>
+  </div>
+  <div class="p-3 border bg-light">Box 3</div>
+  <div class="p-3 border bg-light">Box 4</div>
+</div>
+
+@code {
+  private string[] pixelColors = Enumerable.Repeat("#555555", 9).ToArray();
+  private DateTime selectedDate = DateTime.Today;
+  private string errorMessage = string.Empty;
+  private bool firstRender = true;
+
+  // This method is called when the component is initialized
+  protected override async Task OnInitializedAsync()
   {
-    public string? messageInhoud;
-    public string? MqttTopic;
+    await GetPixelData();
+  }
+
+  // This method is called after the component has been rendered
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      this.firstRender = false;
+
+      if (!string.IsNullOrEmpty(errorMessage))
+      {
+        await JS.InvokeVoidAsync("showErrorModal");
+      }
+      else
+      {
+        await JS.InvokeVoidAsync("hideErrorModal");
+      }
+    }
+  }
+
+  // This method is called when the selected date changes
+  private async Task GetPixelData()
+  {
+    try
+    {
+      var result = await Task.Run(() => DatabaseAccess.ReadPixelData(selectedDate));
+
+      if (!result.Any())
+      {
+        errorMessage = "No pixel data found for selected date";
+        return;
+      }
+
+      foreach (var item in result)
+      {
+        int index = item.PixelNumber - 1;
+        pixelColors[index] = item.PixelData switch
+        {
+          "Green" => "#00FF00",
+          "Yellow" => "#FFFF00",
+          "Red" => "#FF0000",
+          _ => "#555555"
+        };
+        Console.WriteLine($"Setting pixel {item.PixelNumber} to {pixelColors[index]}");
+      }
+    }
+    catch (Exception ex)
+    {
+      errorMessage = $"Error: {ex.Message}";
+    }
   }
 }

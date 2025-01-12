@@ -16,20 +16,27 @@ public class MqttProcessingService : IHostedService
     {
       Console.WriteLine($"Incoming MQTT message on {args.Topic}:{args.Message}");
 
-      string pattern = @"Cropbotics/sensor/(.*)";
-      string input = args.Topic ?? string.Empty;
-      Match match = Regex.Match(input, pattern);
+      string topic = args.Topic ?? string.Empty;
+      string sensorPattern = @"Cropbotics/sensor/(.*)";
+      string pixelPattern = @"Cropbotics/pixel/(\d+)";
+      var sensorMatch = Regex.Match(topic, sensorPattern);
+      var pixelMatch = Regex.Match(topic, pixelPattern);
 
+      var mqttMessage = new SimpleMqttMessage { Topic = args.Topic, Message = args.Message };
 
-      if (match.Success)
+      if (sensorMatch.Success)
       {
-        var mqttMessage = new SimpleMqttMessage { Topic = args.Topic, Message = args.Message };
         _databaseAccess.WriteMqttData(mqttMessage, "sensor");
       }
+      else if (pixelMatch.Success)
+      {
+        int pixelNumber = Convert.ToInt32(pixelMatch.Groups[1].Value);
+        _databaseAccess.WritePixelData(mqttMessage, "pixel", pixelNumber);
 
+        // TODO: Display pixel on display or trigger reload that gets it from the database
+      }
       else
       {
-        var mqttMessage = new SimpleMqttMessage { Topic = args.Topic, Message = args.Message };
         _databaseAccess.WriteMqttData(mqttMessage, "command");
       }
     };
