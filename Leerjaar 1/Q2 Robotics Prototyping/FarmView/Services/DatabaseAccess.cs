@@ -63,7 +63,7 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
       throw new ArgumentNullException(_topic, "Topic cannot be null");
     }
 
-    var sensorTypeMatch = Regex.Match(_topic, @"cropbotics/sensor/(\w+)", RegexOptions.IgnoreCase);
+    var sensorTypeMatch = Regex.Match(_topic, @"CropBotics/sensor/(\w+)", RegexOptions.IgnoreCase);
 
     if (!sensorTypeMatch.Success)
     {
@@ -110,7 +110,7 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
     }
   }
 
-  public void WritePixelData(SimpleMqttMessage mqtt, string typeData, int pixelNumber)
+  public void WritePixelData(SimpleMqttMessage mqtt, int pixelNumber)
   {
     using var connection = new SqlConnection(_connStr);
     {

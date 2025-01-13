@@ -1,6 +1,7 @@
 ﻿@page "/"
 @rendermode InteractiveServer
 @inject SimpleMqtt.SimpleMqttClient MQttClient
+@inject IMqttProcessingService MqttService
 @inject IDatabaseAccess DatabaseAccess
 @inject IJSRuntime JS
 
@@ -8,31 +9,136 @@
 
 <style>
   body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Poppins', sans-serif;
     background-color: #f8f9fa;
+    color: #333;
     margin: 0;
     padding: 0;
   }
 
-  .grid-container {
+  /* General Improvements */
+  :root {
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --background-color: #f8f9fa;
+    --text-color: #333;
+    --card-background: #fff;
+    --button-hover: #0056b3;
+    --danger-color: #dc3545;
+  }
+
+  .dashboard-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin: 2rem;
-    padding: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
   }
 
   .card {
-    background-color: #fff;
-    border-radius: 10px;
+    background-color: var(--card-background);
+    border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
   .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  h3 {
+    margin-top: 0;
+  }
+
+  /* Accessibility */
+  .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    using Microsoft.Data.SqlClient;
+    using FarmView.Interfaces;
+    font-weight: bold;
+    text-align: center;
+    color: #fff;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn:hover {
+    background-color: var(--button-hover);
+  }
+
+  .btn:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+
+  .btn-dangerous {
+    background-color: var(--danger-color);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+  }
+
+  .btn-dangerous:focus {
+    outline: 2px solid var(--danger-color);
+  }
+
+  .btn-dangerous:hover {
+    background-color: #c82333;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+  }
+
+  /* Interaction Enhancements */
+  .progress {
+    height: 10px;
+    background-color: var(--secondary-color);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 10px;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background-color: var(--primary-color);
+    width: 1%;
+    /* TODO Change this value to change the progress */
+    transition: width 0.5s ease-in-out;
+  }
+
+  .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--card-background);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: none;
+  }
+
+  .modal.show {
+    display: block;
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem;
+    padding: 1rem;
   }
 
   .pixel-container {
@@ -89,7 +195,76 @@
   .btn:hover {
     background-color: #0056b3;
   }
+
+  .dashboard-header {
+    background-color: #007bff;
+    color: #fff;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    flex-wrap: wrap;
+  }
+
+  .dashboard-header h1 {
+    font-size: 2rem;
+    margin: 0;
+  }
+
+  .status-indicators {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  .status {
+    font-size: 1rem;
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+  }
+
+  .form-control {
+    background-color: #fff;
+    color: #333;
+    font-size: 1rem;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease;
+  }
+
+  .form-control:focus {
+    outline: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  }
 </style>
+
+<div class="dashboard-header">
+  <h1>FarmView Dashboard</h1>
+  <!-- <p>Gemaakt door Daniël van Ginneken</p> -->
+  <div class="status-indicators">
+    <span class="status"
+      style="background-color: @(MqttService.robotStatus == "Active" ? "#28a745" : "#dc3545")">Status:
+      <strong>@MqttService.robotStatus</strong>
+    </span>
+    <span style="background-color: @(MqttService.robotBattery <= 25 ? "#dc3545" : "#28a745")" class="status">Battery:
+      <strong>@MqttService.robotBattery%</strong>
+    </span>
+
+    <input type="date" class="form-control" id="dateSelect" @bind-value="_selectedDate" @bind-value:event="oninput"
+      @onchange="@(() => GetPixelData())" />
+  </div>
+</div>
 
 <div class="grid-container">
   <!-- Summary card -->
@@ -97,13 +272,13 @@
     <h3 class="mb-3">Summary</h3>
     <p>Quick overview of robot data and performance.</p>
     <button class="btn btn-primary" @onclick="@(() => MqttSendCommand("Start"))">Start</button>
+    <button class="btn btn-primary" @onclick="@(() => MqttSendCommand("Stop"))">Start</button>
+    <button class="btn btn-dangerous" @onclick="@(() => MqttSendCommand("Emergency Stop"))">Emergency Stop</button>
   </div>
 
   <!-- Plant health card -->
   <div class="card">
     <h3 class="mb-3">Plant health</h3>
-    <input type="date" class="form-control" id="dateSelect" @bind="SelectedDate" @bind:event="onchange" />
-    <!-- Fix date changing updating records -->
     <div class="pixel-container">
       @for (int i = 9; i >= 1; i--)
       {
@@ -145,20 +320,8 @@
 @code {
   private string[] pixelColors = Enumerable.Repeat("#555555", 9).ToArray();
   private DateTime _selectedDate = DateTime.Today;
-  private DateTime SelectedDate
-  {
-    get => _selectedDate;
-    set
-    {
-      if (_selectedDate != value)
-      {
-        _selectedDate = value;
-        _ = GetPixelData();
-      }
-    }
-  }
-  private string errorMessage = string.Empty;
   private bool firstRender = true;
+  private string errorMessage = string.Empty;
 
   protected override async Task OnInitializedAsync()
   {
@@ -176,6 +339,13 @@
         await JS.InvokeVoidAsync("showErrorModal");
       }
     }
+  }
+
+  private async Task UpdateData()
+  {
+    await GetPixelData();
+    GetCommandData();
+    GetSensorData();
   }
 
   private async Task GetPixelData()
@@ -212,34 +382,24 @@
     }
   }
 
-  // TODO Implement fetching commanddata
-  // private async Task GetCommandData() { }
+  private void GetCommandData()
+  {
+    // TODO Implement fetching commanddata
+  }
 
-  //TODO Implement fetching sensordata
-  // private async Task GetSensorData() { }
+  private void GetSensorData()
+  {
+    // TODO Implement fetching sensordata
+  }
 
-  // TODO Implement battery data visualization
-  // private async Task GetBatteryData() { }
-
-  // TODO Implement fetching status data
-  // private async Task GetStatusData() { }
-
-
-  // TODO Implement robot controll (mqtt send)
-  public void MqttSendCommand(string command)
+  private void MqttSendCommand(string command) // TODO Implement robot controll (mqtt send)
   {
     MQttClient.PublishMessage(command, "CropBotics/command");
   }
 
-
-  // TODO Implement robot settings (mqtt send)
-  // private async Task SendRobotSettings() { }
-
-
-
-  private async Task OnDateChange()
+  private void MqttSendSettings(string value, string setting) // TODO Implement robot settings (mqtt send)
   {
-    await GetPixelData();
+    MQttClient.PublishMessage(value, $"CropBotics/settings/{setting}");
   }
 
 }
