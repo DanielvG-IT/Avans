@@ -17,8 +17,9 @@ public class MqttProcessingService : IHostedService
       Console.WriteLine($"Incoming MQTT message on {args.Topic}:{args.Message}");
 
       string topic = args.Topic ?? string.Empty;
-      string sensorPattern = @"Cropbotics/sensor/(.*)";
-      string pixelPattern = @"Cropbotics/pixel/(\d+)";
+      string sensorPattern = @"CropBotics/sensor/(.*)";
+      string pixelPattern = @"CropBotics/Pixel/(\d+)";
+
       var sensorMatch = Regex.Match(topic, sensorPattern);
       var pixelMatch = Regex.Match(topic, pixelPattern);
 
@@ -42,7 +43,7 @@ public class MqttProcessingService : IHostedService
 
   public async Task StartAsync(CancellationToken cancellationToken)
   {
-    await _mqttClient.SubscribeToTopic("Cropbotics/#");
+    await _mqttClient.SubscribeToTopic("CropBotics/#");
   }
 
   public Task StopAsync(CancellationToken cancellationToken)

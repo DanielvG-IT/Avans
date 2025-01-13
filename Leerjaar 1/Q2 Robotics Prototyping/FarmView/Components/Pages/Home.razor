@@ -1,4 +1,5 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 @inject SimpleMqtt.SimpleMqttClient MQttClient
 @inject IDatabaseAccess DatabaseAccess
 @inject IJSRuntime JS
@@ -15,7 +16,7 @@
 
   .grid-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1.5rem;
     margin: 2rem;
     padding: 1rem;
@@ -95,6 +96,7 @@
   <div class="card">
     <h3 class="mb-3">Summary</h3>
     <p>Quick overview of robot data and performance.</p>
+    <button class="btn btn-primary" @onclick="@(() => MqttSendCommand("Start"))">Start</button>
   </div>
 
   <!-- Plant health card -->
@@ -151,7 +153,7 @@
       if (_selectedDate != value)
       {
         _selectedDate = value;
-        _ = GetPixelData(); // fetch new data whenever the date changes
+        _ = GetPixelData();
       }
     }
   }
@@ -216,17 +218,24 @@
   //TODO Implement fetching sensordata
   // private async Task GetSensorData() { }
 
-  // Implement fetching battery data
+  // TODO Implement battery data visualization
   // private async Task GetBatteryData() { }
 
-  // Implement fetching status data
+  // TODO Implement fetching status data
   // private async Task GetStatusData() { }
 
-  // Implement robot controll (mqtt send)
-  // private async Task SendRobotCommand() { }
 
-  // Implement robot settings (mqtt send)
+  // TODO Implement robot controll (mqtt send)
+  public void MqttSendCommand(string command)
+  {
+    MQttClient.PublishMessage(command, "CropBotics/command");
+  }
+
+
+  // TODO Implement robot settings (mqtt send)
   // private async Task SendRobotSettings() { }
+
+
 
   private async Task OnDateChange()
   {

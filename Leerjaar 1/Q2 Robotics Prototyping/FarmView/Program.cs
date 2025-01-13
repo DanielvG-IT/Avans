@@ -12,7 +12,6 @@ builder.Services.AddRazorComponents()
 var connectionString = "Server=aei-sql2.avans.nl,1443;Database=DB2226789;UID=ITI2226789;password=H7lcQ2F0;TrustServerCertificate=true;";
 builder.Services.AddSingleton<IDatabaseAccess, DatabaseAccess>(o => new DatabaseAccess(connectionString));
 
-
 // Register SimpleMqttClientConfiguration with options
 var simpleMqttClient = new SimpleMqttClient(new()
 {

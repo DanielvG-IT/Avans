@@ -166,8 +166,9 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
           PixelData = reader.GetString(2)
         });
       }
-      Console.WriteLine($"Found {pixels.Count} pixels for date {date.Date:yyyy-MM-dd}");
-      return pixels;
+      connection.Close();
     }
+    Console.WriteLine($"Found {pixels.Count} pixels for date {date.Date:yyyy-MM-dd}");
+    return pixels;
   }
 }
