@@ -43,6 +43,7 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
           SensorData = reader.GetString(2)
         });
       }
+      Console.WriteLine($"Found {sensors.Count} readings for date {date.Date:yyyy-MM-dd}");
     }
     catch (SqlException sqlEx)
     {
