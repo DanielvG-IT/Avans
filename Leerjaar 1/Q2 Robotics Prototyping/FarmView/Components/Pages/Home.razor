@@ -99,23 +99,6 @@
     transform: translateY(-1px);
   }
 
-  /* Interaction Enhancements */
-  .progress {
-    height: 10px;
-    background-color: var(--secondary-color);
-    border-radius: 5px;
-    overflow: hidden;
-    margin-top: 10px;
-  }
-
-  .progress-bar {
-    height: 100%;
-    background-color: var(--primary-color);
-    width: 1%;
-    /* TODO Change this value to change the progress */
-    transition: width 0.5s ease-in-out;
-  }
-
   .modal {
     position: fixed;
     top: 50%;
@@ -247,6 +230,12 @@
     outline: none;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   }
+
+  .command-table-container {
+    width: 50px;
+    height: 50px;
+    overflow: auto;
+  }
 </style>
 
 <div class="dashboard-header">
@@ -260,9 +249,8 @@
     <span style="background-color: @(MqttService.robotBattery <= 25 ? "#dc3545" : "#28a745")" class="status">Battery:
       <strong>@MqttService.robotBattery%</strong>
     </span>
-
     <input type="date" class="form-control" id="dateSelect" @bind-value="_selectedDate" @bind-value:event="oninput"
-      @onchange="@(() => GetPixelData())" />
+      @onchange="@(() => UpdateData())" />
   </div>
 </div>
 
@@ -271,9 +259,31 @@
   <div class="card">
     <h3 class="mb-3">Summary</h3>
     <p>Quick overview of robot data and performance.</p>
-    <button class="btn btn-primary" @onclick="@(() => MqttSendCommand("Start"))">Start</button>
-    <button class="btn btn-primary" @onclick="@(() => MqttSendCommand("Stop"))">Start</button>
-    <button class="btn btn-dangerous" @onclick="@(() => MqttSendCommand("Emergency Stop"))">Emergency Stop</button>
+    <div class="commandButton">
+      <button class="btn btn-primary" @onclick="@(() => MqttSendCommand("Start"))">Start</button>
+      <button class="btn btn-primary" @onclick="@(() => MqttSendCommand("Stop"))">Stop</button>
+      <button class="btn btn-dangerous" @onclick="@(() => MqttSendCommand("Emergency Stop"))">Emergency Stop</button>
+    </div>
+    <div class="commandHistory">
+      <h4>Command History</h4>
+      <div class="command-table-container">
+        <table class="table-responsive table table-striped table-hover ">
+          <thead>
+            <th>Command Data</th>
+            <th>TimeStamp</th>
+          </thead>
+          <tbody>
+            @foreach (var item in commandHistory)
+            {
+              <tr>
+                <td>@item.CommandData</td>
+                <td>@item.DataTimestamp</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <!-- Plant health card -->
@@ -293,12 +303,38 @@
   <div class="card">
     <h3 class="mb-3">Performance Insights</h3>
     <p>Visualize key performance indicators.</p>
+    <div class="commandHistory">
+      <h4>Sensor History</h4>
+      <div class="sensor-table-container">
+        <table class="table-responsive table table-striped table-hover">
+          <thead>
+            <th>Sensor Name</th>
+            <th>Sensor Data</th>
+            <th>TimeStamp</th>
+          </thead>
+          <tbody>
+            @foreach (var item in sensorHistory)
+            {
+              <tr>
+                <td>@item.SensorName</td>
+                <td>@item.SensorData</td>
+                <td>@item.DataTimestamp</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <!-- Settings card -->
   <div class="card">
     <h3 class="mb-3">Settings</h3>
     <p>Customize robot configurations and data.</p>
+    <input type="selector" placeholder="Colour Sensor Gain" @bind-value="robotMotorsEnabled" @bind-value:event="oninput"
+      @onchange="@(()=> MqttSendSettings("", ""))">
+    <input type="text" placeholder="Motors Enabled" @bind-value="robotColourGain" @bind-value:event="oninput"
+      @onchange="@(()=> MqttSendSettings("", ""))">
   </div>
 </div>
 
@@ -310,8 +346,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <!-- TODO Fix modal not showing when no records found -->
-        <p>@errorMessage</p>
+        <p class="errorMessage" style="color: red;">@errorMessage</p>
       </div>
     </div>
   </div>
@@ -319,13 +354,17 @@
 
 @code {
   private string[] pixelColors = Enumerable.Repeat("#555555", 9).ToArray();
+  private List<Command> commandHistory = new List<Command>();
+  private List<Sensor> sensorHistory = new List<Sensor>();
   private DateTime _selectedDate = DateTime.Today;
-  private bool firstRender = true;
+  private string robotColourGain = string.Empty;
   private string errorMessage = string.Empty;
+  private bool robotMotorsEnabled = default;
+  private bool firstRender = true;
 
   protected override async Task OnInitializedAsync()
   {
-    await GetPixelData();
+    await UpdateData();
   }
 
   protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -336,6 +375,7 @@
 
       if (!string.IsNullOrEmpty(errorMessage))
       {
+        StateHasChanged();
         await JS.InvokeVoidAsync("showErrorModal");
       }
     }
@@ -343,12 +383,22 @@
 
   private async Task UpdateData()
   {
-    await GetPixelData();
-    GetCommandData();
-    GetSensorData();
+    await GetPixelHistory();
+    await GetSensorHistory();
+    await GetCommandHistory();
+
+    robotMotorsEnabled = MqttService.robotMotorsEnabled;
+    robotColourGain = MqttService.robotColourSensorGain;
   }
 
-  private async Task GetPixelData()
+  private void SetErrorMessage(string message)
+  {
+    errorMessage = message;
+    Console.WriteLine(message);
+    StateHasChanged();
+  }
+
+  private async Task GetPixelHistory()
   {
     try
     {
@@ -356,7 +406,7 @@
 
       if (result.Count() == 0)
       {
-        errorMessage = "No pixel data found for selected date";
+        SetErrorMessage("No pixel data found for selected date");
         return;
       }
       else
@@ -367,6 +417,13 @@
       foreach (var item in result)
       {
         int index = item.PixelNumber - 1;
+
+        if (index < 0 || index >= pixelColors.Length)
+        {
+          Console.WriteLine($"Invalid index: {index}. Valid range: 0 to {pixelColors.Length - 1}");
+          return;
+        }
+
         pixelColors[index] = item.PixelData switch
         {
           "Green" => "#28a745",
@@ -378,18 +435,63 @@
     }
     catch (Exception ex)
     {
-      errorMessage = $"Error: {ex.Message}";
+      SetErrorMessage($"Error: {ex.Message}");
     }
   }
 
-  private void GetCommandData()
+
+  private async Task GetCommandHistory()
   {
-    // TODO Implement fetching commanddata
+    try
+    {
+      var commandResult = await Task.Run(() => DatabaseAccess.ReadCommandData(_selectedDate));
+
+      if (commandResult.Count() == 0)
+      {
+        SetErrorMessage("No command data found for selected date");
+        return;
+      }
+      else
+      {
+        SetErrorMessage(string.Empty);
+      }
+
+      foreach (var item in commandResult)
+      {
+        commandHistory.Add(item);
+      }
+    }
+    catch (Exception ex)
+    {
+      SetErrorMessage($"Error: {ex.Message}");
+    }
   }
 
-  private void GetSensorData()
+  private async Task GetSensorHistory()
   {
-    // TODO Implement fetching sensordata
+    try
+    {
+      var sensorResult = await Task.Run(() => DatabaseAccess.ReadSensorData(_selectedDate));
+
+      if (sensorResult.Count() == 0)
+      {
+        SetErrorMessage("No sensor data found for selected date");
+        return;
+      }
+      else
+      {
+        SetErrorMessage(string.Empty);
+      }
+
+      foreach (var item in sensorResult)
+      {
+        sensorHistory.Add(item);
+      }
+    }
+    catch (Exception ex)
+    {
+      SetErrorMessage($"Error: {ex.Message}");
+    }
   }
 
   private void MqttSendCommand(string command)
@@ -400,6 +502,11 @@
   private void MqttSendSettings(string value, string setting) // TODO Implement robot settings (mqtt send)
   {
     MQttClient.PublishMessage(value, $"CropBotics/settings/{setting}");
+  }
+
+  private void MqttRequestData(string data)
+  {
+    MQttClient.PublishMessage(data, $"CropBotics/request");
   }
 
 }

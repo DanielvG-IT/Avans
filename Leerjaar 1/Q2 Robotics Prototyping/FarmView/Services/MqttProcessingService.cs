@@ -11,6 +11,8 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
   public string robotStatus { get; private set; }
   public int robotBattery { get; private set; }
   public bool robotEmergencyStop { get; private set; }
+  public bool robotMotorsEnabled { get; private set; }
+  public string robotColourSensorGain { get; private set; }
 
   public MqttProcessingService(IDatabaseAccess databaseAccess, SimpleMqttClient mqttClient)
   {
@@ -21,6 +23,8 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
     robotStatus = "Unknown";
     robotBattery = 0;
     robotEmergencyStop = false;
+    robotMotorsEnabled = true;
+    robotColourSensorGain = "Unknown";
 
     _mqttClient.OnMessageReceived += (sender, args) =>
     {
@@ -30,16 +34,16 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
       string message = args.Message ?? string.Empty;
 
       string pixelPattern = @"CropBotics/pixel/(\d+)";
-      var pixelMatch = Regex.Match(topic, pixelPattern);
-
-      string sensorPattern = @"CropBotics/sensor/(\w+)";
-      var sensorMatch = Regex.Match(topic, sensorPattern);
-
       string commandPattern = @"CropBotics/command/(\w+)";
-      var commandMatch = Regex.Match(topic, commandPattern);
-
+      string sensorPattern = @"CropBotics/sensor/(\w+)";
       string statusPattern = @"CropBotics/status/(\w+)";
+      string requestPattern = @"CropBotics/request/(\w+)";
+
+      var pixelMatch = Regex.Match(topic, pixelPattern);
+      var commandMatch = Regex.Match(topic, commandPattern);
+      var sensorMatch = Regex.Match(topic, sensorPattern);
       var statusMatch = Regex.Match(topic, statusPattern);
+      var requestMatch = Regex.Match(topic, requestPattern);
 
       var mqttMessage = new SimpleMqttMessage { Topic = args.Topic, Message = args.Message };
 
@@ -73,6 +77,25 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
             Console.WriteLine("Unknown status message received");
             break;
         }
+      }
+      else if (requestMatch.Success)
+      {
+        switch (requestMatch.Groups[1].Value)
+        {
+          case "motorsEnabled":
+            robotMotorsEnabled = message == "true";
+            break;
+          case "colourGain":
+            robotColourSensorGain = message;
+            break;
+          default:
+            Console.WriteLine("Unknown request response received");
+            break;
+        }
+      }
+      else
+      {
+        Console.WriteLine($"Unknown topic format: {topic}");
       }
     };
   }

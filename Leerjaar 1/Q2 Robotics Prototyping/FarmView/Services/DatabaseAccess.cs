@@ -10,46 +10,123 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
 {
   private string _connStr { get; set; } = connectionString;
 
-  public void ReadMqttData(string typeData)
+  public List<Sensor> ReadSensorData(DateTime date)
   {
-    bool isTypeSensor = typeData == "sensor";
+    var sensors = new List<Sensor>();
 
+    try
+    {
+      using var connection = new SqlConnection(_connStr);
+      connection.Open();
+      using var sqlcommand = connection.CreateCommand();
+      sqlcommand.CommandText = @"
+            SELECT SensorName, DataTimestamp, SensorData 
+            FROM SensorHistory 
+            WHERE CONVERT(DATE, DataTimestamp) = @DataTimestamp";
+
+      sqlcommand.Parameters.AddWithValue("@DataTimestamp", date);
+
+      using var reader = sqlcommand.ExecuteReader();
+
+      if (!reader.HasRows)
+      {
+        Console.WriteLine("No sensor data found for the given date.");
+        return sensors;
+      }
+
+      while (reader.Read())
+      {
+        sensors.Add(new Sensor
+        {
+          SensorName = reader.GetString(0),
+          DataTimestamp = reader.GetDateTime(1),
+          SensorData = reader.GetString(2)
+        });
+      }
+    }
+    catch (SqlException sqlEx)
+    {
+      Console.WriteLine($"Database error: {sqlEx.Message}");
+    }
+    catch (Exception ex)
+    {
+      Console.WriteLine($"Unexpected error: {ex.Message}");
+    }
+
+    return sensors;
+  }
+
+  public List<Command> ReadCommandData(DateTime date)
+  {
+    var commands = new List<Command>();
+
+    try
+    {
+      using var connection = new SqlConnection(_connStr);
+      connection.Open();
+      using var command = connection.CreateCommand();
+      command.CommandText = @"
+            SELECT CommandName, DataTimestamp, CommandData 
+            FROM CommandHistory 
+            WHERE CONVERT(DATE, DataTimestamp) = @DataTimestamp";
+
+      command.Parameters.AddWithValue("@DataTimestamp", date);
+
+      using var reader = command.ExecuteReader();
+
+      if (!reader.HasRows)
+      {
+        return commands;
+      }
+
+      while (reader.Read())
+      {
+        commands.Add(new Command
+        {
+          CommandName = reader.GetString(0),
+          DataTimestamp = reader.GetDateTime(1),
+          CommandData = reader.GetString(2)
+        });
+      }
+      Console.WriteLine($"Found {commands.Count} commands for date {date.Date:yyyy-MM-dd}");
+      return commands;
+    }
+    catch (Exception ex)
+    {
+      Console.WriteLine($"Unexpected error: {ex.Message}");
+      return commands;
+    }
+
+  }
+
+  public List<Pixel> ReadPixelData(DateTime date)
+  {
+    var pixels = new List<Pixel>();
     using var connection = new SqlConnection(_connStr);
     {
       connection.Open();
-      var command = connection.CreateCommand();
-      command.Connection = connection;
+      using var command = connection.CreateCommand();
+      command.CommandText = @"
+            SELECT PixelNumber, DataTimestamp, PixelData 
+            FROM PixelHistory 
+            WHERE CONVERT(date, DataTimestamp) = @DataTimestamp";
 
-      try
+      command.Parameters.AddWithValue("@DataTimestamp", date.Date);
+
+      using var reader = command.ExecuteReader();
+      while (reader.Read())
       {
-        command.CommandText = isTypeSensor
-          ? "SELECT SensorName, DataTimestamp, SensorData FROM SensorHistory WHERE SensorName LIKE 'cropbotics/sensor/'"
-          : "SELECT CommandName, DataTimestamp, CommandData FROM CommandHistory WHERE CommandName LIKE 'cropbotics/command/'"; // TODO Add date range for SELECT
-
-        var nameParam = isTypeSensor ? "@SensorName" : "@CommandName";
-        var dataParam = isTypeSensor ? "@SensorData" : "@CommandData";
-
-        var readerResult = command.ExecuteReader();
-
-        if (readerResult.HasRows == false)
+        pixels.Add(new Pixel
         {
-          throw new Exception($"Reader got no results!");
-        }
-
-        // TODO Implement return of a list of sensor & command messages
-
+          PixelNumber = reader.GetInt32(0),
+          DataTimestamp = reader.GetDateTime(1),
+          PixelData = reader.GetString(2)
+        });
       }
-
-      catch (Exception ex)
-      {
-        Console.WriteLine($"Error writing data to database: {ex}");
-      }
-
-      finally
-      {
-        connection.Close();
-      }
+      connection.Close();
     }
+    Console.WriteLine($"Found {pixels.Count} pixels for date {date.Date:yyyy-MM-dd}");
+    return pixels;
   }
 
   public void WriteMqttData(SimpleMqttMessage mqtt, string typeData)
@@ -143,32 +220,4 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
     }
   }
 
-  public List<Pixel> ReadPixelData(DateTime date)
-  {
-    var pixels = new List<Pixel>();
-    using var connection = new SqlConnection(_connStr);
-    {
-      connection.Open();
-      using var command = connection.CreateCommand();
-      command.CommandText = @"
-            SELECT PixelNumber, DataTimestamp, PixelData 
-            FROM PixelHistory 
-            WHERE CONVERT(date, DataTimestamp) = @DataTimestamp";
-      command.Parameters.AddWithValue("@DataTimestamp", date.Date);
-
-      using var reader = command.ExecuteReader();
-      while (reader.Read())
-      {
-        pixels.Add(new Pixel
-        {
-          PixelNumber = reader.GetInt32(0),
-          DataTimestamp = reader.GetDateTime(1),
-          PixelData = reader.GetString(2)
-        });
-      }
-      connection.Close();
-    }
-    Console.WriteLine($"Found {pixels.Count} pixels for date {date.Date:yyyy-MM-dd}");
-    return pixels;
-  }
 }
