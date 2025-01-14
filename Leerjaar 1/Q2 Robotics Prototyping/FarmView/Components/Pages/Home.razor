@@ -9,119 +9,180 @@
 
 <style>
   body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #f8f9fa;
-    color: #333;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f0f4f8, #d9e7ff);
     margin: 0;
-    padding: 0;
-  }
-
-  /* General Improvements */
-  :root {
-    --primary-color: #007bff;
-    --secondary-color: #6c757d;
-    --background-color: #f8f9fa;
-    --text-color: #333;
-    --card-background: #fff;
-    --button-hover: #0056b3;
-    --danger-color: #dc3545;
-  }
-
-  .dashboard-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
     padding: 20px;
+    color: #333;
   }
 
-  .card {
-    background-color: var(--card-background);
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 20px;
   }
 
-  .card:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  }
-
-  h3 {
-    margin-top: 0;
-  }
-
-  /* Accessibility */
-  .btn {
-    display: inline-block;
-    padding: 10px 20px;
-    font-size: 16px;
-    using Microsoft.Data.SqlClient;
-    using FarmView.Interfaces;
-    font-weight: bold;
+  .MainHeader {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     text-align: center;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.8rem;
+    margin: 0;
+    color: #007bff;
+  }
+
+  .status-indicators {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .status {
+    padding: 8px 12px;
     color: #fff;
-    background-color: var(--primary-color);
-    border: none;
     border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-
-  .btn:hover {
-    background-color: var(--button-hover);
-  }
-
-  .btn:focus {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
-  }
-
-  .btn-dangerous {
-    background-color: var(--danger-color);
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 8px;
-    font-size: 0.9rem;
     font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease-in-out;
-  }
-
-  .btn-dangerous:focus {
-    outline: 2px solid var(--danger-color);
-  }
-
-  .btn-dangerous:hover {
-    background-color: #c82333;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    transform: translateY(-1px);
-  }
-
-  .modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: var(--card-background);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    display: none;
-  }
-
-  .modal.show {
-    display: block;
-    animation: fadeIn 0.3s ease-out;
   }
 
   .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin: 2rem;
-    padding: 1rem;
+    gap: 20px;
+  }
+
+  /* General Card Styling */
+  .card {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Form Labels */
+  .card .form-label {
+    font-weight: 600;
+    color: #343a40;
+  }
+
+  /* Input Fields */
+  .card .form-control {
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card .form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 4px rgba(13, 110, 253, 0.5);
+  }
+
+  /* Toggle Switch */
+  .card .form-check-input {
+    width: 50px;
+    height: 25px;
+    background-color: #e9ecef;
+    border: none;
+    border-radius: 25px;
+    position: relative;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+  }
+
+  .card .form-check-input:checked {
+    background-color: #0d6efd;
+  }
+
+  .card .form-check-input:before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #fff;
+    border-radius: 50%;
+    top: 2.5px;
+    left: 3px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .card .form-check-input:checked:before {
+    transform: translateX(25px);
+  }
+
+  /* Additional Spacing and Alignment */
+  .card .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .card .form-group.d-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* Card Title Styling */
+  .card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 1rem;
+  }
+
+  /* Card Description */
+  .card p {
+    color: #6c757d;
+    font-size: 14px;
+    margin-bottom: 1rem;
+  }
+
+  .btn-primary {
+    background: #007bff;
+    border: none;
+    transition: background 0.3s;
+  }
+
+  .btn-primary:hover {
+    background: #0056b3;
+  }
+
+  .btn-dangerous {
+    background: #dc3545;
+    border: none;
+    transition: background 0.3s;
+  }
+
+  .btn-dangerous:hover {
+    background: #a71d2a;
+  }
+
+  .command-table-container,
+  .sensor-table-container {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: auto;
+  }
+
+  .table {
+    margin-top: 15px;
   }
 
   .pixel-container {
@@ -133,162 +194,79 @@
   }
 
   .pixel {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     display: flex;
-    align-items: center;
     justify-content: center;
-    font-weight: bold;
-    font-size: 1rem;
+    align-items: center;
     border-radius: 8px;
     color: #fff;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .pixel:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
   }
 
   .modal-header {
-    background-color: #dc3545;
+    background: #007bff;
     color: #fff;
   }
 
-  .btn-close {
-    filter: invert(1);
-  }
-
-  .form-control {
-    border-radius: 8px;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-  }
-
-  .btn {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 0.5rem 1.5rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: background-color 0.2s ease;
-  }
-
-  .btn:hover {
-    background-color: #0056b3;
-  }
-
-  .dashboard-header {
-    background-color: #007bff;
-    color: #fff;
-    padding: 1rem 2rem;
-    border-radius: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    flex-wrap: wrap;
-  }
-
-  .dashboard-header h1 {
-    font-size: 2rem;
-    margin: 0;
-  }
-
-  .status-indicators {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-top: 1rem;
-  }
-
-  .status {
-    font-size: 1rem;
-    color: #fff;
-    background-color: rgba(255, 255, 255, 0.1);
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    font-weight: bold;
-  }
-
-  .form-control {
-    background-color: #fff;
-    color: #333;
-    font-size: 1rem;
-    border: none;
-    padding: 0.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.2s ease;
-  }
-
-  .form-control:focus {
-    outline: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  }
-
-  .command-table-container {
-    width: 50px;
-    height: 50px;
-    overflow: auto;
+  .errorMessage {
+    font-size: 1.2rem;
   }
 </style>
 
 <div class="dashboard-header">
-  <h1>FarmView Dashboard</h1>
-  <!-- <p>Gemaakt door Daniël van Ginneken</p> -->
+  <div class="MainHeader">
+    <h1>FarmView Dashboard</h1>
+    <p>Gemaakt door Daniël van Ginneken</p>
+  </div>
   <div class="status-indicators">
-    <span class="status"
-      style="background-color: @(MqttService.robotStatus == "Active" ? "#28a745" : "#dc3545")">Status:
-      <strong>@MqttService.robotStatus</strong>
-    </span>
-    <span style="background-color: @(MqttService.robotBattery <= 25 ? "#dc3545" : "#28a745")" class="status">Battery:
-      <strong>@MqttService.robotBattery%</strong>
-    </span>
     <input type="date" class="form-control" id="dateSelect" @bind-value="_selectedDate" @bind-value:event="oninput"
-      @onchange="@(() => UpdateData())" />
+      @onchange="@(() => UpdateData())">
+    <span class="status" style="background-color: @(MqttService.robotStatus == "Active" ? "#28a745" : "#dc3545")">
+      Status: <strong>@MqttService.robotStatus</strong>
+    </span>
+    <span class="status" style="background-color: @(MqttService.robotBattery <= 25 ? "#dc3545" : "#28a745")">
+      Battery: <strong>@MqttService.robotBattery%</strong>
+    </span>
+
   </div>
 </div>
 
 <div class="grid-container">
-  <!-- Summary card -->
+  <!-- Commands Card -->
   <div class="card">
-    <h3 class="mb-3">Summary</h3>
-    <p>Quick overview of robot data and performance.</p>
-    <div class="commandButton">
+    <h3>Commands</h3>
+    <p>Control the robot from the application.</p>
+    <div class="commandButton mb-3">
       <button class="btn btn-primary" @onclick="@(() => MqttSendCommand("Start"))">Start</button>
       <button class="btn btn-primary" @onclick="@(() => MqttSendCommand("Stop"))">Stop</button>
       <button class="btn btn-dangerous" @onclick="@(() => MqttSendCommand("Emergency Stop"))">Emergency Stop</button>
     </div>
-    <div class="commandHistory">
-      <h4>Command History</h4>
-      <div class="command-table-container">
-        <table class="table-responsive table table-striped table-hover ">
-          <thead>
-            <th>Command Data</th>
+    <h4>Command History</h4>
+    <div class="command-table-container">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Command</th>
             <th>TimeStamp</th>
-          </thead>
-          <tbody>
-            @foreach (var item in commandHistory)
-            {
-              <tr>
-                <td>@item.CommandData</td>
-                <td>@item.DataTimestamp</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach (var item in commandHistory)
+          {
+            <tr>
+              <td>@item.CommandData</td>
+              <td>@item.DataTimestamp</td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <!-- Plant health card -->
-  <div class="card">
-    <h3 class="mb-3">Plant health</h3>
+  <!-- Plant Health Card -->
+  <div class="card" id="pixelCard">
+    <h3>Plant Health</h3>
     <div class="pixel-container">
       @for (int i = 9; i >= 1; i--)
       {
@@ -299,42 +277,55 @@
     </div>
   </div>
 
-  <!-- Performance Insights card -->
+  <!-- Sensor Insights Card -->
   <div class="card">
-    <h3 class="mb-3">Performance Insights</h3>
-    <p>Visualize key performance indicators.</p>
-    <div class="commandHistory">
-      <h4>Sensor History</h4>
-      <div class="sensor-table-container">
-        <table class="table-responsive table table-striped table-hover">
-          <thead>
-            <th>Sensor Name</th>
-            <th>Sensor Data</th>
+    <h3>Robot Insights</h3>
+    <p>Quick overview of robot data.</p>
+    <div class="sensor-table-container">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Data</th>
             <th>TimeStamp</th>
-          </thead>
-          <tbody>
-            @foreach (var item in sensorHistory)
-            {
-              <tr>
-                <td>@item.SensorName</td>
-                <td>@item.SensorData</td>
-                <td>@item.DataTimestamp</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach (var item in sensorHistory)
+          {
+            <tr>
+              <td>@item.SensorName</td>
+              <td>@item.SensorData</td>
+              <td>@item.DataTimestamp</td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <!-- Settings card -->
+  <!-- Settings Card -->
   <div class="card">
     <h3 class="mb-3">Settings</h3>
-    <p>Customize robot configurations and data.</p>
-    <input type="selector" placeholder="Colour Sensor Gain" @bind-value="robotMotorsEnabled" @bind-value:event="oninput"
-      @onchange="@(()=> MqttSendSettings("", ""))">
-    <input type="text" placeholder="Motors Enabled" @bind-value="robotColourGain" @bind-value:event="oninput"
-      @onchange="@(()=> MqttSendSettings("", ""))">
+    <p class="mb-4">Customize robot configurations and data.</p>
+    <div class="form-group mb-4">
+      <label for="colorSensorGain" class="form-label">Color Sensor Gain</label>
+      <input type="text" id="colorSensorGain" placeholder="Enter gain value" @bind-value="robotColourGain"
+        @bind-value:event="oninput" @onchange="@(() => MqttSendSettings(robotColourGain, "ColorGain"))"
+        class="form-control">
+    </div>
+    <div class="form-group d-flex align-items-center justify-content-between">
+      <label for="motorsEnabled" class="form-label mb-0">Motors Enabled</label>
+      <div class="form-check form-switch">
+        <input type="checkbox" id="motorsEnabled" class="form-check-input" @bind-value="robotMotorsEnabled"
+          @bind-value:event="oninput"
+          @onchange="@(() => MqttSendSettings(robotMotorsEnabled.ToString(), "MotorsEnabled"))">
+        <label class="form-check-label" for="motorsEnabled"></label>
+      </div>
+    </div>
+    <div class="form-group">
+      <button class="btn btn-primary mt-4" @onclick="@(() => MqttRequestData("all"))">Request Data</button>
+    </div>
   </div>
 </div>
 
@@ -346,7 +337,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <p class="errorMessage" style="color: red;">@errorMessage</p>
+        <p class="errorMessage">@errorMessage</p>
       </div>
     </div>
   </div>
@@ -387,6 +378,8 @@
     await GetSensorHistory();
     await GetCommandHistory();
 
+    MqttRequestData("all");
+
     robotMotorsEnabled = MqttService.robotMotorsEnabled;
     robotColourGain = MqttService.robotColourSensorGain;
   }
@@ -403,16 +396,6 @@
     try
     {
       var result = await Task.Run(() => DatabaseAccess.ReadPixelData(_selectedDate));
-
-      if (result.Count() == 0)
-      {
-        SetErrorMessage("No pixel data found for selected date");
-        return;
-      }
-      else
-      {
-        errorMessage = string.Empty;
-      }
 
       foreach (var item in result)
       {
@@ -439,22 +422,11 @@
     }
   }
 
-
   private async Task GetCommandHistory()
   {
     try
     {
       var commandResult = await Task.Run(() => DatabaseAccess.ReadCommandData(_selectedDate));
-
-      if (commandResult.Count() == 0)
-      {
-        SetErrorMessage("No command data found for selected date");
-        return;
-      }
-      else
-      {
-        SetErrorMessage(string.Empty);
-      }
 
       foreach (var item in commandResult)
       {
@@ -473,16 +445,6 @@
     {
       var sensorResult = await Task.Run(() => DatabaseAccess.ReadSensorData(_selectedDate));
 
-      if (sensorResult.Count() == 0)
-      {
-        SetErrorMessage("No sensor data found for selected date");
-        return;
-      }
-      else
-      {
-        SetErrorMessage(string.Empty);
-      }
-
       foreach (var item in sensorResult)
       {
         sensorHistory.Add(item);
@@ -499,7 +461,7 @@
     MQttClient.PublishMessage(command, "CropBotics/command");
   }
 
-  private void MqttSendSettings(string value, string setting) // TODO Implement robot settings (mqtt send)
+  private void MqttSendSettings(string value, string setting)
   {
     MQttClient.PublishMessage(value, $"CropBotics/settings/{setting}");
   }
