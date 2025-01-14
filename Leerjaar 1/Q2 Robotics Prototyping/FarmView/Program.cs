@@ -26,7 +26,9 @@ var simpleMqttClient = new SimpleMqttClient(new()
 builder.Services.AddSingleton(simpleMqttClient);
 
 // Register MqttProcessingService
-builder.Services.AddSingleton<IMqttProcessingService, MqttProcessingService>();
+builder.Services.AddSingleton<MqttProcessingService>();
+builder.Services.AddSingleton<IMqttProcessingService>(provider => provider.GetRequiredService<MqttProcessingService>());
+builder.Services.AddHostedService(provider => provider.GetRequiredService<MqttProcessingService>());
 
 var app = builder.Build();
 

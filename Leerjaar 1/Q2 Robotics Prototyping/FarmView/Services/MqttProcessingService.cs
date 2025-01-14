@@ -62,11 +62,9 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
         {
           case "status":
             robotStatus = message;
-            Console.WriteLine($"Robot Status: {robotStatus}");
             break;
           case "battery":
             robotBattery = Convert.ToInt32(message);
-            Console.WriteLine($"Battery level: {robotBattery}");
             break;
           case "emergency_stop":
             robotEmergencyStop = message == "true";

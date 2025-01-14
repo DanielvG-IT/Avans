@@ -392,7 +392,7 @@
     // TODO Implement fetching sensordata
   }
 
-  private void MqttSendCommand(string command) // TODO Implement robot controll (mqtt send)
+  private void MqttSendCommand(string command)
   {
     MQttClient.PublishMessage(command, "CropBotics/command");
   }
