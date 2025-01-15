@@ -20,11 +20,9 @@ public class ObstacleDetectionSystem : IUpdatable
 
   public void Update()
   {
-    // Don't measure at every call because it blocks all processing
-    // during the measurement; so use a timer that times out periodically
     if (scanIntervalTimer.Check())
     {
-      Robot.LEDs(0, 0, 255); // Flash the green LED on the Romi board
+      Robot.LEDs(0, 0, 255);
       ObstacleDistance = distanceSensor.GetUltrasoneDistance();
       Robot.LEDs(0, 0, 0);
     }
