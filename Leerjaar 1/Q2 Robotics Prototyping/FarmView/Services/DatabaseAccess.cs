@@ -22,7 +22,8 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
       sqlcommand.CommandText = @"
             SELECT SensorName, DataTimestamp, SensorData 
             FROM SensorHistory 
-            WHERE CONVERT(DATE, DataTimestamp) = @DataTimestamp";
+            WHERE CONVERT(DATE, DataTimestamp) = @DataTimestamp
+            ORDER BY DataTimestamp DESC";
 
       sqlcommand.Parameters.AddWithValue("@DataTimestamp", date);
 
@@ -69,7 +70,8 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
       command.CommandText = @"
             SELECT CommandName, DataTimestamp, CommandData 
             FROM CommandHistory 
-            WHERE CONVERT(DATE, DataTimestamp) = @DataTimestamp";
+            WHERE CONVERT(DATE, DataTimestamp) = @DataTimestamp
+            ORDER BY DataTimestamp DESC";
 
       command.Parameters.AddWithValue("@DataTimestamp", date);
 
