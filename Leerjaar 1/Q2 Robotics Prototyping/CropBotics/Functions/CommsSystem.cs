@@ -5,42 +5,29 @@ namespace CropBotics.Functions;
 
 class CommsSystem : IInitializable
 {
-
-  const string topicCommands = "CropBotics/commands/#";
-  const string topicAlert = "CropBotics/alerts/#";
-
   private readonly SimpleMqttClient _mqttClient;
   private readonly IMessageHandler _messageHandler;
-  private string clientId = "FarmRobot-v1";
+  private readonly string clientId = "FarmRobot-v1.6";
 
 
   public CommsSystem(IMessageHandler messageHandler)
   {
     Console.WriteLine("DEBUG: CommsSystem constructor called");
-    _mqttClient = SimpleMqttClient.CreateSimpleMqttClientForHiveMQ(clientId);
     _messageHandler = messageHandler;
-  }
-
-
-
-  public async Task Init()
-  {
-    await _mqttClient.SubscribeToTopic(topicCommands);
+    _mqttClient = SimpleMqttClient.CreateSimpleMqttClientForHiveMQ(clientId);
     _mqttClient.OnMessageReceived += MessageCallback;
   }
 
+  public async Task Init()
+  {
+    await _mqttClient.SubscribeToTopic("CropBotics/commands");
+    await _mqttClient.SubscribeToTopic("CropBotics/request");
+  }
 
   private void MessageCallback(object? sender, SimpleMqttMessage msg)
   {
-    Console.WriteLine($"MQTT message received: topic={msg.Topic}, msg={msg.Message}");
     _messageHandler.HandleMessage(msg);
   }
-
-  // public async Task SendState(string state)
-  // {
-  //   Console.WriteLine($"Publishing alert state: topic={topicAlert}, msg={state}");
-  //   await _mqttClient.PublishMessage(state, topicAlert);
-  // }
 
   public async Task SendMessage(string topic, string message)
   {
