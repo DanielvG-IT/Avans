@@ -54,6 +54,51 @@
     font-weight: bold;
   }
 
+  .auto-refresh-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .auto-refresh-toggle .form-check-input {
+    width: 50px;
+    height: 25px;
+    background-color: #e9ecef;
+    border: none;
+    border-radius: 25px;
+    position: relative;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+
+  .auto-refresh-toggle .form-check-input:checked {
+    background-color: #0d6efd;
+  }
+
+  .auto-refresh-toggle .form-check-input:before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #fff;
+    border-radius: 50%;
+    top: 2.5px;
+    left: 3px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .auto-refresh-toggle .form-check-input:checked:before {
+    transform: translateX(25px);
+  }
+
+  .auto-refresh-toggle .form-check-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #212529;
+    margin: 0;
+  }
+
   .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -217,9 +262,14 @@
 <div class="dashboard-header">
   <div class="MainHeader">
     <h1>FarmView Dashboard</h1>
-    <p>Gemaakt door Daniël van Ginneken</p>
+    <p>Copyright 2025 - Daniël van Ginneken</p>
   </div>
   <div class="status-indicators">
+    <div class="form-check form-switch auto-refresh-toggle">
+      <input type="checkbox" id="autoRefreshToggle" class="form-check-input" @bind-value="autoRefreshEnabled"
+        @bind-value:event="oninput" @onchange="OnAutoRefreshChanged">
+      <label class="form-check-label" for="autoRefreshToggle">Auto Refresh</label>
+    </div>
     <input type="date" class="form-control" id="dateSelect" @bind-value="_selectedDate" @bind-value:event="oninput"
       @onchange="@(() => UpdateData())">
     <span class="status" style="background-color: @(MqttService.robotStatus == "Active" ? "#28a745" : "#dc3545")">
@@ -228,7 +278,6 @@
     <span class="status" style="background-color: @(MqttService.robotBattery <= 25 ? "#dc3545" : "#28a745")">
       Battery: <strong>@MqttService.robotBattery%</strong>
     </span>
-
   </div>
 </div>
 
@@ -345,17 +394,20 @@
 
 @code {
   private string[] pixelColors = Enumerable.Repeat("#555555", 9).ToArray();
+  private CancellationTokenSource? refreshCancellationTokenSource;
   private List<Command> commandHistory = new List<Command>();
   private List<Sensor> sensorHistory = new List<Sensor>();
   private DateTime _selectedDate = DateTime.Today;
   private string robotColourGain = string.Empty;
   private string errorMessage = string.Empty;
   private bool robotMotorsEnabled = default;
+  private bool autoRefreshEnabled = false;
   private bool firstRender = true;
 
   protected override async Task OnInitializedAsync()
   {
     await UpdateData();
+    StopAutoRefresh();
   }
 
   protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -469,6 +521,47 @@
   private void MqttRequestData(string data)
   {
     MQttClient.PublishMessage(data, $"CropBotics/request");
+  }
+
+  private void OnAutoRefreshChanged()
+  {
+    if (autoRefreshEnabled)
+    {
+      _ = StartAutoRefresh(); // Fire and forget
+      Console.WriteLine("DEBUG: Auto refresh started");
+    }
+    else
+    {
+      StopAutoRefresh();
+      Console.WriteLine("DEBUG: Auto refresh stopped");
+
+    }
+  }
+
+  private async Task StartAutoRefresh()
+  {
+    refreshCancellationTokenSource?.Cancel();
+    refreshCancellationTokenSource = new CancellationTokenSource();
+
+    try
+    {
+      while (!refreshCancellationTokenSource.Token.IsCancellationRequested)
+      {
+        await UpdateData();
+        await Task.Delay(10000, refreshCancellationTokenSource.Token);
+        Console.WriteLine("DEBUG: Auto refresh tick");
+      }
+    }
+    catch (TaskCanceledException)
+    {
+      // Expected when the token is canceled
+    }
+  }
+
+  private void StopAutoRefresh()
+  {
+    refreshCancellationTokenSource?.Cancel();
+    refreshCancellationTokenSource = null;
   }
 
 }
