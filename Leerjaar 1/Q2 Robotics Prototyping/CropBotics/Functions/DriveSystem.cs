@@ -12,7 +12,6 @@ public class DriveSystem : IUpdatable
     set { if (value > 0.0 && value <= 1.0) _speedIncrease = value; }
   }
 
-
   private double _targetSpeed = 0.0;
   public double TargetSpeed
   {
@@ -20,13 +19,9 @@ public class DriveSystem : IUpdatable
     set { if (value > 0.0 && value <= 1.0) _targetSpeed = value; }
   }
 
-
   private double _currentSpeed = 0.0;
   public double CurrentSpeed { get { return _currentSpeed; } }
-
-
   public bool MotorsEnabled { get; set; } = true;
-
 
   private short CalculateRobotSpeed(double speed)
   {
@@ -54,17 +49,6 @@ public class DriveSystem : IUpdatable
     _targetSpeed = 0.0;
     SetMotorSpeed();
   }
-
-  private void Turn()
-  {
-    // TODO Implement turning left and right
-  }
-
-  private void AdjustTrajectory()
-  {
-    // TODO Implement adjusting slight left and right movements
-  }
-
 
   public void Update()
   {
