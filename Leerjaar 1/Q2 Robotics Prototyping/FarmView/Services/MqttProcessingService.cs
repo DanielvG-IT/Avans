@@ -28,7 +28,7 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
 
     _mqttClient.OnMessageReceived += (sender, args) =>
     {
-      Console.WriteLine($"Incoming MQTT message on {args.Topic}:{args.Message}");
+      Console.WriteLine($"DEBUG: Incoming MQTT message on {args.Topic}:{args.Message}");
 
       string topic = args.Topic ?? string.Empty;
       string message = args.Message ?? string.Empty;
@@ -92,10 +92,6 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
             Console.WriteLine("Unknown request response received");
             break;
         }
-      }
-      else
-      {
-        Console.WriteLine($"Unknown topic format: {topic}");
       }
     };
   }

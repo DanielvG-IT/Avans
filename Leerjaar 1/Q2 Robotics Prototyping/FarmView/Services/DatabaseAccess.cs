@@ -30,7 +30,7 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
 
       if (!reader.HasRows)
       {
-        Console.WriteLine("No sensor data found for the given date.");
+        Console.WriteLine("DEBUG: No sensor data found for the given date.");
         return sensors;
       }
 
@@ -43,7 +43,7 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
           SensorData = reader.GetString(2)
         });
       }
-      Console.WriteLine($"Found {sensors.Count} readings for date {date.Date:yyyy-MM-dd}");
+      Console.WriteLine($"DEBUG: Found {sensors.Count} readings for date {date.Date:yyyy-MM-dd}");
     }
     catch (SqlException sqlEx)
     {
@@ -77,6 +77,7 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
 
       if (!reader.HasRows)
       {
+        Console.WriteLine("DEBUG: No command data found for the given date.");
         return commands;
       }
 
@@ -89,7 +90,7 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
           CommandData = reader.GetString(2)
         });
       }
-      Console.WriteLine($"Found {commands.Count} commands for date {date.Date:yyyy-MM-dd}");
+      Console.WriteLine($"DEBUG: Found {commands.Count} commands for date {date.Date:yyyy-MM-dd}");
       return commands;
     }
     catch (Exception ex)
