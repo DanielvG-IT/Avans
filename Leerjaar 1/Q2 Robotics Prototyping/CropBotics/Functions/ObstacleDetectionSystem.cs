@@ -24,10 +24,8 @@ public class ObstacleDetectionSystem : IUpdatable
   {
     if (scanIntervalTimer.Check())
     {
-      Robot.LEDs(0, 0, 255);
       ObstacleDistance = distanceSensor.GetUltrasoneDistance();
       _farmrobot.SendMessage("CropBotics/sensor/obstacleDistance", $"{ObstacleDistance}");
-      Robot.LEDs(0, 0, 0);
     }
   }
 

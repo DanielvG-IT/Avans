@@ -67,8 +67,8 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
 
   public void Wait()
   {
-    Thread.Sleep(500);
-    Robot.Wait(500);
+    Thread.Sleep(250);
+    Robot.Wait(250);
   }
 
 
@@ -228,13 +228,14 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
     {
       stopped = true;
       driveSystem.EmergencyStop();
-      alertSystem.HandleAlert($"Emergency stop\nDistance {distance} cm");
+      alertSystem.HandleAlert($"Emergency stop!");
       alertSystem.EmergencyStop = true;
     }
     else if (distance >= 5 && stopped)
     {
       stopped = false;
       alertSystem.EmergencyStop = false;
+      driveSystem.TargetSpeed = 0.2;
     }
 
     if (distance >= 5 && distance < 10)

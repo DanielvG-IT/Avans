@@ -12,7 +12,7 @@ public class DriveSystem : IUpdatable
     _farmrobot = farmrobot;
   }
 
-  private double _speedIncrease = 0.2;
+  private double _speedIncrease = 0.1;
   public double SpeedIncrease
   {
     get { return _speedIncrease; }
