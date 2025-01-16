@@ -8,24 +8,9 @@ namespace CropBotics;
 
 public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
 {
-  public FarmRobot()
-  {
-    // Initializing hardware
-    AlertLed = new(alertLedPin, AlertBlinkMilSec);
-    emergencyStopButton = new(emergencyStopButtonPin);
-
-    // Initializing systems
-    alertSystem = new(this, AlertLed, emergencyStopButton);
-    commsSystem = new(this);
-    driveSystem = new(this);
-    pixelDetectionSystem = new(this);
-    obstacleDetectionSystem = new(this);
-
-  }
-
   // Local vars for defining hardware 
   const int alertLedPin = 5;
-  const int AlertBlinkMilSec = 5000;
+  const int AlertBlinkMilSec = 1000;
   const int emergencyStopButtonPin = 6;
   private bool stopped = false;
 
@@ -38,22 +23,27 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
   private readonly ObstacleDetectionSystem obstacleDetectionSystem;
   BlinkLed AlertLed;
   Button emergencyStopButton;
+  public bool EmergencyStop { get; private set; } = false;
 
-  public State CurrentState { get; private set; } = State.INIT;
-
-  public void SetState(State inputState)
+  public FarmRobot()
   {
-    CurrentState = inputState;
-  }
+    // Initializing hardware
+    AlertLed = new(alertLedPin, AlertBlinkMilSec);
+    emergencyStopButton = new(emergencyStopButtonPin);
 
+    // Initializing systems
+    alertSystem = new(this, AlertLed, emergencyStopButton);
+    commsSystem = new(this);
+    driveSystem = new(this);
+    pixelDetectionSystem = new(this);
+    obstacleDetectionSystem = new(this);
+  }
 
   public async Task Init()
   {
-    SetState(State.INIT);
     Console.WriteLine($"CropBotics started at {DateTime.Now}");
     Robot.PlayNotes("g>g");
     await commsSystem.Init();
-    SetState(State.READY);
   }
 
   public void Update()
@@ -62,7 +52,9 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
     driveSystem.Update();
     pixelDetectionSystem.Update();
     obstacleDetectionSystem.Update();
+
     HandleObsacle();
+    EmergencyStop = alertSystem.EmergencyStop;
   }
 
   public void Wait()
@@ -71,19 +63,18 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
     Robot.Wait(250);
   }
 
-
   // Secundary functions for passing between systems
-  public static string CheckBatteryLevel()
+  public static int CheckBatteryLevel()
   {
     var batterymV = Robot.ReadBatteryMillivolts();
     var batteryPercentage = batterymV / 9000 * 100;
 
-    return $"{batteryPercentage}";
+    return batteryPercentage;
   }
 
   public async void SendMessage(string topic, string message)
   {
-    await commsSystem.SendMessage(message, topic);
+    await commsSystem.SendMessage(topic, message);
   }
 
   public double GetSpeed()
@@ -111,39 +102,38 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
                 driveSystem.EmergencyStop();
                 if (!alertSystem.EmergencyStop)
                 {
-                  alertSystem.HandleAlert("Emergency stop was triggered");
                   alertSystem.EmergencyStop = true;
                 }
                 else if (alertSystem.EmergencyStop)
                 {
-                  alertSystem.HandleAlert("Emergency stop was released");
                   alertSystem.EmergencyStop = false;
                 }
                 break;
               }
             case "forward":
               {
-                if (alertSystem.EmergencyStop)
+                if (!alertSystem.EmergencyStop)
                 {
-                  Console.WriteLine("ERROR: Emergency stop is active, ignoring message");
-                  return;
+                  stopped = false;
+                  driveSystem.TargetSpeed = 0.2;
                 }
-                driveSystem.TargetSpeed = 0.5;
+                Console.WriteLine("ERROR: Emergency stop is active, ignoring message");
                 break;
               }
             case "backward":
               {
                 if (alertSystem.EmergencyStop)
                 {
-                  Console.WriteLine("ERROR: Emergency stop is active, ignoring message");
-                  return;
+                  stopped = false;
+                  driveSystem.TargetSpeed = -0.5;
                 }
-                driveSystem.TargetSpeed = -0.5;
+                Console.WriteLine("ERROR: Emergency stop is active, ignoring message");
                 break;
               }
             case "stop":
               {
                 driveSystem.TargetSpeed = 0.0;
+                stopped = true;
                 break;
               }
             default:
@@ -156,24 +146,16 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
         break;
       case "CropBotics/request":
         {
-          switch (message.Message)
+          if (message.Message == "all")
           {
-            case "all":
-              {
-                SendMessage("CropBotics/status/status", "Active");
-                SendMessage("CropBotics/status/battery", $"{CheckBatteryLevel()}");
-                SendMessage("CropBotics/request/motorsEnabled", driveSystem.MotorsEnabled ? "true" : "false");
-                SendMessage("CropBotics/request/colourGain", pixelDetectionSystem.CurrentGain.ToString());
-                break;
-              }
-            default:
-              {
-                Console.WriteLine("ERROR: Unknown request received");
-                break;
-              }
+            SendMessage("CropBotics/status/status", "Active");
+            SendMessage("CropBotics/status/battery", $"{CheckBatteryLevel()}");
+            SendMessage("CropBotics/status/emergency_stop", alertSystem.EmergencyStop ? "True" : "False");
+            SendMessage("CropBotics/request/MotorsEnabled", driveSystem.MotorsEnabled ? "True" : "False");
+            SendMessage("CropBotics/request/colourGain", pixelDetectionSystem.CurrentGain.ToString());
           }
-          break;
         }
+        break;
       case "CropBotics/settings/colourGain":
         {
           switch (message.Message)
@@ -206,9 +188,9 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
           }
           break;
         }
-      case "CropBotics/settings/motorsEnabled":
+      case "CropBotics/settings/MotorsEnabled":
         {
-          driveSystem.MotorsEnabled = message.Message == "true";
+          driveSystem.MotorsEnabled = message.Message == "True";
           break;
         }
       default:
@@ -222,32 +204,43 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
   public void HandleObsacle()
   {
     int distance = obstacleDetectionSystem.ObstacleDistance;
-    Console.WriteLine($"DEBUG: Distance {distance} cm");
 
-    if ((distance < 3 && !stopped) || alertSystem.EmergencyStop)
+    if (distance <= 5 || EmergencyStop)
     {
-      stopped = true;
-      driveSystem.EmergencyStop();
-      alertSystem.HandleAlert($"Emergency stop!");
-      alertSystem.EmergencyStop = true;
-    }
-    else if (distance >= 5 && stopped)
-    {
-      stopped = false;
-      alertSystem.EmergencyStop = false;
-      driveSystem.TargetSpeed = 0.2;
+      if (!stopped)
+      {
+        stopped = true;
+        driveSystem.EmergencyStop();
+        alertSystem.EmergencyStop = true;
+        SendMessage("CropBotics/status/emergency_stop", "True");
+        return;
+      }
     }
 
-    if (distance >= 5 && distance < 10)
+    // Dynamic speed control based on distance
+    if (!stopped && !EmergencyStop && !pixelDetectionSystem.nextPixel)
     {
-      driveSystem.TargetSpeed = 0.2;
-    }
-    else if (distance >= 10 && distance < 15)
-    {
-      driveSystem.TargetSpeed = 0.4;
-    }
+      double targetSpeed = 0.0;
+      if (distance > 30)
+      {
+        targetSpeed = 0.3; // Medium speed
+      }
+      else if (distance > 20)
+      {
+        targetSpeed = 0.2; // Slow speed
+      }
+      else if (distance > 10)
+      {
+        targetSpeed = 0.1; // Very slow speed
+      }
 
-    Console.WriteLine($"DEBUG: Target speed {driveSystem.TargetSpeed}");
+      // Only update speed if it needs to change
+      if (Math.Abs(driveSystem.TargetSpeed - targetSpeed) > 0.01)
+      {
+        driveSystem.TargetSpeed = targetSpeed;
+        Console.WriteLine($"DEBUG: Adjusting speed to {targetSpeed} based on distance {distance}cm");
+      }
+    }
   }
 
 }

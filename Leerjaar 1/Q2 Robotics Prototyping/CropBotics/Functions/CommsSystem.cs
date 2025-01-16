@@ -15,18 +15,17 @@ class CommsSystem : IInitializable
     Console.WriteLine("DEBUG: CommsSystem constructor called");
     _messageHandler = messageHandler;
     _mqttClient = SimpleMqttClient.CreateSimpleMqttClientForHiveMQ(clientId);
-    _mqttClient.OnMessageReceived += MessageCallback;
+    _mqttClient.OnMessageReceived += (sender, message) =>
+    {
+      Console.WriteLine($"Bericht ontvangen; topic={message.Topic}; message={message.Message};");
+      _messageHandler.HandleMessage(message);
+    };
   }
 
   public async Task Init()
   {
     await _mqttClient.SubscribeToTopic("CropBotics/commands");
     await _mqttClient.SubscribeToTopic("CropBotics/request");
-  }
-
-  private void MessageCallback(object? sender, SimpleMqttMessage msg)
-  {
-    _messageHandler.HandleMessage(msg);
   }
 
   public async Task SendMessage(string topic, string message)

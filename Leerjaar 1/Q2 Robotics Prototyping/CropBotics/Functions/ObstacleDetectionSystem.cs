@@ -10,6 +10,7 @@ public class ObstacleDetectionSystem : IUpdatable
   const int ScanIntervalMilliseconds = 500;
   private Ultrasonic distanceSensor;
   private PeriodTimer scanIntervalTimer;
+  private int previousDistance;
   public int ObstacleDistance { get; private set; }
 
   public ObstacleDetectionSystem(FarmRobot farmrobot)
@@ -24,8 +25,12 @@ public class ObstacleDetectionSystem : IUpdatable
   {
     if (scanIntervalTimer.Check())
     {
+      previousDistance = ObstacleDistance;
       ObstacleDistance = distanceSensor.GetUltrasoneDistance();
-      _farmrobot.SendMessage("CropBotics/sensor/obstacleDistance", $"{ObstacleDistance}");
+      if (ObstacleDistance != previousDistance)
+      {
+        _farmrobot.SendMessage("CropBotics/sensor/obstacleDistance", $"{ObstacleDistance}");
+      }
     }
   }
 

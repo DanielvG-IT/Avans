@@ -59,6 +59,11 @@ public class DriveSystem : IUpdatable
 
   public void Update()
   {
+    if (_farmrobot.EmergencyStop)
+    {
+      return;
+    }
+
     double previousSpeed = _currentSpeed;
 
     if (_currentSpeed < _targetSpeed)

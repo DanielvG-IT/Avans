@@ -21,11 +21,6 @@ public class AlertSystem : IUpdatable
     _emergencyButtonWasPressed = _emergencyButton.GetState() == "Pressed";
   }
 
-  public void HandleAlert(string message)
-  {
-    _farmRobot.SendMessage("CropBotics/status/emergency_stop", message);
-  }
-
   public void Update()
   {
     bool currentState = _emergencyButton.GetState() == "Pressed";
@@ -42,12 +37,12 @@ public class AlertSystem : IUpdatable
       EmergencyStop = !EmergencyStop;
       if (EmergencyStop)
       {
-        HandleAlert("True");
+        _farmRobot.SendMessage("CropBotics/status/emergency_stop", "True");
         EmergencyStop = true;
       }
       else if (!EmergencyStop)
       {
-        HandleAlert("False");
+        _farmRobot.SendMessage("CropBotics/status/emergency_stop", "False");
         EmergencyStop = false;
       }
     }
