@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug On Robot",
+            "name": "Deploy on Robot",
             "type": "coreclr",
             "request": "launch",
             "program": "/opt/dotnet/dotnet",
@@ -16,7 +16,7 @@
             "justMyCode": false,
             "stopAtEntry": false,
             "console": "internalConsole",
-            "preLaunchTask": "statisticalrobot: Build and Deploy",
+            "preLaunchTask": "FarmRobot: Build and Deploy",
             "pipeTransport": {
                 "pipeCwd": "${workspaceFolder}",
                 "pipeProgram": "ssh",
