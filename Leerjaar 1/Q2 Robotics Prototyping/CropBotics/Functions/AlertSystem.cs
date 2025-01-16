@@ -23,8 +23,7 @@ public class AlertSystem : IUpdatable
 
   public void HandleAlert(string message)
   {
-    Robot.PlayNotes("fd");
-    _farmRobot.SendMessage("CropBotics/sensor/EmergencyStop", message);
+    _farmRobot.SendMessage("CropBotics/status/emergency_stop", message);
   }
 
   public void Update()
@@ -43,14 +42,12 @@ public class AlertSystem : IUpdatable
       EmergencyStop = !EmergencyStop;
       if (EmergencyStop)
       {
-        HandleAlert("Emergency Stop was triggered");
-        _farmRobot.SetState(State.EMERGENCY_STOP);
+        HandleAlert("True");
         EmergencyStop = true;
       }
       else if (!EmergencyStop)
       {
-        HandleAlert("Emergency Stop was released");
-        _farmRobot.SetState(State.PAUSED);
+        HandleAlert("False");
         EmergencyStop = false;
       }
     }
