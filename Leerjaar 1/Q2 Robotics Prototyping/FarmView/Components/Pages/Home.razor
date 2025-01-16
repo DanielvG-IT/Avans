@@ -223,7 +223,7 @@
   .sensor-table-container {
     overflow-x: auto;
     overflow-y: auto;
-    max-height: auto;
+    max-height: 19rem;
   }
 
   .table {
@@ -256,6 +256,34 @@
 
   .errorMessage {
     font-size: 1.2rem;
+  }
+
+  .sensor-data {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .sensor-data p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #495057;
+    margin: 8px 0;
+  }
+
+  .sensor-data strong {
+    color: #212529;
+  }
+
+  .sensor-data strong[style*="color: #dc3545"] {
+    color: #dc3545;
+  }
+
+  .sensor-data strong[style*="color: #28a745"] {
+    color: #28a745;
   }
 </style>
 
@@ -330,7 +358,7 @@
   <div class="card">
     <h3>Robot Insights</h3>
     <p>Quick overview of robot data.</p>
-    <div class="sensor-table-container">
+    <div class="sensor-data">
       <p>Obstacle Distance: <strong>@MqttService.obstacleDistance</strong> cm</p>
       <p>Pixel Distance: <strong>@MqttService.pixelDistance</strong> px</p>
       <p>Motors: <strong>@(MqttService.robotMotorsEnabled ? "Enabled" : "Disabled")</strong></p>
@@ -339,7 +367,9 @@
           @(MqttService.robotEmergencyStop ? "Active" : "Inactive")
         </strong>
       </p>
-      <hr>
+    </div>
+    <hr>
+    <div class="sensor-table-container">
       <table class="table table-striped table-hover">
         <thead>
           <tr>
