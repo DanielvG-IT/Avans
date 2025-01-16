@@ -434,7 +434,9 @@
     await GetSensorHistory();
     await GetCommandHistory();
 
-    MqttRequestData("all");
+    await MqttRequestData("all");
+    MqttService.robotStatus = "Offline";
+    MqttService.robotBattery = 0;
 
     robotMotorsEnabled = MqttService.robotMotorsEnabled;
     robotColourGain = MqttService.robotColourSensorGain;
@@ -512,6 +514,11 @@
     }
   }
 
+  private async Task MqttRequestData(string data)
+  {
+    await MQttClient.PublishMessage(data, $"CropBotics/request");
+  }
+
   private void MqttSendCommand(string command)
   {
     MQttClient.PublishMessage(command, "CropBotics/command");
@@ -520,11 +527,6 @@
   private void MqttSendSettings(string value, string setting)
   {
     MQttClient.PublishMessage(value, $"CropBotics/settings/{setting}");
-  }
-
-  private void MqttRequestData(string data)
-  {
-    MQttClient.PublishMessage(data, $"CropBotics/request");
   }
 
   private void OnAutoRefreshChanged()

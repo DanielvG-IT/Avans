@@ -8,8 +8,8 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
   private readonly SimpleMqttClient _mqttClient;
 
   // Public properties for dashboard
-  public string robotStatus { get; private set; }
-  public int robotBattery { get; private set; }
+  public string robotStatus { get; set; }
+  public int robotBattery { get; set; }
   public bool robotEmergencyStop { get; private set; }
   public bool robotMotorsEnabled { get; private set; }
   public string robotColourSensorGain { get; private set; }
