@@ -31,7 +31,7 @@ class CommsSystem : IInitializable
 
   public async Task SendMessage(string topic, string message)
   {
-    Console.WriteLine($"Publishing message: topic={topic}, msg={message}");
-    await _mqttClient.PublishMessage(topic, message);
+    Console.WriteLine($"DEBUG: Publishing message: msg={message}, topic={topic}");
+    await _mqttClient.PublishMessage(message, topic);
   }
 }
