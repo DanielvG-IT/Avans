@@ -6,5 +6,7 @@ public enum Colour
   Yellow,
   White,
   Black,
+  Cyan,
+  Magenta,
   Unknown
 }
