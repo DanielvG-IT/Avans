@@ -85,7 +85,7 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
             robotBattery = Convert.ToInt32(message);
             break;
           case "emergency_stop":
-            robotEmergencyStop = message == "true";
+            robotEmergencyStop = message == "True";
             break;
           default:
             Console.WriteLine("Unknown status message received");
@@ -96,8 +96,8 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
       {
         switch (requestMatch.Groups[1].Value)
         {
-          case "motorsEnabled":
-            robotMotorsEnabled = message == "true";
+          case "MotorsEnabled":
+            robotMotorsEnabled = message == "True";
             break;
           case "colourGain":
             robotColourSensorGain = message;
@@ -112,7 +112,11 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
 
   public async Task StartAsync(CancellationToken cancellationToken)
   {
-    await _mqttClient.SubscribeToTopic("CropBotics/#");
+    await _mqttClient.SubscribeToTopic("CropBotics/status/#");  // Subscribe to all status topics
+    await _mqttClient.SubscribeToTopic("CropBotics/sensor/#");  // Subscribe to all sensor topics 
+    await _mqttClient.SubscribeToTopic("CropBotics/pixel/#");   // Subscribe to all pixel topics
+    await _mqttClient.SubscribeToTopic("CropBotics/request/#"); // Subscribe to all request topics
+    await _mqttClient.SubscribeToTopic("CropBotics/command/#"); // Subscribe to all command topics
   }
 
   public Task StopAsync(CancellationToken cancellationToken)
