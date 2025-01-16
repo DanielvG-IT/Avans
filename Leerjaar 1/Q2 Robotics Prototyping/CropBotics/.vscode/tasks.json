@@ -8,7 +8,7 @@
             "robotIpAddress": "${command:avans-statisticalrobot.connectedRobotIpAddress}",
             "robotOutputDir": "/media/csprojects",
             "problemMatcher": [],
-            "label": "statisticalrobot: Build and Deploy",
+            "label": "FarmRobot: Build and Deploy",
             "group": {
                 "kind": "build",
                 "isDefault": true
