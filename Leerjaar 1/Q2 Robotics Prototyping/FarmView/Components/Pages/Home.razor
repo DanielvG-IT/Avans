@@ -314,11 +314,21 @@
   <div class="card">
     <h3>Commands</h3>
     <p>Control the robot from the application.</p>
-    <div class="commandButton mb-3">
-      <button class="btn btn-primary" @onclick="@(() => MqttSendCommand("Start"))">Start</button>
-      <button class="btn btn-primary" @onclick="@(() => MqttSendCommand("Stop"))">Stop</button>
-      <button class="btn btn-dangerous" @onclick="@(() => MqttSendCommand("Emergency Stop"))">Emergency Stop</button>
-    </div>
+    @if (MqttService.robotStatus == "Active")
+    {
+      <div class="commandButton mb-3">
+        <button class="btn btn-primary" @onclick="@(() => MqttSendCommand("forward"))">Start</button>
+        <button class="btn btn-primary" @onclick="@(() => MqttSendCommand("backward"))">Return</button>
+        <button class="btn btn-primary" @onclick="@(() => MqttSendCommand("Stop"))">Stop</button>
+        <button class="btn btn-dangerous" @onclick="@(() => MqttSendCommand("emergency_stop"))">Emergency Stop</button>
+      </div>
+    }
+    else
+    {
+      <div class="d-flex flex-column justify-content-center align-items-center" style="height: 100px;">
+        <p>Robot is currently offline.</p>
+      </div>
+    }
     <h4>Command History</h4>
     <div class="command-table-container">
       <table class="table table-striped table-hover">
@@ -359,14 +369,24 @@
     <h3>Robot Insights</h3>
     <p>Quick overview of robot data.</p>
     <div class="sensor-data">
-      <p>Obstacle Distance: <strong>@MqttService.obstacleDistance</strong> cm</p>
-      <p>Pixel Distance: <strong>@MqttService.pixelDistance</strong> px</p>
-      <p>Motors: <strong>@(MqttService.robotMotorsEnabled ? "Enabled" : "Disabled")</strong></p>
-      <p>Emergency Stop:
-        <strong style="color: @(MqttService.robotEmergencyStop ? "#dc3545" : "#28a745")">
-          @(MqttService.robotEmergencyStop ? "Active" : "Inactive")
-        </strong>
-      </p>
+      @if (MqttService.robotStatus == "Active")
+      {
+        <p>Obstacle Distance: <strong>@MqttService.obstacleDistance</strong> cm
+        </p>
+        <p>Pixel Distance: <strong>@MqttService.pixelDistance</strong> px</p>
+        <p>Motors: <strong>@(MqttService.robotMotorsEnabled ? "Enabled" : "Disabled")</strong></p>
+        <p>Emergency Stop:
+          <strong style="color: @(MqttService.robotEmergencyStop ? "#dc3545" : "#28a745")">
+            @(MqttService.robotEmergencyStop ? "Active" : "Inactive")
+          </strong>
+        </p>
+      }
+      else
+      {
+        <div class="d-flex flex-column justify-content-center align-items-center" style="height: 100px;">
+          <p>Robot is currently offline.</p>
+        </div>
+      }
     </div>
     <hr>
     <div class="sensor-table-container">
@@ -396,28 +416,36 @@
   <div class="card">
     <h3 class="mb-3">Settings</h3>
     <p class="mb-4">Customize robot configurations and data.</p>
-    <div class="form-group mb-4">
-      <label for="colorSensorGain" class="form-label">Color Sensor Gain</label>
-      <select id="colorSensorGain" class="form-control" @bind-value="robotColourGain" @bind-value:event="oninput"
-        @onchange="@(() => MqttSendSettings(robotColourGain, "ColorGain"))">
-        <option value="1x">1x</option>
-        <option value="4x">4x</option>
-        <option value="16x">16x</option>
-        <option value="60x">60x</option>
-      </select>
-    </div>
-    <div class="form-group d-flex align-items-center justify-content-between">
-      <label for="motorsEnabled" class="form-label mb-0">Motors Enabled</label>
-      <div class="form-check form-switch">
-        <input type="checkbox" id="motorsEnabled" class="form-check-input" @bind-value="robotMotorsEnabled"
-          @bind-value:event="oninput"
-          @onchange="@(() => MqttSendSettings(robotMotorsEnabled.ToString(), "MotorsEnabled"))">
-        <label class="form-check-label" for="motorsEnabled"></label>
+    @if (MqttService.robotStatus == "Active")
+    {
+      <div class="form-group mb-4">
+        <label for="colorSensorGain" class="form-label">Color Sensor Gain</label>
+        <select id="colorSensorGain" class="form-control" @bind-value="robotColourGain" @bind-value:event="oninput"
+          @onchange="@(() => MqttSendSettings(robotColourGain, "ColorGain"))">
+          <option value="1x">1x</option>
+          <option value="4x">4x</option>
+          <option value="16x">16x</option>
+          <option value="60x">60x</option>
+        </select>
       </div>
-    </div>
-    <div class="form-group">
-      <button class="btn btn-primary mt-4" @onclick="@(() => MqttRequestData("all"))">Request Data</button>
-    </div>
+      <div class="form-group d-flex align-items-center justify-content-between">
+        <label for="motorsEnabled" class="form-label mb-0">Motors Enabled</label>
+        <div class="form-check form-switch">
+          <input type="checkbox" id="motorsEnabled" class="form-check-input" @bind-value="MotorsEnabled"
+            @bind-value:event="oninput" @onchange="@(() => MqttSendSettings(MotorsEnabled.ToString(), "MotorsEnabled"))">
+          <label class="form-check-label" for="motorsEnabled"></label>
+        </div>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary mt-4" @onclick="@(() => MqttRequestData("all"))">Request Data</button>
+      </div>
+    }
+    else
+    {
+      <div class="d-flex flex-column justify-content-center align-items-center" style="height: 100px;">
+        <p>Robot is currently offline.</p>
+      </div>
+    }
   </div>
 </div>
 
@@ -443,7 +471,7 @@
   private DateTime _selectedDate = DateTime.Today;
   private string robotColourGain = string.Empty;
   private string errorMessage = string.Empty;
-  private bool robotMotorsEnabled = default;
+  private bool MotorsEnabled = default;
   private bool autoRefreshEnabled = false;
   private bool firstRender = true;
 
@@ -473,11 +501,12 @@
     await GetSensorHistory();
     await GetCommandHistory();
 
-    await MqttRequestData("all");
     MqttService.robotStatus = "Offline";
     MqttService.robotBattery = 0;
 
-    robotMotorsEnabled = MqttService.robotMotorsEnabled;
+    await MqttRequestData("all");
+
+    MotorsEnabled = MqttService.robotMotorsEnabled;
     robotColourGain = MqttService.robotColourSensorGain;
   }
 
@@ -560,7 +589,18 @@
 
   private void MqttSendCommand(string command)
   {
-    MQttClient.PublishMessage(command, "CropBotics/command");
+    if (command == "Emergency Stop")
+    {
+      MQttClient.PublishMessage(command, "CropBotics/command");
+    }
+    else if (MqttService.robotEmergencyStop)
+    {
+      SetErrorMessage("Robot is in emergency stop mode. Please reset the robot to continue.");
+    }
+    else
+    {
+      MQttClient.PublishMessage(command, "CropBotics/command");
+    }
   }
 
   private void MqttSendSettings(string value, string setting)
