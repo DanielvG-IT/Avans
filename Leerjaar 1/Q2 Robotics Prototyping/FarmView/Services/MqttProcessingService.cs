@@ -26,7 +26,9 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
     robotBattery = 0;
     robotEmergencyStop = false;
     robotMotorsEnabled = true;
-    robotColourSensorGain = "Unknown";
+    pixelDistance = 0;
+    obstacleDistance = 0;
+    robotColourSensorGain = "1x";
 
     _mqttClient.OnMessageReceived += (sender, args) =>
     {
