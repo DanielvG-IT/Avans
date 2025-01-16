@@ -83,7 +83,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
 
   public async void SendMessage(string topic, string message)
   {
-    await commsSystem.SendMessage(topic, message);
+    await commsSystem.SendMessage(message, topic);
   }
 
   public double GetSpeed()
