@@ -359,9 +359,13 @@
     <p class="mb-4">Customize robot configurations and data.</p>
     <div class="form-group mb-4">
       <label for="colorSensorGain" class="form-label">Color Sensor Gain</label>
-      <input type="text" id="colorSensorGain" placeholder="Enter gain value" @bind-value="robotColourGain"
-        @bind-value:event="oninput" @onchange="@(() => MqttSendSettings(robotColourGain, "ColorGain"))"
-        class="form-control">
+      <select id="colorSensorGain" class="form-control" @bind-value="robotColourGain" @bind-value:event="oninput"
+        @onchange="@(() => MqttSendSettings(robotColourGain, "ColorGain"))">
+        <option value="1x">1x</option>
+        <option value="4x">4x</option>
+        <option value="16x">16x</option>
+        <option value="60x">60x</option>
+      </select>
     </div>
     <div class="form-group d-flex align-items-center justify-content-between">
       <label for="motorsEnabled" class="form-label mb-0">Motors Enabled</label>
