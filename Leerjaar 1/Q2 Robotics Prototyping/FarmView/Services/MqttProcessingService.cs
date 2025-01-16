@@ -9,10 +9,12 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
 
   // Public properties for dashboard
   public string robotStatus { get; set; }
-  public int robotBattery { get; set; }
+  public string robotColourSensorGain { get; private set; }
   public bool robotEmergencyStop { get; private set; }
   public bool robotMotorsEnabled { get; private set; }
-  public string robotColourSensorGain { get; private set; }
+  public int obstacleDistance { get; private set; }
+  public int pixelDistance { get; private set; }
+  public int robotBattery { get; set; }
 
   public MqttProcessingService(IDatabaseAccess databaseAccess, SimpleMqttClient mqttClient)
   {
@@ -55,6 +57,16 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
       else if (sensorMatch.Success)
       {
         _databaseAccess.WriteMqttData(mqttMessage, "sensor");
+
+        switch (sensorMatch.Groups[1].Value)
+        {
+          case "pixelDistance":
+            pixelDistance = Convert.ToInt32(message);
+            break;
+          case "obstacleDistance":
+            obstacleDistance = Convert.ToInt32(message);
+            break;
+        }
       }
       else if (commandMatch.Success)
       {

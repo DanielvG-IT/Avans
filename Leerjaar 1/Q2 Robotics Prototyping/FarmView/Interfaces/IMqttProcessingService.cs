@@ -5,4 +5,6 @@ public interface IMqttProcessingService
   bool robotEmergencyStop { get; }
   bool robotMotorsEnabled { get; }
   string robotColourSensorGain { get; }
+  int pixelDistance { get; }
+  int obstacleDistance { get; }
 }
