@@ -17,9 +17,9 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
     // Initializing systems
     alertSystem = new(this, AlertLed, emergencyStopButton);
     commsSystem = new(this);
-    driveSystem = new();
+    driveSystem = new(this);
     pixelDetectionSystem = new(this);
-    obstacleDetectionSystem = new();
+    obstacleDetectionSystem = new(this);
 
   }
 
@@ -60,78 +60,160 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
   {
     alertSystem.Update();
     driveSystem.Update();
-    lineFollowingSystem.Update();
-    colourDetectionSystem.Update();
+    pixelDetectionSystem.Update();
     obstacleDetectionSystem.Update();
     HandleObsacle();
   }
 
   public void Wait()
   {
-    Thread.Sleep(200);
+    Thread.Sleep(500);
+    Robot.Wait(500);
   }
 
 
   // Secundary functions for passing between systems
+  public static string CheckBatteryLevel()
+  {
+    var batterymV = Robot.ReadBatteryMillivolts();
+    var batteryPercentage = batterymV / 9000 * 100;
+
+    return $"{batteryPercentage}";
+  }
+
   public async void SendMessage(string topic, string message)
   {
     await commsSystem.SendMessage(topic, message);
   }
 
+  public double GetSpeed()
+  {
+    return driveSystem.CurrentSpeed;
+  }
+
+  public void SetSpeed(double speed)
+  {
+    driveSystem.TargetSpeed = speed;
+  }
+
   public void HandleMessage(SimpleMqttMessage message)
   {
-    Console.WriteLine($"Handling message: {message.Message}");
-    if (alertSystem.EmergencyStop)
-    {
-      Console.WriteLine("ERROR: Emergency stop is active, ignoring message");
-      return;
-    }
+    Console.WriteLine($"""DEBUG: Handling message "{message.Message}" on topic "{message.Topic}"!""");
 
-    switch (message.Message)
+    switch (message.Topic)
     {
-      case "emergency_stop":
+      case "CropBotics/commands":
         {
-          driveSystem.EmergencyStop();
-          if (!alertSystem.EmergencyStop)
+          switch (message.Message)
           {
-            alertSystem.HandleAlert("Emergency stop was triggered");
-            alertSystem.EmergencyStop = true;
+            case "emergency_stop":
+              {
+                driveSystem.EmergencyStop();
+                if (!alertSystem.EmergencyStop)
+                {
+                  alertSystem.HandleAlert("Emergency stop was triggered");
+                  alertSystem.EmergencyStop = true;
+                }
+                else if (alertSystem.EmergencyStop)
+                {
+                  alertSystem.HandleAlert("Emergency stop was released");
+                  alertSystem.EmergencyStop = false;
+                }
+                break;
+              }
+            case "forward":
+              {
+                if (alertSystem.EmergencyStop)
+                {
+                  Console.WriteLine("ERROR: Emergency stop is active, ignoring message");
+                  return;
+                }
+                driveSystem.TargetSpeed = 0.5;
+                break;
+              }
+            case "backward":
+              {
+                if (alertSystem.EmergencyStop)
+                {
+                  Console.WriteLine("ERROR: Emergency stop is active, ignoring message");
+                  return;
+                }
+                driveSystem.TargetSpeed = -0.5;
+                break;
+              }
+            case "stop":
+              {
+                driveSystem.TargetSpeed = 0.0;
+                break;
+              }
+            default:
+              {
+                Console.WriteLine("ERROR: Unknown command received");
+                break;
+              }
           }
-          else if (alertSystem.EmergencyStop)
+        }
+        break;
+      case "CropBotics/request":
+        {
+          switch (message.Message)
           {
-            alertSystem.HandleAlert("Emergency stop was released");
-            alertSystem.EmergencyStop = false;
+            case "all":
+              {
+                SendMessage("CropBotics/status/status", "Active");
+                SendMessage("CropBotics/status/battery", $"{CheckBatteryLevel()}");
+                SendMessage("CropBotics/request/motorsEnabled", driveSystem.MotorsEnabled ? "true" : "false");
+                SendMessage("CropBotics/request/colourGain", pixelDetectionSystem.CurrentGain.ToString());
+                break;
+              }
+            default:
+              {
+                Console.WriteLine("ERROR: Unknown request received");
+                break;
+              }
           }
           break;
         }
-      case "forward":
+      case "CropBotics/settings/colourGain":
         {
-          driveSystem.TargetSpeed = 0.5;
+          switch (message.Message)
+          {
+            case "1x":
+              {
+                pixelDetectionSystem.SetGain(RGBSensor.Gain.GAIN_1X);
+                break;
+              }
+            case "4x":
+              {
+                pixelDetectionSystem.SetGain(RGBSensor.Gain.GAIN_4X);
+                break;
+              }
+            case "16x":
+              {
+                pixelDetectionSystem.SetGain(RGBSensor.Gain.GAIN_16X);
+                break;
+              }
+            case "60x":
+              {
+                pixelDetectionSystem.SetGain(RGBSensor.Gain.GAIN_60X);
+                break;
+              }
+            default:
+              {
+                Console.WriteLine("ERROR: Unknown colourGain setting received");
+                break;
+              }
+          }
           break;
         }
-      case "backward":
+      case "CropBotics/settings/motorsEnabled":
         {
-          driveSystem.TargetSpeed = -0.5;
-          break;
-        }
-      case "left":
-        {
-          // TODO Implement turning left via MQTT
-          break;
-        }
-      case "right":
-        {
-          // TODO Implement turning right via MQTT
-          break;
-        }
-      case "stop":
-        {
-          driveSystem.TargetSpeed = 0.0;
+          driveSystem.MotorsEnabled = message.Message == "true";
           break;
         }
       default:
         {
-          Console.WriteLine("ERROR: Unknown command received");
+          Console.WriteLine("ERROR: Unknown topic received");
           break;
         }
     }
@@ -155,16 +237,11 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
       alertSystem.EmergencyStop = false;
     }
 
-    // Determine the target speed based on the distance to the nearest obstacle
-    if (distance >= 5 && distance < 15)
-    {
-      driveSystem.TargetSpeed = 0.1;
-    }
-    else if (distance >= 15 && distance < 40)
+    if (distance >= 5 && distance < 10)
     {
       driveSystem.TargetSpeed = 0.2;
     }
-    else if (distance >= 40)
+    else if (distance >= 10 && distance < 15)
     {
       driveSystem.TargetSpeed = 0.4;
     }

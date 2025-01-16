@@ -5,7 +5,14 @@ namespace CropBotics.Functions;
 
 public class DriveSystem : IUpdatable
 {
-  private double _speedIncrease = 0.1;
+  private readonly FarmRobot _farmrobot;
+
+  public DriveSystem(FarmRobot farmrobot)
+  {
+    _farmrobot = farmrobot;
+  }
+
+  private double _speedIncrease = 0.2;
   public double SpeedIncrease
   {
     get { return _speedIncrease; }
@@ -84,6 +91,7 @@ public class DriveSystem : IUpdatable
     if (previousSpeed != _currentSpeed)
     {
       SetMotorSpeed();
+      _farmrobot.SendMessage("CropBotics/sensor/Motors", $"{CurrentSpeed}");
     }
   }
 }

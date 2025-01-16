@@ -24,7 +24,7 @@ public class AlertSystem : IUpdatable
   public void HandleAlert(string message)
   {
     Robot.PlayNotes("fd");
-    _farmRobot.SendMessage("CropBotics/alerts/#", message);
+    _farmRobot.SendMessage("CropBotics/sensor/EmergencyStop", message);
   }
 
   public void Update()
