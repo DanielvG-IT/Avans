@@ -355,10 +355,10 @@
   <div class="card" id="pixelCard">
     <h3>Plant Health</h3>
     <div class="pixel-container">
-      @for (int i = 9; i >= 1; i--)
+      @foreach (var (color, index) in pixelColors.Select((color, index) => (color, index + 1)))
       {
-        <div id="pixel@i" class="pixel" style="background-color: @pixelColors[i-1];">
-          @i
+        <div id="pixel@(index)" class="pixel" style="background-color: @(color);">
+          @index
         </div>
       }
     </div>
@@ -500,10 +500,6 @@
     await GetPixelHistory();
     await GetSensorHistory();
     await GetCommandHistory();
-
-    MqttService.robotStatus = "Offline";
-    MqttService.robotBattery = 0;
-
     await MqttRequestData("all");
 
     MotorsEnabled = MqttService.robotMotorsEnabled;
@@ -523,14 +519,27 @@
     {
       var result = await Task.Run(() => DatabaseAccess.ReadPixelData(_selectedDate));
 
-      foreach (var item in result)
+      // Adjust the pixelColors array size based on the result count
+      pixelColors = new string[result.Count];
+
+      if (result.Count == 0)
       {
+        for (int i = 1; i <= 9; i++)
+        {
+          pixelColors[i - 1] = "#555555";
+        }
+        return;
+      }
+
+      for (int i = 0; i < result.Count; i++)
+      {
+        var item = result[i];
         int index = item.PixelNumber - 1;
 
         if (index < 0 || index >= pixelColors.Length)
         {
           Console.WriteLine($"Invalid index: {index}. Valid range: 0 to {pixelColors.Length - 1}");
-          return;
+          continue;
         }
 
         pixelColors[index] = item.PixelData switch
@@ -538,6 +547,12 @@
           "Green" => "#28a745",
           "Yellow" => "#ffc107",
           "Red" => "#dc3545",
+          "Blue" => "#007bff",
+          "Cyan" => "#17a2b8",
+          "Magenta" => "#6610f2",
+          "White" => "#f8f9fa",
+          "Black" => "#343a40",
+          "Unknown" => "#555555",
           _ => "#555555"
         };
       }
