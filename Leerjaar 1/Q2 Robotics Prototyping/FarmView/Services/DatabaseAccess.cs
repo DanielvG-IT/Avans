@@ -129,7 +129,7 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
       }
       connection.Close();
     }
-    Console.WriteLine($"Found {pixels.Count} pixels for date {date.Date:yyyy-MM-dd}");
+    Console.WriteLine($"DEBUG: Found {pixels.Count} pixels for date {date.Date:yyyy-MM-dd}");
     return pixels;
   }
 
