@@ -9,12 +9,12 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
 
   // Public properties for dashboard
   public string robotStatus { get; set; }
+  public string robotBattery { get; set; }
   public string robotColourSensorGain { get; private set; }
   public bool robotEmergencyStop { get; private set; }
   public bool robotMotorsEnabled { get; private set; }
   public int obstacleDistance { get; private set; }
   public int pixelDistance { get; private set; }
-  public int robotBattery { get; set; }
 
   public MqttProcessingService(IDatabaseAccess databaseAccess, SimpleMqttClient mqttClient)
   {
@@ -22,8 +22,8 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
     _mqttClient = mqttClient;
 
     // Initialize public properties
-    robotStatus = "Unknown";
-    robotBattery = 0;
+    robotStatus = "Offline";
+    robotBattery = "0";
     robotEmergencyStop = false;
     robotMotorsEnabled = true;
     pixelDistance = 0;
@@ -37,17 +37,17 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
       string topic = args.Topic ?? string.Empty;
       string message = args.Message ?? string.Empty;
 
-      string pixelPattern = @"CropBotics/pixel/(\d+)";
       string commandPattern = @"CropBotics/command/(\w+)";
+      string requestPattern = @"CropBotics/request/(\w+)";
       string sensorPattern = @"CropBotics/sensor/(\w+)";
       string statusPattern = @"CropBotics/status/(\w+)";
-      string requestPattern = @"CropBotics/request/(\w+)";
+      string pixelPattern = @"CropBotics/pixel/(\d+)";
 
-      var pixelMatch = Regex.Match(topic, pixelPattern);
+      var requestMatch = Regex.Match(topic, requestPattern);
       var commandMatch = Regex.Match(topic, commandPattern);
       var sensorMatch = Regex.Match(topic, sensorPattern);
       var statusMatch = Regex.Match(topic, statusPattern);
-      var requestMatch = Regex.Match(topic, requestPattern);
+      var pixelMatch = Regex.Match(topic, pixelPattern);
 
       var mqttMessage = new SimpleMqttMessage { Topic = args.Topic, Message = args.Message };
 
@@ -79,10 +79,10 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
         switch (statusMatch.Groups[1].Value)
         {
           case "status":
-            robotStatus = message;
+            robotStatus = "Online" == message ? "Online" : "Offline";
             break;
           case "battery":
-            robotBattery = Convert.ToInt32(message);
+            robotBattery = message;
             break;
           case "emergency_stop":
             robotEmergencyStop = message == "True";
