@@ -458,8 +458,8 @@
       <div class="form-group d-flex align-items-center justify-content-between">
         <label for="rMotorsEnabled" class="form-label mb-0">Motors Enabled</label>
         <div class="form-check form-switch">
-          <input type="checkbox" id="rMotorsEnabled" class="form-check-input" @bind-value="rMotorsEnabled"
-            @bind-value:event="oninput" @onchange="@(() => MqttSendSettings(rMotorsEnabled.ToString(), "MotorsEnabled"))">
+          <input type="checkbox" id="rMotorsEnabled" class="form-check-input" @bind="rMotorsEnabled"
+            @bind:after="@(() => MqttSendSettings(rMotorsEnabled.ToString(), "MotorsEnabled"))">
           <label class="form-check-label" for="rMotorsEnabled"></label>
         </div>
       </div>
