@@ -1,3 +1,4 @@
+using CropBotics.Models;
 using CropBotics.Interfaces;
 using Avans.StatisticalRobot;
 
@@ -11,9 +12,9 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
   private FarmRobot _farmrobot;
   public bool nextPixel = true;
   private int currentPixel;
+  private string currentColour;
   private int distance;
   public RGBSensor.Gain CurrentGain { get; private set; } = RGBSensor.Gain.GAIN_1X;
-  public RGBSensor.IntegrationTime CurrentIntegrationTime { get; private set; } = RGBSensor.IntegrationTime.INTEGRATION_TIME_154MS;
 
   public PixelDetectionSystem(FarmRobot farmrobot)
   {
@@ -22,6 +23,7 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
     _ultrasonic = new(pixelDetectorUltrasoonPin);
     _farmrobot = farmrobot;
     currentPixel = 0;
+    currentColour = "Unknown";
   }
 
   public Task Init()
@@ -30,7 +32,6 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
     _colourSensor.Enable();
     _colourSensor.Begin();
     _colourSensor.SetGain(CurrentGain);
-    _colourSensor.SetIntegrationTime(CurrentIntegrationTime);
     return Task.CompletedTask;
   }
 
@@ -44,7 +45,8 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
       _farmrobot.SetSpeed(0.1D);
 
       currentPixel += 1;
-      var currentColour = CalculateColour();
+      _colourSensor.GetRawData(out ushort r, out ushort b, out ushort g, out ushort c);
+      currentColour = CalculateColour(r, g, b, c);
 
       Console.WriteLine($"DEBUG: Pixel {currentPixel}: Distance: {distance}, Colour: {currentColour}");
       _farmrobot.SendMessage("CropBotics/sensor/pixelDistance", $"{distance}");
@@ -56,59 +58,45 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
     }
   }
 
-  private Colour CalculateColour()
+  private string CalculateColour(ushort r, ushort g, ushort b, ushort c)
   {
-    _colourSensor.GetRawData(out ushort red, out ushort blue, out ushort green, out ushort clear);
+    Console.WriteLine($"DEBUG: Raw colour values - R:{r} G:{g} B:{b} C:{c}");
 
-    const float LowBrightnessThreshold = 0.05f;
-    const float LowSaturationThreshold = 0.1f;
-
-    float r = red / 65535f;
-    float g = green / 65535f;
-    float b = blue / 65535f;
-
-    float maxC = Math.Max(r, Math.Max(g, b));
-    float minC = Math.Min(r, Math.Min(g, b));
-    float delta = maxC - minC;
-
-    if (maxC == 0f)
-      return Colour.Unknown;
-
-    float hue = 0f;
-    if (delta > 0f)
+    // Input validation to avoid division by zero
+    double sumRGB = r + g + b;
+    if (sumRGB <= 0)
     {
-      if (maxC == r) hue = 60f * (((g - b) / delta) % 6f);
-      else if (maxC == g) hue = 60f * (((b - r) / delta) + 2f);
-      else hue = 60f * (((r - g) / delta) + 4f);
-
-      if (hue < 0f) hue += 360f;
+      return "Unknown";
     }
 
-    float saturation = (delta / maxC);
+    // Normalize RGB values to percentages
+    double rPercentage = r / sumRGB * 100;
+    double gPercentage = g / sumRGB * 100;
+    double bPercentage = b / sumRGB * 100;
 
-    if (maxC < LowBrightnessThreshold && saturation < LowSaturationThreshold)
-      return Colour.Unknown;
-
-    if (hue >= 0f && hue < 30f) return Colour.Red;
-    if (hue >= 30f && hue < 90f) return Colour.Yellow;
-    if (hue >= 90f && hue < 150f) return Colour.Green;
-    if (hue >= 150f && hue < 210f) return Colour.Cyan;
-    if (hue >= 210f && hue < 270f) return Colour.Blue;
-    if (hue >= 270f && hue < 330f) return Colour.Magenta;
-
-    return Colour.Unknown; // Fallback to Unknown if hue doesn't match.
+    if (bPercentage >= 35)
+    {
+      return "blue";
+    }
+    else if (rPercentage >= 35 && rPercentage <= 44 && gPercentage >= 28 && gPercentage <= 37 && bPercentage <= 20)
+    {
+      return "yellow";
+    }
+    else if (gPercentage >= 38 && bPercentage <= 24 && rPercentage >= 30)
+    {
+      return "green";
+    }
+    else if (rPercentage >= 45)
+    {
+      return "red";
+    }
+    return "Unknown";
   }
 
   public void SetGain(RGBSensor.Gain gain)
   {
     _colourSensor.SetGain(gain);
     CurrentGain = gain;
-  }
-
-  public void SetIntegrationTime(RGBSensor.IntegrationTime integrationTime)
-  {
-    _colourSensor.SetIntegrationTime(integrationTime);
-    CurrentIntegrationTime = integrationTime;
   }
 
 }
