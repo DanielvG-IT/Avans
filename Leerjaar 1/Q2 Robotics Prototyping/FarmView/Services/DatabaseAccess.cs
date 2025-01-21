@@ -118,6 +118,13 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
       command.Parameters.AddWithValue("@DataTimestamp", date.Date);
 
       using var reader = command.ExecuteReader();
+
+      if (!reader.HasRows)
+      {
+        Console.WriteLine("DEBUG: No command data found for the given date.");
+        return pixels;
+      }
+
       while (reader.Read())
       {
         pixels.Add(new Pixel
