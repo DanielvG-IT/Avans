@@ -6,19 +6,19 @@ namespace CropBotics.Functions;
 class CommsSystem : IInitializable
 {
   private readonly SimpleMqttClient _mqttClient;
-  private readonly IMessageHandler _messageHandler;
+  private readonly FarmRobot _farmRobot;
   private readonly string clientId = "FarmRobot-v1.6";
 
 
-  public CommsSystem(IMessageHandler messageHandler)
+  public CommsSystem(FarmRobot farmRobot)
   {
     Console.WriteLine("DEBUG: CommsSystem constructor called");
-    _messageHandler = messageHandler;
+    _farmRobot = farmRobot;
     _mqttClient = SimpleMqttClient.CreateSimpleMqttClientForHiveMQ(clientId);
     _mqttClient.OnMessageReceived += (sender, message) =>
     {
-      Console.WriteLine($"Bericht ontvangen; topic={message.Topic}; message={message.Message};");
-      _messageHandler.HandleMessage(message);
+      Console.WriteLine($"DEBUG: Bericht ontvangen; topic={message.Topic}; message={message.Message};");
+      _farmRobot.HandleMessage(message);
     };
   }
 
