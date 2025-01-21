@@ -87,15 +87,15 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
     driveSystem.TargetSpeed = speed;
   }
 
-  public void HandleMessage(SimpleMqttMessage message)
+  public void HandleMessage(SimpleMqttMessage Mqtt)
   {
-    Console.WriteLine($"""DEBUG: Handling message "{message.Message}" on topic "{message.Topic}"!""");
+    Console.WriteLine($"""DEBUG: Handling message "{Mqtt.Message}" on topic "{Mqtt.Topic}"!""");
 
-    switch (message.Topic)
+    switch (Mqtt.Topic)
     {
       case "CropBotics/commands":
         {
-          switch (message.Message)
+          switch (Mqtt.Message)
           {
             case "emergency_stop":
               {
@@ -146,9 +146,9 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
         break;
       case "CropBotics/request":
         {
-          if (message.Message == "all")
+          if (Mqtt.Message == "all")
           {
-            SendMessage("CropBotics/status/status", "Active");
+            SendMessage("CropBotics/status/status", "Online");
             SendMessage("CropBotics/status/battery", $"{CheckBatteryLevel()}");
             SendMessage("CropBotics/status/emergency_stop", alertSystem.EmergencyStop ? "True" : "False");
             SendMessage("CropBotics/request/MotorsEnabled", driveSystem.MotorsEnabled ? "True" : "False");
@@ -158,7 +158,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
         break;
       case "CropBotics/settings/colourGain":
         {
-          switch (message.Message)
+          switch (Mqtt.Message)
           {
             case "1x":
               {
@@ -190,7 +190,17 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
         }
       case "CropBotics/settings/MotorsEnabled":
         {
-          driveSystem.MotorsEnabled = message.Message == "True";
+          driveSystem.MotorsEnabled = Mqtt.Message == "True";
+          break;
+        }
+      case "CropBotics/settings/CalibrationLeft":
+        {
+          driveSystem.CalibrationLeft = Convert.ToInt16(Mqtt.Message);
+          break;
+        }
+      case "CropBotics/settings/CalibrationRight":
+        {
+          driveSystem.CalibrationRight = Convert.ToInt16(Mqtt.Message);
           break;
         }
       default:
@@ -221,11 +231,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
     if (!stopped && !EmergencyStop && !pixelDetectionSystem.nextPixel)
     {
       double targetSpeed = 0.0;
-      if (distance > 30)
-      {
-        targetSpeed = 0.3; // Medium speed
-      }
-      else if (distance > 20)
+      if (distance > 20)
       {
         targetSpeed = 0.2; // Slow speed
       }
