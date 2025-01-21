@@ -693,7 +693,7 @@
       while (!refreshCancellationTokenSource.Token.IsCancellationRequested)
       {
         await UpdateData();
-        await Task.Delay(10000, refreshCancellationTokenSource.Token);
+        await Task.Delay(5000, refreshCancellationTokenSource.Token);
         Console.WriteLine("DEBUG: Auto refresh tick");
       }
     }
