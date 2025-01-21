@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch CropBotics",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Run CropBotics",
+            "program": "${workspaceFolder}/CropBotics/bin/Debug/net8.0/CropBotics.dll",
+            "cwd": "${workspaceFolder}/CropBotics",
+            "stopAtEntry": false,
+            "justMyCode": true
+        },
+        {
+            "name": "Launch FarmView",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "Run FarmView",
+            "program": "${workspaceFolder}/FarmView/bin/Debug/net8.0/FarmView.dll",
+            "cwd": "${workspaceFolder}/FarmView",
+            "stopAtEntry": false,
+            "justMyCode": true
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Launch Robotics Prototyping",
+            "configurations": ["Launch CropBotics", "Launch FarmView"],
+            "isDefault": true
+        }
+    ]
+}

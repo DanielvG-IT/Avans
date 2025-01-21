@@ -1,0 +1,29 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run CropBotics",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "run",
+                "--project",
+                "${workspaceFolder}/CropBotics/CropBotics.csproj"
+            ],
+            "group": "build",
+            "isBackground": true
+        },
+        {
+            "label": "Run FarmView",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "run",
+                "--project",
+                "${workspaceFolder}/FarmView/FarmView.csproj"
+            ],
+            "group": "build",
+            "isBackground": true
+        }
+    ]
+}
