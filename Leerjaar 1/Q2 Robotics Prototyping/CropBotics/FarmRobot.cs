@@ -1,5 +1,4 @@
 using CropBotics.Data;
-using CropBotics.Models;
 using CropBotics.Functions;
 using CropBotics.Interfaces;
 using Avans.StatisticalRobot;
@@ -192,16 +191,19 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
         }
       case "CropBotics/settings/MotorsEnabled":
         {
+          Console.WriteLine($"DEBUG: Setting motors enabled to {Mqtt.Message}");
           driveSystem.MotorsEnabled = Mqtt.Message == "True";
           break;
         }
       case "CropBotics/settings/CalibrationLeft":
         {
+          Console.WriteLine($"DEBUG: Setting calibration left to {Mqtt.Message}");
           driveSystem.CalibrationLeft = Convert.ToInt16(Mqtt.Message);
           break;
         }
       case "CropBotics/settings/CalibrationRight":
         {
+          Console.WriteLine($"DEBUG: Setting calibration right to {Mqtt.Message}");
           driveSystem.CalibrationRight = Convert.ToInt16(Mqtt.Message);
           break;
         }
