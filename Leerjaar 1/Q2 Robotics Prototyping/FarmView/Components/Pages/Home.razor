@@ -291,6 +291,12 @@
     justify-content: space-between;
     gap: 1rem;
   }
+
+  .commandButton {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
 </style>
 
 <div class="dashboard-header">
@@ -428,11 +434,15 @@
       <div class="form-group MotorCalibration">
         <div class="mb-3">
           <label for="MotorCalibrationLeft" class="form-label">Calibration Left</label>
-          <input type="number" class="form-control" id="MotorCalibrationLeft" min="-25" max="25">
+          <input type="number" class="form-control" id="MotorCalibrationLeft" min="-25" max="25"
+            @bind-value="CalibrationLeft" @bind-value:event="oninput"
+            @onchange="@(() => MqttSendSettings(Convert.ToString(CalibrationLeft), "CalibrationLeft"))">
         </div>
         <div class="mb-3">
           <label for="MotorCalibrationRight" class="form-label">Calibration Right</label>
-          <input type="number" class="form-control" id="MotorCalibrationRight" min="-25" max="25">
+          <input type="number" class="form-control" id="MotorCalibrationRight" min="-25" max="25"
+            @bind-value="CalibrationRight" @bind-value:event="oninput"
+            @onchange="@(() => MqttSendSettings(Convert.ToString(CalibrationRight), "CalibrationRight"))">
         </div>
       </div>
       <div class="form-group mb-4">
@@ -496,8 +506,8 @@
   private bool firstRender = true;
   private int obstacleDistance = 0;
   private int pixelDistance = 0;
-  private short CalibrationLeft = 0;
   private short CalibrationRight = 0;
+  private short CalibrationLeft = 0;
 
   protected override async Task OnInitializedAsync()
   {
@@ -521,14 +531,17 @@
 
   private async Task UpdateData()
   {
+    // Get new data from database and MQTT
     await GetPixelHistory();
     await GetSensorHistory();
     await GetCommandHistory();
     await MqttRequestData("all");
 
-    robotStatus = "Offline";
-    robotBattery = "0";
+    // Reset fields to default values, so robot status is correctly updated
+    MqttService.robotStatus = "Offline";
+    MqttService.robotBattery = "0";
 
+    // Load the new data from MqttService
     robotColourSensorGain = MqttService.robotColourSensorGain;
     robotEmergencyStop = MqttService.robotEmergencyStop;
     obstacleDistance = MqttService.obstacleDistance;
