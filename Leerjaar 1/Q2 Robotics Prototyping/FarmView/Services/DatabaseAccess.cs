@@ -121,7 +121,7 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
 
       if (!reader.HasRows)
       {
-        Console.WriteLine("DEBUG: No command data found for the given date.");
+        Console.WriteLine("DEBUG: No pixel data found for the given date.");
         return pixels;
       }
 
