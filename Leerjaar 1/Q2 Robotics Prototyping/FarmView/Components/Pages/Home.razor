@@ -531,15 +531,14 @@
 
   private async Task UpdateData()
   {
-    // Reset fields to default values, so robot status is correctly updated
-    MqttService.robotStatus = "Offline";
-    MqttService.robotBattery = "0";
-
     // Get new data from database and MQTT
     await GetPixelHistory();
     await GetSensorHistory();
     await GetCommandHistory();
     await MqttRequestData("all");
+
+    // Wait for the data to be updated
+    await Task.Delay(1000);
 
     // Load the new data from MqttService
     robotColourSensorGain = MqttService.robotColourSensorGain;
@@ -644,6 +643,10 @@
 
   private async Task MqttRequestData(string data)
   {
+    // Reset fields to default values, so robot status is correctly updated
+    MqttService.robotStatus = "Offline";
+    MqttService.robotBattery = "0";
+
     await MQttClient.PublishMessage(data, $"CropBotics/request");
   }
 
