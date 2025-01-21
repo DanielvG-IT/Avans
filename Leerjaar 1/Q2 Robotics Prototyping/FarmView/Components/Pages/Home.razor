@@ -76,7 +76,7 @@
   }
 
   .auto-refresh-toggle .form-check-input:before {
-    @* content: ''; *@
+  @* content: ''; *@
     position: absolute;
     width: 20px;
     height: 20px;
@@ -141,7 +141,7 @@
   }
 
   /* Toggle Switch */
- .card .form-check-input {
+  .card .form-check-input {
     width: 50px;
     height: 25px;
     background-color: #e9ecef;
@@ -157,7 +157,7 @@
   }
 
   .card .form-check-input:before {
-    @* content: ''; *@
+  @* content: ''; *@
     position: absolute;
     width: 20px;
     height: 20px;
@@ -171,7 +171,7 @@
 
   .card .form-check-input:checked:before {
     transform: translateX(25px);
-  } 
+  }
 
   /* Additional Spacing and Alignment */
   .card .form-group {
@@ -284,6 +284,12 @@
 
   .sensor-data strong[style*="color: #28a745"] {
     color: #28a745;
+  }
+
+  .MotorCalibration {
+    display: flex; 
+    justify-content: space-between; 
+    gap: 1rem;
   }
 </style>
 
@@ -419,6 +425,16 @@
     <p class="mb-4">Customize robot configurations and data.</p>
     @if (robotStatus == "Online")
     {
+      <div class="form-group MotorCalibration">
+        <div class="mb-3">
+          <label for="MotorCalibrationLeft" class="form-label">Calibration Left</label>
+          <input type="number" class="form-control" id="MotorCalibrationLeft" min="-25" max="25">
+        </div>
+        <div class="mb-3">
+          <label for="MotorCalibrationRight" class="form-label">Calibration Right</label>
+          <input type="number" class="form-control" id="MotorCalibrationRight" min="-25" max="25">
+        </div>
+      </div>
       <div class="form-group mb-4">
         <label for="colorSensorGain" class="form-label">Color Sensor Gain</label>
         <select id="colorSensorGain" class="form-control" @bind-value="robotColourSensorGain" @bind-value:event="oninput"
@@ -480,6 +496,8 @@
   private bool firstRender = true;
   private int obstacleDistance = 0;
   private int pixelDistance = 0;
+  private short CalibrationLeft = 0;
+  private short CalibrationRight = 0;
 
   protected override async Task OnInitializedAsync()
   {
@@ -515,6 +533,8 @@
     robotEmergencyStop = MqttService.robotEmergencyStop;
     obstacleDistance = MqttService.obstacleDistance;
     rMotorsEnabled = MqttService.robotMotorsEnabled;
+    CalibrationRight = MqttService.CalibrationRight;
+    CalibrationLeft = MqttService.CalibrationLeft;
     pixelDistance = MqttService.pixelDistance;
     robotBattery = MqttService.robotBattery;
     robotStatus = MqttService.robotStatus;

@@ -15,6 +15,8 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
   public bool robotMotorsEnabled { get; private set; }
   public int obstacleDistance { get; private set; }
   public int pixelDistance { get; private set; }
+  public short CalibrationLeft { get; private set; }
+  public short CalibrationRight { get; private set; }
 
   public MqttProcessingService(IDatabaseAccess databaseAccess, SimpleMqttClient mqttClient)
   {
@@ -63,11 +65,15 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
         switch (sensorMatch.Groups[1].Value)
         {
           case "pixelDistance":
-            pixelDistance = Convert.ToInt32(message);
-            break;
+            {
+              pixelDistance = Convert.ToInt32(message);
+              break;
+            }
           case "obstacleDistance":
-            obstacleDistance = Convert.ToInt32(message);
-            break;
+            {
+              obstacleDistance = Convert.ToInt32(message);
+              break;
+            }
         }
       }
       else if (commandMatch.Success)
@@ -79,17 +85,25 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
         switch (statusMatch.Groups[1].Value)
         {
           case "status":
-            robotStatus = "Online" == message ? "Online" : "Offline";
-            break;
+            {
+              robotStatus = "Online" == message ? "Online" : "Offline";
+              break;
+            }
           case "battery":
-            robotBattery = message;
-            break;
+            {
+              robotBattery = message;
+              break;
+            }
           case "emergency_stop":
-            robotEmergencyStop = message == "True";
-            break;
+            {
+              robotEmergencyStop = message == "True";
+              break;
+            }
           default:
-            Console.WriteLine("Unknown status message received");
-            break;
+            {
+              Console.WriteLine("Unknown status message received");
+              break;
+            }
         }
       }
       else if (requestMatch.Success)
@@ -97,14 +111,30 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
         switch (requestMatch.Groups[1].Value)
         {
           case "MotorsEnabled":
-            robotMotorsEnabled = message == "True";
-            break;
+            {
+              robotMotorsEnabled = message == "True";
+              break;
+            }
           case "colourGain":
-            robotColourSensorGain = message;
-            break;
+            {
+              robotColourSensorGain = message;
+              break;
+            }
+          case "MotorCalibrationLeft":
+            {
+              CalibrationLeft = Convert.ToInt16(message);
+              break;
+            }
+          case "MotorCalibrationRight":
+            {
+              CalibrationRight = Convert.ToInt16(message);
+              break;
+            }
           default:
-            Console.WriteLine("Unknown request response received");
-            break;
+            {
+              Console.WriteLine("Unknown request response received");
+              break;
+            }
         }
       }
     };

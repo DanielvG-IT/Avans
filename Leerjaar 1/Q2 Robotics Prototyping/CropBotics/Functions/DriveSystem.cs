@@ -16,13 +16,13 @@ public class DriveSystem : IUpdatable
   public short CalibrationLeft
   {
     get { return _calibrationLeft; }
-    set { if (value < 25) _calibrationLeft = value; }
+    set { if (value < 25 && value > -25) _calibrationLeft = value; }
   }
   private short _calibrationRight = 2;
   public short CalibrationRight
   {
     get { return _calibrationRight; }
-    set { if (value < 25) _calibrationRight = value; }
+    set { if (value < 25 && value > -25) _calibrationRight = value; }
   }
 
   private double _speedIncrease = 0.1;

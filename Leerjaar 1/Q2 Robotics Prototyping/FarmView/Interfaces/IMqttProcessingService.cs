@@ -7,4 +7,6 @@ public interface IMqttProcessingService
   string robotColourSensorGain { get; }
   int pixelDistance { get; }
   int obstacleDistance { get; }
+  short CalibrationLeft { get; }
+  short CalibrationRight { get; }
 }
