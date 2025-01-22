@@ -1,4 +1,3 @@
-using CropBotics.Models;
 using CropBotics.Interfaces;
 using Avans.StatisticalRobot;
 
@@ -7,9 +6,10 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
 {
   private const int pixelDetectorUltrasoonPin = 18;
   private const byte colourSensorAddress = 0x29;
-  private RGBSensor _colourSensor;
-  private Ultrasonic _ultrasonic;
-  private FarmRobot _farmrobot;
+  private readonly RGBSensor _colourSensor;
+  private readonly Ultrasonic _ultrasonic;
+  private readonly FarmRobot _farmrobot;
+  private readonly PeriodTimer periodTimer;
   public bool nextPixel = true;
   private int currentPixel;
   private string currentColour;
@@ -24,13 +24,13 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
     _farmrobot = farmrobot;
     currentPixel = 0;
     currentColour = "Unknown";
+    periodTimer = new(100);
   }
 
   public Task Init()
   {
     // Initialize the colour sensor
     _colourSensor.Enable();
-    _colourSensor.Begin();
     _colourSensor.SetGain(CurrentGain);
     return Task.CompletedTask;
   }
