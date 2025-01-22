@@ -9,11 +9,11 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
   private readonly RGBSensor _colourSensor;
   private readonly Ultrasonic _ultrasonic;
   private readonly FarmRobot _farmrobot;
+  private bool firstMesuarement = true;
   public bool nextPixel = true;
   private int currentPixel;
   private string currentColour;
   private int distance;
-  private bool firstMesuarement = true;
   public RGBSensor.Gain CurrentGain { get; private set; } = RGBSensor.Gain.GAIN_1X;
 
   public PixelDetectionSystem(FarmRobot farmrobot)
@@ -24,7 +24,6 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
     _farmrobot = farmrobot;
     currentPixel = 0;
     currentColour = "Unknown";
-    Thread.Sleep(1000);
   }
 
   public Task Init()
