@@ -155,7 +155,7 @@ public class SimpleMqttClient : IDisposable
         {
             Host = "82460450721346f1b2b5f164a15671c9.s1.eu.hivemq.cloud", // maak eventueel een account aan bij hivemq als dit problemen geeft.
             Port = 8883,
-            CleanStart = false, // <--- false, haalt al gebufferde meldingen ook op.
+            CleanStart = true, // <--- false, haalt al gebufferde meldingen ook op.
             ClientId = clientId, // Dit clientid moet uniek zijn binnen de broker
             TimeoutInMs = 5_000, // Standaard time-out bij het maken van een verbinding (5 seconden)
             UserName = "hivemq.webclient.1732899035765",
