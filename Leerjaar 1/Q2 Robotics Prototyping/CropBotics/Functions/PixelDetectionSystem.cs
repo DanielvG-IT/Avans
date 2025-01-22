@@ -41,18 +41,18 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
 
     if (distance <= 5 && nextPixel)
     {
+      if (firstMesuarement)
+      {
+        firstMesuarement = false;
+        return;
+      }
+
       nextPixel = false; // Not detect the same pixel twice
       _farmrobot.SetSpeed(0.1D);
 
       currentPixel += 1;
       _colourSensor.GetRawData(out ushort r, out ushort b, out ushort g, out ushort c);
       currentColour = CalculateColour(r, g, b, c);
-
-      if (firstMesuarement)
-      {
-        firstMesuarement = false;
-        return;
-      }
 
       Console.WriteLine($"DEBUG: Pixel {currentPixel}: Distance: {distance}, Colour: {currentColour}");
       _farmrobot.SendMessage("CropBotics/sensor/pixelDistance", $"{distance}");
