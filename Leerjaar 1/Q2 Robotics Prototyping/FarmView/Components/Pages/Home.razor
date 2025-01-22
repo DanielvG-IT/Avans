@@ -297,6 +297,49 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 0.5rem;
   }
+
+  .legend-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .legend-box {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .legend-pixel {
+    width: 16px;
+    height: 16px;
+    margin-right: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: bold;
+  }
+
+  .healthy {
+    background-color: #28A242;
+  }
+
+  .warning {
+    background-color: #E0E308;
+  }
+
+  .critical {
+    background-color: #C85353;
+  }
+
+  .info {
+    background-color: #00B3FF;
+  }
+
+  .unknown {
+    background-color: #555555;
+  }
 </style>
 
 <div class="dashboard-header">
@@ -367,6 +410,29 @@
   <!-- Plant Health Card -->
   <div class="card" id="pixelCard">
     <h3>Plant Health</h3>
+    <div class="legend-container">
+      <div class="legend-box">
+        <div class="legend-pixel healthy"></div>
+        <span>Green: Healthy</span>
+      </div>
+      <div class="legend-box">
+        <div class="legend-pixel warning"></div>
+        <span>Yellow: Warning</span>
+      </div>
+      <div class="legend-box">
+        <div class="legend-pixel critical"></div>
+        <span>Red: Critical</span>
+      </div>
+      <div class="legend-box">
+        <div class="legend-pixel info"></div>
+        <span>Blue: Information</span>
+      </div>
+      <div class="legend-box">
+        <div class="legend-pixel unknown"></div>
+        <span>Unknown</span>
+      </div>
+    </div>
+    <hr>
     <div class="pixel-container">
       @foreach (var (color, index) in pixelColors.Select((color, index) => (color, index + 1)))
       {
