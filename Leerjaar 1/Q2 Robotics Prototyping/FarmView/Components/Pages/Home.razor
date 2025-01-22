@@ -387,23 +387,30 @@
     <hr>
     <h4>Command History</h4>
     <div class="command-table-container">
-      <table class="table table-striped table-hover">
-        <thead>
-          <tr>
-            <th>Command</th>
-            <th>TimeStamp</th>
-          </tr>
-        </thead>
-        <tbody>
-          @foreach (var item in commandHistory)
-          {
+      @if (commandHistory.Count == 0)
+      {
+        <p>No commands have been sent yet.</p>
+      }
+      else
+      {
+        <table class="table table-striped table-hover">
+          <thead>
             <tr>
-              <td>@item.CommandData</td>
-              <td>@item.DataTimestamp.ToString("HH:mm:ss")</td>
+              <th>Command</th>
+              <th>TimeStamp</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @foreach (var item in commandHistory)
+            {
+              <tr>
+                <td>@item.CommandData</td>
+                <td>@item.DataTimestamp.ToString("HH:mm:ss")</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
     </div>
   </div>
 
@@ -468,34 +475,42 @@
       }
     </div>
     <hr>
+    <h4>Sensor Reading</h4>
     <div class="sensor-table-container">
-      <table class="table table-striped table-hover">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Data</th>
-            <th>TimeStamp</th>
-          </tr>
-        </thead>
-        <tbody>
-          @foreach (var item in sensorHistory)
-          {
+      @if (commandHistory.Count == 0)
+      {
+        <p>No commands have been sent yet.</p>
+      }
+      else
+      {
+        <table class="table table-striped table-hover">
+          <thead>
             <tr>
-              <td>@item.SensorName</td>
-              <td>
-                @(
-                    item.SensorName == "obstacleDistance" || item.SensorName == "pixelDistance"
-                    ? item.SensorData + " cm"
-                    : item.SensorName == "Motors"
-                    ? item.SensorData + " km/h"
-                    : item.SensorData
-                    )
-              </td>
-              <td>@item.DataTimestamp.ToString("HH:mm:ss")</td>
+              <th>Name</th>
+              <th>Data</th>
+              <th>TimeStamp</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @foreach (var item in sensorHistory)
+            {
+              <tr>
+                <td>@item.SensorName</td>
+                <td>
+                  @(
+                      item.SensorName == "obstacleDistance" || item.SensorName == "pixelDistance"
+                      ? item.SensorData + " cm"
+                      : item.SensorName == "Motors"
+                      ? item.SensorData + " km/h"
+                      : item.SensorData
+                      )
+                </td>
+                <td>@item.DataTimestamp.ToString("HH:mm:ss")</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
     </div>
   </div>
 
