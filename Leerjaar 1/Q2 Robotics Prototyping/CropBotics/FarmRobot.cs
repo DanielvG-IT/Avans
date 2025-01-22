@@ -88,7 +88,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
 
     switch (Mqtt.Topic)
     {
-      case "CropBotics/commands":
+      case "CropBotics/command":
         {
           switch (Mqtt.Message)
           {
