@@ -9,7 +9,6 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
   private readonly RGBSensor _colourSensor;
   private readonly Ultrasonic _ultrasonic;
   private readonly FarmRobot _farmrobot;
-  private readonly PeriodTimer periodTimer;
   public bool nextPixel = true;
   private int currentPixel;
   private string currentColour;
@@ -24,7 +23,7 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
     _farmrobot = farmrobot;
     currentPixel = 0;
     currentColour = "Unknown";
-    periodTimer = new(100);
+    Thread.Sleep(1000);
   }
 
   public Task Init()
