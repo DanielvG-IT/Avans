@@ -13,6 +13,7 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
   private int currentPixel;
   private string currentColour;
   private int distance;
+  private bool firstMesuarement = true;
   public RGBSensor.Gain CurrentGain { get; private set; } = RGBSensor.Gain.GAIN_1X;
 
   public PixelDetectionSystem(FarmRobot farmrobot)
@@ -47,8 +48,9 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
       _colourSensor.GetRawData(out ushort r, out ushort b, out ushort g, out ushort c);
       currentColour = CalculateColour(r, g, b, c);
 
-      if (currentColour == "Unknown" && currentPixel == 1)
+      if (firstMesuarement)
       {
+        firstMesuarement = false;
         return;
       }
 
