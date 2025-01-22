@@ -399,7 +399,7 @@
           {
             <tr>
               <td>@item.CommandData</td>
-              <td>@item.DataTimestamp</td>
+              <td>@item.DataTimestamp.ToString("HH:mm:ss")</td>
             </tr>
           }
         </tbody>
@@ -482,8 +482,16 @@
           {
             <tr>
               <td>@item.SensorName</td>
-              <td>@item.SensorData</td>
-              <td>@item.DataTimestamp</td>
+              <td>
+                @(
+                    item.SensorName == "obstacleDistance" || item.SensorName == "pixelDistance"
+                    ? item.SensorData + " cm"
+                    : item.SensorName == "Motors"
+                    ? item.SensorData + " km/h"
+                    : item.SensorData
+                    )
+              </td>
+              <td>@item.DataTimestamp.ToString("HH:mm:ss")</td>
             </tr>
           }
         </tbody>
