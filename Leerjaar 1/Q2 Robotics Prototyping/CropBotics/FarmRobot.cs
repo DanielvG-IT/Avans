@@ -53,7 +53,6 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
     obstacleDetectionSystem.Update();
 
     SendMessage("CropBotics/status/status", "Online");
-    SendMessage("CropBotics/status/emergency_stop", alertSystem.EmergencyStop ? "True" : "False");
 
     HandleObsacle();
     EmergencyStop = alertSystem.EmergencyStop;
@@ -145,6 +144,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
           {
             SendMessage("CropBotics/request/MotorCalibrationRight", Convert.ToString(driveSystem.CalibrationRight));
             SendMessage("CropBotics/request/MotorCalibrationLeft", Convert.ToString(driveSystem.CalibrationLeft));
+            SendMessage("CropBotics/status/emergency_stop", alertSystem.EmergencyStop ? "True" : "False");
             SendMessage("CropBotics/request/MotorsEnabled", driveSystem.MotorsEnabled ? "True" : "False");
             SendMessage("CropBotics/request/colourGain", pixelDetectionSystem.CurrentGain.ToString());
             SendMessage("CropBotics/status/battery", $"{Robot.ReadBatteryMillivolts() / 90}");
@@ -211,40 +211,50 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
 
   public void HandleObsacle()
   {
-    int distance = obstacleDetectionSystem.ObstacleDistance;
-
-    if (distance <= 5 || EmergencyStop)
+    try
     {
-      if (!stopped)
+      int distance = obstacleDetectionSystem.ObstacleDistance;
+
+      if (distance <= 5 || EmergencyStop)
       {
-        stopped = true;
-        driveSystem.EmergencyStop();
-        alertSystem.EmergencyStop = true;
-        SendMessage("CropBotics/status/emergency_stop", "True");
-        return;
+        if (!stopped)
+        {
+          stopped = true;
+          driveSystem.EmergencyStop();
+          alertSystem.EmergencyStop = true;
+          SendMessage("CropBotics/status/emergency_stop", "True");
+          return;
+        }
+      }
+
+      // Dynamic speed control based on distance
+      if (!stopped && !EmergencyStop && !pixelDetectionSystem.nextPixel)
+      {
+        double targetSpeed = 0.0;
+        if (distance > 20)
+        {
+          targetSpeed = 0.2; // Slow speed
+        }
+        else if (distance > 10)
+        {
+          targetSpeed = 0.1; // Very slow speed
+        }
+
+        // Only update speed if it needs to change
+        if (Math.Abs(driveSystem.TargetSpeed - targetSpeed) > 0.01)
+        {
+          driveSystem.TargetSpeed = targetSpeed;
+          Console.WriteLine($"DEBUG: Adjusting speed to {targetSpeed} based on distance {distance}cm");
+        }
       }
     }
-
-    // Dynamic speed control based on distance
-    if (!stopped && !EmergencyStop && !pixelDetectionSystem.nextPixel)
+    catch (OperationCanceledException ex)
     {
-      double targetSpeed = 0.0;
-      if (distance > 20)
-      {
-        targetSpeed = 0.2; // Slow speed
-      }
-      else if (distance > 10)
-      {
-        targetSpeed = 0.1; // Very slow speed
-      }
-
-      // Only update speed if it needs to change
-      if (Math.Abs(driveSystem.TargetSpeed - targetSpeed) > 0.01)
-      {
-        driveSystem.TargetSpeed = targetSpeed;
-        Console.WriteLine($"DEBUG: Adjusting speed to {targetSpeed} based on distance {distance}cm");
-      }
+      Console.WriteLine($"Operation was canceled: {ex.Message}");
+    }
+    catch (Exception ex)
+    {
+      Console.WriteLine($"Exception thrown: {ex.Message}");
     }
   }
-
 }
