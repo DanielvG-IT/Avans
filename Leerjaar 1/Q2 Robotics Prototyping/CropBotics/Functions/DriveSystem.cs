@@ -18,7 +18,7 @@ public class DriveSystem : IUpdatable
     get { return _calibrationLeft; }
     set { if (value < 25 && value > -25) _calibrationLeft = value; }
   }
-  private short _calibrationRight = 2;
+  private short _calibrationRight = 0;
   public short CalibrationRight
   {
     get { return _calibrationRight; }
@@ -53,15 +53,14 @@ public class DriveSystem : IUpdatable
     if (MotorsEnabled)
     {
       Robot.Motors(
-        (short)(CalculateRobotSpeed(_currentSpeed) + _calibrationLeft),
-        (short)(CalculateRobotSpeed(_currentSpeed) + _calibrationRight)
-        );
+        CalculateRobotSpeed(_currentSpeed + _calibrationLeft),
+        CalculateRobotSpeed(_currentSpeed + _calibrationRight)
+      );
     }
     else
-    {
       Console.WriteLine("ERROR: Failed to set motor speed, motors are disabled");
-    }
   }
+
 
   public void EmergencyStop()
   {
