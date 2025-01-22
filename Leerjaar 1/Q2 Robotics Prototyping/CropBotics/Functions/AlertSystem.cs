@@ -17,7 +17,6 @@ public class AlertSystem : IUpdatable
     _alertLed = led;
     _farmRobot = farmRobot;
     _emergencyButton = button;
-    _emergencyButtonWasPressed = _emergencyButton.GetState() == "Pressed";
   }
 
   public void Update()
