@@ -53,8 +53,8 @@ public class DriveSystem : IUpdatable
     if (MotorsEnabled)
     {
       Robot.Motors(
-        CalculateRobotSpeed(_currentSpeed + _calibrationLeft),
-        CalculateRobotSpeed(_currentSpeed + _calibrationRight)
+        (short)(CalculateRobotSpeed(_currentSpeed) + _calibrationLeft),
+        (short)(CalculateRobotSpeed(_currentSpeed) + _calibrationRight)
       );
     }
     else
