@@ -18,10 +18,14 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
   public short CalibrationLeft { get; private set; }
   public short CalibrationRight { get; private set; }
 
+  private readonly Timer? _statusTimer;
+  private const int STATUS_TIMEOUT_MS = 10000;
+
   public MqttProcessingService(IDatabaseAccess databaseAccess, SimpleMqttClient mqttClient)
   {
     _databaseAccess = databaseAccess;
     _mqttClient = mqttClient;
+    _statusTimer = new Timer(OnStatusTimeout, null, Timeout.Infinite, Timeout.Infinite);
 
     // Initialize public properties
     robotStatus = "Offline";
@@ -86,7 +90,11 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
         {
           case "status":
             {
-              robotStatus = "Online" == message ? "Online" : "Offline";
+              if (message == "Online")
+              {
+                robotStatus = "Online";
+                _statusTimer.Change(STATUS_TIMEOUT_MS, Timeout.Infinite);
+              }
               break;
             }
           case "battery":
@@ -149,9 +157,18 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
     await _mqttClient.SubscribeToTopic("CropBotics/command/#"); // Subscribe to all command topics
   }
 
-  public Task StopAsync(CancellationToken cancellationToken)
+  private void OnStatusTimeout(object? state)
+  {
+    robotStatus = "Offline";
+  }
+
+  public async Task StopAsync(CancellationToken cancellationToken)
   {
     _mqttClient.Dispose();
-    return Task.CompletedTask;
+
+    if (_statusTimer != null)
+    {
+      await _statusTimer.DisposeAsync();
+    }
   }
 }

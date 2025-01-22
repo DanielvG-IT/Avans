@@ -713,10 +713,6 @@
 
   private async Task MqttRequestData(string data)
   {
-    // Reset fields to default values, so robot status is correctly updated
-    MqttService.robotStatus = "Offline";
-    MqttService.robotBattery = "0";
-
     await MQttClient.PublishMessage(data, $"CropBotics/request");
   }
 
@@ -733,12 +729,14 @@
     else
     {
       MQttClient.PublishMessage(command, "CropBotics/command");
+      Console.WriteLine($"DEBUG: Command sent: {command}");
     }
   }
 
   private void MqttSendSettings(string value, string setting)
   {
     MQttClient.PublishMessage(value, $"CropBotics/settings/{setting}");
+    Console.WriteLine($"DEBUG: Setting sent: {setting} - {value}");
   }
 
   private void OnAutoRefreshChanged()
