@@ -521,12 +521,12 @@
       </div>
       <div class="form-group mb-4">
         <label for="colorSensorGain" class="form-label">Color Sensor Gain</label>
-        <select id="colorSensorGain" class="form-control" @bind-value="robotColourSensorGain" @bind-value:event="oninput"
-          @onchange="@(() => MqttSendSettings(robotColourSensorGain, "ColorGain"))">
-          <option value="1x">1x</option>
-          <option value="4x">4x</option>
-          <option value="16x">16x</option>
-          <option value="60x">60x</option>
+        <select id="colorSensorGain" class="form-control" @bind="robotColourSensorGain"
+          @bind:after="@(() => MqttSendSettings(robotColourSensorGain.ToString(), "ColorGain"))">
+          @foreach (ColorSensorGain gain in Enum.GetValues(typeof(ColorSensorGain)))
+          {
+            <option value="@gain">@gain.ToString().Replace("GAIN_", "")</option>
+          }
         </select>
       </div>
       <div class="form-group d-flex align-items-center justify-content-between">
@@ -567,10 +567,10 @@
 @code {
   private string[] pixelColors = new string[0];
   private CancellationTokenSource? refreshCancellationTokenSource;
+  private ColorSensorGain robotColourSensorGain = ColorSensorGain.GAIN_1X;
   private List<Command> commandHistory = new List<Command>();
   private List<Sensor> sensorHistory = new List<Sensor>();
   private DateTime _selectedDate = DateTime.Today;
-  private string robotColourSensorGain = string.Empty;
   private string errorMessage = string.Empty;
   private string robotStatus = string.Empty;
   private string robotBattery = "0";
@@ -615,7 +615,7 @@
     await Task.Delay(1000);
 
     // Load the new data from MqttService
-    robotColourSensorGain = MqttService.robotColourSensorGain;
+    robotColourSensorGain = MqttService.RobotColourSensorGain;
     robotEmergencyStop = MqttService.robotEmergencyStop;
     obstacleDistance = MqttService.obstacleDistance;
     rMotorsEnabled = MqttService.robotMotorsEnabled;

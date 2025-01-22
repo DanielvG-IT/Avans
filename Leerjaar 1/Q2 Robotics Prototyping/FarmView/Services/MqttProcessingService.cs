@@ -10,7 +10,7 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
   // Public properties for dashboard
   public string robotStatus { get; set; }
   public string robotBattery { get; set; }
-  public string robotColourSensorGain { get; private set; }
+  public ColorSensorGain RobotColourSensorGain { get; private set; }
   public bool robotEmergencyStop { get; private set; }
   public bool robotMotorsEnabled { get; private set; }
   public int obstacleDistance { get; private set; }
@@ -34,7 +34,7 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
     robotMotorsEnabled = true;
     pixelDistance = 0;
     obstacleDistance = 0;
-    robotColourSensorGain = "1x";
+    RobotColourSensorGain = ColorSensorGain.GAIN_1X;
 
     _mqttClient.OnMessageReceived += (sender, args) =>
     {
@@ -125,7 +125,7 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
             }
           case "colourGain":
             {
-              robotColourSensorGain = message;
+              RobotColourSensorGain = Enum.Parse<ColorSensorGain>($"GAIN_{message}");
               break;
             }
           case "MotorCalibrationLeft":
