@@ -152,7 +152,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
             SendMessage("CropBotics/status/emergency_stop", alertSystem.EmergencyStop ? "True" : "False");
             SendMessage("CropBotics/request/MotorsEnabled", driveSystem.MotorsEnabled ? "True" : "False");
             SendMessage("CropBotics/request/colourGain", pixelDetectionSystem.CurrentGain.ToString());
-            SendMessage("CropBotics/request/MotorCalibrationLeft", Convert.ToString(driveSystem.CalibrationRight));
+            SendMessage("CropBotics/request/MotorCalibrationLeft", Convert.ToString(driveSystem.CalibrationLeft));
             SendMessage("CropBotics/request/MotorCalibrationRight", Convert.ToString(driveSystem.CalibrationRight));
           }
         }
@@ -195,13 +195,13 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
           driveSystem.MotorsEnabled = Mqtt.Message == "True";
           break;
         }
-      case "CropBotics/settings/CalibrationLeft":
+      case "CropBotics/settings/MotorCalibrationLeft":
         {
           Console.WriteLine($"DEBUG: Setting calibration left to {Mqtt.Message}");
           driveSystem.CalibrationLeft = Convert.ToInt16(Mqtt.Message);
           break;
         }
-      case "CropBotics/settings/CalibrationRight":
+      case "CropBotics/settings/MotorCalibrationRight":
         {
           Console.WriteLine($"DEBUG: Setting calibration right to {Mqtt.Message}");
           driveSystem.CalibrationRight = Convert.ToInt16(Mqtt.Message);
