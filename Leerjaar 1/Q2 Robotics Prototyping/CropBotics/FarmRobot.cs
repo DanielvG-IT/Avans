@@ -63,13 +63,6 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
   }
 
   // Secundary functions for passing between systems
-  public static int CheckBatteryLevel()
-  {
-    var batterymV = Robot.ReadBatteryMillivolts();
-    var batteryPercentage = batterymV / 9000 * 100;
-
-    return batteryPercentage;
-  }
 
   public async void SendMessage(string topic, string message)
   {
@@ -121,7 +114,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
               }
             case "backward":
               {
-                if (alertSystem.EmergencyStop)
+                if (!alertSystem.EmergencyStop)
                 {
                   stopped = false;
                   driveSystem.TargetSpeed = -0.5;
@@ -148,7 +141,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
           if (Mqtt.Message == "all")
           {
             SendMessage("CropBotics/status/status", "Online");
-            SendMessage("CropBotics/status/battery", $"{CheckBatteryLevel()}");
+            SendMessage("CropBotics/status/battery", $"{Robot.ReadBatteryMillivolts() / 9000 * 100}");
             SendMessage("CropBotics/status/emergency_stop", alertSystem.EmergencyStop ? "True" : "False");
             SendMessage("CropBotics/request/MotorsEnabled", driveSystem.MotorsEnabled ? "True" : "False");
             SendMessage("CropBotics/request/colourGain", pixelDetectionSystem.CurrentGain.ToString());
