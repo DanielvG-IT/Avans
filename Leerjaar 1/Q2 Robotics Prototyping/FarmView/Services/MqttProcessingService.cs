@@ -160,6 +160,7 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
   private void OnStatusTimeout(object? state)
   {
     robotStatus = "Offline";
+    robotBattery = "0";
   }
 
   public async Task StopAsync(CancellationToken cancellationToken)
