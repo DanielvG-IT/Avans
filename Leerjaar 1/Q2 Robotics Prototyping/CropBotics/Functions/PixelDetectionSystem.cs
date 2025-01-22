@@ -47,6 +47,11 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
       _colourSensor.GetRawData(out ushort r, out ushort b, out ushort g, out ushort c);
       currentColour = CalculateColour(r, g, b, c);
 
+      if (currentColour == "Unknown" && currentPixel == 1)
+      {
+        return;
+      }
+
       Console.WriteLine($"DEBUG: Pixel {currentPixel}: Distance: {distance}, Colour: {currentColour}");
       _farmrobot.SendMessage("CropBotics/sensor/pixelDistance", $"{distance}");
       _farmrobot.SendMessage($"CropBotics/pixel/{currentPixel}", $"{currentColour}");
