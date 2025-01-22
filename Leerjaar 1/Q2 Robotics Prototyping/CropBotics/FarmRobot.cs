@@ -52,6 +52,10 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
     pixelDetectionSystem.Update();
     obstacleDetectionSystem.Update();
 
+    SendMessage("CropBotics/status/status", "Online");
+    SendMessage("CropBotics/status/battery", $"{Robot.ReadBatteryMillivolts() / 9000 * 100}");
+    SendMessage("CropBotics/status/emergency_stop", alertSystem.EmergencyStop ? "True" : "False");
+
     HandleObsacle();
     EmergencyStop = alertSystem.EmergencyStop;
   }
@@ -140,13 +144,10 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
         {
           if (Mqtt.Message == "all")
           {
-            SendMessage("CropBotics/status/status", "Online");
-            SendMessage("CropBotics/status/battery", $"{Robot.ReadBatteryMillivolts() / 9000 * 100}");
-            SendMessage("CropBotics/status/emergency_stop", alertSystem.EmergencyStop ? "True" : "False");
+            SendMessage("CropBotics/request/MotorCalibrationRight", Convert.ToString(driveSystem.CalibrationRight));
+            SendMessage("CropBotics/request/MotorCalibrationLeft", Convert.ToString(driveSystem.CalibrationLeft));
             SendMessage("CropBotics/request/MotorsEnabled", driveSystem.MotorsEnabled ? "True" : "False");
             SendMessage("CropBotics/request/colourGain", pixelDetectionSystem.CurrentGain.ToString());
-            SendMessage("CropBotics/request/MotorCalibrationLeft", Convert.ToString(driveSystem.CalibrationLeft));
-            SendMessage("CropBotics/request/MotorCalibrationRight", Convert.ToString(driveSystem.CalibrationRight));
           }
         }
         break;
