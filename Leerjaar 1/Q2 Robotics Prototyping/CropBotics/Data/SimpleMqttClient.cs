@@ -28,7 +28,7 @@ public class SimpleMqttClient : IDisposable
     /// </summary>
     public SimpleMqttClient(SimpleMqttClientConfiguration options)
     {
-        this.ClientId = options.ClientId;
+        ClientId = options.ClientId;
 
         _client = new HiveMQClient(new()
         {
@@ -66,7 +66,7 @@ public class SimpleMqttClient : IDisposable
     /// <param name="message">Het bericht dat verstuurd moet worden</param>
     public async Task PublishMessage(SimpleMqttMessage message, bool retain = false)
     {
-        await this.OpenAndVerifyConnection();
+        await OpenAndVerifyConnection();
 
         var mqttMessage = new MQTT5PublishMessage
         {
@@ -121,15 +121,28 @@ public class SimpleMqttClient : IDisposable
     /// <returns>true als de verbinding goed is geopend</returns>
     private async Task OpenAndVerifyConnection()
     {
-        // Open de verbinding wanneer deze niet open is
-        if (!_client.IsConnected())
+        try
         {
-            var connectionResult = await _client.ConnectAsync().ConfigureAwait(false);
-
-            if (connectionResult.ReasonCode != ConnAckReasonCode.Success)
+            // Open de verbinding wanneer deze niet open is
+            if (!_client.IsConnected())
             {
-                throw new InvalidOperationException($"Failed to connect: {connectionResult.ReasonString}");
+                var connectionResult = await _client.ConnectAsync().ConfigureAwait(false);
+
+                if (connectionResult.ReasonCode != ConnAckReasonCode.Success)
+                {
+                    throw new InvalidOperationException($"Failed to connect: {connectionResult.ReasonString}");
+                }
             }
+        }
+        catch (HiveMQtt.Client.Exceptions.HiveMQttClientException ex)
+        {
+            Console.WriteLine($"HiveMQttClientException: {ex.Message}");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception: {ex.Message}");
+            throw;
         }
     }
 
