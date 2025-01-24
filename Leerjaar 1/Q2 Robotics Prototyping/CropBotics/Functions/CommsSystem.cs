@@ -7,14 +7,12 @@ class CommsSystem : IInitializable
 {
   private readonly SimpleMqttClient _mqttClient;
   private readonly FarmRobot _farmRobot;
-  private readonly string clientId = "FarmRobot-v1.6";
-
 
   public CommsSystem(FarmRobot farmRobot)
   {
     Console.WriteLine("DEBUG: CommsSystem constructor called");
     _farmRobot = farmRobot;
-    _mqttClient = SimpleMqttClient.CreateSimpleMqttClientForHiveMQ(clientId);
+    _mqttClient = SimpleMqttClient.CreateSimpleMqttClientForHiveMQ("FarmRobot-v1.6");
     _mqttClient.OnMessageReceived += (sender, message) =>
     {
       Console.WriteLine($"DEBUG: Bericht ontvangen; topic={message.Topic}; message={message.Message};");

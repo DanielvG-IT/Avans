@@ -16,7 +16,7 @@ public class SimpleMqttClient : IDisposable
     /// <summary>
     /// Berichten worden standaard verstu/// urd en ontvangen in onderstaande text encoding
     /// </summary>
-    private static Encoding DefaultEncoding = Encoding.ASCII;
+    private static readonly Encoding DefaultEncoding = Encoding.ASCII;
 
     /// <summary>
     /// Een interne referentie naar de HiveMQClient
@@ -73,9 +73,8 @@ public class SimpleMqttClient : IDisposable
             Topic = message.Topic,
             Payload = DefaultEncoding.GetBytes(message.Message!),
             QoS = QualityOfService.ExactlyOnceDelivery,
+            Retain = retain
         };
-
-        mqttMessage.Retain = retain;
 
         var publishResult = await _client.PublishAsync(mqttMessage).ConfigureAwait(false);
 
@@ -97,7 +96,7 @@ public class SimpleMqttClient : IDisposable
     /// </summary>
     public async Task SubscribeToTopic(string topic)
     {
-        await this.OpenAndVerifyConnection();
+        await OpenAndVerifyConnection();
         await _client.SubscribeAsync(topic, QualityOfService.ExactlyOnceDelivery).ConfigureAwait(false);
     }
 
@@ -113,7 +112,7 @@ public class SimpleMqttClient : IDisposable
             Message = DefaultEncoding.GetString(e.PublishMessage.Payload!)
         };
 
-        this.OnMessageReceived?.Invoke(this, msg);
+        OnMessageReceived?.Invoke(this, msg);
     }
 
     /// <summary>
@@ -123,7 +122,7 @@ public class SimpleMqttClient : IDisposable
     private async Task OpenAndVerifyConnection()
     {
         // Open de verbinding wanneer deze niet open is
-        if (!this._client.IsConnected())
+        if (!_client.IsConnected())
         {
             var connectionResult = await _client.ConnectAsync().ConfigureAwait(false);
 
@@ -158,8 +157,8 @@ public class SimpleMqttClient : IDisposable
             CleanStart = true, // <--- false, haalt al gebufferde meldingen ook op.
             ClientId = clientId, // Dit clientid moet uniek zijn binnen de broker
             TimeoutInMs = 5_000, // Standaard time-out bij het maken van een verbinding (5 seconden)
-            UserName = "hivemq.webclient.1732899035765",
-            Password = "P107L9Dq;yYuMh>ceV#:"
+            UserName = "CropBotics",
+            Password = "CropBotics123!"
         });
 
         return mqttWrapper;
