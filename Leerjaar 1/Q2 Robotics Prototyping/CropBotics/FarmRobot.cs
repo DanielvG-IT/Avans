@@ -20,6 +20,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
   private readonly DriveSystem driveSystem;
   private readonly PixelDetectionSystem pixelDetectionSystem;
   private readonly ObstacleDetectionSystem obstacleDetectionSystem;
+  private readonly PeriodTimer timer;
   BlinkLed AlertLed;
   Button emergencyStopButton;
   public bool EmergencyStop { get; private set; } = false;
@@ -29,6 +30,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
     // Initializing hardware
     AlertLed = new(alertLedPin, AlertBlinkMilSec);
     emergencyStopButton = new(emergencyStopButtonPin);
+    timer = new(5000);
 
     // Initializing systems
     alertSystem = new(this, AlertLed, emergencyStopButton);
@@ -52,10 +54,13 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
     pixelDetectionSystem.Update();
     obstacleDetectionSystem.Update();
 
-    SendMessage("CropBotics/status/status", "Online");
-
     HandleObsacle();
     EmergencyStop = alertSystem.EmergencyStop;
+
+    if (timer.Check())
+    {
+      SendMessage("CropBotics/status/status", "Online");
+    }
   }
 
   public void Wait()
