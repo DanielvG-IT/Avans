@@ -121,35 +121,61 @@ public class SimpleMqttClient : IDisposable
     /// <returns>true als de verbinding goed is geopend</returns>
     private async Task OpenAndVerifyConnection()
     {
-        try
-        {
-            // Open de verbinding wanneer deze niet open is
-            if (!_client.IsConnected())
-            {
-                var connectionResult = await _client.ConnectAsync().ConfigureAwait(false);
+        const int maxRetries = 3;
+        int retryCount = 0;
 
-                if (connectionResult.ReasonCode != ConnAckReasonCode.Success)
+        while (retryCount < maxRetries)
+        {
+            try
+            {
+                // Open de verbinding wanneer deze niet open is
+                if (!_client.IsConnected())
                 {
-                    throw new InvalidOperationException($"Failed to connect: {connectionResult.ReasonString}");
+                    var connectionResult = await _client.ConnectAsync().ConfigureAwait(false);
+
+                    if (connectionResult.ReasonCode != ConnAckReasonCode.Success)
+                    {
+                        throw new InvalidOperationException($"Failed to connect: {connectionResult.ReasonString}");
+                    }
+                }
+                return; // Exit the method if connection is successful
+            }
+            catch (HiveMQtt.Client.Exceptions.HiveMQttClientException ex)
+            {
+                Console.WriteLine($"HiveMQttClientException: {ex.Message}");
+                retryCount++;
+                if (retryCount >= maxRetries)
+                {
+                    throw;
                 }
             }
-        }
-        catch (HiveMQtt.Client.Exceptions.HiveMQttClientException ex)
-        {
-            Console.WriteLine($"HiveMQttClientException: {ex.Message}");
-            throw;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Exception: {ex.Message}");
-            throw;
+            catch (IOException ex)
+            {
+                Console.WriteLine($"IOException: {ex.Message}");
+                retryCount++;
+                if (retryCount >= maxRetries)
+                {
+                    throw;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                throw;
+            }
+
+            // Wait before retrying
+            await Task.Delay(2000);
         }
     }
 
     /// <summary>
     /// Wanneer het object expliciet wordt weggegooid sluiten we de connectie
     /// </summary>
-    public void Dispose() => _client.Dispose();
+    public void Dispose()
+    {
+        _client.Dispose();
+    }
 
     /// <summary>
     /// Wanneer het object wordt opgeruimd door de GC sluiten we de connectie
