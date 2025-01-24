@@ -124,7 +124,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
                 Console.WriteLine("ERROR: Emergency stop is active, ignoring message");
                 break;
               }
-            case "stop":
+            case "Stop":
               {
                 driveSystem.TargetSpeed = 0.0;
                 stopped = true;

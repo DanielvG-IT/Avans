@@ -40,7 +40,7 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
 
     if (distance <= 5 && nextPixel)
     {
-      if (firstMesuarement)
+      if (currentPixel == 1 && firstMesuarement && currentColour == "Unknown")
       {
         firstMesuarement = false;
         return;

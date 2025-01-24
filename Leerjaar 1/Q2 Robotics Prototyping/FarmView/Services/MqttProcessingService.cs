@@ -125,7 +125,7 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
             }
           case "colourGain":
             {
-              RobotColourSensorGain = Enum.Parse<ColorSensorGain>($"GAIN_{message}");
+              RobotColourSensorGain = Enum.Parse<ColorSensorGain>($"{message}");
               break;
             }
           case "MotorCalibrationLeft":
@@ -154,7 +154,7 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
     await _mqttClient.SubscribeToTopic("CropBotics/sensor/#");  // Subscribe to all sensor topics 
     await _mqttClient.SubscribeToTopic("CropBotics/pixel/#");   // Subscribe to all pixel topics
     await _mqttClient.SubscribeToTopic("CropBotics/request/#"); // Subscribe to all request topics
-    await _mqttClient.SubscribeToTopic("CropBotics/command/#"); // Subscribe to all command topics
+    await _mqttClient.SubscribeToTopic("CropBotics/command");   // Subscribe to all command topics
   }
 
   private void OnStatusTimeout(object? state)
