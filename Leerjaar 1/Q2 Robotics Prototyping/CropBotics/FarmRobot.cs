@@ -220,7 +220,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
     {
       int distance = obstacleDetectionSystem.ObstacleDistance;
 
-      if (distance <= 5 || EmergencyStop)
+      if (distance <= 10 || EmergencyStop)
       {
         if (!stopped)
         {
@@ -236,11 +236,11 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
       if (!stopped && !EmergencyStop && !pixelDetectionSystem.nextPixel)
       {
         double targetSpeed = 0.0;
-        if (distance > 20)
+        if (distance > 40)
         {
           targetSpeed = 0.2; // Slow speed
         }
-        else if (distance > 10)
+        else if (distance > 20)
         {
           targetSpeed = 0.1; // Very slow speed
         }
