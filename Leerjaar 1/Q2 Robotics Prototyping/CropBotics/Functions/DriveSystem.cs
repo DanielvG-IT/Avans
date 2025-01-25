@@ -61,7 +61,6 @@ public class DriveSystem : IUpdatable
       Console.WriteLine("ERROR: Failed to set motor speed, motors are disabled");
   }
 
-
   public void EmergencyStop()
   {
     _currentSpeed = 0.0;
