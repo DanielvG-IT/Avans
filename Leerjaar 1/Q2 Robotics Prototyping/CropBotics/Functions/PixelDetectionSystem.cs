@@ -70,8 +70,6 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
 
   private static string CalculateColour(ushort r, ushort g, ushort b, ushort c)
   {
-    Console.WriteLine($"DEBUG: Raw colour values - R:{r} G:{g} B:{b} C:{c}");
-
     double sumRGB = r + g + b;
 
     if (sumRGB <= 0)
