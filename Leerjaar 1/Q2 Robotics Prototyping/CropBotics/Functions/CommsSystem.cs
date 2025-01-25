@@ -1,5 +1,6 @@
 using CropBotics.Data;
 using CropBotics.Interfaces;
+using HiveMQtt.Client.Exceptions;
 
 namespace CropBotics.Functions;
 
@@ -32,14 +33,26 @@ class CommsSystem : IInitializable
     {
       await _mqttClient.PublishMessage(message, topic);
     }
+    catch (TaskCanceledException tcex)
+    {
+      Console.WriteLine($"Task Canceled Exception: {tcex.Message}");
+      // Consider retrying or handling the canceled operation
+    }
+    catch (HiveMQttClientException hmqex)
+    {
+      Console.WriteLine($"HiveMQtt Client Exception: {hmqex.Message}");
+      // Handle MQTT-specific errors
+    }
     catch (InvalidOperationException ioex)
     {
-      Console.WriteLine($"Invalid Operation Exception thrown: {ioex.Message}");
+      Console.WriteLine($"Invalid Operation Exception: {ioex.Message}");
+      // Handle invalid operations
     }
     catch (Exception ex)
     {
-      Console.WriteLine($"Exception thrown: {ex.Message}");
+      Console.WriteLine($"Unexpected Exception: {ex.Message}");
+      // Handle any other unexpected exceptions
     }
-
   }
+
 }
