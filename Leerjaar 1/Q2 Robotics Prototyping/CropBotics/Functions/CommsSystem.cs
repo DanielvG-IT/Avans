@@ -28,6 +28,18 @@ class CommsSystem : IInitializable
 
   public async Task SendMessage(string topic, string message)
   {
-    await _mqttClient.PublishMessage(message, topic);
+    try
+    {
+      await _mqttClient.PublishMessage(message, topic);
+    }
+    catch (InvalidOperationException ioex)
+    {
+      Console.WriteLine($"Invalid Operation Exception thrown: {ioex.Message}");
+    }
+    catch (Exception ex)
+    {
+      Console.WriteLine($"Exception thrown: {ex.Message}");
+    }
+
   }
 }
