@@ -33,15 +33,25 @@ class CommsSystem : IInitializable
     {
       await _mqttClient.PublishMessage(message, topic);
     }
-    catch (TaskCanceledException tcex)
-    {
-      Console.WriteLine($"Task Canceled Exception: {tcex.Message}");
-      // Consider retrying or handling the canceled operation
-    }
     catch (HiveMQttClientException hmqex)
     {
       Console.WriteLine($"HiveMQtt Client Exception: {hmqex.Message}");
       // Handle MQTT-specific errors
+    }
+    catch (IOException ioex)
+    {
+      Console.WriteLine($"IO Exception: {ioex.Message}");
+      // Handle network/IO related errors
+    }
+    catch (TimeoutException tex)
+    {
+      Console.WriteLine($"Timeout Exception: {tex.Message}");
+      // Handle timeout errors
+    }
+    catch (TaskCanceledException tcex)
+    {
+      Console.WriteLine($"Task Canceled Exception: {tcex.Message}");
+      // Handle canceled operations
     }
     catch (InvalidOperationException ioex)
     {
