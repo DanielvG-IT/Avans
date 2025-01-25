@@ -35,32 +35,32 @@ class CommsSystem : IInitializable
     }
     catch (HiveMQttClientException hmqex)
     {
-      Console.WriteLine($"HiveMQtt Client Exception: {hmqex.Message}");
+      _farmRobot.HandleExeption(hmqex.Message, hmqex.Source);
       // Handle MQTT-specific errors
     }
     catch (IOException ioex)
     {
-      Console.WriteLine($"IO Exception: {ioex.Message}");
+      _farmRobot.HandleExeption(ioex.Message, ioex.Source);
       // Handle network/IO related errors
     }
     catch (TimeoutException tex)
     {
-      Console.WriteLine($"Timeout Exception: {tex.Message}");
+      _farmRobot.HandleExeption(tex.Message, tex.Source);
       // Handle timeout errors
     }
     catch (TaskCanceledException tcex)
     {
-      Console.WriteLine($"Task Canceled Exception: {tcex.Message}");
+      _farmRobot.HandleExeption(tcex.Message, tcex.Source);
       // Handle canceled operations
     }
     catch (InvalidOperationException ioex)
     {
-      Console.WriteLine($"Invalid Operation Exception: {ioex.Message}");
+      _farmRobot.HandleExeption(ioex.Message, ioex.Source);
       // Handle invalid operations
     }
     catch (Exception ex)
     {
-      Console.WriteLine($"Unexpected Exception: {ex.Message}");
+      _farmRobot.HandleExeption(ex.Message, ex.Source);
       // Handle any other unexpected exceptions
     }
   }

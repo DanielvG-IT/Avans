@@ -262,4 +262,14 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
       Console.WriteLine($"Exception thrown: {ex.Message}");
     }
   }
+
+  public void HandleExeption(string message, string? exeptiontype)
+  {
+    Console.WriteLine($"ERROR: Exeption {exeptiontype} thrown: {message}");
+    EmergencyStop = true;
+    driveSystem.EmergencyStop();
+    alertSystem.EmergencyStop = true;
+    SendMessage("CropBotics/status/emergency_stop", "True");
+  }
+
 }
