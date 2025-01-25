@@ -733,19 +733,8 @@
 
   private void MqttSendCommand(string command)
   {
-    if (command == "Emergency Stop")
-    {
-      MQttClient.PublishMessage(command, "CropBotics/command");
-    }
-    else if (MqttService.robotEmergencyStop)
-    {
-      SetErrorMessage("Robot is in emergency stop mode. Please reset the robot to continue.");
-    }
-    else
-    {
-      MQttClient.PublishMessage(command, "CropBotics/command");
-      Console.WriteLine($"DEBUG: Command sent: {command}");
-    }
+    MQttClient.PublishMessage(command, "CropBotics/command");
+    Console.WriteLine($"DEBUG: Command sent: {command}");
   }
 
   private void MqttSendSettings(string value, string setting)
