@@ -12,8 +12,6 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
   private bool firstMesuarement = true;
   public bool nextPixel = true;
   private int currentPixel;
-  private string currentColour;
-  private int distance;
   public RGBSensor.Gain CurrentGain { get; private set; } = RGBSensor.Gain.GAIN_1X;
 
   public PixelDetectionSystem(FarmRobot farmrobot)
@@ -23,7 +21,6 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
     _ultrasonic = new(pixelDetectorUltrasoonPin);
     _farmrobot = farmrobot;
     currentPixel = 0;
-    currentColour = "Unknown";
   }
 
   public Task Init()
@@ -36,30 +33,38 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
 
   public void Update()
   {
-    distance = _ultrasonic.GetUltrasoneDistance();
+    _colourSensor.GetRawData(out ushort r, out ushort g, out ushort b, out ushort c);
 
-    if (distance <= 5 && nextPixel)
+    var colourFound = CalculateColour(r, g, b, c);
+    var distance = _ultrasonic.GetUltrasoneDistance();
+
+    // Pixel detected
+    if (distance <= 5 && nextPixel && colourFound != "")
     {
-      if (currentPixel == 0 && firstMesuarement)
+      nextPixel = false;
+
+      try
       {
-        firstMesuarement = false;
-        return;
+        Console.WriteLine($"DEBUG: {colourFound} detected on row {currentPixel}!");
+        _farmrobot.SendMessage("CropBotics/sensor/pixelDistance", $"{distance}");
+        _farmrobot.SendMessage($"CropBotics/pixel/{currentPixel}", $"{colourFound}");
+
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"ERROR: Failed to send messages - {ex.Message}");
       }
 
-      nextPixel = false; // Not detect the same pixel twice
-      _farmrobot.SetSpeed(0.1D);
-
-      currentPixel += 1;
-      _colourSensor.GetRawData(out ushort r, out ushort b, out ushort g, out ushort c);
-      currentColour = CalculateColour(r, g, b, c);
-
-      Console.WriteLine($"DEBUG: Pixel {currentPixel}: Distance: {distance}, Colour: {currentColour}");
-      _farmrobot.SendMessage("CropBotics/sensor/pixelDistance", $"{distance}");
-      _farmrobot.SendMessage($"CropBotics/pixel/{currentPixel}", $"{currentColour}");
+      currentPixel++;
     }
-    else if (distance > 10 && !nextPixel)
+    else if (!nextPixel)
     {
-      nextPixel = true;
+      // Reset the nextPixel flag
+      if (distance > 15)
+      {
+        nextPixel = true;
+        Console.WriteLine($"DEBUG: Waiting for new color...");
+      }
     }
   }
 
@@ -67,35 +72,28 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
   {
     Console.WriteLine($"DEBUG: Raw colour values - R:{r} G:{g} B:{b} C:{c}");
 
-    // Input validation to avoid division by zero
     double sumRGB = r + g + b;
+
     if (sumRGB <= 0)
     {
-      return "Unknown";
+      return "";
     }
-
-    // Normalize RGB values to percentages
-    double rPercentage = r / sumRGB * 100;
-    double gPercentage = g / sumRGB * 100;
-    double bPercentage = b / sumRGB * 100;
-
-    if (bPercentage >= 35)
-    {
-      return "blue";
-    }
-    else if (rPercentage >= 35 && rPercentage <= 44 && gPercentage >= 28 && gPercentage <= 37 && bPercentage <= 20)
-    {
-      return "yellow";
-    }
-    else if (gPercentage >= 38 && bPercentage <= 24 && rPercentage >= 30)
-    {
-      return "green";
-    }
-    else if (rPercentage >= 45)
+    else if (r >= sumRGB * 0.4)
     {
       return "red";
     }
-    return "Unknown";
+    else if (g >= sumRGB * 0.4)
+    {
+      return "green";
+    }
+    else if (b >= sumRGB * 0.4)
+    {
+      return "blue";
+    }
+    else
+    {
+      return "";
+    }
   }
 
   public void SetGain(RGBSensor.Gain gain)
