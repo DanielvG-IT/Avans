@@ -387,7 +387,7 @@
     <hr>
     <h4>Command History</h4>
     <div class="command-table-container">
-      @if (commandHistory.Count == 0)
+      @if (commandHistory.Count() == 0)
       {
         <p>No commands have been sent yet.</p>
       }
@@ -477,7 +477,7 @@
     <hr>
     <h4>Sensor Reading</h4>
     <div class="sensor-table-container">
-      @if (commandHistory.Count == 0)
+      @if (sensorHistory.Count() == 0)
       {
         <p>No sensor readings received yet.</p>
       }
