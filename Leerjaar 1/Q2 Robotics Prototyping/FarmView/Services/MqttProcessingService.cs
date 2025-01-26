@@ -19,7 +19,7 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
   public short CalibrationRight { get; private set; }
 
   private readonly Timer? _statusTimer;
-  private const int STATUS_TIMEOUT_MS = 12500;
+  private const int STATUS_TIMEOUT_MS = 20000;
 
   public MqttProcessingService(IDatabaseAccess databaseAccess, SimpleMqttClient mqttClient)
   {
