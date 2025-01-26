@@ -6,7 +6,7 @@ using SimpleMqtt;
 /// Initializes a new instance of the <see cref="DatabaseAccess"/> class.
 /// </summary>
 /// <param name="connectionString">The connection string used to connect to the database.</param>
-public class DatabaseAccess(string connectionString) : IDatabaseAccess
+public partial class DatabaseAccess(string connectionString) : IDatabaseAccess
 {
   private string _connStr { get; set; } = connectionString;
 
@@ -151,7 +151,7 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
       throw new ArgumentNullException(_topic, "Topic cannot be null");
     }
 
-    var sensorTypeMatch = Regex.Match(_topic, @"CropBotics/sensor/(\w+)", RegexOptions.IgnoreCase);
+    var sensorTypeMatch = SensorRegex().Match(_topic);
 
     if (!sensorTypeMatch.Success)
     {
@@ -231,4 +231,6 @@ public class DatabaseAccess(string connectionString) : IDatabaseAccess
     }
   }
 
+  [GeneratedRegex(@"CropBotics/sensor/(\w+)", RegexOptions.IgnoreCase, "nl-NL")]
+  private static partial Regex SensorRegex();
 }
