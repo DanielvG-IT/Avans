@@ -19,13 +19,13 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
   public short CalibrationRight { get; private set; }
 
   private readonly Timer? _statusTimer;
-  private const int STATUS_TIMEOUT_MS = 10000;
+  private const int STATUS_TIMEOUT_MS = 12500;
 
   public MqttProcessingService(IDatabaseAccess databaseAccess, SimpleMqttClient mqttClient)
   {
     _databaseAccess = databaseAccess;
     _mqttClient = mqttClient;
-    _statusTimer = new Timer(OnStatusTimeout, null, Timeout.Infinite, Timeout.Infinite);
+    _statusTimer = new Timer(OnStatusTimeout, null, STATUS_TIMEOUT_MS, Timeout.Infinite);
 
     // Initialize public properties
     robotStatus = "Offline";
