@@ -601,6 +601,7 @@
   protected override async Task OnInitializedAsync()
   {
     await UpdateData();
+    await MqttRequestData("all");
     StopAutoRefresh();
   }
 
@@ -624,7 +625,6 @@
     await GetPixelHistory();
     await GetSensorHistory();
     await GetCommandHistory();
-    await MqttRequestData("all");
 
     // Wait for the data to be updated
     await Task.Delay(1000);
