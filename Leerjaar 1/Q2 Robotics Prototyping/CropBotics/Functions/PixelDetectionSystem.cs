@@ -38,38 +38,33 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
     var colourFound = CalculateColour(r, g, b, c);
     var distance = _ultrasonic.GetUltrasoneDistance();
 
-    // Pixel detected
-    if (distance <= 5 && nextPixel && colourFound != "" && !firstReading)
+    // Dismiss the first reading (false measurement)
+    if (distance <= 5 && nextPixel && firstReading)
+    {
+      firstReading = false;
+    }
+
+    // Pixel detected and colour found
+    else if (distance <= 5 && nextPixel && colourFound != "" && !firstReading)
     {
       currentPixel++;
       nextPixel = false;
 
-      try
-      {
-        Console.WriteLine($"DEBUG: Colour {colourFound} detected on row {currentPixel}!");
-        _farmrobot.SendMessage("CropBotics/sensor/pixelDistance", $"{distance}");
-        _farmrobot.SendMessage($"CropBotics/pixel/{currentPixel}", $"{colourFound}");
-
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine($"ERROR: Failed to send messages - {ex.Message}");
-      }
+      Console.WriteLine($"DEBUG: Colour {colourFound} detected on row {currentPixel}!");
+      _farmrobot.SendMessage("CropBotics/sensor/pixelDistance", $"{distance}");
+      _farmrobot.SendMessage($"CropBotics/pixel/{currentPixel}", $"{colourFound}");
     }
-    else if (!nextPixel)
+
+    // Reset the nextPixel flag
+    else if (!nextPixel && distance > 15)
     {
-      // Reset the nextPixel flag
-      if (distance > 15)
-      {
-        nextPixel = true;
-        Console.WriteLine($"DEBUG: Waiting for new color...");
-      }
+      nextPixel = true;
+      Console.WriteLine($"DEBUG: Waiting for new color...");
     }
   }
 
   private static string CalculateColour(ushort r, ushort g, ushort b, ushort c)
   {
-    Console.WriteLine($"DEBUG: RGB values: R={r}, G={g}, B={b}, C={c}");
     double normalizedR = (double)r / c;
     double normalizedG = (double)g / c;
     double normalizedB = (double)b / c;
@@ -88,7 +83,7 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
     }
     else
     {
-      return "unknown";
+      return "";
     }
 
   }
