@@ -65,8 +65,8 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
 
   public void Wait()
   {
-    Thread.Sleep(250);
-    Robot.Wait(250);
+    Thread.Sleep(125);
+    Robot.Wait(125);
   }
 
   // Secundary functions for passing between systems
