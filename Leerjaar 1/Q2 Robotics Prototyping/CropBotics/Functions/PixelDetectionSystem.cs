@@ -6,12 +6,13 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
 {
   private const int pixelDetectorUltrasoonPin = 18;
   private const byte colourSensorAddress = 0x29;
+  public RGBSensor.Gain CurrentGain { get; private set; } = RGBSensor.Gain.GAIN_1X;
   private readonly RGBSensor _colourSensor;
   private readonly Ultrasonic _ultrasonic;
   private readonly FarmRobot _farmrobot;
+  public bool firstReading = true;
   public bool nextPixel = true;
   private int currentPixel;
-  public RGBSensor.Gain CurrentGain { get; private set; } = RGBSensor.Gain.GAIN_1X;
 
   public PixelDetectionSystem(FarmRobot farmrobot)
   {
@@ -38,8 +39,9 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
     var distance = _ultrasonic.GetUltrasoneDistance();
 
     // Pixel detected
-    if (distance <= 5 && nextPixel && colourFound != "")
+    if (distance <= 5 && nextPixel && colourFound != "" && !firstReading)
     {
+      currentPixel++;
       nextPixel = false;
 
       try
@@ -53,8 +55,6 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
       {
         Console.WriteLine($"ERROR: Failed to send messages - {ex.Message}");
       }
-
-      currentPixel++;
     }
     else if (!nextPixel)
     {
@@ -70,24 +70,27 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
   private static string CalculateColour(ushort r, ushort g, ushort b, ushort c)
   {
     Console.WriteLine($"DEBUG: RGB values: R={r}, G={g}, B={b}, C={c}");
-    double sumRGB = r + g + b;
+    double normalizedR = (double)r / c;
+    double normalizedG = (double)g / c;
+    double normalizedB = (double)b / c;
 
-    if (r >= sumRGB * 0.3)
+    if (normalizedR > normalizedG && normalizedR > normalizedB)
     {
       return "red";
     }
-    else if (g >= sumRGB * 0.3)
+    else if (normalizedG > normalizedR && normalizedG > normalizedB)
     {
       return "green";
     }
-    else if (b >= sumRGB * 0.3)
+    else if (normalizedB > normalizedR && normalizedB > normalizedG)
     {
       return "blue";
     }
     else
     {
-      return "Unknown";
+      return "unknown";
     }
+
   }
 
   public void SetGain(RGBSensor.Gain gain)
