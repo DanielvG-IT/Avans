@@ -60,6 +60,12 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
     if (timer.Check())
     {
       SendMessage("CropBotics/status/status", "Online");
+      SendMessage("CropBotics/request/MotorCalibrationRight", Convert.ToString(driveSystem.CalibrationRight));
+      SendMessage("CropBotics/request/MotorCalibrationLeft", Convert.ToString(driveSystem.CalibrationLeft));
+      SendMessage("CropBotics/status/emergency_stop", alertSystem.EmergencyStop ? "True" : "False");
+      SendMessage("CropBotics/request/MotorsEnabled", driveSystem.MotorsEnabled ? "True" : "False");
+      SendMessage("CropBotics/request/colourGain", pixelDetectionSystem.CurrentGain.ToString());
+      SendMessage("CropBotics/status/battery", $"{Robot.ReadBatteryMillivolts() / 90}");
     }
   }
 
