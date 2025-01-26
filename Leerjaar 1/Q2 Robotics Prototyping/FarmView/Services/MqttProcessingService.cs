@@ -43,7 +43,7 @@ public class MqttProcessingService : IHostedService, IMqttProcessingService
       string topic = args.Topic ?? string.Empty;
       string message = args.Message ?? string.Empty;
 
-      string commandPattern = @"CropBotics/command/(\w+)";
+      string commandPattern = @"CropBotics/command";
       string requestPattern = @"CropBotics/request/(\w+)";
       string sensorPattern = @"CropBotics/sensor/(\w+)";
       string statusPattern = @"CropBotics/status/(\w+)";
