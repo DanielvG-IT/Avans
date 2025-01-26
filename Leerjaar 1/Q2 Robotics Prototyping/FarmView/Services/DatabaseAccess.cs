@@ -146,6 +146,8 @@ public partial class DatabaseAccess(string connectionString) : IDatabaseAccess
     string? _data = mqtt.Message;
     bool isTypeSensor = typeData == "sensor";
 
+    Console.WriteLine($"DEBUG: Received topic: {_topic}");
+
     if (_topic == null)
     {
       throw new ArgumentNullException(_topic, "Topic cannot be null");
