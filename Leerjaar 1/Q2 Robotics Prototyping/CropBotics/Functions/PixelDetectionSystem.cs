@@ -44,7 +44,7 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
 
       try
       {
-        Console.WriteLine($"DEBUG: {colourFound} detected on row {currentPixel}!");
+        Console.WriteLine($"DEBUG: Colour {colourFound} detected on row {currentPixel}!");
         _farmrobot.SendMessage("CropBotics/sensor/pixelDistance", $"{distance}");
         _farmrobot.SendMessage($"CropBotics/pixel/{currentPixel}", $"{colourFound}");
 
@@ -69,6 +69,7 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
 
   private static string CalculateColour(ushort r, ushort g, ushort b, ushort c)
   {
+    Console.WriteLine($"DEBUG: RGB values: R={r}, G={g}, B={b}, C={c}");
     double sumRGB = r + g + b;
 
     if (r >= sumRGB * 0.3)
