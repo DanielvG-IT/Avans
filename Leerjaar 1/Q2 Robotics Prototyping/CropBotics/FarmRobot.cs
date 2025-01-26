@@ -20,7 +20,7 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
   private readonly DriveSystem driveSystem;
   private readonly PixelDetectionSystem pixelDetectionSystem;
   private readonly ObstacleDetectionSystem obstacleDetectionSystem;
-  private readonly PeriodTimer timer;
+  public readonly PeriodTimer timer;
   BlinkLed AlertLed;
   Button emergencyStopButton;
   public bool EmergencyStop { get; private set; } = false;
@@ -266,7 +266,6 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
   public void HandleExeption(string message, string? exeptiontype)
   {
     Console.WriteLine($"ERROR: Exeption {exeptiontype} thrown: {message}");
-    EmergencyStop = true;
     driveSystem.EmergencyStop();
     alertSystem.EmergencyStop = true;
     SendMessage("CropBotics/status/emergency_stop", "True");

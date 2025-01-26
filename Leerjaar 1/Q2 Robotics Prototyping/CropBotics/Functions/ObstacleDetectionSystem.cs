@@ -29,7 +29,10 @@ public class ObstacleDetectionSystem : IUpdatable
       ObstacleDistance = distanceSensor.GetUltrasoneDistance();
       if (ObstacleDistance != previousDistance)
       {
-        _farmrobot.SendMessage("CropBotics/sensor/obstacleDistance", $"{ObstacleDistance}");
+        if (_farmrobot.timer.Check())
+        {
+          _farmrobot.SendMessage("CropBotics/sensor/obstacleDistance", $"{ObstacleDistance}");
+        }
       }
     }
   }
