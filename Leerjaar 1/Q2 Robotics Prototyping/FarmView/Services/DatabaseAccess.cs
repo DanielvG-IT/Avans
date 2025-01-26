@@ -66,16 +66,16 @@ public partial class DatabaseAccess(string connectionString) : IDatabaseAccess
     {
       using var connection = new SqlConnection(_connStr);
       connection.Open();
-      using var command = connection.CreateCommand();
-      command.CommandText = @"
+      using var sqlcommand = connection.CreateCommand();
+      sqlcommand.CommandText = @"
             SELECT CommandName, DataTimestamp, CommandData 
             FROM CommandHistory 
             WHERE CONVERT(DATE, DataTimestamp) = @DataTimestamp
             ORDER BY DataTimestamp DESC";
 
-      command.Parameters.AddWithValue("@DataTimestamp", date);
+      sqlcommand.Parameters.AddWithValue("@DataTimestamp", date);
 
-      using var reader = command.ExecuteReader();
+      using var reader = sqlcommand.ExecuteReader();
 
       if (!reader.HasRows)
       {
