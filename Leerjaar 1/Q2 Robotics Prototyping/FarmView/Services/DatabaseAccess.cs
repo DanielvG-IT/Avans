@@ -145,22 +145,36 @@ public partial class DatabaseAccess(string connectionString) : IDatabaseAccess
     string? _topic = mqtt.Topic;
     string? _data = mqtt.Message;
     bool isTypeSensor = typeData == "sensor";
-
-    Console.WriteLine($"DEBUG: Received topic: {_topic}");
+    string sensorType = string.Empty;
 
     if (_topic == null)
     {
       throw new ArgumentNullException(_topic, "Topic cannot be null");
     }
 
-    var sensorTypeMatch = SensorRegex().Match(_topic);
-
-    if (!sensorTypeMatch.Success)
+    if (isTypeSensor)
     {
-      throw new ArgumentException("Invalid topic format for sensor data");
+      var TypeMatch = SensorRegex().Match(_topic);
+      if (TypeMatch.Success)
+      {
+        sensorType = TypeMatch.Groups[1].Value;
+        Console.WriteLine($"DEBUG: Matched sensor type: {sensorType}");
+      }
+      else
+      {
+        Console.WriteLine("DEBUG: Sensor regex match failed");
+      }
     }
-
-    string sensorType = sensorTypeMatch.Groups[1].Value;
+    else
+    {
+      var CommandMatch = CommandRegex().Match(_topic);
+      sensorType = "Command";
+      if (!CommandMatch.Success)
+      {
+        Console.WriteLine("DEBUG: Command regex match failed");
+        return;
+      }
+    }
 
     using var connection = new SqlConnection(_connStr);
     {
@@ -233,6 +247,11 @@ public partial class DatabaseAccess(string connectionString) : IDatabaseAccess
     }
   }
 
-  [GeneratedRegex(@"CropBotics/sensor/(\w+)", RegexOptions.IgnoreCase, "nl-NL")]
+  // Sensor Regex
+  [GeneratedRegex(@"^CropBotics/sensor/(\w+)$", RegexOptions.IgnoreCase, "nl-NL")]
   private static partial Regex SensorRegex();
+
+  // Command Regex
+  [GeneratedRegex(@"^CropBotics/command$", RegexOptions.IgnoreCase, "nl-NL")]
+  private static partial Regex CommandRegex();
 }
