@@ -12,18 +12,9 @@ public class DriveSystem : IUpdatable
     _farmrobot = farmrobot;
   }
 
-  private short _calibrationLeft = 1;
-  public short CalibrationLeft
-  {
-    get { return _calibrationLeft; }
-    set { if (value < 25 && value > -25) _calibrationLeft = value; }
-  }
-  private short _calibrationRight = 0;
-  public short CalibrationRight
-  {
-    get { return _calibrationRight; }
-    set { if (value < 25 && value > -25) _calibrationRight = value; }
-  }
+  public short CalibrationLeft = 1;
+
+  public short CalibrationRight = 0;
 
   private double _speedIncrease = 0.1;
   public double SpeedIncrease
@@ -53,8 +44,8 @@ public class DriveSystem : IUpdatable
     if (MotorsEnabled)
     {
       Robot.Motors(
-        (short)(CalculateRobotSpeed(_currentSpeed) + _calibrationLeft),
-        (short)(CalculateRobotSpeed(_currentSpeed) + _calibrationRight)
+        (short)(CalculateRobotSpeed(_currentSpeed) + CalibrationLeft),
+        (short)(CalculateRobotSpeed(_currentSpeed) + CalibrationRight)
       );
     }
     else
