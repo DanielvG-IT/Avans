@@ -3,15 +3,9 @@ using Avans.StatisticalRobot;
 
 namespace CropBotics.Functions;
 
-public class DriveSystem : IUpdatable
+public class DriveSystem(FarmRobot farmrobot) : IUpdatable
 {
-  private readonly FarmRobot _farmrobot;
-
-  public DriveSystem(FarmRobot farmrobot)
-  {
-    _farmrobot = farmrobot;
-  }
-
+  private readonly FarmRobot _farmrobot = farmrobot;
   public short CalibrationLeft = 2;
 
   public short CalibrationRight = 0;

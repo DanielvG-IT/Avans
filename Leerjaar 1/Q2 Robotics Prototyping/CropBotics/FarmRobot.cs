@@ -20,9 +20,9 @@ public class FarmRobot : IInitializable, IUpdatable, IWaitable, IMessageHandler
   private readonly DriveSystem driveSystem;
   private readonly PixelDetectionSystem pixelDetectionSystem;
   private readonly ObstacleDetectionSystem obstacleDetectionSystem;
+  private readonly BlinkLed AlertLed;
+  private readonly Button emergencyStopButton;
   public readonly PeriodTimer timer;
-  BlinkLed AlertLed;
-  Button emergencyStopButton;
   public bool EmergencyStop { get; private set; } = false;
 
   public FarmRobot()
