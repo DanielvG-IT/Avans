@@ -33,9 +33,7 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
 
   public void Update()
   {
-    _colourSensor.GetRawData(out ushort r, out ushort g, out ushort b, out ushort c);
 
-    var colourFound = CalculateColour(r, g, b, c);
     var distance = _ultrasonic.GetUltrasoneDistance();
 
     // Dismiss the first reading (false measurement)
@@ -45,12 +43,18 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
     }
 
     // Pixel detected and colour found
-    else if (distance <= 5 && nextPixel && colourFound != "" && !firstReading)
+    else if (distance <= 5 && nextPixel && !firstReading)
     {
       currentPixel++;
       nextPixel = false;
+      // var colourFound = "unknown";
 
+      _colourSensor.GetRawData(out ushort r, out ushort g, out ushort b, out ushort c);
+      var colourFound = CalculateColour(r, g, b, c);
+
+      Console.WriteLine($"DEBUG: RGB values: R={r}, G={g}, B={b}, C={c} for pixel {currentPixel}");
       Console.WriteLine($"DEBUG: Colour {colourFound} detected on row {currentPixel}!");
+
       _farmrobot.SendMessage("CropBotics/sensor/pixelDistance", $"{distance}");
       _farmrobot.SendMessage($"CropBotics/pixel/{currentPixel}", $"{colourFound}");
     }
@@ -68,16 +72,17 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
     double normalizedR = (double)r / c;
     double normalizedG = (double)g / c;
     double normalizedB = (double)b / c;
+    double maxValue = Math.Max(normalizedR, Math.Max(normalizedG, normalizedB));
 
-    if (normalizedR > normalizedG && normalizedR > normalizedB)
+    if (maxValue == normalizedR)
     {
       return "red";
     }
-    else if (normalizedG > normalizedR && normalizedG > normalizedB)
+    else if (maxValue == normalizedG)
     {
       return "green";
     }
-    else if (normalizedB > normalizedR && normalizedB > normalizedG)
+    else if (maxValue == normalizedB)
     {
       return "blue";
     }
