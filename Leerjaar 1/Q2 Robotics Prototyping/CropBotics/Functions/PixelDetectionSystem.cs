@@ -9,7 +9,6 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
   private readonly RGBSensor _colourSensor;
   private readonly Ultrasonic _ultrasonic;
   private readonly FarmRobot _farmrobot;
-  private bool firstMesuarement = true;
   public bool nextPixel = true;
   private int currentPixel;
   public RGBSensor.Gain CurrentGain { get; private set; } = RGBSensor.Gain.GAIN_1X;
@@ -72,25 +71,21 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
   {
     double sumRGB = r + g + b;
 
-    if (sumRGB <= 0)
-    {
-      return "";
-    }
-    else if (r >= sumRGB * 0.4)
+    if (r >= sumRGB * 0.3)
     {
       return "red";
     }
-    else if (g >= sumRGB * 0.4)
+    else if (g >= sumRGB * 0.3)
     {
       return "green";
     }
-    else if (b >= sumRGB * 0.4)
+    else if (b >= sumRGB * 0.3)
     {
       return "blue";
     }
     else
     {
-      return "";
+      return "Unknown";
     }
   }
 
