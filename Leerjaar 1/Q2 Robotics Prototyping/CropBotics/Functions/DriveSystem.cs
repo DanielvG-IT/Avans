@@ -12,7 +12,7 @@ public class DriveSystem : IUpdatable
     _farmrobot = farmrobot;
   }
 
-  public short CalibrationLeft = 1;
+  public short CalibrationLeft = 2;
 
   public short CalibrationRight = 0;
 
