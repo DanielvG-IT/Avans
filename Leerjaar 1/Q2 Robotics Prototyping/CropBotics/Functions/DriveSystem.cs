@@ -6,7 +6,7 @@ namespace CropBotics.Functions;
 public class DriveSystem(FarmRobot farmrobot) : IUpdatable
 {
   private readonly FarmRobot _farmrobot = farmrobot;
-  public short CalibrationLeft = 2;
+  public short CalibrationLeft = 4;
 
   public short CalibrationRight = 0;
 
