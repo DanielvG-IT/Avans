@@ -16,7 +16,7 @@ public class SimpleMqttClient : IDisposable
     /// <summary>
     /// Berichten worden standaard verstu/// urd en ontvangen in onderstaande text encoding
     /// </summary>
-    private static readonly Encoding DefaultEncoding = Encoding.ASCII;
+    private static Encoding DefaultEncoding = Encoding.ASCII;
 
     /// <summary>
     /// Een interne referentie naar de HiveMQClient
@@ -28,7 +28,7 @@ public class SimpleMqttClient : IDisposable
     /// </summary>
     public SimpleMqttClient(SimpleMqttClientConfiguration options)
     {
-        ClientId = options.ClientId;
+        this.ClientId = options.ClientId;
 
         _client = new HiveMQClient(new()
         {
@@ -66,15 +66,16 @@ public class SimpleMqttClient : IDisposable
     /// <param name="message">Het bericht dat verstuurd moet worden</param>
     public async Task PublishMessage(SimpleMqttMessage message, bool retain = false)
     {
-        await OpenAndVerifyConnection();
+        await this.OpenAndVerifyConnection();
 
         var mqttMessage = new MQTT5PublishMessage
         {
             Topic = message.Topic,
             Payload = DefaultEncoding.GetBytes(message.Message!),
             QoS = QualityOfService.ExactlyOnceDelivery,
-            Retain = retain
         };
+
+        mqttMessage.Retain = retain;
 
         var publishResult = await _client.PublishAsync(mqttMessage).ConfigureAwait(false);
 
@@ -96,7 +97,7 @@ public class SimpleMqttClient : IDisposable
     /// </summary>
     public async Task SubscribeToTopic(string topic)
     {
-        await OpenAndVerifyConnection();
+        await this.OpenAndVerifyConnection();
         await _client.SubscribeAsync(topic, QualityOfService.ExactlyOnceDelivery).ConfigureAwait(false);
     }
 
@@ -112,7 +113,7 @@ public class SimpleMqttClient : IDisposable
             Message = DefaultEncoding.GetString(e.PublishMessage.Payload!)
         };
 
-        OnMessageReceived?.Invoke(this, msg);
+        this.OnMessageReceived?.Invoke(this, msg);
     }
 
     /// <summary>
@@ -121,66 +122,27 @@ public class SimpleMqttClient : IDisposable
     /// <returns>true als de verbinding goed is geopend</returns>
     private async Task OpenAndVerifyConnection()
     {
-        const int maxRetries = 3;
-        int retryCount = 0;
-
-        while (retryCount < maxRetries)
+        // Open de verbinding wanneer deze niet open is
+        if (!this._client.IsConnected())
         {
-            try
-            {
-                // Open de verbinding wanneer deze niet open is
-                if (!_client.IsConnected())
-                {
-                    var connectionResult = await _client.ConnectAsync().ConfigureAwait(false);
+            var connectionResult = await _client.ConnectAsync().ConfigureAwait(false);
 
-                    if (connectionResult.ReasonCode != ConnAckReasonCode.Success)
-                    {
-                        throw new InvalidOperationException($"Failed to connect: {connectionResult.ReasonString}");
-                    }
-                }
-                return; // Exit the method if connection is successful
-            }
-            catch (HiveMQtt.Client.Exceptions.HiveMQttClientException ex)
+            if (connectionResult.ReasonCode != ConnAckReasonCode.Success)
             {
-                Console.WriteLine($"HiveMQttClientException: {ex.Message}");
-                retryCount++;
-                if (retryCount >= maxRetries)
-                {
-                    throw;
-                }
+                throw new InvalidOperationException($"Failed to connect: {connectionResult.ReasonString}");
             }
-            catch (IOException ex)
-            {
-                Console.WriteLine($"IOException: {ex.Message}");
-                retryCount++;
-                if (retryCount >= maxRetries)
-                {
-                    throw;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception: {ex.Message}");
-                throw;
-            }
-
-            // Wait before retrying
-            await Task.Delay(2000);
         }
     }
 
     /// <summary>
     /// Wanneer het object expliciet wordt weggegooid sluiten we de connectie
     /// </summary>
-    public void Dispose()
-    {
-        _client.Dispose();
-    }
+    public void Dispose() => _client.Dispose();
 
     /// <summary>
     /// Wanneer het object wordt opgeruimd door de GC sluiten we de connectie
     /// </summary>
-    ~SimpleMqttClient() => Dispose();
+    ~SimpleMqttClient() => _client.Dispose();
 
     /// <summary>
     /// Maakt een instantie van een SimpleMqttClient geschikt voor gebruik met HiveMQ 
@@ -196,8 +158,8 @@ public class SimpleMqttClient : IDisposable
             CleanStart = true, // <--- false, haalt al gebufferde meldingen ook op.
             ClientId = clientId, // Dit clientid moet uniek zijn binnen de broker
             TimeoutInMs = 5_000, // Standaard time-out bij het maken van een verbinding (5 seconden)
-            UserName = "CropBotics",
-            Password = "CropBotics123!"
+            UserName = "hivemq.webclient.1732899035765",
+            Password = "P107L9Dq;yYuMh>ceV#:"
         });
 
         return mqttWrapper;
