@@ -58,6 +58,10 @@ class CommsSystem : IInitializable
       _farmRobot.HandleExeption(ioex.Message, ioex.Source);
       // Handle invalid operations
     }
+    catch (NotSupportedException nsex)
+    {
+      _farmRobot.HandleExeption(nsex.Message, nsex.Source);
+    }
     catch (Exception ex)
     {
       _farmRobot.HandleExeption(ex.Message, ex.Source);
