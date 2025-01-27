@@ -8,8 +8,16 @@ THE Github repo for all my projects made for my bachelor at Avans University of 
 | Leerjaar   | Module   | Project Name                           | Status      |
 |------------|----------|----------------------------------------|-------------|
 | Leerjaar 1 | Module 1 | Smart Energy                           | Completed   |
-| Leerjaar 1 | Module 2 | Robotisering voor duurzame landbouw    | In Progress |
-| Leerjaar 1 | Module 3 | ...                                    | ...         |
+| Leerjaar 1 | Module 2 | Robotics Prototyping                   | Completed   |
+| Leerjaar 1 | Module 3 | 2D Graphics & Secure Communication     | ...         |
+| Leerjaar 1 | Module 4 | AI & System Integration                | ...         |
+| Leerjaar 2 | Module 1 | ....     | ...         |
+| Leerjaar 2 | Module 2 | ....     | ...         |
+| Leerjaar 2 | Module 3 | ....     | ...         |
+| Leerjaar 2 | Module 4 | ....     | ...         |
+| Leerjaar 3 | Module 1 | ....     | ...         |
+
+
 
 
 ## ⚙️ Projects
