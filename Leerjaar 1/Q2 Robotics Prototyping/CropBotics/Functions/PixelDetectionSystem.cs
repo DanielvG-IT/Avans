@@ -49,31 +49,8 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
       nextPixel = false;
       var colourFound = "unknown";
 
-      // _colourSensor.GetRawData(out ushort r, out ushort g, out ushort b, out ushort c);
-      // var colourFound = CalculateColour(r, g, b, c);
-
-      // Cheating for the demo
-      switch (currentPixel)
-      {
-        case 1:
-          colourFound = "green";
-          break;
-        case 2:
-          colourFound = "red";
-          break;
-        case 3:
-          colourFound = "green";
-          break;
-        case 4:
-          colourFound = "blue";
-          break;
-        case 5:
-          colourFound = "green";
-          break;
-        case 6:
-          colourFound = "red";
-          break;
-      }
+      _colourSensor.GetRawData(out ushort r, out ushort g, out ushort b, out ushort c);
+      var colourFound = CalculateColour(r, g, b, c);
 
       _farmrobot.SendMessage("CropBotics/sensor/pixelDistance", $"{distance}");
       _farmrobot.SendMessage($"CropBotics/pixel/{currentPixel}", $"{colourFound}");
