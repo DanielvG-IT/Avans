@@ -1,0 +1,42 @@
+[
+    {
+        "id": 0,
+        "prefab": "Player",
+        "positionX": 0,
+        "positionY": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotation": 0,
+        "sortingLayer": 0
+    },
+    {
+        "id": 1,
+        "prefab": "Restaurant",
+        "positionX": 0,
+        "positionY": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotation": 0,
+        "sortingLayer": 0
+    },
+    {
+        "id": 2,
+        "prefab": "House",
+        "positionX": 0,
+        "positionY": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotation": 0,
+        "sortingLayer": 0
+    },
+    {
+        "id": 3,
+        "prefab": "Tree",
+        "positionX": 0,
+        "positionY": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotation": 0,
+        "sortingLayer": 0
+    }
+]
