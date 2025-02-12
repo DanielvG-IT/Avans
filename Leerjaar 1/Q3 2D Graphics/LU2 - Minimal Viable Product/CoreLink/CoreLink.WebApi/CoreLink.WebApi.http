@@ -1,4 +1,4 @@
-@CoreLink.WebApi_HostAddress = http://localhost:5228
+@CoreLink.WebApi_HostAddress = http://localhost:80
 
 GET {{CoreLink.WebApi_HostAddress}}/weatherforecast/
 Accept: application/json
