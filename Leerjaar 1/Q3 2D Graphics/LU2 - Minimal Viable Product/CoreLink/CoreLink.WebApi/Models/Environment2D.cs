@@ -2,8 +2,9 @@
 {
     public class Environment2D
     {
-        public required string name { get; set; }
-        public required string maxLength { get; set; }
-        public required string maxHeight { get; set; }
+        public Guid Id { get; set; }
+        public required string Name { get; set; }
+        public required int MaxHeight { get; set; }
+        public required int MaxLength { get; set; }
     }
 }

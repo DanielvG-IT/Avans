@@ -1,31 +1,39 @@
-using CoreLink.WebApi.Repositories;
-using Microsoft.AspNetCore.Mvc;
+using CoreLink.WebApi.Interfaces;
 using CoreLink.WebApi.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CoreLink.WebApi.Controllers;
 
 [ApiController]
 [Route("Environments")]
-public class EnvironmentsController(ILogger<EnvironmentsController> logger) : ControllerBase
+public class EnvironmentsController(ILogger<EnvironmentsController> logger, IEnvironmentRepository environmentRepository, IObjectRepository objectRepository) : ControllerBase
 {
-    //private readonly ILogger<EnvironmentsController> _logger = logger;
+    private readonly ILogger<EnvironmentsController> _logger = logger;
+    private readonly IEnvironmentRepository _environmentRepository = environmentRepository;
+
 
     // Getting Environment
-    [HttpGet]
-    public IActionResult Get()
+    [HttpGet(Name = "ReadEnvironments")]
+    public async Task<ActionResult<IEnumerable<Environment2D>>> Get()
     {
-        var environments = EnvironmentRepository.GetEnvironments();
+        var environments = await _environmentRepository.ReadAsync();
+
+        if (!environments.Any())
+        {
+            return NotFound();
+        }
+
         return Ok(environments);
     }
 
-    [HttpGet("{name}")]
-    public IActionResult Get(string name)
+    [HttpGet("{Id}", Name = "ReadEnvironmentsByGuid")]
+    public async Task<ActionResult<Environment2D>> Get(Guid Id)
     {
-        var environment = EnvironmentRepository.GetEnvironment(name);
+        var environment = await _environmentRepository.ReadAsync(Id);
 
         if (environment == null)
         {
-            return NotFound($"Environment with name '{name}' not found.");
+            return NotFound();
         }
 
         return Ok(environment);
@@ -33,54 +41,76 @@ public class EnvironmentsController(ILogger<EnvironmentsController> logger) : Co
 
 
     // Creating a new environment
-    [HttpPost]
-    public IActionResult Post([FromBody] Environment2D payload)
+    [HttpPost(Name = "CreateEnvironment")]
+    public IActionResult Post(Environment2D newEnvironment)
     {
-        if (string.IsNullOrEmpty(payload.name))
-        {
-            return BadRequest("name is required.");
-        }
-        if (string.IsNullOrEmpty(payload.maxLength))
-        {
-            return BadRequest("maxLength is required.");
-        }
-        if (string.IsNullOrEmpty(payload.maxHeight))
-        {
-            return BadRequest("maxHeight is required.");
-        }
+        newEnvironment.Id = Guid.NewGuid();
+        _environmentRepository.CreateAsync(newEnvironment);
 
-        // Save the environment to the ...MEDIUM...
-        int result = EnvironmentRepository.AddEnvironment(payload);
-
-        return result switch
-        {
-            201 => Created("", new { Message = $"Created environment {payload.name}"}),
-            400 => BadRequest("Environment already exists."),
-            _ => StatusCode(500, "An error occurred while processing your request.")
-        };
+        return CreatedAtRoute("ReadEnvironmentsByGuid", new { Id = newEnvironment.Id }, newEnvironment);
     }
 
     // Updating an environment
-    [HttpPut("{name}")]
-    public IActionResult Put(string name, [FromBody] Environment2D payload)
+    [HttpPut("{Id}", Name = "UpdateEnvironmentByGuid")]
+    public IActionResult Put(Guid Id, Environment2D Environment)
     {
-        var result = EnvironmentRepository.UpdateEnvironment(name, payload);
+        // TODO Check if the environment exists
+        var environment = _environmentRepository.ReadAsync(Id);
+        if (environment == null) { return NotFound(); }
 
-        return result;
+        _environmentRepository.UpdateAsync(Environment);
+
+        return Ok();
     }
 
 
     // Deleting an environment
-    [HttpDelete("{name}")]
-    public IActionResult Delete(string name)
+    [HttpDelete("{Id}", Name = "DeleteEnvironmentByGuid")]
+    public IActionResult Delete(Guid Id)
     {
-        var result = EnvironmentRepository.RemoveEnvironment(name);
+        // TODO Improve Check if the environment exists
+        var environment = _environmentRepository.ReadAsync(Id);
+        if (environment == null) { return NotFound(); }
 
-        return result switch
-        {
-            204 => NoContent(),
-            404 => BadRequest("Environment not found."),
-            _ => StatusCode(500, "An error occurred while processing your request.")
-        };
+        _environmentRepository.DeleteAsync(Id);
+
+        return NoContent();
     }
+
+
+
+
+
+
+
+
+
+
+    // Get objects from environment
+    [HttpGet("{EnvironmentId}/objects", Name = "GetObjectsByEnvironmentGuid")]
+    public async Task<ActionResult<IEnumerable<Object2D>>> GetObjects(Guid EnvironmentId)
+    {
+        // TODO Check if the environment exists
+        var environment = _environmentRepository.ReadAsync(Id);
+        if (environment == null) { return NotFound(); }
+
+        _environmentRepository.UpdateAsync(Environment);
+
+        return Ok();
+    }
+
+    // Get objects from environment
+    [HttpGet("{EnvironmentId}/objects/{ObjectId}", Name = "GetObjectByObjectGuid")]
+    public async Task<ActionResult<IEnumerable<Object2D>>> GetObject(Guid ObjectId, Guid EnvironmentId )
+    {
+        // TODO Check if the environment exists
+        var environment = _environmentRepository.ReadAsync(Id);
+
+        if (environment == null) { return NotFound(); }
+
+        return Ok();
+    }
+
+
+
 }

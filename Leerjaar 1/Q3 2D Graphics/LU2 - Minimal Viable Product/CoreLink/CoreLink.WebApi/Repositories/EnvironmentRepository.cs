@@ -1,67 +1,70 @@
 ﻿using CoreLink.WebApi.Models;
-using Microsoft.AspNetCore.Mvc;
+using CoreLink.WebApi.Interfaces;
+using Dapper;
+using Microsoft.Data.SqlClient;
 
 namespace CoreLink.WebApi.Repositories
 {
-    public static class EnvironmentRepository
+    public class EnvironmentRepository : IEnvironmentRepository
     {
-        public static List<Environment2D> Environments { get; } = [];
+        private readonly string sqlConnectionString;
 
-        // Add methodes
-        public static int AddEnvironment(Environment2D environment)
+        public EnvironmentRepository(string sqlDatabaseConnectionString)
         {
-            // Check if an environment with the same name already exists
-            if (Environments.Any(e => e.name == environment.name))
+            sqlConnectionString = sqlDatabaseConnectionString;
+        }
+
+        // Create Methodes
+        public async Task CreateAsync(Environment2D environment)
+        {
+            using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                return StatusCodes.Status400BadRequest; // Return 400 if the name already exists
+                var environmentId = await sqlConnection.ExecuteAsync("INSERT INTO [Environment2D] (Id, Name, MaxHeight, MaxLength) VALUES (@Id, @Name, @MaxHeight, @MaxLength)", environment);
             }
-
-            Environments.Add(environment);
-            return StatusCodes.Status201Created; // Return 201 if successfully added
         }
 
-        // Update methodes
-        public static IActionResult UpdateEnvironment(string existingName, Environment2D newEnvironment)
-        {
-            var existingEnvironment = Environments.FirstOrDefault(e => e.name == existingName);
 
-            if (existingEnvironment == null)
+        // Read Methodes
+        public async Task<IEnumerable<Environment2D>> ReadAsync()
+        {
+            using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                return new NotFoundObjectResult("Environment not found.");
+                return await sqlConnection.QueryAsync<Environment2D>("SELECT * FROM [Environment2D]");
             }
-
-            Environments.Remove(existingEnvironment);
-            Environments.Add(newEnvironment);
-
-            return new OkObjectResult(newEnvironment);
-
         }
 
-        // Delete methodes
-        public static int RemoveEnvironment(string nameDeleting)
+        public async Task<Environment2D?> ReadAsync(Guid Id)
         {
-            var wantingToDelete = Environments.FirstOrDefault(e => e.name == nameDeleting);
-            
-            if (wantingToDelete == null) 
-            { 
-                return StatusCodes.Status404NotFound; 
+            using (var sqlConnection = new SqlConnection(sqlConnectionString))
+            {
+                return await sqlConnection.QuerySingleOrDefaultAsync<Environment2D>("SELECT * FROM [Environment2D] WHERE Id = @Id", new { Id });
             }
-
-            Environments.Remove(wantingToDelete);
-
-            return StatusCodes.Status204NoContent;
         }
 
 
-        // Get methodes
-        public static List<Environment2D> GetEnvironments()
+        // Update Methodes
+        public async Task UpdateAsync(Environment2D environment)
         {
-            return Environments;
+            using (var sqlConnection = new SqlConnection(sqlConnectionString))
+            {
+                await sqlConnection.ExecuteAsync("UPDATE [Environment2D] SET " +
+                                                 "Id = @Id, " +
+                                                 "Name = @Name" +
+                                                 "MaxHeight = @MaxHeight" +
+                                                 "MaxLength = @MaxLength"
+                                                 , environment);
+
+            }
         }
 
-        public static Environment2D? GetEnvironment(string name)
+
+        // Delete Methodes
+        public async Task DeleteAsync(Guid id)
         {
-            return Environments.FirstOrDefault(e => e.name == name);
+            using (var sqlConnection = new SqlConnection(sqlConnectionString))
+            {
+                await sqlConnection.ExecuteAsync("DELETE FROM [WeatherForecast] WHERE Id = @Id", new { id });
+            }
         }
     }
 }
