@@ -1,35 +1,35 @@
-name: L1Q1 .NET Build and Test
+# name: L1Q1 .NET Build and Test
 
-on:
-    push:
-        branches: ['main']
-    pull_request:
-        branches: ['main']
+# on:
+#     push:
+#         branches: ['main']
+#     pull_request:
+#         branches: ['main']
 
-jobs:
-    build:
-        runs-on: ubuntu-latest
+# jobs:
+#     build:
+#         runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout Code
-              uses: actions/checkout@v4
+#         steps:
+#             - name: Checkout Code
+#               uses: actions/checkout@v4
 
-            - name: Setup .NET Core
-              uses: actions/setup-dotnet@v4
-              with:
-                  dotnet-version: 9.0.x
+#             - name: Setup .NET Core
+#               uses: actions/setup-dotnet@v4
+#               with:
+#                   dotnet-version: 9.0.x
 
-            # Restore dependencies for the solutions
-            - name: Restore dependencies for Smart Energy
-              run: dotnet restore
-              working-directory: 'Leerjaar 1/Q1 Smart Energy'
+#             # Restore dependencies for the solutions
+#             - name: Restore dependencies for Smart Energy
+#               run: dotnet restore
+#               working-directory: 'Leerjaar 1/Q1 Smart Energy'
 
-            # Build the solutions
-            - name: Build Smart Energy solution
-              run: dotnet build --no-restore --configuration Release
-              working-directory: 'Leerjaar 1/Q1 Smart Energy'
+#             # Build the solutions
+#             - name: Build Smart Energy solution
+#               run: dotnet build --no-restore --configuration Release
+#               working-directory: 'Leerjaar 1/Q1 Smart Energy'
 
-            # Run tests for the solutions
-            - name: Run tests for Smart Energy
-              run: dotnet test --no-build --verbosity normal
-              working-directory: 'Leerjaar 1/Q1 Smart Energy'
+#             # Run tests for the solutions
+#             - name: Run tests for Smart Energy
+#               run: dotnet test --no-build --verbosity normal
+#               working-directory: 'Leerjaar 1/Q1 Smart Energy'
