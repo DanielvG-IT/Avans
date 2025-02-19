@@ -1,7 +1,6 @@
 name: L1Q3-LU2 WebApi Deploy
-# name: L1Q2 .NET Build and Test
 
-env: # Change these settings when you need to
+env:
   ARTIFACT_NAME: WebApi
   DOTNET_CORE_VERSION: 9.0.x
   PUBLISH_DIRECTORY: "./out/publish"
@@ -10,12 +9,10 @@ on:
     branches:
       - main
       - deployment 
-
-  # Allows you to run this workflow manually from the Actions tab.
   workflow_dispatch:
 
 jobs:
-  check: # checking if the secrets exist (src: https://stackoverflow.com/questions/72925899/github-actions-detect-if-secret-exists)
+  check:
       runs-on: ubuntu-latest
       steps:
         - name: "Check if AZURE_WEBAPP_NAME secret exists"
