@@ -47,7 +47,6 @@ public class PixelDetectionSystem : IUpdatable, IInitializable
     {
       currentPixel++;
       nextPixel = false;
-      var colourFound = "unknown";
 
       _colourSensor.GetRawData(out ushort r, out ushort g, out ushort b, out ushort c);
       var colourFound = CalculateColour(r, g, b, c);
