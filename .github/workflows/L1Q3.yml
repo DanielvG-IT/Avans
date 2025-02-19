@@ -51,6 +51,9 @@ jobs:
       with:
         dotnet-version: ${{env.DOTNET_CORE_VERSION}}
 
+    - name: Change working directory
+      run: cd "Leerjaar 1/Q3 2D Graphics/LU2 - Minimal Viable Product/CoreLink/CoreLink.WebApi"
+
     - name: Restore dependencies
       run: dotnet restore
       
