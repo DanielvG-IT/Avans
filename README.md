@@ -1,6 +1,6 @@
-# AvansSchool
+# Avans
 
-THE Github repo for all my projects made for my bachelor at Avans University of Applied Science in Breda (The Netherlands)!
+THE Github repo for all my projects made for my bachelor at Avans University of Applied Science in Breda, The Netherlands!
 
 
 ## 🚀 Projects Overview
