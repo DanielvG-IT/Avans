@@ -1,10 +1,27 @@
+namespace CoreLink.WebApi.Models;
+
+/// <summary>
+/// Represents a 2D environment with specific dimensions and a unique identifier.
+/// </summary>
 public class Environment2D
 {
-    public string id;
+    /// <summary>
+    /// Gets or sets the unique identifier for the environment.
+    /// </summary>
+    public Guid id;
 
-    public string name;
+    /// <summary>
+    /// Gets or sets the name of the environment.
+    /// </summary>
+    public required string name;
 
-    public int maxLength;
+    /// <summary>
+    /// Gets or sets the maximum length of the environment.
+    /// </summary>
+    public required int maxLength;
 
-    public int maxHeight;
+    /// <summary>
+    /// Gets or sets the maximum height of the environment.
+    /// </summary>
+    public required int maxHeight;
 }
