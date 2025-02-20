@@ -4,12 +4,6 @@
 
 CoreLink is a minimal viable product (MVP) developed for the LU2 course in the 2D Graphics module. This project aims to demonstrate the core functionalities required for a basic 2D graphics application.
 
-## TODO
-
--   [ ] Prefect Environment repo with correctMethodes
--   [ ] Create ObjectController and object repo
--   [ ] Document code and create user manual
-
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
