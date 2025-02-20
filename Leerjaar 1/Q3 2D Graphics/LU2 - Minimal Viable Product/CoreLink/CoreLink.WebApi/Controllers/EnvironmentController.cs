@@ -5,18 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace CoreLink.WebApi.Controllers;
 
 [ApiController]
-[Route("Environments")]
-public class EnvironmentsController(ILogger<EnvironmentsController> logger, IEnvironmentRepository environmentRepository, IObjectRepository objectRepository) : ControllerBase
+[Route("environments")]
+public class EnvironmentsController(IEnvironmentRepository environmentRepository, IObjectRepository objectRepository) : ControllerBase
 {
-    private readonly ILogger<EnvironmentsController> _logger = logger;
-    private readonly IEnvironmentRepository _environmentRepository = environmentRepository;
-
-
-    // Getting Environment
     [HttpGet(Name = "ReadEnvironments")]
     public async Task<ActionResult<IEnumerable<Environment2D>>> Get()
     {
-        var environments = await _environmentRepository.ReadAsync();
+        var environments = await environmentRepository.GetAllEnvironments();
 
         if (!environments.Any())
         {
@@ -26,10 +21,10 @@ public class EnvironmentsController(ILogger<EnvironmentsController> logger, IEnv
         return Ok(environments);
     }
 
-    [HttpGet("{Id}", Name = "ReadEnvironmentsByGuid")]
-    public async Task<ActionResult<Environment2D>> Get(Guid Id)
+    [HttpGet("{environmentId}", Name = "ReadEnvironmentById")]
+    public async Task<ActionResult<Environment2D>> Get(Guid environmentId)
     {
-        var environment = await _environmentRepository.ReadAsync(Id);
+        var environment = await environmentRepository.GetEnvironmentById(environmentId);
 
         if (environment == null)
         {
@@ -39,40 +34,59 @@ public class EnvironmentsController(ILogger<EnvironmentsController> logger, IEnv
         return Ok(environment);
     }
 
+    // [HttpGet("{UserId}", Name = "ReadEnvironmentsByUserId")]
+    // public async Task<ActionResult<IEnumerable<Environment2D>>> Get(Guid UserId)
+    // {
+    //     var environments = await environmentRepository.GetEnvironmentByUserId(UserId);
 
-    // Creating a new environment
+    //     if (!environments.Any())
+    //     {
+    //         return NotFound();
+    //     }
+
+    //     return Ok(environments);
+    // }
+
     [HttpPost(Name = "CreateEnvironment")]
-    public IActionResult Post(Environment2D newEnvironment)
+    public async Task<IActionResult> Post(Environment2D newEnvironment)
     {
         newEnvironment.Id = Guid.NewGuid();
-        _environmentRepository.CreateAsync(newEnvironment);
+        await environmentRepository.CreateEnvironment(newEnvironment);
 
-        return CreatedAtRoute("ReadEnvironmentsByGuid", new { Id = newEnvironment.Id }, newEnvironment);
+        return CreatedAtRoute("ReadEnvironments", newEnvironment);
     }
 
-    // Updating an environment
+    // [HttpPost(Name = "CreateEnvironment")]
+    // public async Task<IActionResult> Post(Environment2D newEnvironment)
+    // {
+    //     // TODO Check if the user is allowed to create an environment
+    //     // TODO Check if environment with same name already exists
+    //     newEnvironment.Id = Guid.NewGuid();
+    //     await environmentRepository.CreateEnvironment(newEnvironment);
+
+    //     return CreatedAtRoute("ReadEnvironmentsByUserId", new { UserId = newEnvironment.UserId }, newEnvironment);
+    // }
+
     [HttpPut("{Id}", Name = "UpdateEnvironmentByGuid")]
-    public IActionResult Put(Guid Id, Environment2D Environment)
+    public async Task<IActionResult> Put(Guid Id, Environment2D updatedEnvironment)
     {
-        // TODO Check if the environment exists
-        var environment = _environmentRepository.ReadAsync(Id);
+        // TODO Check if environment is the users own environment
+        var environment = await environmentRepository.GetEnvironmentById(Id);
         if (environment == null) { return NotFound(); }
 
-        _environmentRepository.UpdateAsync(Environment);
+        await environmentRepository.UpdateEnvironmentById(Id, updatedEnvironment);
 
         return Ok();
     }
 
-
-    // Deleting an environment
     [HttpDelete("{Id}", Name = "DeleteEnvironmentByGuid")]
-    public IActionResult Delete(Guid Id)
+    public async Task<IActionResult> Delete(Guid Id)
     {
-        // TODO Improve Check if the environment exists
-        var environment = _environmentRepository.ReadAsync(Id);
+        // TODO Check if environment is users own environment
+        var environment = await environmentRepository.GetEnvironmentById(Id);
         if (environment == null) { return NotFound(); }
 
-        _environmentRepository.DeleteAsync(Id);
+        await environmentRepository.DeleteEnvironmentById(Id);
 
         return NoContent();
     }
@@ -86,31 +100,78 @@ public class EnvironmentsController(ILogger<EnvironmentsController> logger, IEnv
 
 
 
-    // Get objects from environment
-    [HttpGet("{EnvironmentId}/objects", Name = "GetObjectsByEnvironmentGuid")]
-    public async Task<ActionResult<IEnumerable<Object2D>>> GetObjects(Guid EnvironmentId)
+
+
+
+
+
+    [HttpGet(Name = "ReadEnvironments")]
+    public async Task<ActionResult<IEnumerable<Environment2D>>> GetObjects()
     {
-        // TODO Check if the environment exists
-        var environment = _environmentRepository.ReadAsync(Id);
+        var environments = await environmentRepository.GetAllEnvironments();
+
+        if (!environments.Any())
+        {
+            return NotFound();
+        }
+
+        return Ok(environments);
+    }
+
+    [HttpGet("{environmentId}/objects", Name = "ReadObjectsByEnvironmentId")]
+    public async Task<ActionResult<IEnumerable<Object2D>>> GetObjects(Guid environmentId)
+    {
+        var objects = await objectRepository.GetObjectsByEnvironmentId(environmentId);
+
+        if (objects == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(objects);
+    }
+
+    [HttpPost("{id}/objects", Name = "CreateObject")]
+    public async Task<IActionResult> PostObject(Guid id, Object2D object2d)
+    {
+        object2d.Id = Guid.NewGuid();
+        await objectRepository.CreateObject(id, object2d);
+
+        return CreatedAtRoute("ReadObjectsByEnvironmentId", object2d);
+    }
+
+    // [HttpPost(Name = "CreateEnvironment")]
+    // public async Task<IActionResult> Post(Environment2D newEnvironment)
+    // {
+    //     // TODO Check if the user is allowed to create an environment
+    //     // TODO Check if environment with same name already exists
+    //     newEnvironment.Id = Guid.NewGuid();
+    //     await environmentRepository.CreateEnvironment(newEnvironment);
+
+    //     return CreatedAtRoute("ReadEnvironmentsByUserId", new { UserId = newEnvironment.UserId }, newEnvironment);
+    // }
+
+    [HttpPut("{Id}/objects", Name = "UpdateObjectByGuid")]
+    public async Task<IActionResult> PutObject(Guid Id, Object2D updatedObject)
+    {
+        // TODO Check if environment is the users own environment
+        var environment = await environmentRepository.GetEnvironmentById(Id);
         if (environment == null) { return NotFound(); }
 
-        _environmentRepository.UpdateAsync(Environment);
+        await objectRepository.UpdateObjectById(Id, updatedObject);
 
         return Ok();
     }
 
-    // Get objects from environment
-    [HttpGet("{EnvironmentId}/objects/{ObjectId}", Name = "GetObjectByObjectGuid")]
-    public async Task<ActionResult<IEnumerable<Object2D>>> GetObject(Guid ObjectId, Guid EnvironmentId )
+    [HttpDelete("{Id}/objects", Name = "DeleteObjectByGuid")]
+    public async Task<IActionResult> DeleteObject(Guid Id)
     {
-        // TODO Check if the environment exists
-        var environment = _environmentRepository.ReadAsync(Id);
-
+        // TODO Check if environment is users own environment
+        var environment = await objectRepository.GetObjectById(Id);
         if (environment == null) { return NotFound(); }
 
-        return Ok();
+        await objectRepository.DeleteObjectById(Id);
+
+        return NoContent();
     }
-
-
-
 }

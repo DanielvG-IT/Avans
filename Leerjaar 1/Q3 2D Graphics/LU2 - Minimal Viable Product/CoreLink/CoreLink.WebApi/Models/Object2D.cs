@@ -3,13 +3,13 @@
     public class Object2D
     {
         public Guid Id { get; set; }
-        public required int ObjectId;
+        public int EnvironmentId;
         public required string PrefabId;
-        public required float positionX;
-        public required float positionY;
-        public required float scaleX;
-        public required float scaleY;
-        public required float rotationZ;
-        public required int sortingLayer;
+        public required float PositionX;
+        public required float PositionY;
+        public required float ScaleX;
+        public required float ScaleY;
+        public required float RotationZ;
+        public required int SortingLayer;
     }
 }

@@ -1,37 +1,40 @@
 using CoreLink.WebApi.Interfaces;
 using CoreLink.WebApi.Repositories;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Configure database connection
+var sqlConnectionString = builder.Configuration["SqlConnectionString"]
+    ?? throw new InvalidProgramException("Configuration variable SqlConnectionString not found");
 
+// Configure Identity
+builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
+{
+    options.User.RequireUniqueEmail = true;
+    options.Password.RequiredLength = 12; // 512 was extreem lang
+})
+.AddRoles<IdentityRole>()
+.AddDapperStores(options => options.ConnectionString = sqlConnectionString);
+
+// Register services
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-builder.Services.Configure<RouteOptions>(o => o.LowercaseUrls = true);
+builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
-var sqlConnectionString = builder.Configuration["SqlConnectionString"];
-Console.WriteLine($"SqlConnectionString: {sqlConnectionString}");
-
-if (string.IsNullOrWhiteSpace(sqlConnectionString))
-    throw new InvalidProgramException("Configuration variable SqlConnectionString not found");
-
-builder.Services.AddTransient<IEnvironmentRepository, EnvironmentRepository>(o => new EnvironmentRepository(sqlConnectionString));
-
-
+builder.Services.AddTransient<IEnvironmentRepository, EnvironmentRepository>(_ => new EnvironmentRepository(sqlConnectionString));
+builder.Services.AddTransient<IObjectRepository, ObjectRepository>(_ => new ObjectRepository(sqlConnectionString));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Enable OpenApi in development
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
-app.MapControllers();
+app.MapGroup("/account").MapIdentityApi<IdentityUser>();
+app.MapControllers().RequireAuthorization();
 
 app.Run();
