@@ -18,12 +18,13 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
 .AddDapperStores(options => options.ConnectionString = sqlConnectionString);
 
 // Register services
-builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
-
-builder.Services.AddTransient<IEnvironmentRepository, EnvironmentRepository>(_ => new EnvironmentRepository(sqlConnectionString));
+builder.Services.AddTransient<IAuthenticationService, AspNetIdentityAuthenticationService>();
 builder.Services.AddTransient<IObjectRepository, ObjectRepository>(_ => new ObjectRepository(sqlConnectionString));
+builder.Services.AddTransient<IEnvironmentRepository, EnvironmentRepository>(_ => new EnvironmentRepository(sqlConnectionString));
 
 var app = builder.Build();
 
