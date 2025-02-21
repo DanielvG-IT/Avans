@@ -10,37 +10,38 @@ namespace CoreLink.WebApi.Repositories
         public async Task CreateEnvironment(Environment2D environment)
         {
             using var sqlConnection = new SqlConnection(sqlDatabaseConnectionString);
-            var rowsAffected = await sqlConnection.ExecuteAsync("INSERT INTO [Environment2D] (Id, Name, MaxHeight, MaxLength) VALUES (@Id, @Name, @MaxHeight, @MaxLength)", environment);
-        }
-
-        public async Task<IEnumerable<Environment2D>> GetAllEnvironments()
-        {
-            using var sqlConnection = new SqlConnection(sqlDatabaseConnectionString);
-            return await sqlConnection.QueryAsync<Environment2D>("SELECT * FROM [Environment2D]");
+            var rowsAffected = await sqlConnection.ExecuteAsync("INSERT INTO [Environment2D] (id, name, ownerUserId, maxHeight, maxLength) VALUES (@Id, @Name, @ownerUserId ,@MaxHeight, @MaxLength)", environment);
         }
 
         public async Task<Environment2D?> GetEnvironmentById(Guid Id)
         {
             using var sqlConnection = new SqlConnection(sqlDatabaseConnectionString);
-            return await sqlConnection.QuerySingleOrDefaultAsync<Environment2D>("SELECT * FROM [Environment2D] WHERE Id = @Id", new { Id });
+            return await sqlConnection.QuerySingleOrDefaultAsync<Environment2D>("SELECT * FROM [Environment2D] WHERE id = @Id", new { Id });
         }
 
-        public async Task<IEnumerable<Environment2D>> GetEnvironmentByUserId(Guid UserId)
+        public async Task<IEnumerable<Environment2D>> GetEnvironmentsByUserId(string UserId)
         {
             using var sqlConnection = new SqlConnection(sqlDatabaseConnectionString);
-            var userEnvironments = await sqlConnection.QueryAsync<Environment2D>("SELECT * FROM [Environment2D] WHERE UserId = @UserId", new { UserId });
+            var userEnvironments = await sqlConnection.QueryAsync<Environment2D>("SELECT * FROM [Environment2D] WHERE ownerUserId = @UserId", new { UserId });
             return userEnvironments;
         }
 
-        public async Task UpdateEnvironmentById(Guid Id, Environment2D updatedEnvironment)
+        public async Task UpdateEnvironmentById(Guid id, Environment2D updatedEnvironment)
         {
             using var sqlConnection = new SqlConnection(sqlDatabaseConnectionString);
-            await sqlConnection.ExecuteAsync("UPDATE [Environment2D] SET " +
-                                             "Name = @Name, " +
-                                             "MaxHeight = @MaxHeight, " +
-                                             "MaxLength = @MaxLength " +
-                                             "WHERE Id = @Id",
-                                             new { updatedEnvironment.Name, updatedEnvironment.MaxHeight, updatedEnvironment.MaxLength, Id });
+            var query = "UPDATE [Environment2D] SET " +
+                "name = @Name, " +
+                "maxHeight = @MaxHeight, " +
+                "maxLength = @MaxLength " +
+                "WHERE id = @Id";
+            var parameters = new
+            {
+                updatedEnvironment.name,
+                updatedEnvironment.maxHeight,
+                updatedEnvironment.maxLength,
+                Id = id
+            };
+            await sqlConnection.ExecuteAsync(query, parameters);
         }
 
         public async Task DeleteEnvironmentById(Guid id)

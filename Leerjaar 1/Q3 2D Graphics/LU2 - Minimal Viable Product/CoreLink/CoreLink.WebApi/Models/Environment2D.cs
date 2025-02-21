@@ -11,6 +11,11 @@ public class Environment2D
     public Guid id;
 
     /// <summary>
+    ///   Gets or sets the user identifier.
+    /// </summary>
+    public required string ownerUserId;
+
+    /// <summary>
     /// Gets or sets the name of the environment.
     /// </summary>
     public required string name;

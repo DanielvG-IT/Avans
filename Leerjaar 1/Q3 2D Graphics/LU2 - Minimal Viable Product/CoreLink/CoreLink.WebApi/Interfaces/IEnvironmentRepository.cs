@@ -15,12 +15,6 @@ namespace CoreLink.WebApi.Interfaces
         public Task CreateEnvironment(Environment2D environment);
 
         /// <summary>
-        /// Retrieves all 2D environments.
-        /// </summary>
-        /// <returns>A task representing the asynchronous operation, containing a collection of environments.</returns>
-        public Task<IEnumerable<Environment2D>> GetAllEnvironments();
-
-        /// <summary>
         /// Retrieves a 2D environment by its unique identifier.
         /// </summary>
         /// <param name="Id">The unique identifier of the environment.</param>
@@ -32,7 +26,7 @@ namespace CoreLink.WebApi.Interfaces
         /// </summary>
         /// <param name="UserId">The unique identifier of the user.</param>
         /// <returns>A task representing the asynchronous operation, containing the environment if found, otherwise null.</returns>
-        public Task<IEnumerable<Environment2D>> GetEnvironmentByUserId(Guid UserId);
+        public Task<IEnumerable<Environment2D>> GetEnvironmentsByUserId(string UserId);
 
         /// <summary>
         /// Updates a 2D environment by its unique identifier.
