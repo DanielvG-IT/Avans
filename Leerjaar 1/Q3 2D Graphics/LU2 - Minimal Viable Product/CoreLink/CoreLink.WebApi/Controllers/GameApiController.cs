@@ -29,7 +29,7 @@ public class GameApiController : ControllerBase
         if (string.IsNullOrEmpty(loggedInUser))
             return Unauthorized("User is not authenticated.");
 
-        var environments = await _environmentRepository.GetEnvironmentsByUserId(loggedInUser);
+        var environments = await _environmentRepository.GetEnvironmentsByUserIdAsync(loggedInUser);
 
         if (!environments.Any())
             return NotFound("No environments found for the current user.");
@@ -38,12 +38,27 @@ public class GameApiController : ControllerBase
     }
 
     // TODO Maybe redundant methode (because unity already has all environments from user)
-    [HttpGet("{environmentId}", Name = "ReadEnvironmentById")]
-    public async Task<ActionResult<Environment2D>> Get(Guid environmentId)
-    {
-        var environment = await _environmentRepository.GetEnvironmentById(environmentId);
-        return Ok(environment);
-    }
+    // [HttpGet("{environmentId}", Name = "ReadEnvironmentById")]
+    // public async Task<ActionResult<Environment2D>> Get(Guid environmentId)
+    // {
+    //     var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
+
+    //     if (environmentId == Guid.Empty)
+    //         return BadRequest("The environment ID is not valid.");
+
+    //     if (string.IsNullOrEmpty(loggedInUser))
+    //         return Unauthorized("User is not authenticated.");
+
+    //     var environment = await _environmentRepository.GetEnvironmentById(environmentId);
+
+    //     if (environment == null)
+    //         return NotFound("The environment with the specified ID does not exist.");
+
+    //     if (environment.ownerUserId != loggedInUser)
+    //         return Forbid("You do not have permission to view this environment.");
+
+    //     return Ok(environment);
+    // }
 
 
     [HttpPost(Name = "CreateEnvironment")]
@@ -53,7 +68,7 @@ public class GameApiController : ControllerBase
         if (string.IsNullOrEmpty(loggedInUser))
             return Unauthorized("User is not authenticated.");
 
-        var existingEnvironments = await _environmentRepository.GetEnvironmentsByUserId(loggedInUser);
+        var existingEnvironments = await _environmentRepository.GetEnvironmentsByUserIdAsync(loggedInUser);
 
         if (existingEnvironments.Any(e => e.name == newEnvironment.name))
             return BadRequest("An environment with the same name already exists.");
@@ -67,7 +82,7 @@ public class GameApiController : ControllerBase
 
         Console.WriteLine($"Creating new environment: ID = {environment.id}, Name = {environment.name}, OwnerUserId = {environment.ownerUserId}, MaxHeight = {environment.maxHeight}, MaxLength = {environment.maxLength}");
 
-        await _environmentRepository.CreateEnvironment(environment);
+        await _environmentRepository.CreateEnvironmentAsync(environment);
 
         return Ok(environment);
     }
@@ -76,7 +91,7 @@ public class GameApiController : ControllerBase
     public async Task<IActionResult> Put(Guid environmentId, Environment2D updatedEnvironment)
     {
         var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
-        var existingEnvironment = await _environmentRepository.GetEnvironmentById(environmentId);
+        var existingEnvironment = await _environmentRepository.GetEnvironmentByIdAsync(environmentId);
 
         if (string.IsNullOrEmpty(loggedInUser))
             return Unauthorized("User is not authenticated.");
@@ -90,7 +105,7 @@ public class GameApiController : ControllerBase
         updatedEnvironment.id = environmentId;
         updatedEnvironment.ownerUserId = loggedInUser;
 
-        await _environmentRepository.UpdateEnvironmentById(environmentId, updatedEnvironment);
+        await _environmentRepository.UpdateEnvironmentByIdAsync(environmentId, updatedEnvironment);
         return Ok(updatedEnvironment);
     }
 
@@ -99,7 +114,7 @@ public class GameApiController : ControllerBase
     public async Task<IActionResult> Delete(Guid environmentId)
     {
         var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
-        var existingEnvironment = await _environmentRepository.GetEnvironmentById(environmentId);
+        var existingEnvironment = await _environmentRepository.GetEnvironmentByIdAsync(environmentId);
 
         if (string.IsNullOrEmpty(loggedInUser))
             return Unauthorized("User is not authenticated.");
@@ -110,7 +125,16 @@ public class GameApiController : ControllerBase
         if (existingEnvironment.ownerUserId != loggedInUser)
             return Forbid("You do not have permission to delete this environment.");
 
-        await _environmentRepository.DeleteEnvironmentById(environmentId);
+        await _environmentRepository.DeleteEnvironmentByIdAsync(environmentId);
         return NoContent();
     }
+
+
+    /// OBJECTS
+
+    // [HttpGet("{environmentId}/objects", Name = "GetObjectsByEnvironmentId")]
+    // public async Task<IActionResult> GetObjects()
+    // {
+    //     await _objectRepository
+    // }
 }
