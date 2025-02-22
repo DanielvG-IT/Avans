@@ -1,6 +1,7 @@
 using CoreLink.WebApi.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using CoreLink.WebApi.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace CoreLink.WebApi.Controllers;
 
@@ -20,6 +21,7 @@ public class GameApiController : ControllerBase
     }
 
     // HTTP METHODES
+    // TODO Refactor environment methodes to also check for empty Guid
 
     [HttpGet(Name = "ReadEnvironmentsFromUser")]
     public async Task<ActionResult<IEnumerable<Environment2D>>> Get()
@@ -129,9 +131,126 @@ public class GameApiController : ControllerBase
 
     /// OBJECTS
 
-    // [HttpGet("{environmentId}/objects", Name = "GetObjectsByEnvironmentId")]
-    // public async Task<IActionResult> GetObjects()
-    // {
-    //     await _objectRepository
-    // }
+    [HttpGet("{environmentId}/objects", Name = "GetObjectsByEnvironmentId")]
+    public async Task<ActionResult<IEnumerable<Object2D>>> GetObjects(Guid environmentId)
+    {
+        var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
+
+        if (string.IsNullOrEmpty(loggedInUser))
+            return Unauthorized("User is not authenticated.");
+
+        if (environmentId == Guid.Empty)
+            return BadRequest("The environment ID is not valid.");
+
+        var environment = await _environmentRepository.GetEnvironmentByIdAsync(environmentId);
+
+        if (environment == null)
+            return NotFound("The environment with the specified ID does not exist.");
+
+        if (environment.ownerUserId != loggedInUser)
+            return Forbid("You do not have permission to view objects in this environment.");
+
+        var objects = await _objectRepository.GetObject2DsAsync(environmentId);
+
+        if (!objects.Any())
+            return NotFound("No objects found in the specified environment.");
+
+        return Ok(objects);
+    }
+
+
+    [HttpPost("{environmentId}/objects", Name = "CreateObject")]
+    // TODO Maybe add Object2D to Task<ActionResult<Object2D>>
+    public async Task<IActionResult> CreateObject(Guid environmentId, [FromBody] Object2D newObject)
+    {
+        var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
+
+        if (string.IsNullOrEmpty(loggedInUser))
+            return Unauthorized("User is not authenticated.");
+
+        if (environmentId == Guid.Empty)
+            return BadRequest("The environment ID is not valid.");
+
+        var environment = await _environmentRepository.GetEnvironmentByIdAsync(environmentId);
+
+        if (environment == null)
+            return NotFound("The environment with the specified ID does not exist.");
+
+        if (environment.ownerUserId != loggedInUser)
+            return Forbid("You do not have permission to create objects in this environment.");
+
+        // TODO Check constrains of the environment like rotation, scale and position
+
+        newObject.id = new Guid();
+        newObject.environmentId = environmentId;
+
+        await _objectRepository.CreateObject(environmentId, newObject);
+
+        return Ok(newObject);
+    }
+
+
+    [HttpPut("{environmentId}/objects/{objectId}", Name = "UpdateObject")]
+    public async Task<IActionResult> UpdateObject(Guid environmentId, Guid objectId, [FromBody] Object2D updatedObject)
+    {
+        var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
+
+        if (string.IsNullOrEmpty(loggedInUser))
+            return Unauthorized("User is not authenticated.");
+
+        if (environmentId == Guid.Empty)
+            return BadRequest("The environment ID is not valid.");
+
+        if (objectId == Guid.Empty)
+            return BadRequest("The Object ID is not valid.");
+
+        var environment = await _environmentRepository.GetEnvironmentByIdAsync(environmentId);
+
+        if (environment == null)
+            return NotFound("The environment with the specified ID does not exist.");
+
+        if (environment.ownerUserId != loggedInUser)
+            return Forbid("You do not have permission to create objects in this environment.");
+
+        updatedObject.id = objectId;
+        // TODO Figure out if this is redundant code
+        updatedObject.environmentId = environmentId;
+
+        await _objectRepository.UpdateObject(objectId, updatedObject);
+        return Ok(updatedObject);
+    }
+
+    [HttpDelete("{environmentId}/objects/{objectId}", Name = "DeleteObject")]
+    public async Task<IActionResult> DeleteObject(Guid environmentId, Guid objectId)
+    {
+        var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
+
+        if (string.IsNullOrEmpty(loggedInUser))
+            return Unauthorized("User is not authenticated.");
+
+        if (environmentId == Guid.Empty)
+            return BadRequest("The environment ID is not valid.");
+
+        if (objectId == Guid.Empty)
+            return BadRequest("The object ID is not valid.");
+
+        var objectEnvironment = await _environmentRepository.GetEnvironmentByIdAsync(environmentId);
+
+        if (objectEnvironment == null)
+            return NotFound("The environment with the specified ID does not exist.");
+
+        if (objectEnvironment.ownerUserId != loggedInUser)
+            return Forbid("You do not have permission to delete objects in this environment.");
+
+        var existingObject = await _objectRepository.GetObjectByIdAsync(objectId);
+
+        if (existingObject == null)
+            return NotFound("The object with the specified ID does not exist.");
+
+        if (existingObject.environmentId != environmentId)
+            return BadRequest("The object does not belong to the specified environment.");
+
+        await _objectRepository.DeleteObject(objectId);
+        return NoContent();
+    }
 }

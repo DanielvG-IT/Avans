@@ -18,7 +18,7 @@ namespace CoreLink.WebApi.Models
         /// Gets or sets the identifier of the environment the object belongs to.
         /// </summary>
         [Required]
-        public string? environmentId { get; set; }
+        public Guid environmentId { get; set; }
 
         /// <summary>
         /// Gets or sets the identifier of the prefab used to create the object.
