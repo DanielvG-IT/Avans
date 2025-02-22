@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace CoreLink.WebApi.Models;
 
 /// <summary>
@@ -8,25 +10,28 @@ public class Environment2D
     /// <summary>
     /// Gets or sets the unique identifier for the environment.
     /// </summary>
-    public Guid id;
-
-    /// <summary>
-    ///   Gets or sets the user identifier.
-    /// </summary>
-    public required string ownerUserId;
+    public Guid id { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the environment.
     /// </summary>
-    public required string name;
+    [Required]
+    public string name { get; set; }
+
+    /// <summary>
+    ///   Gets or sets the user identifier.
+    /// </summary>
+    public string? ownerUserId { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum length of the environment.
     /// </summary>
-    public required int maxLength;
+    [Required]
+    public int maxLength { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum height of the environment.
     /// </summary>
-    public required int maxHeight;
+    [Required]
+    public int maxHeight { get; set; }
 }

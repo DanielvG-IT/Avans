@@ -47,7 +47,7 @@ public class GameApiController : ControllerBase
 
 
     [HttpPost(Name = "CreateEnvironment")]
-    public async Task<ActionResult<Environment2D>> Post(Environment2D newEnvironment)
+    public async Task<ActionResult<Environment2D>> Post([FromBody] Environment2D newEnvironment)
     {
         var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
         if (string.IsNullOrEmpty(loggedInUser))
@@ -65,9 +65,11 @@ public class GameApiController : ControllerBase
         environment.id = Guid.NewGuid();
         environment.ownerUserId = loggedInUser;
 
+        Console.WriteLine($"Creating new environment: ID = {environment.id}, Name = {environment.name}, OwnerUserId = {environment.ownerUserId}, MaxHeight = {environment.maxHeight}, MaxLength = {environment.maxLength}");
+
         await _environmentRepository.CreateEnvironment(environment);
 
-        return CreatedAtRoute("ReadEnvironmentById", new { environment.id }, environment);
+        return Ok(environment);
     }
 
     [HttpPut("{environmentId}", Name = "UpdateEnvironmentById")]
