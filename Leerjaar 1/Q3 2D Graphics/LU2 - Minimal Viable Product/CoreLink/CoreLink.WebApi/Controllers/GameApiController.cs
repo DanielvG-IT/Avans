@@ -76,15 +76,12 @@ public class GameApiController : ControllerBase
         if (existingEnvironments.Count() >= 5)
             return BadRequest("You have reached the maximum number of environments allowed (5).");
 
-        var environment = newEnvironment;
-        environment.id = Guid.NewGuid();
-        environment.ownerUserId = loggedInUser;
+        newEnvironment.id = Guid.NewGuid();
+        newEnvironment.ownerUserId = loggedInUser;
 
-        Console.WriteLine($"Creating new environment: ID = {environment.id}, Name = {environment.name}, OwnerUserId = {environment.ownerUserId}, MaxHeight = {environment.maxHeight}, MaxLength = {environment.maxLength}");
+        await _environmentRepository.CreateEnvironmentAsync(newEnvironment);
 
-        await _environmentRepository.CreateEnvironmentAsync(environment);
-
-        return Ok(environment);
+        return Ok(newEnvironment);
     }
 
     [HttpPut("{environmentId}", Name = "UpdateEnvironmentById")]
