@@ -29,7 +29,7 @@ namespace CoreLink.WebApi.Repositories
         public async Task UpdateEnvironmentByIdAsync(Guid id, Environment2D updatedEnvironment)
         {
             using var sqlConnection = new SqlConnection(sqlDatabaseConnectionString);
-            await sqlConnection.ExecuteAsync("INSERT INTO [Environment2D] (id, name, ownerUserId, maxHeight, maxLength) VALUES (@id, @name, @ownerUserId, @maxHeight, @maxLength)", updatedEnvironment);
+            await sqlConnection.ExecuteAsync("UPDATE [Environment2D] SET name = @name, ownerUserId = @ownerUserId, maxHeight = @maxHeight, maxLength = @maxLength WHERE id = @id", updatedEnvironment);
         }
 
         public async Task DeleteEnvironmentByIdAsync(Guid id)
