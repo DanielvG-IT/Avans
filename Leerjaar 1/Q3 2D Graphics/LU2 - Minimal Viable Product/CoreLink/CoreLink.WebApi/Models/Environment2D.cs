@@ -16,7 +16,7 @@ public class Environment2D
     /// Gets or sets the name of the environment.
     /// </summary>
     [Required]
-    public string name { get; set; }
+    public string? name { get; set; }
 
     /// <summary>
     ///   Gets or sets the user identifier.
