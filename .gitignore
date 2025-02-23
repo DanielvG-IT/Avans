@@ -7,14 +7,47 @@
 *.tmp
 
 # Unity Ignores
+.utmp/
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
+[Bb]uild/
 [Bb]uilds/
+[Ll]ogs/
 [Uu]ser[Ss]ettings/
-MemoryCaptures/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+[Aa]ssets/Plugins/Editor/JetBrains*
+.vs/
+.gradle/
+ExportedObj/
+.consulo/
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+sysinfo.txt
+*.apk
+*.aab
+*.unitypackage
+*.unitypackage.meta
+*.app
+crashlytics-build.properties
+[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+[Aa]ssets/[Ss]treamingAssets/aa.meta
+[Aa]ssets/[Ss]treamingAssets/aa/*
 
-# .NET Ignores (Blazor & Console)
+# .NET Ignores (Blazor, Console & WebAPI)
 bin/
 obj/
 *.nupkg
