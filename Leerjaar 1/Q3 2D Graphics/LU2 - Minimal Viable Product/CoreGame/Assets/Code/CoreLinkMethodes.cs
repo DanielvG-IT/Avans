@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ApiMethodes : MonoBehaviour
+public class CoreLinkMethodes : MonoBehaviour
 {
     public GameObject circlePrefab;
     public GameObject squarePrefab;
@@ -20,7 +20,6 @@ public class ApiMethodes : MonoBehaviour
 
     #region Login
 
-    [ContextMenu("User/Register")]
     public async void Register()
     {
         IWebRequestReponse webRequestResponse = await userApiClient.Register(user);
@@ -41,7 +40,6 @@ public class ApiMethodes : MonoBehaviour
         }
     }
 
-    [ContextMenu("User/Login")]
     public async void Login()
     {
         IWebRequestReponse webRequestResponse = await userApiClient.Login(user);
@@ -66,7 +64,6 @@ public class ApiMethodes : MonoBehaviour
 
     #region Environment
 
-    [ContextMenu("Environment2D/Read all")]
     public async void ReadEnvironment2Ds()
     {
         IWebRequestReponse webRequestResponse = await enviroment2DApiClient.ReadEnvironment2Ds();
@@ -89,7 +86,6 @@ public class ApiMethodes : MonoBehaviour
         }
     }
 
-    [ContextMenu("Environment2D/Create")]
     public async void CreateEnvironment2D()
     {
         IWebRequestReponse webRequestResponse = await enviroment2DApiClient.CreateEnvironment(environment2D);
