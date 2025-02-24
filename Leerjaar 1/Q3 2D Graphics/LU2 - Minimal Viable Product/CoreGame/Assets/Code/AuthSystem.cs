@@ -16,7 +16,28 @@ public class AuthSystem : MonoBehaviour
   public Environment2DApiClient enviroment2DApiClient;
   public Object2DApiClient object2DApiClient;
 
-  public async void Register()
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape)) 
+            Quit(); 
+
+        
+        if (Input.GetKeyDown(KeyCode.Return))
+            Login();
+
+        if (Input.GetKeyDown(KeyCode.L))
+            Login();
+
+        if (Input.GetKeyDown(KeyCode.R)) 
+            Register();
+    }
+
+    public void Quit()
+    { 
+        Application.Quit();
+    }
+
+    public async void Register()
   {
     User user = new()
     {
