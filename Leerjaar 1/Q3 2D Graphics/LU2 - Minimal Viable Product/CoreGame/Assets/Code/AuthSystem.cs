@@ -33,13 +33,15 @@ public class AuthSystem : MonoBehaviour
     }
 
     public void Quit()
-    { 
+    {
         Application.Quit();
     }
 
     public async void Register()
   {
-    User user = new()
+        MessageText.text = "";
+
+        User user = new()
     {
       email = UsernameField.text,
       password = PasswordField.text,
@@ -82,7 +84,9 @@ public class AuthSystem : MonoBehaviour
 
   public async void Login()
   {
-    User user = new()
+        MessageText.text = "";
+
+        User user = new()
     {
       email = UsernameField.text,
       password = PasswordField.text,
@@ -103,7 +107,7 @@ public class AuthSystem : MonoBehaviour
       case WebRequestError errorResponse:
         string errorMessage = errorResponse.ErrorMessage;
         Debug.Log("Login error: " + errorMessage);
-        // TODO: Handle error scenario. Show the errormessage to the user.
+                // TODO: Handle error scenario. Show the errormessage to the user.
         MessageText.color = Color.red;
         MessageText.text = errorMessage switch
         {
