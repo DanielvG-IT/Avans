@@ -4,17 +4,17 @@
 
 - [ ] Als gebruiker wil ik mezelf kunnen registeren op basis van een gebruikersnaam en wachtwoord.
   - [ ] Er bestaat nog geen gebruiker met deze gebruikersnaam. De gebruikersnaam is uniek.
-  - [ ] Wachtwoord moet minimaal 10 karakters lang zijn.
-  - [ ] Wachtwoord moet minstens 1 lowercase, uppercase, cijfer en niet-alphanumeriek karakter bevatten.
+  - [x] Wachtwoord moet minimaal 10 karakters lang zijn.
+  - [x] Wachtwoord moet minstens 1 lowercase, uppercase, cijfer en niet-alphanumeriek karakter bevatten.
 - [x] Als gebruiker wil ik kunnen inloggen op basis van mijn gebruikersnaam en wachtwoord.
   - [ ] De gebruiker ziet een foutmelding wanneer de gebruikersnaam of wachtwoord niet correct is.
 - [ ] Als gebruiker wil ik een nieuwe lege 2D-wereld aan kunnen maken.
-  - [ ] De gebruiker moet ingelogd zijn.
-  - [ ] De gebruiker moet een naam invoeren voor de nieuwe 2D-wereld.
-  - [ ] De naam voor de nieuwe 2D-wereld mag niet identiek zijn aan de naam van een al bestaande 2D-wereld van de gebruiker.
-  - [ ] De naam voor de nieuwe 2D-wereld is minimaal 1 karakter en maximaal 25 karakters lang.
-  - [ ] De gebruiker mag niet meer dan 5 eigen 2D-werelden hebben.
-  - [ ] De nieuwe 2D-wereld wordt opgeslagen.
+  - [x] De gebruiker moet ingelogd zijn.
+  - [x] De gebruiker moet een naam invoeren voor de nieuwe 2D-wereld.
+  - [x] De naam voor de nieuwe 2D-wereld mag niet identiek zijn aan de naam van een al bestaande 2D-wereld van de gebruiker.
+  - [x] De naam voor de nieuwe 2D-wereld is minimaal 1 karakter en maximaal 25 karakters lang.
+  - [x] De gebruiker mag niet meer dan 5 eigen 2D-werelden hebben.
+  - [x] De nieuwe 2D-wereld wordt opgeslagen.
 - [ ] Als gebruiker wil ik een overzicht van mijn bestaande 2D-werelden kunnen bekijken.
   - [ ] De gebruiker moet ingelogd zijn.
   - [ ] Het overzicht toont de naam van de bestaande 2D-werelden van de gebruiker.
@@ -43,8 +43,8 @@
 - [ ] Als gebruiker wil ik de camera kunnen bewegen terwijl ik een 2D-wereld bekijk zodanig dat ik heel de 2D-wereld kan bekijken.
   - [ ] De gebruiker kan de camera naar links, rechts, boven en onder bewegen met de bijbehorende pijltjestoetsen op het toetsenbord.
 - [ ] Als gebruiker wil ik de grootte van mijn 2D-wereld specifiëren in maximale lengte (X) en maximale hoogte (Y) wanneer ik een nieuwe lege 2D-wereld aanmaak.
-  - [ ] De maximale lengte moet een geheel getal zijn tussen 20 en 200.
-  - [ ] De maximale hoogte moet een geheel getal zijn tussen 10 en 100.
+  - [x] De maximale lengte moet een geheel getal zijn tussen 20 en 200.
+  - [x] De maximale hoogte moet een geheel getal zijn tussen 10 en 100.
   - [ ] De positie van 2D-objecten in deze 2D-wereld mag zich niet buiten de maximale lengte of maximale hoogte van de 2D-wereld bevinden.
 - [ ] Als gebruiker wil ik een door mij gemaakte 2D-wereld kunnen delen met een andere gebruiker op basis van hun gebruikersnaam.
   - [ ] De gebruiker voert de gebruikersnaam in van de user waarmee ze hun 2D-wereld willen delen.

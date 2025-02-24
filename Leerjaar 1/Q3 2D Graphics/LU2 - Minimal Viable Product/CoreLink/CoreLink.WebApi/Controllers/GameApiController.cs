@@ -70,12 +70,22 @@ public class GameApiController : ControllerBase
         if (string.IsNullOrEmpty(loggedInUser))
             return Unauthorized("User is not authenticated.");
 
-        var existingEnvironments = await _environmentRepository.GetEnvironmentsByUserIdAsync(loggedInUser);
+        if (string.IsNullOrEmpty(newEnvironment.name) || newEnvironment.name.Length > 25)
+            return BadRequest("The environment name must be between 1 and 25 characters.");
 
-        if (existingEnvironments.Any(e => e.name == newEnvironment.name))
+        if (newEnvironment.maxLength > 200 || newEnvironment.maxLength < 20)
+            return BadRequest("The environment length must be between 20 and 200.");
+
+        if (newEnvironment.maxHeight > 100 || newEnvironment.maxHeight < 10)
+            return BadRequest("The environment height must be between 10 and 100.");
+
+
+        var existingEnvironmentsForUser = await _environmentRepository.GetEnvironmentsByUserIdAsync(loggedInUser);
+
+        if (existingEnvironmentsForUser.Any(e => e.name == newEnvironment.name))
             return BadRequest("An environment with the same name already exists.");
 
-        if (existingEnvironments.Count() >= 5)
+        if (existingEnvironmentsForUser.Count() >= 5)
             return BadRequest("You have reached the maximum number of environments allowed (5).");
 
         newEnvironment.id = Guid.NewGuid();

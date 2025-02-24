@@ -12,7 +12,11 @@ var sqlConnectionString = builder.Configuration["SqlConnectionString"]
 builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
 {
     options.User.RequireUniqueEmail = true;
-    options.Password.RequiredLength = 12; // 512 was extreem lang
+    options.Password.RequiredLength = 10;
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
 })
 .AddRoles<IdentityRole>()
 .AddDapperStores(options => options.ConnectionString = sqlConnectionString);

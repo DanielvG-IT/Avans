@@ -27,11 +27,13 @@ public class Environment2D
     /// Gets or sets the maximum length of the environment.
     /// </summary>
     [Required]
+    [Range(20, 200)]
     public int maxLength { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum height of the environment.
     /// </summary>
     [Required]
+    [Range(10, 100)]
     public int maxHeight { get; set; }
 }
