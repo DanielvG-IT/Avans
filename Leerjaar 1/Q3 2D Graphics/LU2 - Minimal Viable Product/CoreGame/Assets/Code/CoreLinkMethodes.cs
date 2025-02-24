@@ -180,6 +180,8 @@ public class CoreLinkMethodes : MonoBehaviour
                         spawnedObject.GetComponent<SpriteRenderer>().sortingOrder = item.sortingLayer;
                     }
 
+                    // TODO Remove existing objects
+
                 }
                 break;
 
