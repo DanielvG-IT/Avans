@@ -6,6 +6,22 @@
 *.log
 *.tmp
 
+# .NET Ignores (Blazor, Console & WebAPI)
+bin/
+obj/
+*.nupkg
+*.snupkg
+project.lock.json
+project.assets.json
+
+# Blazor-specific ignores
+wwwroot/dist/
+wwwroot/node_modules/
+
+# Rider/Visual Studio Code
+.idea/
+*.code-workspace
+
 # Unity Ignores
 .utmp/
 [Ll]ibrary/
@@ -46,19 +62,3 @@ crashlytics-build.properties
 [Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
 [Aa]ssets/[Ss]treamingAssets/aa.meta
 [Aa]ssets/[Ss]treamingAssets/aa/*
-
-# .NET Ignores (Blazor, Console & WebAPI)
-bin/
-obj/
-*.nupkg
-*.snupkg
-project.lock.json
-project.assets.json
-
-# Blazor-specific ignores
-wwwroot/dist/
-wwwroot/node_modules/
-
-# Rider/Visual Studio Code
-.idea/
-*.code-workspace
