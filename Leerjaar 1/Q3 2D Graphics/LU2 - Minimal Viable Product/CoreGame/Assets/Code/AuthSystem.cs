@@ -24,12 +24,6 @@ public class AuthSystem : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.Return))
             Login();
-
-        if (Input.GetKeyDown(KeyCode.L))
-            Login();
-
-        if (Input.GetKeyDown(KeyCode.R)) 
-            Register();
     }
 
     public void Quit()
