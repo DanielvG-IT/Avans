@@ -60,7 +60,9 @@ git clone https://github.com/DanielvG-IT/Avans.git
 ```
 
 **2. Select the project**: Open the desired project folder in Visual Studio Code.
+
 **3. Install dependencies**: Use the provided instructions per project (usually in the README of that folder).
+
 **4. Run**: Start the project according to the platform-specific guides (e.g., .NET for Smart Energy, Unity for 2D Graphics, etc.).
 
 ---
