@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 17ef5b84629c2094783be488d82ce259
+guid: abd8e0b79657a0440810b92c1ac82041
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5168041613449910407
-    second: 66847_0
+      213: 7541802385606665328
+    second: Casino_Gambling_Floor_Background_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: 66847_0
+      name: Casino_Gambling_Floor_Background_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 512
-        height: 512
+        width: 1800
+        height: 1200
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 977a1e5b88d6748b0800000000000000
-      internalID: -5168041613449910407
+      spriteID: 0746740cf4dd9a860800000000000000
+      internalID: 7541802385606665328
       vertices: []
       indices: 
       edges: []
