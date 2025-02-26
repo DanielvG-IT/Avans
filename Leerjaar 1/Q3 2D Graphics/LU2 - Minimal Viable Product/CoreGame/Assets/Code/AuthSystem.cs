@@ -96,7 +96,7 @@ public class AuthSystem : MonoBehaviour
         MessageText.color = Color.green;
         MessageText.text = "Login Succesfull!";
 
-        await SceneManager.LoadSceneAsync("StartScreen");
+        await SceneManager.LoadSceneAsync("MainMenu");
         break;
       case WebRequestError errorResponse:
         string errorMessage = errorResponse.ErrorMessage;
