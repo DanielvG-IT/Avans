@@ -12,6 +12,7 @@ public class EnvironmentSystem : MonoBehaviour
     //public GameObject trianglePrefab;
 
     [Header("UI References")]
+    public Canvas canvas;
     public TMP_Text UserMessage;
     public TMP_InputField envName;
     public TMP_InputField envMaxHeight;
@@ -24,7 +25,7 @@ public class EnvironmentSystem : MonoBehaviour
     private UserApiClient userApiClient;
     private Object2DApiClient object2DApiClient;
     private Environment2DApiClient enviroment2DApiClient;
-    
+
     private List<Environment2D> environmentList;
     //private Environment2D loadedEnvironment;
 
@@ -63,12 +64,22 @@ public class EnvironmentSystem : MonoBehaviour
             }
 
             string environmentId = item.id; // Use a local copy of the environment ID for the listener (to avoid closure issues).
-            
+
             // Set the button's event listener to call methode with environmentId embedded.
             button.onClick.AddListener(() => {
-                LoadEnvironment(environmentId); 
+                LoadEnvironment(environmentId);
             });
         }
+    }
+
+    public void HideUI()
+    {
+        canvas.GetComponent<Canvas>().enabled = false;
+    }
+    
+    public void ShowUI()
+    {
+        canvas.GetComponent<Canvas>().enabled = true;
     }
 
     #endregion UI Methodes

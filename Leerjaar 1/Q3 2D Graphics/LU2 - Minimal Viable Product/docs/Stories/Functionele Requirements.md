@@ -8,16 +8,16 @@
   - [x] Wachtwoord moet minstens 1 lowercase, uppercase, cijfer en niet-alphanumeriek karakter bevatten.
 - [x] Als gebruiker wil ik kunnen inloggen op basis van mijn gebruikersnaam en wachtwoord.
   - [ ] De gebruiker ziet een foutmelding wanneer de gebruikersnaam of wachtwoord niet correct is.
-- [ ] Als gebruiker wil ik een nieuwe lege 2D-wereld aan kunnen maken.
+- [x] Als gebruiker wil ik een nieuwe lege 2D-wereld aan kunnen maken.
   - [x] De gebruiker moet ingelogd zijn.
   - [x] De gebruiker moet een naam invoeren voor de nieuwe 2D-wereld.
   - [x] De naam voor de nieuwe 2D-wereld mag niet identiek zijn aan de naam van een al bestaande 2D-wereld van de gebruiker.
   - [x] De naam voor de nieuwe 2D-wereld is minimaal 1 karakter en maximaal 25 karakters lang.
   - [x] De gebruiker mag niet meer dan 5 eigen 2D-werelden hebben.
   - [x] De nieuwe 2D-wereld wordt opgeslagen.
-- [ ] Als gebruiker wil ik een overzicht van mijn bestaande 2D-werelden kunnen bekijken.
-  - [ ] De gebruiker moet ingelogd zijn.
-  - [ ] Het overzicht toont de naam van de bestaande 2D-werelden van de gebruiker.
+- [x] Als gebruiker wil ik een overzicht van mijn bestaande 2D-werelden kunnen bekijken.
+  - [x] De gebruiker moet ingelogd zijn.
+  - [x] Het overzicht toont de naam van de bestaande 2D-werelden van de gebruiker.
 - [ ] Als gebruiker wil ik één van mijn bestaande 2D-werelden kunnen bekijken.
   - [ ] De gebruiker moet ingelogd zijn.
   - [ ] 2D-objecten die gekoppeld zijn aan deze 2D-wereld worden correct getoond op basis van de attributen van het 2D-object.
