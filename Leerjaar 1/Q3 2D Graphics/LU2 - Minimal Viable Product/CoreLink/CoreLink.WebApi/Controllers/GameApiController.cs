@@ -16,14 +16,12 @@ public class GameApiController : ControllerBase
     public GameApiController(IAuthenticationService authenticationService, IEnvironmentRepository environmentRepository, IObjectRepository objectRepository)
     {
         _environmentRepository = environmentRepository;
-        _objectRepository = objectRepository;
         _authenticationService = authenticationService;
+        _objectRepository = objectRepository;
     }
 
-    // HTTP METHODES
-    // TODO Refactor environment methodes to also check for empty Guid
-
-    [HttpGet(Name = "ReadEnvironmentsFromUser")]
+    // ENVIRONMENT METHODES
+    [HttpGet(Name = "GetUserEnvironments")]
     public async Task<ActionResult<IEnumerable<Environment2D>>> Get()
     {
         var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
@@ -39,31 +37,7 @@ public class GameApiController : ControllerBase
         return Ok(environments);
     }
 
-    // TODO Maybe redundant methode (because unity already has all environments from user)
-    // [HttpGet("{environmentId}", Name = "ReadEnvironmentById")]
-    // public async Task<ActionResult<Environment2D>> Get(Guid environmentId)
-    // {
-    //     var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
-
-    //     if (environmentId == Guid.Empty)
-    //         return BadRequest("The environment ID is not valid.");
-
-    //     if (string.IsNullOrEmpty(loggedInUser))
-    //         return Unauthorized("User is not authenticated.");
-
-    //     var environment = await _environmentRepository.GetEnvironmentById(environmentId);
-
-    //     if (environment == null)
-    //         return NotFound("The environment with the specified ID does not exist.");
-
-    //     if (environment.ownerUserId != loggedInUser)
-    //         return Forbid("You do not have permission to view this environment.");
-
-    //     return Ok(environment);
-    // }
-
-
-    [HttpPost(Name = "CreateEnvironment")]
+    [HttpPost(Name = "AddEnvironment")]
     public async Task<ActionResult<Environment2D>> Post([FromBody] Environment2D newEnvironment)
     {
         var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
@@ -96,14 +70,18 @@ public class GameApiController : ControllerBase
         return Ok(newEnvironment);
     }
 
-    [HttpPut("{environmentId}", Name = "UpdateEnvironmentById")]
+    [HttpPut("{environmentId}", Name = "EditEnvironment")]
     public async Task<IActionResult> Put(Guid environmentId, Environment2D updatedEnvironment)
     {
         var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
-        var existingEnvironment = await _environmentRepository.GetEnvironmentByIdAsync(environmentId);
 
         if (string.IsNullOrEmpty(loggedInUser))
             return Unauthorized("User is not authenticated.");
+
+        if (environmentId == Guid.Empty)
+            return BadRequest("The environment ID is not valid.");
+
+        var existingEnvironment = await _environmentRepository.GetEnvironmentByIdAsync(environmentId);
 
         if (existingEnvironment == null)
             return NotFound("The environment with the specified ID does not exist.");
@@ -119,14 +97,18 @@ public class GameApiController : ControllerBase
     }
 
 
-    [HttpDelete("{environmentId}", Name = "DeleteEnvironmentById")]
+    [HttpDelete("{environmentId}", Name = "RemoveEnvironment")]
     public async Task<IActionResult> Delete(Guid environmentId)
     {
         var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
-        var existingEnvironment = await _environmentRepository.GetEnvironmentByIdAsync(environmentId);
 
         if (string.IsNullOrEmpty(loggedInUser))
             return Unauthorized("User is not authenticated.");
+
+        if (environmentId == Guid.Empty)
+            return BadRequest("The environment ID is not valid.");
+
+        var existingEnvironment = await _environmentRepository.GetEnvironmentByIdAsync(environmentId);
 
         if (existingEnvironment == null)
             return NotFound("The environment with the specified ID does not exist.");
@@ -139,9 +121,9 @@ public class GameApiController : ControllerBase
     }
 
 
-    /// OBJECTS
+    /// OBJECTS METHODES
 
-    [HttpGet("{environmentId}/objects", Name = "GetObjectsByEnvironmentId")]
+    [HttpGet("{environmentId}/objects", Name = "GetEnvironmentObjects")]
     public async Task<ActionResult<IEnumerable<Object2D>>> GetObjects(Guid environmentId)
     {
         var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
@@ -169,9 +151,8 @@ public class GameApiController : ControllerBase
     }
 
 
-    [HttpPost("{environmentId}/objects", Name = "CreateObject")]
-    // TODO Maybe add Object2D to Task<ActionResult<Object2D>>
-    public async Task<IActionResult> CreateObject(Guid environmentId, [FromBody] Object2D newObject)
+    [HttpPost("{environmentId}/objects", Name = "AddEnvironmentObject")]
+    public async Task<ActionResult<Object2D>> CreateObject(Guid environmentId, [FromBody] Object2D newObject)
     {
         var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
 
@@ -200,7 +181,7 @@ public class GameApiController : ControllerBase
     }
 
 
-    [HttpPut("{environmentId}/objects/{objectId}", Name = "UpdateObject")]
+    [HttpPut("{environmentId}/objects/{objectId}", Name = "EditEnvironmentObject")]
     public async Task<IActionResult> UpdateObject(Guid environmentId, Guid objectId, [FromBody] Object2D updatedObject)
     {
         var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
@@ -219,18 +200,23 @@ public class GameApiController : ControllerBase
         if (environment == null)
             return NotFound("The environment with the specified ID does not exist.");
 
-        if (environment.ownerUserId != loggedInUser)
-            return Forbid("You do not have permission to create objects in this environment.");
+        var existingObject = await _objectRepository.GetObjectByIdAsync(objectId);
 
-        updatedObject.id = objectId;
-        // TODO Figure out if this is redundant code
-        updatedObject.environmentId = environmentId;
+        if (existingObject == null)
+            return NotFound("The object with the specified ID does not exist.");
+
+        if (existingObject.environmentId != environmentId)
+            return BadRequest("The object does not belong to the specified environment.");
+
+        // Check if the object belongs to the user
+        if (environment.ownerUserId != loggedInUser)
+            return Forbid("You do not have permission to update this object.");
 
         await _objectRepository.UpdateObject(objectId, updatedObject);
         return Ok(updatedObject);
     }
 
-    [HttpDelete("{environmentId}/objects/{objectId}", Name = "DeleteObject")]
+    [HttpDelete("{environmentId}/objects/{objectId}", Name = "RemoveEnvironmentObject")]
     public async Task<IActionResult> DeleteObject(Guid environmentId, Guid objectId)
     {
         var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();

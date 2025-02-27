@@ -2,12 +2,12 @@
 
 ## Must have
 
-- [ ] Als gebruiker wil ik mezelf kunnen registeren op basis van een gebruikersnaam en wachtwoord.
-  - [ ] Er bestaat nog geen gebruiker met deze gebruikersnaam. De gebruikersnaam is uniek.
+- [x] Als gebruiker wil ik mezelf kunnen registeren op basis van een gebruikersnaam en wachtwoord.
+  - [x] Er bestaat nog geen gebruiker met deze gebruikersnaam. De gebruikersnaam is uniek.
   - [x] Wachtwoord moet minimaal 10 karakters lang zijn.
   - [x] Wachtwoord moet minstens 1 lowercase, uppercase, cijfer en niet-alphanumeriek karakter bevatten.
 - [x] Als gebruiker wil ik kunnen inloggen op basis van mijn gebruikersnaam en wachtwoord.
-  - [ ] De gebruiker ziet een foutmelding wanneer de gebruikersnaam of wachtwoord niet correct is.
+  - [x] De gebruiker ziet een foutmelding wanneer de gebruikersnaam of wachtwoord niet correct is.
 - [x] Als gebruiker wil ik een nieuwe lege 2D-wereld aan kunnen maken.
   - [x] De gebruiker moet ingelogd zijn.
   - [x] De gebruiker moet een naam invoeren voor de nieuwe 2D-wereld.
