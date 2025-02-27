@@ -39,6 +39,11 @@ public class EnvironmentSystem : MonoBehaviour
 
     private void OnDestroy() { }
 
+    public void Quit()
+    {
+        Application.Quit();
+    }
+
     #region Environment2D
 
     private void LoadEnvironment2D() 
@@ -47,7 +52,7 @@ public class EnvironmentSystem : MonoBehaviour
         //worldMap.transform.height = environment2D.maxHeight;
         //worldMap.transform.lenght = environment2D.maxLength;
 
-        ReadObject2Ds(environment2D.id);
+        ReadObject2Ds();
     }
 
     private void SaveEnvironment2D() 
@@ -100,9 +105,9 @@ public class EnvironmentSystem : MonoBehaviour
 
     #region Object2D
 
-    public async void ReadObject2Ds(string environmentId)
+    public async void ReadObject2Ds()
     {
-        IWebRequestReponse webRequestResponse = await object2DApiClient.ReadObject2Ds(environmentId);
+        IWebRequestReponse webRequestResponse = await object2DApiClient.ReadObject2Ds(environment2D.id);
 
         switch (webRequestResponse)
         {
@@ -111,8 +116,6 @@ public class EnvironmentSystem : MonoBehaviour
                 Debug.Log("List of object2Ds: " + object2Ds);
                 object2Ds.ForEach(object2D => Debug.Log(object2D.id));
                 GameObject prefabToInstantiate;
-                // TODO: Succes scenario. Show the enviroments in the UI
-                 
                 foreach (var item in object2Ds)
                 {
                     prefabToInstantiate = null;

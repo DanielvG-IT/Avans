@@ -47,8 +47,6 @@ public class AuthSystem : MonoBehaviour
     {
       case WebRequestData<string> dataResponse:
         {
-          Debug.Log("Register succes!");
-          // TODO: Handle succes scenario;
           MessageText.color = Color.green;
           MessageText.text = "Register Succesfull!";
           UsernameField.text = "";
@@ -59,13 +57,11 @@ public class AuthSystem : MonoBehaviour
       case WebRequestError errorResponse:
         {
           string errorMessage = errorResponse.ErrorMessage;
-          Debug.Log("Register error: " + errorMessage);
-          // TODO: Handle error scenario. Show the errormessage to the user.
+                    Debug.Log(errorMessage);
           MessageText.color = Color.red;
-          MessageText.text = errorMessage switch
-          {
-            "HTTP/1.1 400 Bad Request" => "Invalid Credentials!",
-            _ => "Something went wrong!",
+          MessageText.text = errorMessage switch { 
+          
+          _  => "Something went wrong!"
           };
           break;
         }
