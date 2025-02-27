@@ -31,6 +31,11 @@ public class MainMenuSystem : MonoBehaviour
         ReadEnvironments();
     }
 
+    public void Quit()
+    {
+        Application.Quit();
+    }
+
     public void ShowEnvironments()
     {
         // Clear existing items.
