@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5633299065742136326}
   - component: {fileID: 8827965109433475458}
   m_Layer: 5
-  m_Name: LoadWorldEntry
+  m_Name: WorldListButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
