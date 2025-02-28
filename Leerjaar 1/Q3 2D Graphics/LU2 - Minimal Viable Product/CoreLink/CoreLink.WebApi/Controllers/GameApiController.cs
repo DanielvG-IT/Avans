@@ -64,6 +64,11 @@ public class GameApiController : ControllerBase
         newEnvironment.id = Guid.NewGuid();
         newEnvironment.ownerUserId = loggedInUser;
 
+        if (newEnvironment.id == Guid.Empty)
+        {
+            return StatusCode(500, "Failed to generate a valid GUID for the new object.");
+        }
+
         await _environmentRepository.CreateEnvironmentAsync(newEnvironment);
 
         return Ok(newEnvironment);
@@ -176,6 +181,11 @@ public class GameApiController : ControllerBase
 
         newObject.id = Guid.NewGuid();
         newObject.environmentId = environmentId;
+
+        if (newObject.id == Guid.Empty)
+        {
+            return StatusCode(500, "Failed to generate a valid GUID for the new object.");
+        }
 
         await _objectRepository.CreateObject(environmentId, newObject);
 
