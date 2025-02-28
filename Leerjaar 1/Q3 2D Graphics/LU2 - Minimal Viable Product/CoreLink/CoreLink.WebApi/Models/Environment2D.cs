@@ -47,6 +47,6 @@ public class Environment2D
     public bool IsPositionValid(float x, float y)
     {
         // TODO: ADD UNIT TESTS FOR THIS
-        return x >= 20 && x <= maxLength && y >= 10 && y <= maxHeight;
+        return x >= 0 && x <= maxLength && y >= 0 && y <= maxHeight;
     }
 }
