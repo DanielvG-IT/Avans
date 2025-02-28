@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-private float speed = 2f;
-    private float xMin = 0f, xMax = 0f;
-    private float yMin = 0f, yMax = 0f;
+private readonly float speed = 2f;
+    private float xMin = -200f, xMax = 200f;
+    private float yMin = -100f, yMax = 100f;
 
     void Update()
     {
