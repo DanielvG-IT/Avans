@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Casino_Gambling_Floor_Background_0: 7541802385606665328
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
