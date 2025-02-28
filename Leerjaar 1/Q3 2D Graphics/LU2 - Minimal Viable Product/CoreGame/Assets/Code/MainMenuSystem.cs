@@ -4,20 +4,16 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
-using System.Linq;
-using NUnit.Framework;
 
 public class MainMenuSystem : MonoBehaviour
 {
     [Header("UI References")]
-    public Canvas canvas;
     public TMP_Text UserMessage;
-    public TMP_InputField envName;
-    public TMP_InputField envMaxHeight;
-    public TMP_InputField envMaxLength;
-    public UnityEngine.UIElements.ScrollView loadEnvironment;
-    [SerializeField] private Transform contentPanel;
-    [SerializeField] private GameObject environmentButtonPrefab;
+    public TMP_InputField InputEnvName;
+    public TMP_InputField InputEnvMaxHeight;
+    public TMP_InputField InputEnvMaxLength;
+    [SerializeField] private Transform ScrollVieuw;
+    [SerializeField] private GameObject ScrollVieuwButtonPrefab;
 
     // Internal
     private Environment2DApiClient enviroment2DApiClient;
@@ -39,7 +35,7 @@ public class MainMenuSystem : MonoBehaviour
     public void ShowEnvironments()
     {
         // Clear existing items.
-        foreach (Transform child in contentPanel)
+        foreach (Transform child in ScrollVieuw)
         {
             Destroy(child.gameObject);
         }
@@ -47,7 +43,7 @@ public class MainMenuSystem : MonoBehaviour
         foreach (var item in environmentList)
         {
             // Instantiate a new button for each environment.
-            GameObject buttonObj = Instantiate(environmentButtonPrefab, contentPanel);
+            GameObject buttonObj = Instantiate(ScrollVieuwButtonPrefab, ScrollVieuw);
             Button button = buttonObj.GetComponent<Button>();
 
             // Set the button's text to the environment name.
@@ -74,9 +70,9 @@ public class MainMenuSystem : MonoBehaviour
             id = string.Empty,
 
             // Get values from the input fields
-            name = envName.text,
-            maxHeight = Convert.ToInt32(envMaxHeight.text),
-            maxLength = Convert.ToInt32(envMaxLength.text),
+            name = InputEnvName.text,
+            maxHeight = Convert.ToInt32(InputEnvMaxHeight.text),
+            maxLength = Convert.ToInt32(InputEnvMaxLength.text),
 
         };
 
