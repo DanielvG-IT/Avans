@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 namespace CoreLink.WebApi.Models;
 
 /// <summary>
-/// Represents a 2D environment with specific dimensions and a unique identifier.
+/// Represents a 2D environment with specific dimensions and properties.
 /// </summary>
 public class Environment2D
 {
@@ -20,7 +20,7 @@ public class Environment2D
     public string? name { get; set; }
 
     /// <summary>
-    ///   Gets or sets the user identifier.
+    /// Gets or sets the user identifier of the owner.
     /// </summary>
     public string? ownerUserId { get; set; }
 
@@ -43,10 +43,10 @@ public class Environment2D
     /// </summary>
     /// <param name="x">The x-coordinate of the position.</param>
     /// <param name="y">The y-coordinate of the position.</param>
-    /// <returns>True if the position is valid, otherwise false.</returns>
-    /// TODO MAAK UNIT TEST VOOR DIT 1/3
-    public bool IsPositionValid(int x, int y)
+    /// <returns>True if the position is within the bounds, otherwise false.</returns>
+    public bool IsPositionValid(float x, float y)
     {
-        return x >= 0 && x <= maxLength && y >= 0 && y <= maxHeight;
+        // TODO: ADD UNIT TESTS FOR THIS
+        return x >= 20 && x <= maxLength && y >= 10 && y <= maxHeight;
     }
 }

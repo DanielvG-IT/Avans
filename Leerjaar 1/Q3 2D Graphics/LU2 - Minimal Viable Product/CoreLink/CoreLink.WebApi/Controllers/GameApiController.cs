@@ -1,24 +1,16 @@
 using CoreLink.WebApi.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using CoreLink.WebApi.Models;
-using Microsoft.AspNetCore.Identity;
 
 namespace CoreLink.WebApi.Controllers;
 
 [ApiController]
 [Route("environments")]
-public class GameApiController : ControllerBase
+public class GameApiController(IAuthenticationService authenticationService, IEnvironmentRepository environmentRepository, IObjectRepository objectRepository) : ControllerBase
 {
-    private readonly IEnvironmentRepository _environmentRepository;
-    private readonly IObjectRepository _objectRepository;
-    private readonly IAuthenticationService _authenticationService;
-
-    public GameApiController(IAuthenticationService authenticationService, IEnvironmentRepository environmentRepository, IObjectRepository objectRepository)
-    {
-        _environmentRepository = environmentRepository;
-        _authenticationService = authenticationService;
-        _objectRepository = objectRepository;
-    }
+    private readonly IEnvironmentRepository _environmentRepository = environmentRepository;
+    private readonly IObjectRepository _objectRepository = objectRepository;
+    private readonly IAuthenticationService _authenticationService = authenticationService;
 
     // ENVIRONMENT METHODES
     [HttpGet(Name = "GetUserEnvironments")]
@@ -170,7 +162,10 @@ public class GameApiController : ControllerBase
         if (environment.ownerUserId != loggedInUser)
             return Forbid("You do not have permission to create objects in this environment.");
 
-        // TODO Check constrains of the environment like rotation, scale and position
+        bool isPositionValid = environment.IsPositionValid(newObject.positionX, newObject.positionY);
+
+        if (!isPositionValid)
+            return BadRequest("The position of the object is not valid within the environment.");
 
         newObject.id = new Guid();
         newObject.environmentId = environmentId;
