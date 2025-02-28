@@ -2,9 +2,13 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-private readonly float speed = 2f;
-    private float xMin = -200f, xMax = 200f;
-    private float yMin = -100f, yMax = 100f;
+    private const float speed = 2f;
+
+    private readonly float xMin = -(GameManager.Instance.SelectedEnvironment.maxLength / 2);
+    private readonly float xMax = GameManager.Instance.SelectedEnvironment.maxLength / 2;
+
+    private readonly float yMin = -(GameManager.Instance.SelectedEnvironment.maxHeight / 2);
+    private readonly float yMax = GameManager.Instance.SelectedEnvironment.maxHeight / 2;
 
     void Update()
     {
