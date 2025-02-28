@@ -3,11 +3,13 @@ using UnityEngine.EventSystems;
 
 public class UIDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    private GameObject draggedObject;
     public GameObject prefabToInstantiate;
+    private GameObject draggedObject;
+    private Environment2D loadedEnvironment;
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        loadedEnvironment = GameManager.Instance.SelectedEnvironment;
         draggedObject = Instantiate(prefabToInstantiate);
         draggedObject.transform.position = Camera.main.ScreenToWorldPoint(eventData.position);
         draggedObject.transform.position = new Vector3(draggedObject.transform.position.x, draggedObject.transform.position.y, 0);
@@ -29,6 +31,7 @@ public class UIDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             EnvironmentSystem environmentSystem = FindFirstObjectByType<EnvironmentSystem>();
             Object2D newObjectData = new()
             {
+                environmentId = loadedEnvironment.id,
                 positionX = draggedObject.transform.position.x,
                 positionY = draggedObject.transform.position.y,
                 prefabId = prefabToInstantiate.name
