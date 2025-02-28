@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e23fea4b5efe6714e98838b3df1a24a0
+guid: 948c5983d63a56748b879335a9e60f0e
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5389040288357630381
-    second: cardBack_blue3_0
+      213: 2252668949684742851
+    second: chipBlue_border_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,30 +96,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: cardBack_blue3_0
+      name: chipBlue_border_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 140
-        height: 190
+        width: 68
+        height: 68
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: da143d30797b9ca40800000000000000
-      internalID: 5389040288357630381
+      spriteID: 3cae28e7976134f10800000000000000
+      internalID: 2252668949684742851
       vertices: []
       indices: 
       edges: []
@@ -147,8 +134,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      cardBack_blue3_0: 5389040288357630381
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
