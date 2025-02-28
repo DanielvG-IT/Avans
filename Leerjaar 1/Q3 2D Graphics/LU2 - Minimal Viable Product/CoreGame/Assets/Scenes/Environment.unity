@@ -583,7 +583,7 @@ MonoBehaviour:
   chipBlackWhitePrefab: {fileID: 3488491483172587879, guid: 1977532f3a7a5884caf3b1b572c4df62, type: 3}
   chipWhitePrefab: {fileID: 2193029801163486399, guid: 088657c8b443cce449f9c9ec6c202246, type: 3}
   chipBluePrefab: {fileID: 6917406580915234616, guid: 48870148493f1f44eae988a9bd570cf5, type: 3}
-  chipBlueWhitePrefab: {fileID: 8484809521265692628, guid: 43a1087c149594d43800d70bc93baab2, type: 3}
+  chipBlueWhitePrefab: {fileID: 6010208913234904219, guid: b3343d584c160c14391f44ee16621467, type: 3}
   chipRedWhitePrefab: {fileID: 8345606334214492673, guid: d2d593b413f09b3479c30a62e2ef4563, type: 3}
 --- !u!4 &938826290
 Transform:
