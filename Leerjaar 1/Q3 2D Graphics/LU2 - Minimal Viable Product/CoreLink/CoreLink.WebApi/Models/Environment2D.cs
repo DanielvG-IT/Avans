@@ -47,6 +47,16 @@ public class Environment2D
     public bool IsPositionValid(float x, float y)
     {
         // TODO: ADD UNIT TESTS FOR THIS
-        return x >= 0 && x <= maxLength && y >= 0 && y <= maxHeight;
+
+        // Calculate the range boundaries (centered around 0)
+        float xMin = -(maxLength / 2f);
+        float xMax = maxLength / 2f;
+        float yMin = -(maxHeight / 2f);
+        float yMax = maxHeight / 2f;
+
+        Console.WriteLine($"PositionX: {x}, positionY: {y}, maxHeight: {maxHeight}, maxLength: {maxLength}");
+
+        // Check if the position is within the bounds
+        return x >= xMin && x <= xMax && y >= yMin && y <= yMax;
     }
 }
