@@ -2,6 +2,7 @@ using TMPro;
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class EnvironmentSystem : MonoBehaviour
 {
@@ -126,10 +127,8 @@ public class EnvironmentSystem : MonoBehaviour
                 // Iterate through each item and spawn prefabs based on the prefabId
                 foreach (var item in object2Ds)
                 {
-                    Debug.Log("Loading item with id: " + item.id);
                     if (prefabDictionary.TryGetValue(item.prefabId, out GameObject prefabToInstantiate))
                     {
-                        Debug.Log("Found prefab to instanciate: " + prefabToInstantiate.name);
                         // Convert item properties (Position, Scale, and Rotation) to Unity types
                         Vector2 position = new(item.positionX, item.positionY);
                         Quaternion rotation = Quaternion.Euler(0f, 0f, item.rotationZ);
