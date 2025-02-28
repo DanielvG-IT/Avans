@@ -174,7 +174,7 @@ public class GameApiController : ControllerBase
         if (!isPositionValid)
             return BadRequest("The position of the object is not valid within the environment.");
 
-        newObject.id = new Guid();
+        newObject.id = Guid.NewGuid();
         newObject.environmentId = environmentId;
 
         await _objectRepository.CreateObject(environmentId, newObject);
