@@ -6,11 +6,18 @@ namespace CoreLink.WebApi.Controllers;
 
 [ApiController]
 [Route("environments")]
-public class GameApiController(IAuthenticationService authenticationService, IEnvironmentRepository environmentRepository, IObjectRepository objectRepository) : ControllerBase
+public class GameApiController : ControllerBase
 {
-    private readonly IEnvironmentRepository _environmentRepository = environmentRepository;
-    private readonly IObjectRepository _objectRepository = objectRepository;
-    private readonly IAuthenticationService _authenticationService = authenticationService;
+    private readonly IEnvironmentRepository _environmentRepository;
+    private readonly IObjectRepository _objectRepository;
+    private readonly IAuthenticationService _authenticationService;
+
+    public GameApiController(IAuthenticationService authenticationService, IEnvironmentRepository environmentRepository, IObjectRepository objectRepository)
+    {
+        _authenticationService = authenticationService;
+        _environmentRepository = environmentRepository;
+        _objectRepository = objectRepository;
+    }
 
     // ENVIRONMENT METHODES
     [HttpGet(Name = "GetUserEnvironments")]
