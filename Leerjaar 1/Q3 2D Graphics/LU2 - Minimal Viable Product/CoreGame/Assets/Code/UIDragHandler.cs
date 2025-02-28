@@ -34,6 +34,8 @@ public class UIDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                 environmentId = loadedEnvironment.id,
                 positionX = draggedObject.transform.position.x,
                 positionY = draggedObject.transform.position.y,
+                scaleX = draggedObject.transform.localScale.x,
+                scaleY = draggedObject.transform.localScale.y,
                 prefabId = prefabToInstantiate.name
             };
 
