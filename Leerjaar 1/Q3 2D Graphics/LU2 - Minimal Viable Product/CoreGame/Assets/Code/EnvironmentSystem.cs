@@ -6,21 +6,23 @@ using UnityEngine.UIElements;
 
 public class EnvironmentSystem : MonoBehaviour
 {
-    [Header("Environment Links")]
-    public TextMeshPro nameText;
-    public GameObject worldMap;
- 
-    [Header("UI Links")]
-    public Object2D object2D;
-    public GameObject circlePrefab;
-    public GameObject squarePrefab;
-    public GameObject trianglePrefab;
+    //[Header("Environment Links")]
+    //public TextMeshPro nameText;
+    //public GameObject worldMap;
+
+    //[Header("UI Links")]
+    //List<GameObject> gameObjects;
+    //public Object2D object2D;
+    //public GameObject circlePrefab;
+    //public GameObject squarePrefab;
+    //public GameObject trianglePrefab;
 
     // Internal
     private Environment2D environment2D;
     private Object2DApiClient object2DApiClient;
     private Environment2DApiClient enviroment2DApiClient;
-   
+    public GameObject SelectedObject { get; private set; }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -31,36 +33,27 @@ public class EnvironmentSystem : MonoBehaviour
         LoadEnvironment2D();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-        
-    }
-
-    private void OnDestroy() { }
-
     public void Quit()
     {
         Application.Quit();
     }
 
+
     #region Environment2D
 
     private void LoadEnvironment2D() 
     { 
-        nameText.text = environment2D.name;
+        //nameText.text = environment2D.name;
         //worldMap.transform.height = environment2D.maxHeight;
         //worldMap.transform.lenght = environment2D.maxLength;
 
-        ReadObject2Ds();
+        //ReadObject2Ds();
     }
 
-    private void SaveEnvironment2D() 
-    { 
-        // TODO Implement saving objects
-        // TODO MAY MOVE TO OBJECTSYSTEM.cs
-    }
+    //private void SaveEnvironment2D() 
+    //{ 
+    //    // TODO Implement saving objects
+    //}
 
     public async void UpdateEnvironment2D()
     {
@@ -116,41 +109,45 @@ public class EnvironmentSystem : MonoBehaviour
                 List<Object2D> object2Ds = dataResponse.Data;
                 Debug.Log("List of object2Ds: " + object2Ds);
                 object2Ds.ForEach(object2D => Debug.Log(object2D.id));
-                GameObject prefabToInstantiate;
+                //GameObject prefabToInstantiate;
                 foreach (var item in object2Ds)
                 {
-                    prefabToInstantiate = null;
+                    //prefabToInstantiate = null;
 
                     switch (item.prefabId)
                     {
-                        case "Circle":
-                            prefabToInstantiate = circlePrefab;
-                            break;
-                        case "Square":
-                            prefabToInstantiate = squarePrefab;
-                            break;
-                        case "Triangle":
-                            prefabToInstantiate = trianglePrefab;
-                            break;
+                        //case "Circle":
+                        //    prefabToInstantiate = circlePrefab;
+                        //    break;
+                        //case "Square":
+                        //    prefabToInstantiate = squarePrefab;
+                        //    break;
+                        //case "Triangle":
+                        //    prefabToInstantiate = trianglePrefab;
+                        //    break;
                         default:
                             Debug.LogWarning($"Unknown prefab ID: {item.prefabId}");
                             continue;
                     }
 
-                    if (prefabToInstantiate != null)
-                    {
-                        // Convert item properties (Position, Scale and Rotation) to Unity types
-                        Vector2 position = new(item.positionX, item.positionY);
-                        Quaternion rotation = Quaternion.Euler(0f, 0f, item.rotationZ);
-                        Vector2 scale = new(item.scaleX, item.scaleY);
+                    //if (prefabToInstantiate != null)
+                    //{
+                    //    // Convert item properties (Position, Scale and Rotation) to Unity types
+                    //    Vector2 position = new(item.positionX, item.positionY);
+                    //    Quaternion rotation = Quaternion.Euler(0f, 0f, item.rotationZ);
+                    //    Vector2 scale = new(item.scaleX, item.scaleY);
 
-                        // Spawn Object and assert scale
-                        GameObject spawnedObject = Instantiate(prefabToInstantiate, position, rotation);
-                        spawnedObject.transform.localScale = scale;
+                    //    // Spawn Object and assert scale
+                    //    GameObject spawnedObject = Instantiate(prefabToInstantiate, position, rotation);
+                    //    spawnedObject.transform.localScale = scale;
 
-                        // Get SpriteRenderer and assert SortingLayer
-                        spawnedObject.GetComponent<SpriteRenderer>().sortingOrder = item.sortingLayer;
-                    }
+                    //    // Get SpriteRenderer and assert SortingLayer
+                    //    spawnedObject.GetComponent<SpriteRenderer>().sortingOrder = item.sortingLayer;
+
+                    //    // Assign draggable functionality
+                    //    DraggableObject draggable = spawnedObject.AddComponent<DraggableObject>();
+                    //    draggable.Initialize(item);
+                    //}
 
                     // TODO Remove existing objects
 
@@ -168,7 +165,7 @@ public class EnvironmentSystem : MonoBehaviour
         }
     }
 
-    public async void CreateObject2D()
+    public async void CreateObject2D(Object2D object2D)
     {
         IWebRequestReponse webRequestResponse = await object2DApiClient.CreateObject2D(object2D);
 
@@ -188,7 +185,7 @@ public class EnvironmentSystem : MonoBehaviour
         }
     }
 
-    public async void UpdateObject2D()
+    public async void UpdateObject2D(Object2D object2D)
     {
         IWebRequestReponse webRequestResponse = await object2DApiClient.UpdateObject2D(object2D);
 
@@ -208,7 +205,7 @@ public class EnvironmentSystem : MonoBehaviour
         }
     }
 
-    public async void DeleteObject2D()
+    public async void DeleteObject2D(Object2D object2D)
     {
         IWebRequestReponse webRequestResponse = await object2DApiClient.DeleteObject2D(object2D);
 
