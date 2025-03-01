@@ -16,26 +16,26 @@ public class AuthSystem : MonoBehaviour
   public Environment2DApiClient enviroment2DApiClient;
   public Object2DApiClient object2DApiClient;
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape)) 
-            Quit(); 
-
-        
-        if (Input.GetKeyDown(KeyCode.Return))
-            Login();
-    }
-
-    public void Quit()
-    {
-        Application.Quit();
-    }
-
-    public async void Register()
+  private void Update()
   {
-        MessageText.text = "";
+    if (Input.GetKeyDown(KeyCode.Escape))
+      Quit();
 
-        User user = new()
+
+    if (Input.GetKeyDown(KeyCode.Return))
+      Login();
+  }
+
+  public void Quit()
+  {
+    Application.Quit();
+  }
+
+  public async void Register()
+  {
+    MessageText.text = "";
+
+    User user = new()
     {
       email = UsernameField.text,
       password = PasswordField.text,
@@ -57,11 +57,12 @@ public class AuthSystem : MonoBehaviour
       case WebRequestError errorResponse:
         {
           string errorMessage = errorResponse.ErrorMessage;
-                    Debug.Log(errorMessage);
+          Debug.Log(errorMessage);
           MessageText.color = Color.red;
-          MessageText.text = errorMessage switch { 
-          
-          _  => "Something went wrong!"
+          MessageText.text = errorMessage switch
+          {
+
+            _ => "Something went wrong!"
           };
           break;
         }
@@ -74,9 +75,9 @@ public class AuthSystem : MonoBehaviour
 
   public async void Login()
   {
-        MessageText.text = "";
+    MessageText.text = "";
 
-        User user = new()
+    User user = new()
     {
       email = UsernameField.text,
       password = PasswordField.text,
@@ -88,7 +89,6 @@ public class AuthSystem : MonoBehaviour
     {
       case WebRequestData<string> dataResponse:
         Debug.Log("Login succes!");
-        // TODO: Todo handle succes scenario.
         MessageText.color = Color.green;
         MessageText.text = "Login Succesfull!";
 
@@ -97,7 +97,6 @@ public class AuthSystem : MonoBehaviour
       case WebRequestError errorResponse:
         string errorMessage = errorResponse.ErrorMessage;
         Debug.Log("Login error: " + errorMessage);
-                // TODO: Handle error scenario. Show the errormessage to the user.
         MessageText.color = Color.red;
         MessageText.text = errorMessage switch
         {
