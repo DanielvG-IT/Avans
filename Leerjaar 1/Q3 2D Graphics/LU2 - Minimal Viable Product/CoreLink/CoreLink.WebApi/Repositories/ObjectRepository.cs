@@ -44,6 +44,6 @@ public class ObjectRepository : IObjectRepository
     public async Task DeleteObject(Guid id)
     {
         using var sqlConnection = new SqlConnection(sqlConnectionString);
-        await sqlConnection.ExecuteAsync("DELETE FROM [Object2D] WHERE id = @id", id);
+        await sqlConnection.ExecuteAsync("DELETE FROM [Object2D] WHERE id = @id", new { id });
     }
 }
