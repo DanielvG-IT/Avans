@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class EnvironmentSystem : MonoBehaviour
 {
@@ -78,7 +79,7 @@ public class EnvironmentSystem : MonoBehaviour
                 break;
             case WebRequestError errorResponse:
                 string errorMessage = errorResponse.ErrorMessage;
-                Debug.Log("Delete environment error: " + errorMessage);
+                Debug.LogError("Delete environment error: " + errorMessage);
                 UserMessage.color = Color.red;
                 UserMessage.text = errorResponse.ErrorMessage;
                 break;
@@ -99,7 +100,7 @@ public class EnvironmentSystem : MonoBehaviour
                 break;
             case WebRequestError errorResponse:
                 string errorMessage = errorResponse.ErrorMessage;
-                Debug.Log("Delete environment error: " + errorMessage);
+                Debug.LogError("Delete environment error: " + errorMessage);
                 UserMessage.color = Color.red;
                 UserMessage.text = errorResponse.ErrorMessage;
                 break;
@@ -128,7 +129,7 @@ public class EnvironmentSystem : MonoBehaviour
                 return object2D;
             case WebRequestError errorResponse:
                 string errorMessage = errorResponse.ErrorMessage;
-                Debug.Log("Create Object2D error: " + errorMessage);
+                Debug.LogError("Create Object2D error: " + errorMessage);
                 UserMessage.color = Color.red;
                 UserMessage.text = errorResponse.ErrorMessage;
                 return null;
@@ -195,7 +196,7 @@ public class EnvironmentSystem : MonoBehaviour
 
             case WebRequestError errorResponse:
                 string errorMessage = errorResponse.ErrorMessage;
-                Debug.Log("Read object2Ds error: " + errorMessage);
+                Debug.LogError("Read object2Ds error: " + errorMessage);
 
                 UserMessage.color = Color.red;
                 UserMessage.text = errorResponse.ErrorMessage;
