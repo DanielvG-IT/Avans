@@ -67,43 +67,41 @@ public class EnvironmentSystem : MonoBehaviour
 
     #region Environment2D
 
-    public async void UpdateEnvironment2D()
+    public async Task<bool> UpdateEnvironment2D(Environment2D changedEnvironment)
     {
-        IWebRequestReponse webRequestResponse = await enviroment2DApiClient.UpdateEnvironment(environment2D);
+        IWebRequestReponse webRequestResponse = await enviroment2DApiClient.UpdateEnvironment(changedEnvironment);
 
         switch (webRequestResponse)
         {
-            case WebRequestData<string> dataResponse:
-                string responseData = dataResponse.Data;
-                // TODO: Handle succes scenario.
-                break;
+            case WebRequestData<Environment2D> dataResponse:
+                var updatedEnvironment = dataResponse.Data;
+                GameManager.Instance.SelectedEnvironment = updatedEnvironment;
+                return true;
             case WebRequestError errorResponse:
                 string errorMessage = errorResponse.ErrorMessage;
                 Debug.LogError("Delete environment error: " + errorMessage);
                 UserMessage.color = Color.red;
                 UserMessage.text = errorResponse.ErrorMessage;
-                break;
+                return false;
             default:
                 throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
         }
     }
 
-    public async void DeleteEnvironment2D()
+    public async Task<bool> DeleteEnvironment2D()
     {
         IWebRequestReponse webRequestResponse = await enviroment2DApiClient.DeleteEnvironment(environment2D.id);
 
         switch (webRequestResponse)
         {
-            case WebRequestData<string> dataResponse:
-                string responseData = dataResponse.Data;
-                // TODO: Handle succes scenario.
-                break;
+            case WebRequestData<string>:
+                return true;
             case WebRequestError errorResponse:
                 string errorMessage = errorResponse.ErrorMessage;
                 Debug.LogError("Delete environment error: " + errorMessage);
                 UserMessage.color = Color.red;
                 UserMessage.text = errorResponse.ErrorMessage;
-                break;
+                return false;
             default:
                 throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
         }

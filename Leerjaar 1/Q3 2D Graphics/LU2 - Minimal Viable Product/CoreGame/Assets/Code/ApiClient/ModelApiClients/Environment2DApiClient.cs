@@ -27,7 +27,9 @@ public class Environment2DApiClient : MonoBehaviour
     {
         string route = "/environments/" + environment.id;
         string data = JsonUtility.ToJson(environment);
-        return await webClient.SendPutRequest(route, data);
+
+        IWebRequestReponse webRequestResponse = await webClient.SendPutRequest(route, data);
+        return ParseEnvironment2DResponse(webRequestResponse);
     }
 
     public async Awaitable<IWebRequestReponse> DeleteEnvironment(string environmentId)

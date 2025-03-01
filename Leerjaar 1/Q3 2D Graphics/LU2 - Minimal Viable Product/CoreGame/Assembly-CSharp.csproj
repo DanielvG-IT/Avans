@@ -112,6 +112,7 @@
     <Compile Include="Assets\Code\MainMenuSystem.cs" />
     <Compile Include="Assets\Code\Models\User.cs" />
     <Compile Include="Assets\Code\AuthSystem.cs" />
+    <Compile Include="Assets\Code\SettingsMenuSystem.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextInfoDebugTool.cs" />
     <Compile Include="Assets\Code\Player.cs" />
   </ItemGroup>
