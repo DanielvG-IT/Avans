@@ -1,50 +1,73 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using System.Threading.Tasks;
 
-public class DraggableObject : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
+public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    private Vector2 initialPosition;
-    private bool isDragging = false;
-    private Object2D objectData;
     private EnvironmentSystem environmentSystem;
-
-    void Start()
-    {
-        environmentSystem = FindFirstObjectByType<EnvironmentSystem>();
-    }
+    private Object2D objectData;
+    private Vector3 initialPosition;
+    private bool isDragging = false;
 
     public void Initialize(Object2D data)
     {
         objectData = data;
+        environmentSystem = FindFirstObjectByType<EnvironmentSystem>();
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (objectData.id == null)
+        {
+            Debug.LogWarning("Cannot drag an object that has no ID assigned.");
+            return;
+        }
+
         initialPosition = transform.position;
         isDragging = true;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        transform.position = Camera.main.ScreenToWorldPoint(eventData.position);
-        transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+        if (!isDragging) return;
+
+        Vector3 newPos = Camera.main.ScreenToWorldPoint(eventData.position);
+        newPos.z = 0;
+        transform.position = newPos;
     }
 
-    public void OnEndDrag(PointerEventData eventData)
+    public async void OnEndDrag(PointerEventData eventData)
     {
+        if (!isDragging) return;
         isDragging = false;
-        objectData.positionX = transform.position.x;
-        objectData.positionY = transform.position.y;
 
-        environmentSystem.UpdateObject2D(objectData);
-    }
+        Vector3 finalPosition = transform.position;
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.D) && environmentSystem.SelectedObject == this.gameObject)
+        // Prepare object update data
+        Object2D updatedData = new Object2D
         {
-            environmentSystem.DeleteObject2D(objectData);
-            Destroy(gameObject);
+            id = objectData.id,
+            environmentId = objectData.environmentId,
+            positionX = finalPosition.x,
+            positionY = finalPosition.y,
+            scaleX = transform.localScale.x,
+            scaleY = transform.localScale.y,
+            prefabId = objectData.prefabId
+        };
+
+        // Call API to validate position
+        Object2D validatedData = await environmentSystem.UpdateObject2D(updatedData);
+
+        if (validatedData != null)
+        {
+            // Apply server-validated position
+            transform.position = new Vector3(validatedData.positionX, validatedData.positionY, 0);
+        }
+        else
+        {
+            // Revert to initial position if update fails
+            Debug.LogError("Failed to update object on server. Reverting position.");
+            transform.position = initialPosition;
         }
     }
 }

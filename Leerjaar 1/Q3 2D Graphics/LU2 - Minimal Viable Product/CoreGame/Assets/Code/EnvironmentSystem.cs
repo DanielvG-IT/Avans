@@ -1,15 +1,14 @@
 using TMPro;
 using System;
 using UnityEngine;
+using System.Threading.Tasks;
 using System.Collections.Generic;
-using UnityEngine.UI;
 
 public class EnvironmentSystem : MonoBehaviour
 {
     [Header("UI Links")]
     public TMP_Text nameText;
     public TMP_Text UserMessage;
-    //public GameObject worldMap;
 
     [Header("Prefab References")]
     public GameObject chipWhiteBluePrefab;
@@ -27,9 +26,11 @@ public class EnvironmentSystem : MonoBehaviour
     private Environment2DApiClient enviroment2DApiClient;
     public GameObject SelectedObject { get; private set; }
 
+    #region WorldManager
+
     void Start()
     {
-        enviroment2DApiClient = ApiClientManager.Instance.Environment2DApiClient; 
+        enviroment2DApiClient = ApiClientManager.Instance.Environment2DApiClient;
         object2DApiClient = ApiClientManager.Instance.Object2DApiClient;
         environment2D = GameManager.Instance.SelectedEnvironment;
 
@@ -41,22 +42,29 @@ public class EnvironmentSystem : MonoBehaviour
         Application.Quit();
     }
 
+    public void SpawnObject2D(Object2D objectData)
+    {
+        if (prefabDictionary.TryGetValue(objectData.prefabId, out GameObject prefabToInstantiate))
+        {
+            Vector2 position = new(objectData.positionX, objectData.positionY);
+            GameObject spawnedObject = Instantiate(prefabToInstantiate, position, Quaternion.identity);
 
-    #region Environment2D
+            // Assign draggable functionality with proper ID
+            DraggableObject draggable = spawnedObject.AddComponent<DraggableObject>();
+            draggable.Initialize(objectData);
+        }
+    }
 
-    private void LoadEnvironment2D() 
+    private void LoadEnvironment2D()
     {
         nameText.text = environment2D.name;
-        //worldMap.transform.height = environment2D.maxHeight;
-        //worldMap.transform.lenght = environment2D.maxLength;
 
         ReadObject2Ds();
     }
 
-    //private void SaveEnvironment2D() 
-    //{ 
-    //    // TODO Implement saving objects
-    //}
+    #endregion
+
+    #region Environment2D
 
     public async void UpdateEnvironment2D()
     {
@@ -71,7 +79,8 @@ public class EnvironmentSystem : MonoBehaviour
             case WebRequestError errorResponse:
                 string errorMessage = errorResponse.ErrorMessage;
                 Debug.Log("Delete environment error: " + errorMessage);
-                // TODO: Handle error scenario. Show the errormessage to the user.
+                UserMessage.color = Color.red;
+                UserMessage.text = errorResponse.ErrorMessage;
                 break;
             default:
                 throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
@@ -91,7 +100,8 @@ public class EnvironmentSystem : MonoBehaviour
             case WebRequestError errorResponse:
                 string errorMessage = errorResponse.ErrorMessage;
                 Debug.Log("Delete environment error: " + errorMessage);
-                // TODO: Handle error scenario. Show the errormessage to the user.
+                UserMessage.color = Color.red;
+                UserMessage.text = errorResponse.ErrorMessage;
                 break;
             default:
                 throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
@@ -101,6 +111,32 @@ public class EnvironmentSystem : MonoBehaviour
     #endregion
 
     #region Object2D
+
+    public async Task<Object2D> CreateObject2D(Object2D object2D)
+    {
+        IWebRequestReponse webRequestResponse = await object2DApiClient.CreateObject2D(object2D);
+
+        switch (webRequestResponse)
+        {
+            case WebRequestData<Object2D> dataResponse:
+                object2D.id = dataResponse.Data.id; // Server-generated Guid
+                object2D.positionX = dataResponse.Data.positionX; // Server-validated position
+                object2D.positionY = dataResponse.Data.positionY;
+                object2D.sortingLayer = dataResponse.Data.sortingLayer;
+                object2D.environmentId = dataResponse.Data.environmentId;
+
+                return object2D;
+            case WebRequestError errorResponse:
+                string errorMessage = errorResponse.ErrorMessage;
+                Debug.Log("Create Object2D error: " + errorMessage);
+                UserMessage.color = Color.red;
+                UserMessage.text = errorResponse.ErrorMessage;
+                return null;
+
+            default:
+                throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
+        }
+    }
 
     public async void ReadObject2Ds()
     {
@@ -162,8 +198,8 @@ public class EnvironmentSystem : MonoBehaviour
                 Debug.Log("Read object2Ds error: " + errorMessage);
 
                 UserMessage.color = Color.red;
-                UserMessage.text = "Getting existing object went wrong!";
-                
+                UserMessage.text = errorResponse.ErrorMessage;
+
                 break;
 
             default:
@@ -171,44 +207,23 @@ public class EnvironmentSystem : MonoBehaviour
         }
     }
 
-    public async void CreateObject2D(Object2D object2D)
-    {
-        IWebRequestReponse webRequestResponse = await object2DApiClient.CreateObject2D(object2D);
-
-        switch (webRequestResponse)
-        {
-            case WebRequestData<Object2D> dataResponse:
-                object2D.id = dataResponse.Data.id;
-                // TODO: Handle succes scenario.
-                // MOVE HERE FROM DraggableObject, otherwise no update or delete possible (cuz of id not there!)
-                break;
-            case WebRequestError errorResponse:
-                string errorMessage = errorResponse.ErrorMessage;
-                Debug.Log("Create Object2D error: " + errorMessage);
-                // TODO: Handle error scenario. Show the errormessage to the user.
-                break;
-            default:
-                throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
-        }
-    }
-
-    public async void UpdateObject2D(Object2D object2D)
+    public async Task<Object2D> UpdateObject2D(Object2D object2D)
     {
         IWebRequestReponse webRequestResponse = await object2DApiClient.UpdateObject2D(object2D);
 
         switch (webRequestResponse)
         {
-            case WebRequestData<string> dataResponse:
-                string responseData = dataResponse.Data;
-                // TODO: Handle succes scenario.
-                break;
+            case WebRequestData<Object2D> dataResponse:
+                return dataResponse.Data; // Return server-validated data
+
             case WebRequestError errorResponse:
-                string errorMessage = errorResponse.ErrorMessage;
-                Debug.Log("Update object2D error: " + errorMessage);
-                // TODO: Handle error scenario. Show the errormessage to the user.
-                break;
+                Debug.LogError("Update object2D error: " + errorResponse.ErrorMessage);
+                UserMessage.color = Color.red;
+                UserMessage.text = errorResponse.ErrorMessage;
+                return null;
+
             default:
-                throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
+                throw new NotImplementedException("Unexpected response type: " + webRequestResponse.GetType());
         }
     }
 
@@ -225,7 +240,8 @@ public class EnvironmentSystem : MonoBehaviour
             case WebRequestError errorResponse:
                 string errorMessage = errorResponse.ErrorMessage;
                 Debug.Log("Update object2D error: " + errorMessage);
-                // TODO: Handle error scenario. Show the errormessage to the user.
+                UserMessage.color = Color.red;
+                UserMessage.text = errorResponse.ErrorMessage;
                 break;
             default:
                 throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
