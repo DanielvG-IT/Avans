@@ -227,22 +227,19 @@ public class EnvironmentSystem : MonoBehaviour
         }
     }
 
-    public async void DeleteObject2D(Object2D object2D)
+    public async Task<bool> DeleteObject2D(Object2D object2D)
     {
         IWebRequestReponse webRequestResponse = await object2DApiClient.DeleteObject2D(object2D);
 
         switch (webRequestResponse)
         {
-            case WebRequestData<string> dataResponse:
-                string responseData = dataResponse.Data;
-                // TODO: Handle succes scenario.
-                break;
+            case WebRequestData<string>:
+                return true;
             case WebRequestError errorResponse:
-                string errorMessage = errorResponse.ErrorMessage;
-                Debug.Log("Update object2D error: " + errorMessage);
+                Debug.Log("Update object2D error: " + errorResponse.ErrorMessage);
                 UserMessage.color = Color.red;
                 UserMessage.text = errorResponse.ErrorMessage;
-                break;
+                return false;
             default:
                 throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
         }
