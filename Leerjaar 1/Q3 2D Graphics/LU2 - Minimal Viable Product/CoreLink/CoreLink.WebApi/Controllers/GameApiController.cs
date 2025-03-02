@@ -19,7 +19,7 @@ public class GameApiController : ControllerBase
         _objectRepository = objectRepository;
     }
 
-    // ENVIRONMENT METHODES
+    // ENVIRONMENT METHODS
     [HttpGet(Name = "GetUserEnvironments")]
     public async Task<ActionResult<IEnumerable<Environment2D>>> Get()
     {
@@ -52,12 +52,11 @@ public class GameApiController : ControllerBase
         if (string.IsNullOrEmpty(newEnvironment.name) || newEnvironment.name.Length > 25)
             return BadRequest("The environment name must be between 1 and 25 characters.");
 
-        if (newEnvironment.maxLength > 200 || newEnvironment.maxLength < 20)
+        if (newEnvironment.maxLength < 20 || newEnvironment.maxLength > 200)
             return BadRequest("The environment length must be between 20 and 200.");
 
-        if (newEnvironment.maxHeight > 100 || newEnvironment.maxHeight < 10)
+        if (newEnvironment.maxHeight < 10 || newEnvironment.maxHeight > 100)
             return BadRequest("The environment height must be between 10 and 100.");
-
 
         var existingEnvironmentsForUser = await _environmentRepository.GetEnvironmentsByUserIdAsync(loggedInUser);
 
@@ -71,9 +70,7 @@ public class GameApiController : ControllerBase
         newEnvironment.ownerUserId = loggedInUser;
 
         if (newEnvironment.id == Guid.Empty)
-        {
-            return StatusCode(500, "Failed to generate a valid GUID for the new object.");
-        }
+            return StatusCode(500, "Failed to generate a valid GUID for the new environment.");
 
         await _environmentRepository.CreateEnvironmentAsync(newEnvironment);
 
@@ -81,7 +78,7 @@ public class GameApiController : ControllerBase
     }
 
     [HttpPut("{environmentId}", Name = "EditEnvironment")]
-    public async Task<IActionResult> Put(Guid environmentId, Environment2D updatedEnvironment)
+    public async Task<IActionResult> Put(Guid environmentId, [FromBody] Environment2D updatedEnvironment)
     {
         var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
 
@@ -103,9 +100,9 @@ public class GameApiController : ControllerBase
         updatedEnvironment.ownerUserId = loggedInUser;
 
         await _environmentRepository.UpdateEnvironmentByIdAsync(environmentId, updatedEnvironment);
+
         return Ok(updatedEnvironment);
     }
-
 
     [HttpDelete("{environmentId}", Name = "RemoveEnvironment")]
     public async Task<IActionResult> Delete(Guid environmentId)
@@ -132,9 +129,7 @@ public class GameApiController : ControllerBase
         return NoContent();
     }
 
-
-    /// OBJECTS METHODES
-
+    // OBJECT METHODS
     [HttpGet("{environmentId}/objects", Name = "GetEnvironmentObjects")]
     public async Task<ActionResult<IEnumerable<Object2D>>> GetObjects(Guid environmentId)
     {
@@ -161,7 +156,6 @@ public class GameApiController : ControllerBase
 
         return Ok(objects);
     }
-
 
     [HttpPost("{environmentId}/objects", Name = "AddEnvironmentObject")]
     public async Task<ActionResult<Object2D>> CreateObject(Guid environmentId, [FromBody] Object2D newObject)
@@ -190,16 +184,10 @@ public class GameApiController : ControllerBase
         newObject.id = Guid.NewGuid();
         newObject.environmentId = environmentId;
 
-        if (newObject.id == Guid.Empty)
-        {
-            return StatusCode(500, "Failed to generate a valid GUID for the new object.");
-        }
-
         await _objectRepository.CreateObject(environmentId, newObject);
 
-        return Ok(newObject);
+        return CreatedAtRoute("GetEnvironmentObjects", new { environmentId, objectId = newObject.id }, newObject);
     }
-
 
     [HttpPut("{environmentId}/objects/{objectId}", Name = "EditEnvironmentObject")]
     public async Task<IActionResult> UpdateObject(Guid environmentId, Guid objectId, [FromBody] Object2D updatedObject)
@@ -209,30 +197,25 @@ public class GameApiController : ControllerBase
         if (string.IsNullOrEmpty(loggedInUser))
             return Unauthorized("User is not authenticated.");
 
-        if (environmentId == Guid.Empty)
-            return BadRequest("The environment ID is not valid.");
-
-        if (objectId == Guid.Empty)
-            return BadRequest("The Object ID is not valid.");
+        if (environmentId == Guid.Empty || objectId == Guid.Empty)
+            return BadRequest("The environment or object ID is not valid.");
 
         var environment = await _environmentRepository.GetEnvironmentByIdAsync(environmentId);
-
         if (environment == null)
             return NotFound("The environment with the specified ID does not exist.");
 
         var existingObject = await _objectRepository.GetObjectByIdAsync(objectId);
+        if (existingObject == null || existingObject.environmentId != environmentId)
+            return NotFound("The object with the specified ID does not exist or does not belong to this environment.");
 
-        if (existingObject == null)
-            return NotFound("The object with the specified ID does not exist.");
-
-        if (existingObject.environmentId != environmentId)
-            return BadRequest("The object does not belong to the specified environment.");
-
-        // Check if the object belongs to the user
         if (environment.ownerUserId != loggedInUser)
             return Forbid("You do not have permission to update this object.");
 
+        updatedObject.id = objectId;
+        updatedObject.environmentId = environmentId;
+
         await _objectRepository.UpdateObjectByIdAsync(objectId, updatedObject);
+
         return Ok(updatedObject);
     }
 
@@ -244,14 +227,10 @@ public class GameApiController : ControllerBase
         if (string.IsNullOrEmpty(loggedInUser))
             return Unauthorized("User is not authenticated.");
 
-        if (environmentId == Guid.Empty)
-            return BadRequest("The environment ID is not valid.");
-
-        if (objectId == Guid.Empty)
-            return BadRequest("The object ID is not valid.");
+        if (environmentId == Guid.Empty || objectId == Guid.Empty)
+            return BadRequest("The environment or object ID is not valid.");
 
         var objectEnvironment = await _environmentRepository.GetEnvironmentByIdAsync(environmentId);
-
         if (objectEnvironment == null)
             return NotFound("The environment with the specified ID does not exist.");
 
@@ -259,14 +238,11 @@ public class GameApiController : ControllerBase
             return Forbid("You do not have permission to delete objects in this environment.");
 
         var existingObject = await _objectRepository.GetObjectByIdAsync(objectId);
-
-        if (existingObject == null)
-            return NotFound("The object with the specified ID does not exist.");
-
-        if (existingObject.environmentId != environmentId)
-            return BadRequest("The object does not belong to the specified environment.");
+        if (existingObject == null || existingObject.environmentId != environmentId)
+            return NotFound("The object with the specified ID does not exist or does not belong to this environment.");
 
         await _objectRepository.DeleteObjectByIdAsync(objectId);
+
         return NoContent();
     }
 }
