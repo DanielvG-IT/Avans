@@ -22,24 +22,24 @@
   - [x] De gebruiker moet ingelogd zijn.
   - [x] 2D-objecten die gekoppeld zijn aan deze 2D-wereld worden correct getoond op basis van de attributen van het 2D-object.
   - [x] De gebruiker kan alleen eigen 2D-werelden bekijken.
-- [ ] Als gebruiker wil ik een 2D-object aan mijn openstaande 2D-wereld kunnen toevoegen.
+- [x] Als gebruiker wil ik een 2D-object aan mijn openstaande 2D-wereld kunnen toevoegen.
   - [x] De gebruiker moet ingelogd zijn.
   - [x] De gebruiker kan kiezen uit minimaal 3 beschikbare 2D-objecten.
-  - [ ] Het nieuwe 2D-object wordt opgeslagen.
-- [ ] Als gebruiker wil ik een door mij gemaakte 2D-wereld kunnen verwijderen.
-  - [ ] De gebruiker moet ingelogd zijn.
-  - [ ] 2D-objecten die gekoppeld zijn aan deze 2D-wereld worden ook verwijderd.
+  - [x] Het nieuwe 2D-object wordt opgeslagen.
+- [x] Als gebruiker wil ik een door mij gemaakte 2D-wereld kunnen verwijderen.
+  - [x] De gebruiker moet ingelogd zijn.
+  - [x] 2D-objecten die gekoppeld zijn aan deze 2D-wereld worden ook verwijderd.
 
 ## Should have (Not required, for extra challenge)
 
-- [ ] Als gebruiker wil ik de positie, rotatie of schaal van een bestaand 2D-object in een door mij gemaakte 2D-wereld kunnen aanpassen.
-  - [ ] De gebruiker moet ingelogd zijn.
-  - [ ] De aanpassing van het 2D-object wordt getoond.
-  - [ ] De aanpassing van het 2D-object wordt opgeslagen.
-- [ ] Als gebruiker wil ik een 2D-object in een door mij gemaakte 2D-wereld kunnen verwijderen.
-  - [ ] De gebruiker moet ingelogd zijn.
-  - [ ] Het 2D-object wordt niet meer getoond.
-  - [ ] Verwijderen van het 2D-object wordt opgeslagen.
+- [x] Als gebruiker wil ik de positie, rotatie of schaal van een bestaand 2D-object in een door mij gemaakte 2D-wereld kunnen aanpassen.
+  - [x] De gebruiker moet ingelogd zijn.
+  - [x] De aanpassing van het 2D-object wordt getoond.
+  - [x] De aanpassing van het 2D-object wordt opgeslagen.
+- [x] Als gebruiker wil ik een 2D-object in een door mij gemaakte 2D-wereld kunnen verwijderen.
+  - [x] De gebruiker moet ingelogd zijn.
+  - [x] Het 2D-object wordt niet meer getoond.
+  - [x] Verwijderen van het 2D-object wordt opgeslagen.
 - [x] Als gebruiker wil ik de camera kunnen bewegen terwijl ik een 2D-wereld bekijk zodanig dat ik heel de 2D-wereld kan bekijken.
   - [x] De gebruiker kan de camera naar links, rechts, boven en onder bewegen met de bijbehorende pijltjestoetsen op het toetsenbord.
 - [x] Als gebruiker wil ik de grootte van mijn 2D-wereld specificeren in maximale lengte (X) en maximale hoogte (Y) wanneer ik een nieuwe lege 2D-wereld aanmaak.
