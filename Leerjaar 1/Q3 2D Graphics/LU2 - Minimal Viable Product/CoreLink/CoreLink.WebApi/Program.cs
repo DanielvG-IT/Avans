@@ -58,9 +58,9 @@ app.MapGet("/", (Microsoft.Extensions.Options.IOptions<IdentityOptions> identity
     var additionalInfo = new
     {
         ApplicationName = "CoreLink Web API",
-        Version = "1.0.0",
-        DeveloperContact = "developer@example.com",
-        DocumentationLink = "https://example.com/docs"
+        Version = "1.0.4",
+        DeveloperContact = "dcj.vanginneken@student.avans.nl",
+        DocumentationLink = "https://github.com/DanielvG-IT/Avans/blob/main/Leerjaar%201/Q3%202D%20Graphics/LU2%20-%20Minimal%20Viable%20Product/docs/Design/APIEndpoints.md"
     };
 
     var html = $@"
