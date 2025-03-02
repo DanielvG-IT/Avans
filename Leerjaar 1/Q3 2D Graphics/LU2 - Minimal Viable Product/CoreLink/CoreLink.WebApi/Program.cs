@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configure database connection
 var sqlConnectionString = builder.Configuration["SqlConnectionString"] ?? "";
+var sqlConnectionStringFound = !string.IsNullOrWhiteSpace(sqlConnectionString);
 
 // Configure Identity
 builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
@@ -36,6 +37,19 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.MapGet("/", (Microsoft.Extensions.Options.IOptions<IdentityOptions> identityOptions) =>
+{
+    var environment = app.Environment.EnvironmentName;
+    var connectionStringStatus = sqlConnectionStringFound ? "found" : "not found";
+    var passwordOptions = identityOptions.Value.Password;
+    var passwordRequirements = $"Required Length: {passwordOptions.RequiredLength}, Require Digit: {passwordOptions.RequireDigit}, Require Lowercase: {passwordOptions.RequireLowercase}, Require Uppercase: {passwordOptions.RequireUppercase}, Require Non-Alphanumeric: {passwordOptions.RequireNonAlphanumeric}";
+
+    var buildDate = System.IO.File.GetLastWriteTime(System.Reflection.Assembly.GetExecutingAssembly().Location);
+    var deployDate = DateTime.UtcNow; // Assuming the current time as deploy time
+
+    return $"The API is up and running. Environment: {environment}. Connection string: {connectionStringStatus}. Password Requirements: {passwordRequirements}. Build Date: {buildDate}. Deploy Date: {deployDate}.";
+});
 
 app.UseAuthorization();
 app.MapGroup("/account").MapIdentityApi<IdentityUser>();
