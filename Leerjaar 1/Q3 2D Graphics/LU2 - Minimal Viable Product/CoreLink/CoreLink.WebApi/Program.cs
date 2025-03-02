@@ -5,8 +5,7 @@ using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure database connection
-var sqlConnectionString = builder.Configuration["SqlConnectionString"]
-    ?? throw new InvalidProgramException("Configuration variable SqlConnectionString not found");
+var sqlConnectionString = builder.Configuration["SqlConnectionString"] ?? "";
 
 // Configure Identity
 builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
