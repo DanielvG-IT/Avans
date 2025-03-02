@@ -343,7 +343,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UsernameField: {fileID: 99319253}
   PasswordField: {fileID: 267501322}
-  UserMessage: {fileID: 0}
+  UserMessage: {fileID: 1007774096}
   userApiClient: {fileID: 567209740}
 --- !u!1 &222572794
 GameObject:
