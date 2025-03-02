@@ -15,12 +15,16 @@ public class MainMenuSystem : MonoBehaviour
     public TMP_InputField InputEnvName;
     public TMP_InputField InputEnvMaxHeight;
     public TMP_InputField InputEnvMaxLength;
-    [SerializeField] private Transform ScrollVieuw;
-    [SerializeField] private GameObject ScrollVieuwButtonPrefab;
+    public Transform environmentListContainer;
+
+    [Header("Prefabs")]
+    public GameObject environmentButtonPrefab;
+    public GameObject deleteButtonPrefab;
+
 
     // Internal
     private Environment2DApiClient enviroment2DApiClient;
-    private List<Environment2D> environmentList;
+    private List<Environment2D> environments;
 
     private void Start()
     {
@@ -42,6 +46,13 @@ public class MainMenuSystem : MonoBehaviour
         Debug.LogError(message);
     }
 
+    private void ShowSuccessMessage(string message)
+    {
+        UserMessage.color = Color.green;
+        UserMessage.text = message;
+        Debug.Log(message);
+    }
+
     private async Task RefreshEnvironmentsIfNeeded()
     {
         // Check if the local list is outdated (e.g., last update was a while ago)
@@ -49,36 +60,45 @@ public class MainMenuSystem : MonoBehaviour
 
         if (webRequestResponse is WebRequestData<List<Environment2D>> dataResponse)
         {
-            environmentList = dataResponse.Data;
+            environments = dataResponse.Data;
         }
     }
 
-    public void ShowEnvironments()
+    public void DisplayEnvironments()
     {
         // Clear existing items.
-        foreach (Transform child in ScrollVieuw)
+        foreach (Transform child in environmentListContainer)
         {
             Destroy(child.gameObject);
         }
 
-        foreach (var item in environmentList)
+        foreach (var item in environments)
         {
             // Instantiate a new button for each environment.
-            GameObject buttonObj = Instantiate(ScrollVieuwButtonPrefab, ScrollVieuw);
-            Button button = buttonObj.GetComponent<Button>();
+            GameObject environmentButtonObj = Instantiate(environmentButtonPrefab, environmentListContainer);
+            Button button = environmentButtonObj.GetComponent<Button>();
 
             // Set the button's text to the environment name.
-            TextMeshProUGUI buttonText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
+            TextMeshProUGUI buttonText = environmentButtonObj.GetComponentInChildren<TextMeshProUGUI>();
             if (buttonText != null)
             {
                 buttonText.text = item.name;
             }
 
-            string environmentId = item.id; // Use a local copy of the environment ID for the listener (to avoid closure issues).
+            string environmentId = item.id; // Use local copy
 
-            // Set the button's event listener to call methode with environmentId embedded.
+            // Set the button's event listener to call method with environmentId embedded.
             button.onClick.AddListener(() => {
                 LoadEnvironment(environmentId);
+            });
+
+            // Instantiate the delete button inside the environment button.
+            GameObject deleteButtonObj = Instantiate(deleteButtonPrefab, environmentButtonObj.transform);
+
+            // Set up the delete button's listener to delete the environment.
+            Button deleteButton = deleteButtonObj.GetComponent<Button>();
+            deleteButton.onClick.AddListener(() => {
+                DeleteEnvironment(environmentId);
             });
         }
     }
@@ -108,10 +128,7 @@ public class MainMenuSystem : MonoBehaviour
                 LoadEnvironment(newEnvironement.id);
                 break;
             case WebRequestError errorResponse:
-                string errorMessage = errorResponse.ErrorMessage;
-                Debug.Log("Create environment2D error: " + errorMessage);
-                UserMessage.color = Color.green;
-                UserMessage.text = errorMessage;
+                ShowErrorMessage(errorResponse.ErrorMessage);
                 break;
             default:
                 throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
@@ -126,15 +143,13 @@ public class MainMenuSystem : MonoBehaviour
         {
             case WebRequestData<List<Environment2D>> dataResponse:
                 {
-                    environmentList = dataResponse.Data;
-                        ShowEnvironments();
+                    environments = dataResponse.Data;
+                        DisplayEnvironments();
                     break;
                 }
             case WebRequestError errorResponse:
                 {
-                    string errorMessage = errorResponse.ErrorMessage;
-                    UserMessage.color = Color.red;
-                    UserMessage.text = errorMessage;
+                    ShowErrorMessage(errorResponse.ErrorMessage);
                     break;
                 }
             default:
@@ -149,12 +164,12 @@ public class MainMenuSystem : MonoBehaviour
         await RefreshEnvironmentsIfNeeded();
 
         // Find the selected environment from the list
-        var loadedEnvironment = environmentList.Find(env => env.id == environmentId);
+        var loadedEnvironment = environments.Find(env => env.id == environmentId);
 
         if (loadedEnvironment == null)
         {
             ShowErrorMessage($"Environment with ID {environmentId} not found!");
-            ShowEnvironments();
+            DisplayEnvironments();
             return;
         }
 
@@ -162,23 +177,22 @@ public class MainMenuSystem : MonoBehaviour
         SceneManager.LoadScene("Environment");
     }
 
-    //public async void DeleteEnvironments()
-    //{
-    //    IWebRequestReponse webRequestResponse = await enviroment2DApiClient.DeleteEnvironment(loadedEnvironment.id);
+    public async void DeleteEnvironment(string environmentId)
+    {
+        IWebRequestReponse webRequestResponse = await enviroment2DApiClient.DeleteEnvironment(environmentId);
 
-    //    switch (webRequestResponse)
-    //    {
-    //        case WebRequestData<string> dataResponse:
-    //            string responseData = dataResponse.Data;
-    //            // TODO: Handle succes scenario.
-    //            break;
-    //        case WebRequestError errorResponse:
-    //            string errorMessage = errorResponse.ErrorMessage;
-    //            Debug.Log("Delete environment error: " + errorMessage);
-    //            // TODO: Handle error scenario. Show the errormessage to the user.
-    //            break;
-    //        default:
-    //            throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
-    //    }
-    //}
+        switch (webRequestResponse)
+        {
+            case WebRequestData<string>:
+                ShowSuccessMessage("Succesfully deleted environment!");
+                await RefreshEnvironmentsIfNeeded();
+                DisplayEnvironments();
+                break;
+            case WebRequestError errorResponse:
+                ShowErrorMessage(errorResponse.ErrorMessage);
+                break;
+            default:
+                throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
+        }
+    }
 }
