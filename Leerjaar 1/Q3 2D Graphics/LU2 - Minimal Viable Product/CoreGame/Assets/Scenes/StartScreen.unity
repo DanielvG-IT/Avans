@@ -343,10 +343,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UsernameField: {fileID: 99319253}
   PasswordField: {fileID: 267501322}
-  MessageText: {fileID: 1007774096}
+  UserMessage: {fileID: 0}
   userApiClient: {fileID: 567209740}
-  enviroment2DApiClient: {fileID: 567209739}
-  object2DApiClient: {fileID: 567209738}
 --- !u!1 &222572794
 GameObject:
   m_ObjectHideFlags: 0
@@ -1350,7 +1348,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2c86bd7546f1f94e9c106ea19a09157, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseUrl: https://localhost
+  baseUrl: avansict2226789.azurewebsites.net
 --- !u!4 &567209742
 Transform:
   m_ObjectHideFlags: 0
@@ -1380,7 +1378,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WebClient: {fileID: 567209741}
   UserApiClient: {fileID: 567209740}
-  Object2DApiClient: {fileID: 0}
+  Object2DApiClient: {fileID: 567209738}
   Environment2DApiClient: {fileID: 567209739}
 --- !u!1 &595284601
 GameObject:
