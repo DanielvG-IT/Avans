@@ -3,14 +3,14 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private const float speed = 2f;
+    private float xMin, xMax, yMin, yMax;
 
-    private readonly float xMin = -(GameManager.Instance.SelectedEnvironment.maxLength / 2);
-    private readonly float xMax = GameManager.Instance.SelectedEnvironment.maxLength / 2;
+    public void Start()
+    {
+        ResetMovementValues();
+    }
 
-    private readonly float yMin = -(GameManager.Instance.SelectedEnvironment.maxHeight / 2);
-    private readonly float yMax = GameManager.Instance.SelectedEnvironment.maxHeight / 2;
-
-    void Update()
+    public void Update()
     {
         float movementX = Input.GetAxisRaw("Horizontal");
         float movementY = Input.GetAxisRaw("Vertical");
@@ -19,5 +19,14 @@ public class Player : MonoBehaviour
         float yPos = Mathf.Clamp(transform.position.y, yMin, yMax);
         float xPos = Mathf.Clamp(transform.position.x, xMin, xMax);
         transform.position = new Vector3(xPos, yPos);
+    }
+
+    public void ResetMovementValues()
+    {
+        xMin = -(GameManager.Instance.SelectedEnvironment.maxLength / 2);
+        xMax = GameManager.Instance.SelectedEnvironment.maxLength / 2;
+
+        yMin = -(GameManager.Instance.SelectedEnvironment.maxHeight / 2);
+        yMax = GameManager.Instance.SelectedEnvironment.maxHeight / 2;
     }
 }

@@ -1,5 +1,5 @@
-using UnityEngine.EventSystems;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class UIDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
@@ -19,7 +19,7 @@ public class UIDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         // Create a semi-transparent preview object
         dragPreview = Instantiate(prefabToInstantiate);
-        dragPreview.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f); // 50% transparent
+        dragPreview.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
         UpdatePosition(eventData);
     }
 

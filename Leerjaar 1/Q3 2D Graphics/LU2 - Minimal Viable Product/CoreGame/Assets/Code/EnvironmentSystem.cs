@@ -3,7 +3,6 @@ using System;
 using UnityEngine;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using UnityEngine.UI;
 
 public class EnvironmentSystem : MonoBehaviour
 {
@@ -42,6 +41,20 @@ public class EnvironmentSystem : MonoBehaviour
     public void Quit()
     {
         Application.Quit();
+    }
+
+    private void ShowErrorMessage(string message)
+    {
+        UserMessage.color = Color.red;
+        UserMessage.text = message;
+        Debug.LogError(message);
+    }
+
+    private void ShowSuccessMessage(string message)
+    {
+        UserMessage.color = Color.green;
+        UserMessage.text = message;
+        Debug.Log(message);
     }
 
     public void CreateDictionary()
@@ -94,10 +107,7 @@ public class EnvironmentSystem : MonoBehaviour
                 GameManager.Instance.SelectedEnvironment = updatedEnvironment;
                 return true;
             case WebRequestError errorResponse:
-                string errorMessage = errorResponse.ErrorMessage;
-                Debug.LogError("Delete environment error: " + errorMessage);
-                UserMessage.color = Color.red;
-                UserMessage.text = errorResponse.ErrorMessage;
+                ShowErrorMessage(errorResponse.ErrorMessage);
                 return false;
             default:
                 throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
@@ -113,10 +123,7 @@ public class EnvironmentSystem : MonoBehaviour
             case WebRequestData<string>:
                 return true;
             case WebRequestError errorResponse:
-                string errorMessage = errorResponse.ErrorMessage;
-                Debug.LogError("Delete environment error: " + errorMessage);
-                UserMessage.color = Color.red;
-                UserMessage.text = errorResponse.ErrorMessage;
+                ShowErrorMessage(errorResponse.ErrorMessage);
                 return false;
             default:
                 throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
@@ -142,10 +149,7 @@ public class EnvironmentSystem : MonoBehaviour
 
                 return object2D;
             case WebRequestError errorResponse:
-                string errorMessage = errorResponse.ErrorMessage;
-                Debug.LogError("Create Object2D error: " + errorMessage);
-                UserMessage.color = Color.red;
-                UserMessage.text = errorResponse.ErrorMessage;
+                ShowErrorMessage(errorResponse.ErrorMessage);
                 return null;
 
             default:
@@ -197,9 +201,7 @@ public class EnvironmentSystem : MonoBehaviour
                 break;
 
             case WebRequestError errorResponse:
-                string errorMessage = errorResponse.ErrorMessage;
-                Debug.LogError("Read object2Ds error: " + errorMessage);
-                // DONT SHARE TO USER, WHEN EMPTY ENVIRONMENT ALSO 404
+                ShowErrorMessage(errorResponse.ErrorMessage);
                 break;
 
             default:
@@ -217,9 +219,7 @@ public class EnvironmentSystem : MonoBehaviour
                 return dataResponse.Data; // Return server-validated data
 
             case WebRequestError errorResponse:
-                Debug.LogError("Update object2D error: " + errorResponse.ErrorMessage);
-                UserMessage.color = Color.red;
-                UserMessage.text = errorResponse.ErrorMessage;
+                ShowErrorMessage(errorResponse.ErrorMessage);
                 return null;
 
             default:
@@ -236,9 +236,7 @@ public class EnvironmentSystem : MonoBehaviour
             case WebRequestData<string>:
                 return true;
             case WebRequestError errorResponse:
-                Debug.Log("Update object2D error: " + errorResponse.ErrorMessage);
-                UserMessage.color = Color.red;
-                UserMessage.text = errorResponse.ErrorMessage;
+                ShowErrorMessage(errorResponse.ErrorMessage);
                 return false;
             default:
                 throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());

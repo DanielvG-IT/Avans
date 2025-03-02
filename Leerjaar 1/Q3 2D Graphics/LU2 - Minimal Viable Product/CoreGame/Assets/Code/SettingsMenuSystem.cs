@@ -1,21 +1,20 @@
 using TMPro;
 using System;
 using UnityEngine;
-using UnityEngine.UI;
-using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
 
 public class SettingsMenuSystem : MonoBehaviour
 {
     [Header("UI References")]
     public GameObject settingsMenu;
-    public Button settingsButton;
+    public TMP_Text SettingsName;
     public TMP_InputField InputEnvName;
     public TMP_InputField InputEnvMaxHeight;
     public TMP_InputField InputEnvMaxLength;
 
     [Header("Scripts Dependencies")]
     public EnvironmentSystem environmentSystem;
+    public GameObject player;
 
     // Internal
     private Environment2D currentEnvironment;
@@ -26,17 +25,22 @@ public class SettingsMenuSystem : MonoBehaviour
         
         settingsMenu.SetActive(false);
 
-        UpdateInputFields();
+        UpdateSettingsFields();
     }
 
-    private void UpdateInputFields()
+    private void UpdateSettingsFields()
     {
-        if (currentEnvironment == null) 
-            GoBackToMainMenu();
-
+        SettingsName.text = currentEnvironment.name;
         InputEnvName.text = currentEnvironment.name;
         InputEnvMaxHeight.text = currentEnvironment.maxHeight.ToString();
         InputEnvMaxLength.text = currentEnvironment.maxLength.ToString();
+    }
+
+    private void UpdatePlayer() 
+    {
+        // Update player boundaries for waling
+        var playerScript = GetComponent<Player>();
+        playerScript.ResetMovementValues();
     }
 
     public void GoBackToMainMenu()
@@ -57,8 +61,9 @@ public class SettingsMenuSystem : MonoBehaviour
         await environmentSystem.UpdateEnvironment2D(updatedEnvironment);
         
         currentEnvironment = GameManager.Instance.SelectedEnvironment;
-        
-        // SceneManager.LoadScene("Environment");
+
+        UpdatePlayer();
+        UpdateSettingsFields();
     }
 
     public async void DeleteEnvironmentSettingsMenu()

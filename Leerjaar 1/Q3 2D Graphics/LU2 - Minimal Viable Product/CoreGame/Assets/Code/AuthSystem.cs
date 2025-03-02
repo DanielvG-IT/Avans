@@ -1,20 +1,17 @@
 using TMPro;
 using System;
 using UnityEngine;
-using UnityEngine.UI;
-using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
 public class AuthSystem : MonoBehaviour
 {
+  [Header("UI References")]
   public TMP_InputField UsernameField;
   public TMP_InputField PasswordField;
-  public TMP_Text MessageText;
+  public TMP_Text UserMessage;
 
   [Header("Dependencies")]
   public UserApiClient userApiClient;
-  public Environment2DApiClient enviroment2DApiClient;
-  public Object2DApiClient object2DApiClient;
 
   private void Update()
   {
@@ -31,9 +28,29 @@ public class AuthSystem : MonoBehaviour
     Application.Quit();
   }
 
-  public async void Register()
+    private void ShowErrorMessage(string message)
+    {
+        UserMessage.color = Color.red;
+        UserMessage.text = message;
+        Debug.LogError(message);
+    }
+
+    private void ShowSuccessMessage(string message)
+    {
+        UserMessage.color = Color.green;
+        UserMessage.text = message;
+        Debug.Log(message);
+    }
+
+    public void ResetFromFields()
+    {
+        UsernameField.text = "";
+        PasswordField.text = "";
+    }
+
+    public async void Register()
   {
-    MessageText.text = "";
+    UserMessage.text = "";
 
     User user = new()
     {
@@ -45,26 +62,16 @@ public class AuthSystem : MonoBehaviour
 
     switch (webRequestResponse)
     {
-      case WebRequestData<string> dataResponse:
+      case WebRequestData<string>:
         {
-          MessageText.color = Color.green;
-          MessageText.text = "Register Succesfull!";
-          UsernameField.text = "";
-          PasswordField.text = "";
-
+          ShowSuccessMessage("Register Succesfull!");
+          ResetFromFields();
           break;
         }
-      case WebRequestError errorResponse:
+      case WebRequestError:
         {
-          string errorMessage = errorResponse.ErrorMessage;
-          Debug.Log(errorMessage);
-          MessageText.color = Color.red;
-          MessageText.text = errorMessage switch
-          {
-
-            _ => "Something went wrong!"
-          };
-          break;
+            ShowErrorMessage("Something went wrong!");
+            break;
         }
       default:
         {
@@ -75,7 +82,7 @@ public class AuthSystem : MonoBehaviour
 
   public async void Login()
   {
-    MessageText.text = "";
+    UserMessage.text = "";
 
     User user = new()
     {
@@ -87,23 +94,18 @@ public class AuthSystem : MonoBehaviour
 
     switch (webRequestResponse)
     {
-      case WebRequestData<string> dataResponse:
-        Debug.Log("Login succes!");
-        MessageText.color = Color.green;
-        MessageText.text = "Login Succesfull!";
-
+      case WebRequestData<string>:
+        ShowSuccessMessage("Login Succesfull!");
         await SceneManager.LoadSceneAsync("MainMenu");
         break;
       case WebRequestError errorResponse:
-        string errorMessage = errorResponse.ErrorMessage;
-        Debug.Log("Login error: " + errorMessage);
-        MessageText.color = Color.red;
-        MessageText.text = errorMessage switch
-        {
-          "HTTP/1.1 401 Unauthorized" => "Invalid Credentials!",
-          _ => "Something went wrong!",
-        };
+        string errorMessage = errorResponse.ErrorMessage == "HTTP/1.1 401 Unauthorized"
+            ? "Invalid Credentials!"
+            : "Something went wrong!";
+        ShowErrorMessage(errorMessage);
+        ResetFromFields();
         break;
+
       default:
         throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
     }

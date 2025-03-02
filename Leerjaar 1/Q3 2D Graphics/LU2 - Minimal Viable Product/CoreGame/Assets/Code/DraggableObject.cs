@@ -1,7 +1,6 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
-using System.Threading.Tasks;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
@@ -119,14 +118,11 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log($"Clicked on object: {gameObject.name}");
-
         // Deselect all objects before selecting the clicked one
         DeselectAllObjects();
 
         // Toggle selection state and update visual selection
         isSelected = !isSelected;
-        Debug.Log($"isSelected is now: {isSelected}");
 
         UpdateVisualSelection();
     }
@@ -158,15 +154,11 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             return;
         }
 
-        Debug.Log("Requesting server to delete object with ID: " + data.id);
-
         // Send request to the server to delete object
         bool success = await environmentSystem.DeleteObject2D(data);
-        if (success)
-        {
-            // Successfully deleted, remove object from scene
-            Debug.Log("Object deleted successfully from server.");
-            Destroy(gameObject);  // This removes the object from the scene
+        if (success) 
+        { 
+            Destroy(gameObject);
         }
         else
         {
