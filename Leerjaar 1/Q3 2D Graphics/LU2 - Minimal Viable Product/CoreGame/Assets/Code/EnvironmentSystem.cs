@@ -35,12 +35,28 @@ public class EnvironmentSystem : MonoBehaviour
         object2DApiClient = ApiClientManager.Instance.Object2DApiClient;
         environment2D = GameManager.Instance.SelectedEnvironment;
 
+        CreateDictionary();
         LoadEnvironment2D();
     }
 
     public void Quit()
     {
         Application.Quit();
+    }
+
+    public void CreateDictionary()
+    {
+        // Initialize the dictionary with prefabId as the key and the prefab as the value
+        prefabDictionary = new Dictionary<string, GameObject>
+        {
+            { "chipWhiteBlue", chipWhiteBluePrefab },
+            { "chipGreen", chipGreenPrefab },
+            { "chipBlackWhite", chipBlackWhitePrefab },
+            { "chipWhite", chipWhitePrefab },
+            { "chipBlue", chipBluePrefab },
+            { "chipBlueWhite", chipBlueWhitePrefab },
+            { "chipRedWhite", chipRedWhitePrefab }
+        };
     }
 
     public void SpawnObject2D(Object2D objectData)
@@ -144,18 +160,6 @@ public class EnvironmentSystem : MonoBehaviour
         switch (webRequestResponse)
         {
             case WebRequestData<List<Object2D>> dataResponse:
-                // Initialize the dictionary with prefabId as the key and the prefab as the value
-                prefabDictionary = new Dictionary<string, GameObject>
-        {
-            { "chipWhiteBlue", chipWhiteBluePrefab },
-            { "chipGreen", chipGreenPrefab },
-            { "chipBlackWhite", chipBlackWhitePrefab },
-            { "chipWhite", chipWhitePrefab },
-            { "chipBlue", chipBluePrefab },
-            { "chipBlueWhite", chipBlueWhitePrefab },
-            { "chipRedWhite", chipRedWhitePrefab }
-        };
-
                 // Load data into List
                 List<Object2D> object2Ds = dataResponse.Data;
 
@@ -195,10 +199,7 @@ public class EnvironmentSystem : MonoBehaviour
             case WebRequestError errorResponse:
                 string errorMessage = errorResponse.ErrorMessage;
                 Debug.LogError("Read object2Ds error: " + errorMessage);
-
-                UserMessage.color = Color.red;
-                UserMessage.text = errorResponse.ErrorMessage;
-
+                // DONT SHARE TO USER, WHEN EMPTY ENVIRONMENT ALSO 404
                 break;
 
             default:
