@@ -101,9 +101,7 @@ public class GameApiController : ControllerBase
         foreach (var obj in objectsInEnvironment)
         {
             if (!existingEnvironment.IsPositionValid(obj.positionX, obj.positionY))
-            {
-                return BadRequest($"Object with ID {obj.id} has an invalid position.");
-            }
+                return BadRequest("One or more objects have invalid positions.");
         }
 
         updatedEnvironment.id = environmentId;
