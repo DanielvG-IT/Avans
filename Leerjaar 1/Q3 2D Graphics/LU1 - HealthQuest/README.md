@@ -1,4 +1,4 @@
-# Smart Health 2D Applicatie
+# Health Quest 2D Applicatie
 
 ## Projectoverzicht
 
@@ -6,22 +6,23 @@ Dit project is een **grafische 2D applicatie** ontwikkeld met **Unity** binnen h
 
 ## Functionaliteiten
 
--   **Interactieve UI:** Een kindvriendelijke interface met boeiende graphics.
--   **Educatieve Inhoud:** Informatie over ziekenhuisprocedures, rollen van het personeel en de inrichting van de kamers.
--   **Mini-games:** Leuke en informatieve spelletjes om gebruikers vertrouwd te maken met de medische omgeving.
--   **Beveiligde Back-End:** Een beschermde server en database voor het opslaan van gebruikersinteracties en voortgang.
--   **Gebruikersprofielen:** Gepersonaliseerde ervaringen op basis van leeftijd en medische situatie van het kind.
+- **Interactieve UI:** Een kindvriendelijke interface met boeiende graphics.
+- **Educatieve Inhoud:** Informatie over ziekenhuisprocedures, rollen van het personeel en de inrichting van de kamers.
+- **Beveiligde Back-End:** Een beschermde server en database voor het opslaan van gebruikersinteracties en voortgang.
 
 ## Technische Stack
 
--   **Game Engine:** Unity
--   **Programmeertaal:** C#
--   **Back-End:** Beveiligde server met API
--   **Database:** SQL/NoSQL (afhankelijk van projectvereisten)
+- **Game Engine:** Unity
+- **Programmeertaal:** C#
+- **Back-End:** Beveiligde server met API
+- **Database:** SQL/NoSQL (afhankelijk van projectvereisten)
 
 ## Teamleden
 
--   [Jouw Naam] - Ontwikkelaar
--   [Teamgenoot 1] - Ontwikkelaar
--   [Teamgenoot 2] - Designer
--   [Teamgenoot 3] - Projectmanager
+- **Jouke Corbijn - Product Owner**
+- **Gitta de Vaan - Product Owner**
+- Daniël van Ginneken - Ontwikkelaar
+- Luuk Stassen - Ontwikkelaar
+- Wouter Baas - Ontwikkelaar
+- Fabian van Well - Ontwikkelaar
+- Floris Bogers - Ontwikkelaar
