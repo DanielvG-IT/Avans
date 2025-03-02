@@ -126,7 +126,9 @@ public class GameApiController : ControllerBase
         if (existingEnvironment.ownerUserId != loggedInUser)
             return Forbid("You do not have permission to delete this environment.");
 
+        await _objectRepository.DeleteObjectsByEnvironmentIdAsync(environmentId);
         await _environmentRepository.DeleteEnvironmentByIdAsync(environmentId);
+
         return NoContent();
     }
 
@@ -152,7 +154,7 @@ public class GameApiController : ControllerBase
         if (environment.ownerUserId != loggedInUser)
             return Forbid("You do not have permission to view objects in this environment.");
 
-        var objects = await _objectRepository.GetObject2DsAsync(environmentId);
+        var objects = await _objectRepository.GetObjectsAsync(environmentId);
 
         if (!objects.Any())
             return NotFound("No objects found in the specified environment.");
@@ -230,7 +232,7 @@ public class GameApiController : ControllerBase
         if (environment.ownerUserId != loggedInUser)
             return Forbid("You do not have permission to update this object.");
 
-        await _objectRepository.UpdateObject(objectId, updatedObject);
+        await _objectRepository.UpdateObjectByIdAsync(objectId, updatedObject);
         return Ok(updatedObject);
     }
 
@@ -264,7 +266,7 @@ public class GameApiController : ControllerBase
         if (existingObject.environmentId != environmentId)
             return BadRequest("The object does not belong to the specified environment.");
 
-        await _objectRepository.DeleteObject(objectId);
+        await _objectRepository.DeleteObjectByIdAsync(objectId);
         return NoContent();
     }
 }
