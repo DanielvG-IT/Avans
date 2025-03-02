@@ -82,6 +82,6 @@ jobs:
               id: deploy-to-webapp
               uses: azure/webapps-deploy@v3
               with:
-                app-name: ${{ secrets.L1Q3_WEBAPI_PROJECT_NAME }}
-                package: ${{ env.PUBLISH_DIRECTORY}}
-                publish-profile: ${{ secrets.L1Q3_AZURE_PUBLISH_PROFILE }}
+                app-name: ${{ secrets.L1Q3_AZURE_WEBAPP_NAME }}
+                publish-profile: <publishData><publishProfile profileName="${{secrets.L1Q3_AZURE_WEBAPP_NAME}} - Zip Deploy" publishMethod="ZipDeploy" publishUrl="${{ secrets.L1Q3_AZURE_WEBAPP_NAME}}.scm.azurewebsites.net:443" userName="${{ secrets.L1Q3_AZURE_WEBAPP_PUBLISH_USERNAME}}" userPWD="${{ secrets.L1Q3_AZURE_WEBAPP_PUBLISH_PASSWORD }}" destinationAppUrl="http://${{ secrets.L1Q3_AZURE_WEBAPP_NAME}}.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="https://portal.azure.com" webSystem="WebSites"><databases /></publishProfile></publishData>
+                package: '${{ env.PUBLISH_DIRECTORY}}'
