@@ -68,9 +68,10 @@ public class AuthSystem : MonoBehaviour
           ResetFromFields();
           break;
         }
-      case WebRequestError:
+      case WebRequestError webRequestError:
         {
             ShowErrorMessage("Something went wrong!");
+                    Debug.Log(webRequestError.ErrorMessage);
             break;
         }
       default:
