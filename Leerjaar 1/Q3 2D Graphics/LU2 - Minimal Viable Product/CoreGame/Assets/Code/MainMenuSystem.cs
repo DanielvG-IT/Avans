@@ -2,8 +2,11 @@ using TMPro;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+
+// TODO refactor class to use the show error message for all errors!
 
 public class MainMenuSystem : MonoBehaviour
 {
@@ -30,6 +33,24 @@ public class MainMenuSystem : MonoBehaviour
     public void Quit()
     {
         Application.Quit();
+    }
+
+    private void ShowErrorMessage(string message)
+    {
+        UserMessage.color = Color.red;
+        UserMessage.text = message;
+        Debug.LogError(message);
+    }
+
+    private async Task RefreshEnvironmentsIfNeeded()
+    {
+        // Check if the local list is outdated (e.g., last update was a while ago)
+        IWebRequestReponse webRequestResponse = await enviroment2DApiClient.ReadEnvironment2Ds();
+
+        if (webRequestResponse is WebRequestData<List<Environment2D>> dataResponse)
+        {
+            environmentList = dataResponse.Data;
+        }
     }
 
     public void ShowEnvironments()
@@ -81,15 +102,12 @@ public class MainMenuSystem : MonoBehaviour
         switch (webRequestResponse)
         {
             case WebRequestData<Environment2D> dataResponse:
-                // TODO: Handle succes scenario.
                 newEnvironement.id = dataResponse.Data.id;
                 UserMessage.color = Color.green;
                 UserMessage.text = "Environment created succesfully!";
                 LoadEnvironment(newEnvironement.id);
-
                 break;
             case WebRequestError errorResponse:
-                // TODO: Handle error scenario. Show the errormessage to the user.
                 string errorMessage = errorResponse.ErrorMessage;
                 Debug.Log("Create environment2D error: " + errorMessage);
                 UserMessage.color = Color.green;
@@ -109,14 +127,12 @@ public class MainMenuSystem : MonoBehaviour
             case WebRequestData<List<Environment2D>> dataResponse:
                 {
                     environmentList = dataResponse.Data;
-                    // TODO: Handle succes scenario.
                         ShowEnvironments();
                     break;
                 }
             case WebRequestError errorResponse:
                 {
                     string errorMessage = errorResponse.ErrorMessage;
-                    // TODO: Handle error scenario. Show the errormessage to the user.
                     UserMessage.color = Color.red;
                     UserMessage.text = errorMessage;
                     break;
@@ -128,20 +144,22 @@ public class MainMenuSystem : MonoBehaviour
         }
     }
 
-    public void LoadEnvironment(string environmentId)
+    public async void LoadEnvironment(string environmentId)
     {
-        // Find the selected environment from the list
-        Environment2D loadedEnvironment = environmentList.Find(env => env.id == environmentId);
+        await RefreshEnvironmentsIfNeeded();
 
-        if (loadedEnvironment != null)
+        // Find the selected environment from the list
+        var loadedEnvironment = environmentList.Find(env => env.id == environmentId);
+
+        if (loadedEnvironment == null)
         {
-            GameManager.Instance.SelectedEnvironment = loadedEnvironment;
-            SceneManager.LoadScene("Environment");
+            ShowErrorMessage($"Environment with ID {environmentId} not found!");
+            ShowEnvironments();
+            return;
         }
-        else
-        {
-            Debug.LogError($"Environment with ID {environmentId} not found!");
-        }
+
+        GameManager.Instance.SelectedEnvironment = loadedEnvironment;
+        SceneManager.LoadScene("Environment");
     }
 
     //public async void DeleteEnvironments()

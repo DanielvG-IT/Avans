@@ -68,7 +68,9 @@ public class SettingsMenuSystem : MonoBehaviour
         if (success)
         {
             settingsMenu.SetActive(false);
-            GoBackToMainMenu();
+
+            // Ensure data updates before returning to the main menu
+            SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
         }
     }
 
