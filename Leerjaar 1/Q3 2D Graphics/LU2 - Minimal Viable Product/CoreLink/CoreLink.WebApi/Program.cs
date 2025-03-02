@@ -48,7 +48,25 @@ app.MapGet("/", (Microsoft.Extensions.Options.IOptions<IdentityOptions> identity
     var buildDate = System.IO.File.GetLastWriteTime(System.Reflection.Assembly.GetExecutingAssembly().Location);
     var deployDate = DateTime.UtcNow; // Assuming the current time as deploy time
 
-    return $"The API is up and running. Environment: {environment}. Connection string: {connectionStringStatus}. Password Requirements: {passwordRequirements}. Build Date: {buildDate}. Deploy Date: {deployDate}.";
+    var additionalInfo = new
+    {
+        ApplicationName = "CoreLink Web API",
+        Version = "1.0.0",
+        DeveloperContact = "developer@example.com",
+        DocumentationLink = "https://example.com/docs"
+    };
+
+    return Results.Json(new
+    {
+        Message = "The API is up and running.",
+        Environment = environment,
+        ConnectionString = sqlConnectionString,
+        ConnectionStringStatus = connectionStringStatus,
+        PasswordRequirements = passwordRequirements,
+        BuildDate = buildDate,
+        DeployDate = deployDate,
+        AdditionalInfo = additionalInfo
+    });
 });
 
 app.UseAuthorization();
