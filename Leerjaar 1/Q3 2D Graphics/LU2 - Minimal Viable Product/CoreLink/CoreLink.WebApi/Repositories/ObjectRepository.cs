@@ -15,7 +15,7 @@ public class ObjectRepository : IObjectRepository
     }
 
     // TODO Refactor SQL queries and parameters
-    public async Task<IEnumerable<Object2D>> GetObjectsAsync(Guid environmentId)
+    public async Task<IEnumerable<Object2D>> GetObjectsByEnvironmentIdAsync(Guid environmentId)
     {
         using var sqlConnection = new SqlConnection(sqlConnectionString);
         return await sqlConnection.QueryAsync<Object2D>("SELECT * FROM [Object2D] WHERE environmentId = @environmentId", new { environmentId });

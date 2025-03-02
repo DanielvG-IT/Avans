@@ -96,6 +96,16 @@ public class GameApiController : ControllerBase
         if (existingEnvironment.ownerUserId != loggedInUser)
             return Forbid("You do not have permission to update this environment.");
 
+        var objectsInEnvironment = await _objectRepository.GetObjectsByEnvironmentIdAsync(existingEnvironment.id);
+
+        foreach (var obj in objectsInEnvironment)
+        {
+            if (!existingEnvironment.IsPositionValid(obj.positionX, obj.positionY))
+            {
+                return BadRequest($"Object with ID {obj.id} has an invalid position.");
+            }
+        }
+
         updatedEnvironment.id = environmentId;
         updatedEnvironment.ownerUserId = loggedInUser;
 
@@ -149,7 +159,7 @@ public class GameApiController : ControllerBase
         if (environment.ownerUserId != loggedInUser)
             return Forbid("You do not have permission to view objects in this environment.");
 
-        var objects = await _objectRepository.GetObjectsAsync(environmentId);
+        var objects = await _objectRepository.GetObjectsByEnvironmentIdAsync(environmentId);
 
         if (!objects.Any())
             return NotFound("No objects found in the specified environment.");

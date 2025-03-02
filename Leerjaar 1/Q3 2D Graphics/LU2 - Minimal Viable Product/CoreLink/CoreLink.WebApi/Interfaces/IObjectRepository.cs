@@ -12,7 +12,7 @@ namespace CoreLink.WebApi.Interfaces
         /// </summary>
         /// <param name="environmentId">The unique identifier of the environment.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains an enumerable collection of 2D objects.</returns>
-        Task<IEnumerable<Object2D>> GetObjectsAsync(Guid environmentId);
+        Task<IEnumerable<Object2D>> GetObjectsByEnvironmentIdAsync(Guid environmentId);
 
         /// <summary>
         /// Retrieves a 2D object by its unique identifier.
