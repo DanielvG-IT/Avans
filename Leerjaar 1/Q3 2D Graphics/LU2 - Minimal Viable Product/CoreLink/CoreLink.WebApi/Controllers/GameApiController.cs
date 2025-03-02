@@ -30,8 +30,14 @@ public class GameApiController : ControllerBase
 
         var environments = await _environmentRepository.GetEnvironmentsByUserIdAsync(loggedInUser);
 
+        if (environments == null)
+            return StatusCode(500, "Error retrieving environments from the repository.");
+
         if (!environments.Any())
             return NotFound("No environments found for the current user.");
+
+        if (environments.Count() > 5)
+            return BadRequest("Too many environments found for the current user.");
 
         return Ok(environments);
     }
