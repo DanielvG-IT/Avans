@@ -1,0 +1,1057 @@
+{
+	"info": {
+		"_postman_id": "33e4aa13-3f9c-4ffa-a98d-7f3b5a307779",
+		"name": "SystemTests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41979928"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "/account/login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Login - Success\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.be.json;\r",
+									"    pm.response.to.have.jsonBody({\r",
+									"        \"accessToken\": \"string\",\r",
+									"        \"expiresIn\": \"integer\",\r",
+									"        \"refreshToken\": \"string\"\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"bearer_token\", pm.response.json().accessToken);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"postmantest@student.avans.nl\",\n    \"password\": \"DitW8w00rd!sSterkG3noeg\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/account/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"account",
+								"login"
+							],
+							"query": [
+								{
+									"key": "useCookies",
+									"value": "<boolean>",
+									"disabled": true
+								},
+								{
+									"key": "useSessionCookies",
+									"value": "<boolean>",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"<string>\",\n  \"password\": \"<string>\",\n  \"twoFactorCode\": \"<string>\",\n  \"twoFactorRecoveryCode\": \"<string>\"\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/account/login?useCookies=<boolean>&useSessionCookies=<boolean>",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"account",
+										"login"
+									],
+									"query": [
+										{
+											"key": "useCookies",
+											"value": "<boolean>"
+										},
+										{
+											"key": "useSessionCookies",
+											"value": "<boolean>"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"accessToken\": \"<string>\",\n  \"expiresIn\": \"<long>\",\n  \"refreshToken\": \"<string>\",\n  \"tokenType\": \"<string>\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "General Flow",
+			"item": [
+				{
+					"name": "Add Environment",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: 'Bearer ' + pm.environment.get('bearer_token')\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Create Environment - Success\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.be.json;\r",
+									"    pm.response.to.have.jsonBody({\r",
+									"        \"id\": \"string\",\r",
+									"        \"name\": \"string\",\r",
+									"        \"maxLength\": \"integer\",\r",
+									"        \"maxHeight\": \"integer\"\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"currentEnvironment\", pm.response.json().id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "text/plain"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"PostmanTestEnvironment\",\n  \"maxLength\": \"50\",\n  \"maxHeight\": \"25\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/environments",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"environments"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "text/plain"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"<string>\",\n  \"maxLength\": \"<integer>\",\n  \"maxHeight\": \"<integer>\",\n  \"id\": \"<uuid>\",\n  \"ownerUserId\": \"<string>\"\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/environments",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"environments"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"name\": \"<string>\",\n  \"maxLength\": \"<integer>\",\n  \"maxHeight\": \"<integer>\",\n  \"id\": \"<uuid>\",\n  \"ownerUserId\": \"<string>\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get User Environments",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: 'Bearer ' + pm.environment.get('bearer_token')\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get Environments - Success\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.be.json;\r",
+									"    pm.response.to.have.jsonBody([\r",
+									"        {\r",
+									"        \"id\": \"string\",\r",
+									"        \"name\": \"string\",\r",
+									"        \"maxLength\": \"integer\",\r",
+									"        \"maxHeight\": \"integer\"\r",
+									"        }\r",
+									"    ]);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "text/plain"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/environments",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"environments"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "text/plain"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/environments",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"environments"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "[\n  {\n    \"name\": \"<string>\",\n    \"maxLength\": \"<integer>\",\n    \"maxHeight\": \"<integer>\",\n    \"id\": \"<uuid>\",\n    \"ownerUserId\": \"<string>\"\n  },\n  {\n    \"name\": \"<string>\",\n    \"maxLength\": \"<integer>\",\n    \"maxHeight\": \"<integer>\",\n    \"id\": \"<uuid>\",\n    \"ownerUserId\": \"<string>\"\n  }\n]"
+						}
+					]
+				},
+				{
+					"name": "Edit Environment",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: 'Bearer ' + pm.environment.get('bearer_token')\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Update Environment - Success\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"PostmanTestUpdate\",\n  \"maxLength\": \"200\",\n  \"maxHeight\": \"100\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/environments/:environmentId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"environments",
+								":environmentId"
+							],
+							"variable": [
+								{
+									"key": "environmentId",
+									"value": "{{currentEnvironment}}"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"<string>\",\n  \"maxLength\": \"<integer>\",\n  \"maxHeight\": \"<integer>\",\n  \"id\": \"<uuid>\",\n  \"ownerUserId\": \"<string>\"\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/environments/:environmentId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"environments",
+										":environmentId"
+									],
+									"variable": [
+										{
+											"key": "environmentId"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "Add Environment Object",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: 'Bearer ' + pm.environment.get('bearer_token')\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body matches Object2D schema\", function () {\r",
+									"    pm.response.to.have.jsonSchema({\r",
+									"        type: \"object\",\r",
+									"        properties: {\r",
+									"            environmentId: { type: \"string\", format: \"uuid\" },\r",
+									"            prefabId: { type: \"string\" },\r",
+									"            positionX: { type: \"number\" },\r",
+									"            positionY: { type: \"number\" },\r",
+									"            scaleX: { type: \"number\" },\r",
+									"            scaleY: { type: \"number\" },\r",
+									"            rotationZ: { type: \"number\" },\r",
+									"            sortingLayer: { type: \"integer\" }\r",
+									"        },\r",
+									"        required: [\"environmentId\", \"prefabId\", \"positionX\", \"positionY\", \"scaleX\", \"scaleY\", \"rotationZ\", \"sortingLayer\"]\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Request body was passed correctly\", function () {\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.environmentId).to.eql(pm.environment.get(\"currentEnvironment\"));\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"currentObject\", pm.response.json().id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "text/plain"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"prefabId\": \"chipBlue\",\n  \"positionX\": \"-2\",\n  \"positionY\": \"2\",\n  \"scaleX\": \"1\",\n  \"scaleY\": \"1\",\n  \"rotationZ\": \"1\",\n  \"sortingLayer\": \"1\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/environments/:environmentId/objects",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"environments",
+								":environmentId",
+								"objects"
+							],
+							"variable": [
+								{
+									"key": "environmentId",
+									"value": "{{currentEnvironment}}",
+									"description": "(Required) "
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "text/plain"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"environmentId\": \"<uuid>\",\n  \"prefabId\": \"<string>\",\n  \"positionX\": \"<float>\",\n  \"positionY\": \"<float>\",\n  \"scaleX\": \"<float>\",\n  \"scaleY\": \"<float>\",\n  \"rotationZ\": \"<float>\",\n  \"sortingLayer\": \"<integer>\",\n  \"id\": \"<uuid>\"\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/environments/:environmentId/objects",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"environments",
+										":environmentId",
+										"objects"
+									],
+									"variable": [
+										{
+											"key": "environmentId"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"environmentId\": \"<uuid>\",\n  \"prefabId\": \"<string>\",\n  \"positionX\": \"<float>\",\n  \"positionY\": \"<float>\",\n  \"scaleX\": \"<float>\",\n  \"scaleY\": \"<float>\",\n  \"rotationZ\": \"<float>\",\n  \"sortingLayer\": \"<integer>\",\n  \"id\": \"<uuid>\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Environment Objects",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: 'Bearer ' + pm.environment.get('bearer_token')\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Array items match Object2D schema\", function () {\r",
+									"    pm.response.to.have.jsonSchema({\r",
+									"        type: \"array\",\r",
+									"        items: {\r",
+									"            type: \"object\",\r",
+									"            properties: {\r",
+									"                environmentId: { type: \"string\", format: \"uuid\" },\r",
+									"                prefabId: { type: \"string\" },\r",
+									"                positionX: { type: \"number\" },\r",
+									"                positionY: { type: \"number\" },\r",
+									"                scaleX: { type: \"number\" },\r",
+									"                scaleY: { type: \"number\" },\r",
+									"                rotationZ: { type: \"number\" },\r",
+									"                sortingLayer: { type: \"integer\" }\r",
+									"            },\r",
+									"            required: [\"environmentId\", \"prefabId\", \"positionX\", \"positionY\", \"scaleX\", \"scaleY\", \"rotationZ\", \"sortingLayer\"]\r",
+									"        }\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "text/plain"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/environments/:environmentId/objects",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"environments",
+								":environmentId",
+								"objects"
+							],
+							"variable": [
+								{
+									"key": "environmentId",
+									"value": "{{currentEnvironment}}",
+									"description": "(Required) "
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "text/plain"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/environments/:environmentId/objects",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"environments",
+										":environmentId",
+										"objects"
+									],
+									"variable": [
+										{
+											"key": "environmentId"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "[\n  {\n    \"environmentId\": \"<uuid>\",\n    \"prefabId\": \"<string>\",\n    \"positionX\": \"<float>\",\n    \"positionY\": \"<float>\",\n    \"scaleX\": \"<float>\",\n    \"scaleY\": \"<float>\",\n    \"rotationZ\": \"<float>\",\n    \"sortingLayer\": \"<integer>\",\n    \"id\": \"<uuid>\"\n  },\n  {\n    \"environmentId\": \"<uuid>\",\n    \"prefabId\": \"<string>\",\n    \"positionX\": \"<float>\",\n    \"positionY\": \"<float>\",\n    \"scaleX\": \"<float>\",\n    \"scaleY\": \"<float>\",\n    \"rotationZ\": \"<float>\",\n    \"sortingLayer\": \"<integer>\",\n    \"id\": \"<uuid>\"\n  }\n]"
+						}
+					]
+				},
+				{
+					"name": "Edit Environment Object",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: 'Bearer ' + pm.environment.get('bearer_token')\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"ObjectId is updated correctly\", function () {\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.id).to.eql(pm.environment.get(\"currentObject\"));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"prefabId\": \"chipGreen\",\n  \"positionX\": \"5\",\n  \"positionY\": \"4\",\n  \"scaleX\": \"3\",\n  \"scaleY\": \"2\",\n  \"rotationZ\": \"12\",\n  \"sortingLayer\": \"3\"\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/environments/:environmentId/objects/:objectId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"environments",
+								":environmentId",
+								"objects",
+								":objectId"
+							],
+							"variable": [
+								{
+									"key": "environmentId",
+									"value": "{{currentEnvironment}}",
+									"description": "(Required) "
+								},
+								{
+									"key": "objectId",
+									"value": "{{currentObject}}",
+									"description": "(Required) "
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"environmentId\": \"<uuid>\",\n  \"prefabId\": \"<string>\",\n  \"positionX\": \"<float>\",\n  \"positionY\": \"<float>\",\n  \"scaleX\": \"<float>\",\n  \"scaleY\": \"<float>\",\n  \"rotationZ\": \"<float>\",\n  \"sortingLayer\": \"<integer>\",\n  \"id\": \"<uuid>\"\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/environments/:environmentId/objects/:objectId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"environments",
+										":environmentId",
+										"objects",
+										":objectId"
+									],
+									"variable": [
+										{
+											"key": "environmentId"
+										},
+										{
+											"key": "objectId"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "Remove Environment Object",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: 'Bearer ' + pm.environment.get('bearer_token')\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/environments/:environmentId/objects/:objectId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"environments",
+								":environmentId",
+								"objects",
+								":objectId"
+							],
+							"variable": [
+								{
+									"key": "environmentId",
+									"value": "{{currentEnvironment}}",
+									"description": "(Required) "
+								},
+								{
+									"key": "objectId",
+									"value": "{{currentObject}}",
+									"description": "(Required) "
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/environments/:environmentId/objects/:objectId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"environments",
+										":environmentId",
+										"objects",
+										":objectId"
+									],
+									"variable": [
+										{
+											"key": "environmentId"
+										},
+										{
+											"key": "objectId"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "Remove Environment",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: 'Bearer ' + pm.environment.get('bearer_token')\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/environments/:environmentId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"environments",
+								":environmentId"
+							],
+							"variable": [
+								{
+									"key": "environmentId",
+									"value": "{{currentEnvironment}}"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/environments/:environmentId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"environments",
+										":environmentId"
+									],
+									"variable": [
+										{
+											"key": "environmentId"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": ""
+		}
+	]
+}

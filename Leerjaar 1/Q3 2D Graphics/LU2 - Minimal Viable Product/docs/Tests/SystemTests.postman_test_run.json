@@ -1,0 +1,325 @@
+{
+	"id": "4d68adc2-94c8-46d9-ba22-7e74a249910f",
+	"name": "SystemTests",
+	"timestamp": "2025-03-10T11:55:34.450Z",
+	"collection_id": "41979928-33e4aa13-3f9c-4ffa-a98d-7f3b5a307779",
+	"folder_id": 0,
+	"environment_id": "41979928-2d7a964a-4252-4ca3-bee7-7a3c30b0a3d5",
+	"totalPass": 13,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2025-03-10T11:55:32.419Z",
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "16375f99-6435-4391-bd7b-e9c3ed25278f",
+			"name": "/account/login",
+			"url": "https://avansict2226789.azurewebsites.net//account/login",
+			"time": 257,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Login - Success": true
+			},
+			"testPassFailCounts": {
+				"Login - Success": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				257
+			],
+			"allTests": [
+				{
+					"Login - Success": true
+				}
+			]
+		},
+		{
+			"id": "ca9dec72-720b-417a-8cd6-82062a7bb1ba",
+			"name": "Add Environment",
+			"url": "https://avansict2226789.azurewebsites.net//environments",
+			"time": 100,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Create Environment - Success": true
+			},
+			"testPassFailCounts": {
+				"Create Environment - Success": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				100
+			],
+			"allTests": [
+				{
+					"Create Environment - Success": true
+				}
+			]
+		},
+		{
+			"id": "2e714a72-ecd2-4e84-bec4-f8a4c8948616",
+			"name": "Get User Environments",
+			"url": "https://avansict2226789.azurewebsites.net//environments",
+			"time": 52,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Get Environments - Success": true
+			},
+			"testPassFailCounts": {
+				"Get Environments - Success": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				52
+			],
+			"allTests": [
+				{
+					"Get Environments - Success": true
+				}
+			]
+		},
+		{
+			"id": "ee6dfd7e-9348-41db-ac9f-a48385c1f065",
+			"name": "Edit Environment",
+			"url": "https://avansict2226789.azurewebsites.net//environments/78d5fe27-03bd-4360-b6e5-6b692867b647",
+			"time": 42,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Update Environment - Success": true
+			},
+			"testPassFailCounts": {
+				"Update Environment - Success": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				42
+			],
+			"allTests": [
+				{
+					"Update Environment - Success": true
+				}
+			]
+		},
+		{
+			"id": "bafdeb83-184b-437a-a224-e0aab1b67ba6",
+			"name": "Add Environment Object",
+			"url": "https://avansict2226789.azurewebsites.net//environments/78d5fe27-03bd-4360-b6e5-6b692867b647/objects",
+			"time": 58,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201": true,
+				"Response body matches Object2D schema": true,
+				"Request body was passed correctly": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response body matches Object2D schema": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Request body was passed correctly": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				58
+			],
+			"allTests": [
+				{
+					"Status code is 201": true,
+					"Response body matches Object2D schema": true,
+					"Request body was passed correctly": true
+				}
+			]
+		},
+		{
+			"id": "22834bbc-4e41-4bc4-a181-32c7c33cf182",
+			"name": "Get Environment Objects",
+			"url": "https://avansict2226789.azurewebsites.net//environments/78d5fe27-03bd-4360-b6e5-6b692867b647/objects",
+			"time": 35,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Array items match Object2D schema": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Array items match Object2D schema": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				35
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Array items match Object2D schema": true
+				}
+			]
+		},
+		{
+			"id": "29aabb05-0021-4f68-ac46-fdb855f64cd2",
+			"name": "Edit Environment Object",
+			"url": "https://avansict2226789.azurewebsites.net//environments/78d5fe27-03bd-4360-b6e5-6b692867b647/objects/4853ec26-d579-4754-b8be-0c185487629f",
+			"time": 48,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"ObjectId is updated correctly": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"ObjectId is updated correctly": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				48
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"ObjectId is updated correctly": true
+				}
+			]
+		},
+		{
+			"id": "83ec0de5-157f-43b0-b064-4421818665a6",
+			"name": "Remove Environment Object",
+			"url": "https://avansict2226789.azurewebsites.net//environments/78d5fe27-03bd-4360-b6e5-6b692867b647/objects/4853ec26-d579-4754-b8be-0c185487629f",
+			"time": 504,
+			"responseCode": {
+				"code": 204,
+				"name": "No Content"
+			},
+			"tests": {
+				"Status code is 204": true
+			},
+			"testPassFailCounts": {
+				"Status code is 204": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				504
+			],
+			"allTests": [
+				{
+					"Status code is 204": true
+				}
+			]
+		},
+		{
+			"id": "0faf420e-05dd-445f-a1d0-afbeb09719a4",
+			"name": "Remove Environment",
+			"url": "https://avansict2226789.azurewebsites.net//environments/78d5fe27-03bd-4360-b6e5-6b692867b647",
+			"time": 59,
+			"responseCode": {
+				"code": 204,
+				"name": "No Content"
+			},
+			"tests": {
+				"Status code is 204": true
+			},
+			"testPassFailCounts": {
+				"Status code is 204": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				59
+			],
+			"allTests": [
+				{
+					"Status code is 204": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 1155,
+	"collection": {
+		"requests": [
+			{
+				"id": "16375f99-6435-4391-bd7b-e9c3ed25278f",
+				"method": "POST"
+			},
+			{
+				"id": "ca9dec72-720b-417a-8cd6-82062a7bb1ba",
+				"method": "POST"
+			},
+			{
+				"id": "2e714a72-ecd2-4e84-bec4-f8a4c8948616",
+				"method": "GET"
+			},
+			{
+				"id": "ee6dfd7e-9348-41db-ac9f-a48385c1f065",
+				"method": "PUT"
+			},
+			{
+				"id": "bafdeb83-184b-437a-a224-e0aab1b67ba6",
+				"method": "POST"
+			},
+			{
+				"id": "22834bbc-4e41-4bc4-a181-32c7c33cf182",
+				"method": "GET"
+			},
+			{
+				"id": "29aabb05-0021-4f68-ac46-fdb855f64cd2",
+				"method": "PUT"
+			},
+			{
+				"id": "83ec0de5-157f-43b0-b064-4421818665a6",
+				"method": "DELETE"
+			},
+			{
+				"id": "0faf420e-05dd-445f-a1d0-afbeb09719a4",
+				"method": "DELETE"
+			}
+		]
+	}
+}

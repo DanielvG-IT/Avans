@@ -2,9 +2,9 @@
 
 ## Must have
 
-- [ ] Als developer wil ik dat er unittesten worden opgesteld voor de secure backend zodanig dat de betrouwbaarheid van de code verbeterd wordt.
-  - [ ] Er zijn unit testen opgesteld voor minstens 3 acceptatiecriteria.
-- [ ] Als developer wil ik dat er systeemtesten worden opgesteld voor de secure backend zodanig dat de betrouwbaarheid van het systeem verbeterd wordt.
+- [x] Als developer wil ik dat er unittesten worden opgesteld voor de secure backend zodanig dat de betrouwbaarheid van de code verbeterd wordt.
+  - [x] Er zijn unit testen opgesteld voor minstens 3 acceptatiecriteria.
+- [x] Als developer wil ik dat er systeemtesten worden opgesteld voor de secure backend zodanig dat de betrouwbaarheid van het systeem verbeterd wordt.
 - [x] Als developer wil ik dat de secure backend gedeployed is in cloud zodanig dat deze online beschikbaar is.
 - [x] Als developer wil ik dat de code van de Unity applicatie onder version control staat op een git repository in cloud.
 - [x] Als developer wil ik dat de code van de secure backend onder version control staat op een git repository in cloud.
@@ -22,6 +22,6 @@
 
 - [ ] Als gebruiker wil ik dat de Unity applicatie beschikbaar is via browser als een webapplicatie zodanig dat ik deze applicatie niet op mijn computer hoef te installeren.
 - [ ] Als developer wil ik dat er systeemtesten worden opgesteld voor de Unity applicatie zodanig dat ik weet dat het systeem correct werkt.
-- [ ] Als developer wil ik dat een push naar git repository van de Unity applicatie zorgt voor het automatisch uitvoeren van de unittesten.
+- [x] Als developer wil ik dat een push naar git repository van de Unity applicatie zorgt voor het automatisch uitvoeren van de unittesten.
 - [x] Als developer wil ik dat een push naar de git repository van de Unity applicatie zorgt voor het automatisch deployen van de API en database naar cloud indien de testen slagen.
 - [ ] Als developer wil ik dat de Unity applicatie automatisch de token vernieuwd bij de secure backend wanneer de token verlopen is zodanig dat de gebruiker niet opnieuw in moet loggen wanneer de token verlopen is.
