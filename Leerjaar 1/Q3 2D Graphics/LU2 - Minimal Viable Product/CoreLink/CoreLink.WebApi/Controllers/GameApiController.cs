@@ -78,7 +78,7 @@ public class GameApiController : ControllerBase
     }
 
     [HttpPut("{environmentId}", Name = "EditEnvironment")]
-    public async Task<IActionResult> Put(Guid environmentId, [FromBody] Environment2D updatedEnvironment)
+    public async Task<ActionResult> Put(Guid environmentId, [FromBody] Environment2D updatedEnvironment)
     {
         var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
 
@@ -113,7 +113,7 @@ public class GameApiController : ControllerBase
     }
 
     [HttpDelete("{environmentId}", Name = "RemoveEnvironment")]
-    public async Task<IActionResult> Delete(Guid environmentId)
+    public async Task<ActionResult> Delete(Guid environmentId)
     {
         var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
 
@@ -198,7 +198,7 @@ public class GameApiController : ControllerBase
     }
 
     [HttpPut("{environmentId}/objects/{objectId}", Name = "EditEnvironmentObject")]
-    public async Task<IActionResult> UpdateObject(Guid environmentId, Guid objectId, [FromBody] Object2D updatedObject)
+    public async Task<ActionResult> UpdateObject(Guid environmentId, Guid objectId, [FromBody] Object2D updatedObject)
     {
         var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
 
@@ -228,7 +228,7 @@ public class GameApiController : ControllerBase
     }
 
     [HttpDelete("{environmentId}/objects/{objectId}", Name = "RemoveEnvironmentObject")]
-    public async Task<IActionResult> DeleteObject(Guid environmentId, Guid objectId)
+    public async Task<ActionResult> DeleteObject(Guid environmentId, Guid objectId)
     {
         var loggedInUser = _authenticationService.GetCurrentAuthenticatedUserId();
 
