@@ -93,6 +93,14 @@ public class GameApiController : ControllerBase
         if (existingEnvironment == null)
             return NotFound("The environment with the specified ID does not exist.");
 
+        if (existingEnvironment.name == updatedEnvironment.name)
+            return BadRequest("An environment with the same name already exists.");
+        
+        var existingEnvironmentsForUser = await _environmentRepository.GetEnvironmentsByUserIdAsync(loggedInUser);
+
+        if (existingEnvironmentsForUser.Any(e => e.name == updatedEnvironment.name))
+            return BadRequest("An environment with the same name already exists.");
+
         if (existingEnvironment.ownerUserId != loggedInUser)
             return Forbid("You do not have permission to update this environment.");
 
