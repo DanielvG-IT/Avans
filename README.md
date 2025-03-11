@@ -69,4 +69,4 @@ git clone https://github.com/DanielvG-IT/Avans.git
 
 ## 📜 Licentie
 
-This repository is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. Avans University of Applied Science owns the rights to the projects in this repository. The code is provided as-is and is not guaranteed to work in all environments. Use at your own risk.
+This repository is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details. Avans University of Applied Science owns the rights to the projects in this repository. The code is provided as-is and is not guaranteed to work in all environments. Use at your own risk.
