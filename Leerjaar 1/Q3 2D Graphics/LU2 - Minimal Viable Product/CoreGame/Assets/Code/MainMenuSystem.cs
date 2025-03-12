@@ -57,7 +57,7 @@ public class MainMenuSystem : MonoBehaviour
         UserMessage.color = Color.green;
         UserMessage.text = message;
 
-        await Task.Delay(2500);
+        await Task.Delay(1000);
 
         UserMessage.text = "";
     }
