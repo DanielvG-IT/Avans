@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using System.Threading;
 
 // TODO refactor class to use the show error message for all errors!
 
@@ -43,14 +44,22 @@ public class MainMenuSystem : MonoBehaviour
     {
         UserMessage.color = Color.red;
         UserMessage.text = message;
-        Debug.LogError(message);
     }
 
     private void ShowSuccessMessage(string message)
     {
         UserMessage.color = Color.green;
         UserMessage.text = message;
-        Debug.Log(message);
+    }
+
+    private async Task ShowSuccessMessageAsync(string message)
+    {
+        UserMessage.color = Color.green;
+        UserMessage.text = message;
+
+        await Task.Delay(2500);
+
+        UserMessage.text = "";
     }
 
     private async Task RefreshEnvironmentsIfNeeded()
@@ -88,7 +97,8 @@ public class MainMenuSystem : MonoBehaviour
             string environmentId = item.id; // Use local copy
 
             // Set the button's event listener to call method with environmentId embedded.
-            button.onClick.AddListener(() => {
+            button.onClick.AddListener(() =>
+            {
                 LoadEnvironment(environmentId);
             });
 
@@ -97,7 +107,8 @@ public class MainMenuSystem : MonoBehaviour
 
             // Set up the delete button's listener to delete the environment.
             Button deleteButton = deleteButtonObj.GetComponent<Button>();
-            deleteButton.onClick.AddListener(() => {
+            deleteButton.onClick.AddListener(() =>
+            {
                 DeleteEnvironment(environmentId);
             });
         }
@@ -125,7 +136,7 @@ public class MainMenuSystem : MonoBehaviour
                 newEnvironement.id = dataResponse.Data.id;
                 UserMessage.color = Color.green;
                 UserMessage.text = "Environment created succesfully!";
-                LoadEnvironment(newEnvironement.id);
+                ReadEnvironments();
                 break;
             case WebRequestError errorResponse:
                 ShowErrorMessage(errorResponse.ErrorMessage);
@@ -144,7 +155,7 @@ public class MainMenuSystem : MonoBehaviour
             case WebRequestData<List<Environment2D>> dataResponse:
                 {
                     environments = dataResponse.Data;
-                        DisplayEnvironments();
+                    DisplayEnvironments();
                     break;
                 }
             case WebRequestError errorResponse:
@@ -173,6 +184,8 @@ public class MainMenuSystem : MonoBehaviour
             return;
         }
 
+        ShowSuccessMessage($"Loading Environment: {loadedEnvironment.name}");
+
         GameManager.Instance.SelectedEnvironment = loadedEnvironment;
         SceneManager.LoadScene("Environment");
     }
@@ -184,7 +197,7 @@ public class MainMenuSystem : MonoBehaviour
         switch (webRequestResponse)
         {
             case WebRequestData<string>:
-                ShowSuccessMessage("Succesfully deleted environment!");
+                await ShowSuccessMessageAsync("Succesfully deleted environment!");
                 await RefreshEnvironmentsIfNeeded();
                 DisplayEnvironments();
                 break;

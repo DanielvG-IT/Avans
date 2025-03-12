@@ -28,27 +28,32 @@ public class AuthSystem : MonoBehaviour
     Application.Quit();
   }
 
-    private void ShowErrorMessage(string message)
+  private void ShowErrorMessage(string message, Color color)
+  {
+    if (color == default)
     {
-        UserMessage.color = Color.red;
-        UserMessage.text = message;
-        Debug.LogError(message);
+      color = Color.red;
     }
 
-    private void ShowSuccessMessage(string message)
-    {
-        UserMessage.color = Color.green;
-        UserMessage.text = message;
-        Debug.Log(message);
-    }
+    UserMessage.color = color;
+    UserMessage.text = message;
+    Debug.LogError(message);
+  }
 
-    public void ResetFromFields()
-    {
-        UsernameField.text = "";
-        PasswordField.text = "";
-    }
+  private void ShowSuccessMessage(string message)
+  {
+    UserMessage.color = Color.green;
+    UserMessage.text = message;
+    Debug.Log(message);
+  }
 
-    public async void Register()
+  public void ResetFromFields()
+  {
+    UsernameField.text = "";
+    PasswordField.text = "";
+  }
+
+  public async void Register()
   {
     UserMessage.text = "";
 
@@ -64,15 +69,14 @@ public class AuthSystem : MonoBehaviour
     {
       case WebRequestData<string>:
         {
-          ShowSuccessMessage("Register Succesfull!");
+          ShowSuccessMessage("Register Successful!");
           ResetFromFields();
           break;
         }
       case WebRequestError webRequestError:
         {
-            ShowErrorMessage("Something went wrong!");
-                    Debug.Log(webRequestError.ErrorMessage);
-            break;
+          ShowErrorMessage("Registration failed! \n\n\n Password must be at least 10 characters long and include a digit, a lowercase letter, an uppercase letter, and a special character.", Color.white);
+          break;
         }
       default:
         {
@@ -96,14 +100,17 @@ public class AuthSystem : MonoBehaviour
     switch (webRequestResponse)
     {
       case WebRequestData<string>:
-        ShowSuccessMessage("Login Succesfull!");
+        ShowSuccessMessage("Login Successful!");
         await SceneManager.LoadSceneAsync("MainMenu");
         break;
       case WebRequestError errorResponse:
-        string errorMessage = errorResponse.ErrorMessage == "HTTP/1.1 401 Unauthorized"
-            ? "Invalid Credentials!"
-            : "Something went wrong!";
-        ShowErrorMessage(errorMessage);
+        var errorMessage = errorResponse.ErrorMessage switch
+        {
+          "HTTP/1.1 401 Unauthorized" => "Invalid Credentials!",
+          _ => "Something went wrong!"
+        };
+
+        ShowErrorMessage(errorMessage, Color.red);
         ResetFromFields();
         break;
 
