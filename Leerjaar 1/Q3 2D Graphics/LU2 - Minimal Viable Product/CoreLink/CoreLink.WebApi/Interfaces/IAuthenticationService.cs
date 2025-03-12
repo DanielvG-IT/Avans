@@ -1,8 +1,11 @@
-public interface IAuthenticationService
+namespace CoreLink.WebApi.Interfaces
 {
-  /// <summary>
-  /// Returns the user name of the authenticated user
-  /// </summary>
-  /// <returns></returns>
-  string? GetCurrentAuthenticatedUserId();
+  public interface IAuthenticationService
+  {
+    /// <summary>
+    /// Retrieves the ID of the currently authenticated user using the Identity framework.
+    /// </summary>
+    /// <returns>A string representing the ID of the authenticated user, or null if no user is authenticated.</returns>
+    public string? GetCurrentAuthenticatedUserId();
+  }
 }
