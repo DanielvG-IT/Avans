@@ -1,0 +1,158 @@
+{
+	"id": "86a75624-9889-486a-8d24-1f5288853b34",
+	"name": "SystemTests",
+	"timestamp": "2025-03-12T15:01:27.809Z",
+	"collection_id": "41979928-33e4aa13-3f9c-4ffa-a98d-7f3b5a307779",
+	"folder_id": "41979928-1012ec50-4b2a-41b4-8899-86230760a339",
+	"environment_id": "41979928-2d7a964a-4252-4ca3-bee7-7a3c30b0a3d5",
+	"totalPass": 6,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2025-03-12T15:01:27.069Z",
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "0b951bf5-6e0d-49d2-b975-2382888ef1e7",
+			"name": "Login",
+			"url": "https://avansict2226789.azurewebsites.net//account/login",
+			"time": 129,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Login - Success": true
+			},
+			"testPassFailCounts": {
+				"Login - Success": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				129
+			],
+			"allTests": [
+				{
+					"Login - Success": true
+				}
+			]
+		},
+		{
+			"id": "76bac155-bfe8-494a-8b62-90db5483387b",
+			"name": "Add Environment",
+			"url": "https://avansict2226789.azurewebsites.net//environments",
+			"time": 145,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Create Environment - Success": true
+			},
+			"testPassFailCounts": {
+				"Create Environment - Success": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				145
+			],
+			"allTests": [
+				{
+					"Create Environment - Success": true
+				}
+			]
+		},
+		{
+			"id": "bb95fb3b-3e8a-40c6-bddf-21b745d19223",
+			"name": "Add Environment Object",
+			"url": "https://avansict2226789.azurewebsites.net//environments/db49d56e-723c-44e6-93b6-5168661b253d/objects",
+			"time": 37,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201": true,
+				"Response body matches Object2D schema": true,
+				"Request body was passed correctly": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response body matches Object2D schema": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Request body was passed correctly": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				37
+			],
+			"allTests": [
+				{
+					"Status code is 201": true,
+					"Response body matches Object2D schema": true,
+					"Request body was passed correctly": true
+				}
+			]
+		},
+		{
+			"id": "29768d0d-d520-4c57-a15f-7316f8cab52e",
+			"name": "Remove Environment",
+			"url": "https://avansict2226789.azurewebsites.net//environments/db49d56e-723c-44e6-93b6-5168661b253d",
+			"time": 40,
+			"responseCode": {
+				"code": 204,
+				"name": "No Content"
+			},
+			"tests": {
+				"Status code is 204": true
+			},
+			"testPassFailCounts": {
+				"Status code is 204": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				40
+			],
+			"allTests": [
+				{
+					"Status code is 204": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 351,
+	"collection": {
+		"requests": [
+			{
+				"id": "0b951bf5-6e0d-49d2-b975-2382888ef1e7",
+				"method": "POST"
+			},
+			{
+				"id": "76bac155-bfe8-494a-8b62-90db5483387b",
+				"method": "POST"
+			},
+			{
+				"id": "bb95fb3b-3e8a-40c6-bddf-21b745d19223",
+				"method": "POST"
+			},
+			{
+				"id": "29768d0d-d520-4c57-a15f-7316f8cab52e",
+				"method": "DELETE"
+			}
+		]
+	}
+}

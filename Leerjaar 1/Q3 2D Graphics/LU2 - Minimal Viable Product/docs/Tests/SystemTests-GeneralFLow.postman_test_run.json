@@ -1,22 +1,22 @@
 {
-	"id": "4d68adc2-94c8-46d9-ba22-7e74a249910f",
+	"id": "da00a34b-b629-479d-add2-9379ba2ad1a5",
 	"name": "SystemTests",
-	"timestamp": "2025-03-10T11:55:34.450Z",
+	"timestamp": "2025-03-12T15:00:56.256Z",
 	"collection_id": "41979928-33e4aa13-3f9c-4ffa-a98d-7f3b5a307779",
-	"folder_id": 0,
+	"folder_id": "41979928-9679be7c-d580-4d1e-9630-7658c8c8af5f",
 	"environment_id": "41979928-2d7a964a-4252-4ca3-bee7-7a3c30b0a3d5",
 	"totalPass": 13,
 	"delay": 0,
 	"persist": true,
 	"status": "finished",
-	"startedAt": "2025-03-10T11:55:32.419Z",
+	"startedAt": "2025-03-12T15:00:55.211Z",
 	"totalFail": 0,
 	"results": [
 		{
-			"id": "16375f99-6435-4391-bd7b-e9c3ed25278f",
-			"name": "/account/login",
+			"id": "3d699e8c-a552-4f17-b4c6-bab259605543",
+			"name": "Login",
 			"url": "https://avansict2226789.azurewebsites.net//account/login",
-			"time": 257,
+			"time": 274,
 			"responseCode": {
 				"code": 200,
 				"name": "OK"
@@ -31,7 +31,7 @@
 				}
 			},
 			"times": [
-				257
+				274
 			],
 			"allTests": [
 				{
@@ -43,7 +43,7 @@
 			"id": "ca9dec72-720b-417a-8cd6-82062a7bb1ba",
 			"name": "Add Environment",
 			"url": "https://avansict2226789.azurewebsites.net//environments",
-			"time": 100,
+			"time": 32,
 			"responseCode": {
 				"code": 200,
 				"name": "OK"
@@ -58,7 +58,7 @@
 				}
 			},
 			"times": [
-				100
+				32
 			],
 			"allTests": [
 				{
@@ -70,7 +70,7 @@
 			"id": "2e714a72-ecd2-4e84-bec4-f8a4c8948616",
 			"name": "Get User Environments",
 			"url": "https://avansict2226789.azurewebsites.net//environments",
-			"time": 52,
+			"time": 28,
 			"responseCode": {
 				"code": 200,
 				"name": "OK"
@@ -85,7 +85,7 @@
 				}
 			},
 			"times": [
-				52
+				28
 			],
 			"allTests": [
 				{
@@ -96,8 +96,8 @@
 		{
 			"id": "ee6dfd7e-9348-41db-ac9f-a48385c1f065",
 			"name": "Edit Environment",
-			"url": "https://avansict2226789.azurewebsites.net//environments/78d5fe27-03bd-4360-b6e5-6b692867b647",
-			"time": 42,
+			"url": "https://avansict2226789.azurewebsites.net//environments/2cf67020-723d-4110-9a0c-7290402e32e8",
+			"time": 38,
 			"responseCode": {
 				"code": 200,
 				"name": "OK"
@@ -112,7 +112,7 @@
 				}
 			},
 			"times": [
-				42
+				38
 			],
 			"allTests": [
 				{
@@ -123,8 +123,8 @@
 		{
 			"id": "bafdeb83-184b-437a-a224-e0aab1b67ba6",
 			"name": "Add Environment Object",
-			"url": "https://avansict2226789.azurewebsites.net//environments/78d5fe27-03bd-4360-b6e5-6b692867b647/objects",
-			"time": 58,
+			"url": "https://avansict2226789.azurewebsites.net//environments/2cf67020-723d-4110-9a0c-7290402e32e8/objects",
+			"time": 42,
 			"responseCode": {
 				"code": 201,
 				"name": "Created"
@@ -149,7 +149,7 @@
 				}
 			},
 			"times": [
-				58
+				42
 			],
 			"allTests": [
 				{
@@ -162,8 +162,8 @@
 		{
 			"id": "22834bbc-4e41-4bc4-a181-32c7c33cf182",
 			"name": "Get Environment Objects",
-			"url": "https://avansict2226789.azurewebsites.net//environments/78d5fe27-03bd-4360-b6e5-6b692867b647/objects",
-			"time": 35,
+			"url": "https://avansict2226789.azurewebsites.net//environments/2cf67020-723d-4110-9a0c-7290402e32e8/objects",
+			"time": 37,
 			"responseCode": {
 				"code": 200,
 				"name": "OK"
@@ -183,7 +183,7 @@
 				}
 			},
 			"times": [
-				35
+				37
 			],
 			"allTests": [
 				{
@@ -195,8 +195,8 @@
 		{
 			"id": "29aabb05-0021-4f68-ac46-fdb855f64cd2",
 			"name": "Edit Environment Object",
-			"url": "https://avansict2226789.azurewebsites.net//environments/78d5fe27-03bd-4360-b6e5-6b692867b647/objects/4853ec26-d579-4754-b8be-0c185487629f",
-			"time": 48,
+			"url": "https://avansict2226789.azurewebsites.net//environments/2cf67020-723d-4110-9a0c-7290402e32e8/objects/077324c9-743a-4990-b246-2a84cdb05b9f",
+			"time": 40,
 			"responseCode": {
 				"code": 200,
 				"name": "OK"
@@ -216,7 +216,7 @@
 				}
 			},
 			"times": [
-				48
+				40
 			],
 			"allTests": [
 				{
@@ -228,8 +228,8 @@
 		{
 			"id": "83ec0de5-157f-43b0-b064-4421818665a6",
 			"name": "Remove Environment Object",
-			"url": "https://avansict2226789.azurewebsites.net//environments/78d5fe27-03bd-4360-b6e5-6b692867b647/objects/4853ec26-d579-4754-b8be-0c185487629f",
-			"time": 504,
+			"url": "https://avansict2226789.azurewebsites.net//environments/2cf67020-723d-4110-9a0c-7290402e32e8/objects/077324c9-743a-4990-b246-2a84cdb05b9f",
+			"time": 32,
 			"responseCode": {
 				"code": 204,
 				"name": "No Content"
@@ -244,7 +244,7 @@
 				}
 			},
 			"times": [
-				504
+				32
 			],
 			"allTests": [
 				{
@@ -255,8 +255,8 @@
 		{
 			"id": "0faf420e-05dd-445f-a1d0-afbeb09719a4",
 			"name": "Remove Environment",
-			"url": "https://avansict2226789.azurewebsites.net//environments/78d5fe27-03bd-4360-b6e5-6b692867b647",
-			"time": 59,
+			"url": "https://avansict2226789.azurewebsites.net//environments/2cf67020-723d-4110-9a0c-7290402e32e8",
+			"time": 34,
 			"responseCode": {
 				"code": 204,
 				"name": "No Content"
@@ -271,7 +271,7 @@
 				}
 			},
 			"times": [
-				59
+				34
 			],
 			"allTests": [
 				{
@@ -281,11 +281,11 @@
 		}
 	],
 	"count": 1,
-	"totalTime": 1155,
+	"totalTime": 557,
 	"collection": {
 		"requests": [
 			{
-				"id": "16375f99-6435-4391-bd7b-e9c3ed25278f",
+				"id": "3d699e8c-a552-4f17-b4c6-bab259605543",
 				"method": "POST"
 			},
 			{
