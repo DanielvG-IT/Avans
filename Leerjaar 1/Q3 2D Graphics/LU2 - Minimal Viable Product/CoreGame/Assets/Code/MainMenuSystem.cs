@@ -32,7 +32,7 @@ public class MainMenuSystem : MonoBehaviour
         ReadEnvironments();
     }
 
-    public async Task Logout()
+    public async void Logout()
     {
         Destroy(GameManager.Instance.gameObject);
         Destroy(ApiClientManager.Instance.gameObject);
