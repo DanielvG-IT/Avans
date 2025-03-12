@@ -22,6 +22,18 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
 .AddRoles<IdentityRole>()
 .AddDapperStores(options => options.ConnectionString = sqlConnectionString);
 
+// Configure CORS to allow WebGL build
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowCoreGame",
+        policy =>
+        {
+            policy.WithOrigins("https://coregame.danielvanginneken.nl")
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
+
 // Register services
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
@@ -104,5 +116,5 @@ app.MapGet("/", (Microsoft.Extensions.Options.IOptions<IdentityOptions> identity
 app.UseAuthorization();
 app.MapGroup("/account").MapIdentityApi<IdentityUser>();
 app.MapControllers().RequireAuthorization();
-
+app.UseCors("AllowCoreGame");
 app.Run();
