@@ -95,7 +95,7 @@ public class GameApiController : ControllerBase
 
         if (existingEnvironment.name == updatedEnvironment.name)
             return BadRequest("An environment with the same name already exists.");
-        
+
         var existingEnvironmentsForUser = await _environmentRepository.GetEnvironmentsByUserIdAsync(loggedInUser);
 
         if (existingEnvironmentsForUser.Any(e => e.name == updatedEnvironment.name))

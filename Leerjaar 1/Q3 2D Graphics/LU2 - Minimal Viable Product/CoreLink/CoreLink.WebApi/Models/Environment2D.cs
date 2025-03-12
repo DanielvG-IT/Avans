@@ -46,8 +46,6 @@ public class Environment2D
     /// <returns>True if the position is within the bounds, otherwise false.</returns>
     public bool IsPositionValid(float x, float y)
     {
-        // TODO: ADD UNIT TESTS FOR THIS
-
         // Calculate the range boundaries (centered around 0)
         float xMin = -(maxLength / 2f);
         float xMax = maxLength / 2f;

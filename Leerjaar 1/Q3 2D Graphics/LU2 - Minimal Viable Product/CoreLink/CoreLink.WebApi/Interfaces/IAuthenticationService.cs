@@ -1,5 +1,8 @@
 namespace CoreLink.WebApi.Interfaces
 {
+  /// <summary>
+  /// Provides methods for authentication-related operations.
+  /// </summary>
   public interface IAuthenticationService
   {
     /// <summary>
