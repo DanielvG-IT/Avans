@@ -64,10 +64,9 @@ public class WebClient : MonoBehaviour
                 return new WebRequestData<string>(responseData);
             default:
                 return new WebRequestError(webRequest.error);
-                // TODO Change this in every methode for sending back JSON error!
         }
     }
- 
+
     private void AddToken(UnityWebRequest webRequest)
     {
         webRequest.SetRequestHeader("Authorization", "Bearer " + token);

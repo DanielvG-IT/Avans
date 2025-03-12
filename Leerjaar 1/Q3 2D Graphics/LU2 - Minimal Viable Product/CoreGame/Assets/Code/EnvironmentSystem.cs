@@ -10,6 +10,9 @@ public class EnvironmentSystem : MonoBehaviour
     public TMP_Text nameText;
     public TMP_Text UserMessage;
 
+    [Header("Border References")]
+    public GameObject BorderPrefab;
+
     [Header("Prefab References")]
     public GameObject chipWhiteBluePrefab;
     public GameObject chipGreenPrefab;
@@ -28,14 +31,16 @@ public class EnvironmentSystem : MonoBehaviour
 
     #region WorldManager
 
-    void Start()
+    public void Start()
     {
         enviroment2DApiClient = ApiClientManager.Instance.Environment2DApiClient;
         object2DApiClient = ApiClientManager.Instance.Object2DApiClient;
         environment2D = GameManager.Instance.SelectedEnvironment;
 
+        nameText.text = environment2D.name;
+
         CreateDictionary();
-        LoadEnvironment2D();
+        ReadObject2Ds();
     }
 
     public void Quit()
@@ -48,13 +53,6 @@ public class EnvironmentSystem : MonoBehaviour
         UserMessage.color = Color.red;
         UserMessage.text = message;
         Debug.LogError(message);
-    }
-
-    private void ShowSuccessMessage(string message)
-    {
-        UserMessage.color = Color.green;
-        UserMessage.text = message;
-        Debug.Log(message);
     }
 
     public void CreateDictionary()
@@ -85,13 +83,6 @@ public class EnvironmentSystem : MonoBehaviour
         }
     }
 
-    private void LoadEnvironment2D()
-    {
-        nameText.text = environment2D.name;
-
-        ReadObject2Ds();
-    }
-
     #endregion
 
     #region Environment2D
@@ -106,8 +97,8 @@ public class EnvironmentSystem : MonoBehaviour
                 var updatedEnvironment = dataResponse.Data;
                 GameManager.Instance.SelectedEnvironment = updatedEnvironment;
                 return true;
-            case WebRequestError errorResponse:
-                ShowErrorMessage(errorResponse.ErrorMessage);
+            case WebRequestError:
+                ShowErrorMessage("ERROR: Couldn't update environment!");
                 return false;
             default:
                 throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
@@ -122,8 +113,8 @@ public class EnvironmentSystem : MonoBehaviour
         {
             case WebRequestData<string>:
                 return true;
-            case WebRequestError errorResponse:
-                ShowErrorMessage(errorResponse.ErrorMessage);
+            case WebRequestError:
+                ShowErrorMessage("ERROR: Couldn't delete environment!");
                 return false;
             default:
                 throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
@@ -148,8 +139,8 @@ public class EnvironmentSystem : MonoBehaviour
                 object2D.environmentId = dataResponse.Data.environmentId;
 
                 return object2D;
-            case WebRequestError errorResponse:
-                ShowErrorMessage(errorResponse.ErrorMessage);
+            case WebRequestError:
+                ShowErrorMessage("ERROR: Couldn't create environment!");
                 return null;
 
             default:
@@ -196,12 +187,10 @@ public class EnvironmentSystem : MonoBehaviour
                         Debug.LogWarning($"Unknown prefab ID: {item.prefabId}");
                     }
                 }
-
-                // TODO Remove existing objects if necessary
                 break;
 
-            case WebRequestError errorResponse:
-                ShowErrorMessage(errorResponse.ErrorMessage);
+            case WebRequestError:
+                ShowErrorMessage("ERROR: Couldn't read objects!");
                 break;
 
             default:
@@ -219,7 +208,7 @@ public class EnvironmentSystem : MonoBehaviour
                 return dataResponse.Data; // Return server-validated data
 
             case WebRequestError errorResponse:
-                ShowErrorMessage(errorResponse.ErrorMessage);
+                ShowErrorMessage("ERROR: Couldn't update object!");
                 return null;
 
             default:
@@ -235,8 +224,8 @@ public class EnvironmentSystem : MonoBehaviour
         {
             case WebRequestData<string>:
                 return true;
-            case WebRequestError errorResponse:
-                ShowErrorMessage(errorResponse.ErrorMessage);
+            case WebRequestError:
+                ShowErrorMessage("ERROR: Couldn't delete object!");
                 return false;
             default:
                 throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
