@@ -22,7 +22,7 @@ public class SettingsMenuSystem : MonoBehaviour
     void Start()
     {
         currentEnvironment = GameManager.Instance.SelectedEnvironment;
-        
+
         settingsMenu.SetActive(false);
 
         UpdateSettingsFields();
@@ -36,10 +36,10 @@ public class SettingsMenuSystem : MonoBehaviour
         InputEnvMaxLength.text = currentEnvironment.maxLength.ToString();
     }
 
-    private void UpdatePlayer() 
+    private void UpdatePlayer()
     {
-        // Update player boundaries for waling
-        var playerScript = GetComponent<Player>();
+        // Update player boundaries for walking
+        var playerScript = player.GetComponent<Player>();
         playerScript.ResetMovementValues();
     }
 
@@ -59,7 +59,7 @@ public class SettingsMenuSystem : MonoBehaviour
         };
 
         await environmentSystem.UpdateEnvironment2D(updatedEnvironment);
-        
+
         currentEnvironment = GameManager.Instance.SelectedEnvironment;
 
         UpdatePlayer();
@@ -67,7 +67,7 @@ public class SettingsMenuSystem : MonoBehaviour
     }
 
     public async void DeleteEnvironmentSettingsMenu()
-    { 
+    {
         var success = await environmentSystem.DeleteEnvironment2D();
 
         if (success)
