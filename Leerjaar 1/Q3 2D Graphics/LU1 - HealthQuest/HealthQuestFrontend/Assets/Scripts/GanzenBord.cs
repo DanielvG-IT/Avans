@@ -4,18 +4,25 @@ using UnityEngine.UI;
 
 public class Ganzenbord : MonoBehaviour
 {
-    [Header("PopUp")]
+    [Header("PopUpAfspraak")]
     public Image backdrop;
     public Button exitButton;
+    public Button doneButton;
     public TMP_Text appointmentTitle;
     public TMP_Text appointmentDescription;
+    public TMP_Text appointmentErrorMessage;
+    public GameObject[] levelButtons;
 
     public Camera mainCamera;
 
     private bool appoinmentPopUpActive = true;
-    private string[] appointmentTitles = new string[] { "Title 1", "Title 2", "Title 3" };
+    private static int selectedLevel = 1;
+    private SpriteRenderer levelColorChanger;
+
+    private string[] appointmentTitles = new string[] { "Afspraak 1", "Afspraak 2", "Afpsraak 3" };
     private string[] appointmentDescriptions = new string[] { "Description 1", "Description 2", "Description 3" };
-    private float[] cameraPositions = new float[] { 283, 500, 700 };
+    private float[] cameraPositions = new float[] { 283, 316, 467 };
+    private bool[] unlockedLevels = new bool[] { true, false, false };
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
@@ -52,6 +59,7 @@ public class Ganzenbord : MonoBehaviour
     {
         appointmentTitle.text = appointmentTitles[level];
         appointmentDescription.text = appointmentDescriptions[level];
+        selectedLevel = level;
         ToggleSelection();
         MoveMainCamera(cameraPositions[level]);
     }
@@ -65,18 +73,22 @@ public class Ganzenbord : MonoBehaviour
     {
         if(appoinmentPopUpActive)
         {
+            appointmentErrorMessage.text = "";
             backdrop.gameObject.SetActive(false);
             exitButton.gameObject.SetActive(false);
             appointmentTitle.gameObject.SetActive(false);
             appointmentDescription.gameObject.SetActive(false);
+            doneButton.gameObject.SetActive(false);
             appoinmentPopUpActive = false;
         }
         else
         {
+            appointmentErrorMessage.text = "";
             backdrop.gameObject.SetActive(true);
             exitButton.gameObject.SetActive(true);
             appointmentTitle.gameObject.SetActive(true);
             appointmentDescription.gameObject.SetActive(true);
+            doneButton.gameObject.SetActive(true);
             appoinmentPopUpActive = true;
         }
     }
@@ -84,5 +96,21 @@ public class Ganzenbord : MonoBehaviour
     public void MoveMainCamera(float posX)
     {
         mainCamera.transform.position = new Vector3(posX, mainCamera.transform.position.y, mainCamera.transform.position.z);
+    }
+
+    public void DoneWithSelectedLevel()
+    {
+        if(selectedLevel - 1 >= 0)
+            if (unlockedLevels[selectedLevel-1])
+            {
+                unlockedLevels[selectedLevel] = true;
+                levelColorChanger = levelButtons[selectedLevel].GetComponent<SpriteRenderer>();
+                levelColorChanger.color = new Color(0.1548149f, 0.4622642f, 0.1599829f, 1);
+                ToggleSelection();
+            }
+            else
+            {
+                appointmentErrorMessage.text = "Je moet eerst het vorige level voltooien!";
+            }
     }
 }
