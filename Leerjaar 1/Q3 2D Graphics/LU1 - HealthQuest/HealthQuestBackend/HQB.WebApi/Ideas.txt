@@ -1,0 +1,1 @@
+﻿Maybe when reaching the get endpoint, if no thing exists, it will create a new one and return that.
