@@ -4,12 +4,11 @@ using HQB.WebApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 🔹 Load Configuration (User Secrets, Environment Variables)
+// 🔹 Load Configuration
 var configuration = builder.Configuration;
 
 // 🔹 Add Database Context (EF Core with SQL Server)
@@ -22,11 +21,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 // 🔹 Configure Authentication & JWT
-builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -44,15 +39,16 @@ builder.Services.AddAuthentication(options =>
 // 🔹 Add Controllers
 builder.Services.AddControllers();
 
-// 🔹 Add Swagger
-builder.Services.AddEndpointsApiExplorer();
+
 
 var app = builder.Build();
 
 // 🔹 Configure Middleware
 if (app.Environment.IsDevelopment())
 {
+    // 🔹 Add API Documentation
     app.MapOpenApi();
+    builder.Services.AddEndpointsApiExplorer();
 }
 
 app.UseHttpsRedirection();
