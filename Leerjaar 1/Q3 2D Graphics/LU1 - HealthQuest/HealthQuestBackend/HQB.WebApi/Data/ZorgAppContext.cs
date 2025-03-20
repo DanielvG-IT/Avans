@@ -1,14 +1,13 @@
 ﻿using HQB.WebApi.Models;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace HQB.WebApi.Data;
-public class ZorgAppDbContext : IdentityDbContext<ApplicationUser>
+public class ZorgAppDbContext : IdentityDbContext<OuderVoogd>
 {
     public ZorgAppDbContext(DbContextOptions<ZorgAppDbContext> options) : base(options) { }
 
     public DbSet<Arts> Artsen { get; set; }
-    public DbSet<OuderVoogd> OuderVoogden { get; set; }
     public DbSet<Patient> Patienten { get; set; }
     public DbSet<Traject> Trajecten { get; set; }
     public DbSet<TrajectZorgMoment> TrajectZorgMomenten { get; set; }
@@ -24,18 +23,9 @@ public class ZorgAppDbContext : IdentityDbContext<ApplicationUser>
             entity.HasIndex(a => new { a.Naam, a.Specialisatie }).IsUnique();
         });
 
-        modelBuilder.Entity<OuderVoogd>(entity =>
-        {
-            entity.HasKey(o => o.ID);
-        });
-
         modelBuilder.Entity<Patient>(entity =>
         {
             entity.HasKey(p => p.ID);
-            entity.HasOne(p => p.OuderVoogd)
-                .WithMany()
-                .HasForeignKey(p => p.OuderVoogdID)
-                .OnDelete(DeleteBehavior.Restrict);
             entity.HasOne(p => p.Arts)
                 .WithMany()
                 .HasForeignKey(p => p.ArtsID)

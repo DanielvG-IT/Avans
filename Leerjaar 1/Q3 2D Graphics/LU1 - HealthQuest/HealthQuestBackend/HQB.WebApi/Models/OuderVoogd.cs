@@ -1,8 +1,8 @@
-﻿namespace HQB.WebApi.Models;
+﻿using Microsoft.AspNetCore.Identity;
 
-public class OuderVoogd
+namespace HQB.WebApi.Models;
+public class OuderVoogd : IdentityUser
 {
-    public int ID { get; set; }
     public required string Voornaam { get; set; }
     public required string Achternaam { get; set; }
 }
