@@ -65,8 +65,7 @@ app.MapGet("/", (Microsoft.Extensions.Options.IOptions<IdentityOptions> identity
             <li><strong>Require Non-Alphanumeric:</strong> {passwordOptions.RequireNonAlphanumeric}</li>
         </ul>";
 
-    var buildDate = System.IO.File.GetLastWriteTime(System.Reflection.Assembly.GetExecutingAssembly().Location);
-    var deployDate = DateTime.UtcNow; // Assuming current time as deploy time
+    var buildDate = File.GetLastWriteTime(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
     var additionalInfo = new
     {
@@ -97,7 +96,6 @@ app.MapGet("/", (Microsoft.Extensions.Options.IOptions<IdentityOptions> identity
                         <h4>Password Policy:</h4>
                         {passwordRequirements}
                         <p><strong>Build Date:</strong> {buildDate.ToString("yyyy-MM-dd HH:mm:ss")}</p>
-                        <p><strong>Deploy Date:</strong> {deployDate.ToString("yyyy-MM-dd HH:mm:ss")} (UTC)</p>
                         <h4>Additional Info:</h4>
                         <p><strong>Application:</strong> {additionalInfo.ApplicationName}</p>
                         <p><strong>Version:</strong> {additionalInfo.Version}</p>
