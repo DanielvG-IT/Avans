@@ -3,99 +3,78 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// StartScreenManager handles the switching between Start, Login, and Registration panels with smooth fade-in and fade-out animations.
+/// Manages the Start, Login, and Registration panels with smooth fade transitions.
 /// </summary>
 public class StartScreenManager : MonoBehaviour
 {
     [Header("UI Panels")]
-    public CanvasGroup startPanel;
-    public CanvasGroup loginPanel;
-    public CanvasGroup registerPanel;
+    [SerializeField] private CanvasGroup startPanel;
+    [SerializeField] private CanvasGroup loginPanel;
+    [SerializeField] private CanvasGroup registerPanel;
 
     [Header("Animation Settings")]
-    public float fadeDuration = 0.5f;
+    [SerializeField] private float fadeDuration = 0.5f;
 
-    /// <summary>
-    /// Initializes the UI by ensuring the start panel is active and others are hidden.
-    /// </summary>
+    private CanvasGroup currentPanel;
+
     private void Start()
     {
-        // Ensure only the Start Panel is visible at launch
-        SetPanelActive(startPanel, true, false);
-        SetPanelActive(loginPanel, false, false);
-        SetPanelActive(registerPanel, false, false);
+        InitializePanels();
     }
 
     /// <summary>
-    /// Transitions from the Start Panel to the Login Panel.
+    /// Initializes the UI by ensuring the Start panel is active and others are hidden.
     /// </summary>
-    public void ShowLoginPanel()
+    private void InitializePanels()
     {
-        StartCoroutine(SwitchPanel(startPanel, loginPanel));
+        startPanel.gameObject.SetActive(true);
+        loginPanel.gameObject.SetActive(false);
+        registerPanel.gameObject.SetActive(false);
+
+        startPanel.alpha = 1;
+        loginPanel.alpha = 0;
+        registerPanel.alpha = 0;
+
+        startPanel.blocksRaycasts = true;
+        loginPanel.blocksRaycasts = false;
+        registerPanel.blocksRaycasts = false;
+
+        currentPanel = startPanel;
     }
 
     /// <summary>
-    /// Transitions from the Start Panel to the Registration Panel.
+    /// Displays the specified panel with a fade transition.
     /// </summary>
-    public void ShowRegisterPanel()
+    public void ShowPanel(CanvasGroup targetPanel)
     {
-        StartCoroutine(SwitchPanel(startPanel, registerPanel));
+        if (targetPanel == currentPanel) return;
+
+        StartCoroutine(SwitchPanel(currentPanel, targetPanel));
+        currentPanel = targetPanel;
     }
 
     /// <summary>
-    /// Returns to the Start Panel from either Login or Registration Panel.
+    /// Switches from one panel to another with a smooth fade effect.
     /// </summary>
-    public void BackToStart()
-    {
-        if (loginPanel.gameObject.activeSelf)
-            StartCoroutine(SwitchPanel(loginPanel, startPanel));
-        else if (registerPanel.gameObject.activeSelf)
-            StartCoroutine(SwitchPanel(registerPanel, startPanel));
-    }
-
-    /// <summary>
-    /// Switches from Registration Panel to Login Panel.
-    /// </summary>
-    public void SwitchToLogin()
-    {
-        StartCoroutine(SwitchPanel(registerPanel, loginPanel));
-    }
-
-    /// <summary>
-    /// Switches from Login Panel to Registration Panel.
-    /// </summary>
-    public void SwitchToRegister()
-    {
-        StartCoroutine(SwitchPanel(loginPanel, registerPanel));
-    }
-
-    /// <summary>
-    /// Handles the transition between two panels with fade-in and fade-out effects.
-    /// </summary>
-    /// <param name="from">The panel to fade out.</param>
-    /// <param name="to">The panel to fade in.</param>
     private IEnumerator SwitchPanel(CanvasGroup from, CanvasGroup to)
     {
-        yield return StartCoroutine(FadePanel(from, false)); // Fade out current panel
-        SetPanelActive(from, false, true); // Deactivate previous panel
+        yield return StartCoroutine(FadePanel(from, false));
+        from.gameObject.SetActive(false);
 
-        SetPanelActive(to, true, false); // Activate new panel
-        yield return StartCoroutine(FadePanel(to, true)); // Fade in new panel
+        to.gameObject.SetActive(true);
+        yield return StartCoroutine(FadePanel(to, true));
     }
 
     /// <summary>
-    /// Fades a panel in or out over time.
+    /// Fades a panel in or out over a duration.
     /// </summary>
-    /// <param name="panel">The panel to fade.</param>
-    /// <param name="fadeIn">If true, the panel fades in; otherwise, it fades out.</param>
     private IEnumerator FadePanel(CanvasGroup panel, bool fadeIn)
     {
-        float startAlpha = fadeIn ? 0 : 1; // Initial alpha value
-        float endAlpha = fadeIn ? 1 : 0;   // Target alpha value
-        float elapsedTime = 0; // Timer
+        float startAlpha = fadeIn ? 0 : 1;
+        float endAlpha = fadeIn ? 1 : 0;
+        float elapsedTime = 0;
 
-        panel.gameObject.SetActive(true); // Ensure panel is active
-        panel.blocksRaycasts = fadeIn; // Enable or disable interaction
+        panel.blocksRaycasts = fadeIn;
 
         while (elapsedTime < fadeDuration)
         {
@@ -104,22 +83,13 @@ public class StartScreenManager : MonoBehaviour
             yield return null;
         }
 
-        panel.alpha = endAlpha; // Ensure final alpha is correctly set
-        if (!fadeIn)
-            panel.gameObject.SetActive(false); // Deactivate panel when faded out
+        panel.alpha = endAlpha;
     }
 
-    /// <summary>
-    /// Activates or deactivates a panel instantly, without animations.
-    /// </summary>
-    /// <param name="panel">The panel to modify.</param>
-    /// <param name="active">If true, the panel is shown; otherwise, it is hidden.</param>
-    /// <param name="instant">If true, the panel switches instantly without fading.</param>
-    private void SetPanelActive(CanvasGroup panel, bool active, bool instant)
-    {
-        panel.gameObject.SetActive(active);
-        panel.alpha = active ? 1 : 0;
-        panel.blocksRaycasts = active;
-        panel.interactable = active;
-    }
+    // Public UI Methods
+    public void ShowLoginPanel() => ShowPanel(loginPanel);
+    public void ShowRegisterPanel() => ShowPanel(registerPanel);
+    public void BackToStart() => ShowPanel(startPanel);
+    public void SwitchToLogin() => ShowPanel(loginPanel);
+    public void SwitchToRegister() => ShowPanel(registerPanel);
 }

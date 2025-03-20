@@ -3273,7 +3273,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 972936709}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -4218,7 +4218,7 @@ GameObject:
   - component: {fileID: 1167188254}
   - component: {fileID: 1167188253}
   m_Layer: 5
-  m_Name: LoginButton
+  m_Name: RegistreerButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
