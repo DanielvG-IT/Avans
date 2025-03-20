@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("HealthQuestConnectionString") ?? throw new InvalidOperationException("Connection string 'HealthQuestConnectionString' not found.");;
+var connectionString = builder.Configuration.GetConnectionString("HealthQuestConnectionString") ?? throw new InvalidOperationException("Connection string 'HealthQuestConnectionString' not found."); ;
 
 // 🔹 Load Configuration
 var configuration = builder.Configuration;
@@ -19,7 +19,7 @@ builder.Services.AddDbContext<ZorgAppDbContext>(options =>
     options.UseSqlServer(configuration.GetConnectionString("HealthQuestConnectionString")));
 
 // 🔹 Configure Identity
-builder.Services.AddDefaultIdentity<OuderVoogd>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<OuderVoogd>()
     .AddEntityFrameworkStores<ZorgAppDbContext>()
     .AddDefaultTokenProviders();
 
@@ -42,8 +42,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // 🔹 Add Controllers
 builder.Services.AddControllers();
 
-
-
 var app = builder.Build();
 
 // Enable OpenApi in development
@@ -51,6 +49,10 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseHttpsRedirection();
+app.UseAuthentication(); // Ensure this is before UseAuthorization
+app.UseAuthorization();
 
 app.MapGet("/", (IOptions<IdentityOptions> identityOptions) =>
 {
@@ -111,9 +113,6 @@ app.MapGet("/", (IOptions<IdentityOptions> identityOptions) =>
     return Results.Text(html, "text/html");
 });
 
-app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
