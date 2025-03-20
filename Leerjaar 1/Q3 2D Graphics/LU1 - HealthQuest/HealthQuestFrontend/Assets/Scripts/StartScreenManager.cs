@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// UIManager handles the switching between Start, Login, and Registration panels with smooth fade-in and fade-out animations.
+/// StartScreenManager handles the switching between Start, Login, and Registration panels with smooth fade-in and fade-out animations.
 /// </summary>
 public class StartScreenManager : MonoBehaviour
 {
