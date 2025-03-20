@@ -26,10 +26,19 @@ public class ZorgAppDbContext : IdentityDbContext<OuderVoogd>
         modelBuilder.Entity<Patient>(entity =>
         {
             entity.HasKey(p => p.ID);
+
+            entity.HasOne(p => p.OuderVoogd)
+                .WithMany() // No need to configure inverse navigation
+                .HasForeignKey(p => p.OuderVoogdId)
+                .IsRequired() // Ensures a patient must have an OuderVoogd
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deletion of OuderVoogd if referenced by Patient
+
             entity.HasOne(p => p.Arts)
-                .WithMany()
+                .WithMany(a => a.Patients) // Ensure Arts has a navigation property
                 .HasForeignKey(p => p.ArtsID)
+                .IsRequired(false) // Allow null values (optional doctor)
                 .OnDelete(DeleteBehavior.SetNull);
+
             entity.HasOne(p => p.Traject)
                 .WithMany()
                 .HasForeignKey(p => p.TrajectID)

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HQB.WebApi.Migrations
 {
     [DbContext(typeof(ZorgAppDbContext))]
-    [Migration("20250318093915_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250320180307_StartedOver")]
+    partial class StartedOver
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,13 +25,39 @@ namespace HQB.WebApi.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("HQB.WebApi.Models.ApplicationUser", b =>
+            modelBuilder.Entity("HQB.WebApi.Models.Arts", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Naam")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Specialisatie")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("Naam", "Specialisatie")
+                        .IsUnique();
+
+                    b.ToTable("Artsen");
+                });
+
+            modelBuilder.Entity("HQB.WebApi.Models.OuderVoogd", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<string>("Achternaam")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -77,6 +103,10 @@ namespace HQB.WebApi.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("Voornaam")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -90,71 +120,25 @@ namespace HQB.WebApi.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("HQB.WebApi.Models.Arts", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<string>("Naam")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Specialisatie")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("Naam", "Specialisatie")
-                        .IsUnique();
-
-                    b.ToTable("Artsen");
-                });
-
-            modelBuilder.Entity("HQB.WebApi.Models.OuderVoogd", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<string>("Achternaam")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Voornaam")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("OuderVoogden");
-                });
-
             modelBuilder.Entity("HQB.WebApi.Models.Patient", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Achternaam")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ArtsID")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("ArtsID")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("OuderVoogdID")
-                        .HasColumnType("int");
+                    b.Property<string>("OuderVoogdId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("TrajectID")
-                        .HasColumnType("int");
+                    b.Property<Guid>("TrajectID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Voornaam")
                         .IsRequired()
@@ -164,7 +148,7 @@ namespace HQB.WebApi.Migrations
 
                     b.HasIndex("ArtsID");
 
-                    b.HasIndex("OuderVoogdID");
+                    b.HasIndex("OuderVoogdId");
 
                     b.HasIndex("TrajectID");
 
@@ -173,11 +157,9 @@ namespace HQB.WebApi.Migrations
 
             modelBuilder.Entity("HQB.WebApi.Models.Traject", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Naam")
                         .IsRequired()
@@ -193,11 +175,11 @@ namespace HQB.WebApi.Migrations
 
             modelBuilder.Entity("HQB.WebApi.Models.TrajectZorgMoment", b =>
                 {
-                    b.Property<int>("TrajectID")
-                        .HasColumnType("int");
+                    b.Property<Guid>("TrajectID")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ZorgMomentID")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ZorgMomentID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Volgorde")
                         .HasColumnType("int");
@@ -211,11 +193,9 @@ namespace HQB.WebApi.Migrations
 
             modelBuilder.Entity("HQB.WebApi.Models.ZorgMoment", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Naam")
                         .IsRequired()
@@ -318,10 +298,12 @@ namespace HQB.WebApi.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -358,10 +340,12 @@ namespace HQB.WebApi.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -374,13 +358,13 @@ namespace HQB.WebApi.Migrations
             modelBuilder.Entity("HQB.WebApi.Models.Patient", b =>
                 {
                     b.HasOne("HQB.WebApi.Models.Arts", "Arts")
-                        .WithMany()
+                        .WithMany("Patients")
                         .HasForeignKey("ArtsID")
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("HQB.WebApi.Models.OuderVoogd", "OuderVoogd")
                         .WithMany()
-                        .HasForeignKey("OuderVoogdID")
+                        .HasForeignKey("OuderVoogdId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -427,7 +411,7 @@ namespace HQB.WebApi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("HQB.WebApi.Models.ApplicationUser", null)
+                    b.HasOne("HQB.WebApi.Models.OuderVoogd", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -436,7 +420,7 @@ namespace HQB.WebApi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("HQB.WebApi.Models.ApplicationUser", null)
+                    b.HasOne("HQB.WebApi.Models.OuderVoogd", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -451,7 +435,7 @@ namespace HQB.WebApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HQB.WebApi.Models.ApplicationUser", null)
+                    b.HasOne("HQB.WebApi.Models.OuderVoogd", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -460,11 +444,16 @@ namespace HQB.WebApi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("HQB.WebApi.Models.ApplicationUser", null)
+                    b.HasOne("HQB.WebApi.Models.OuderVoogd", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("HQB.WebApi.Models.Arts", b =>
+                {
+                    b.Navigation("Patients");
                 });
 #pragma warning restore 612, 618
         }

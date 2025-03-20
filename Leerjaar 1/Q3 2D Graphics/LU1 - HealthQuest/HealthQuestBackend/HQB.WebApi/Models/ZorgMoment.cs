@@ -2,7 +2,7 @@
 
 public class ZorgMoment
 {
-    public int ID { get; set; }
+    public Guid ID { get; set; }
     public required string Naam { get; set; }
     public string? Url { get; set; }
     public byte[]? Plaatje { get; set; }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HQB.WebApi.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class StartedOver : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,8 +15,7 @@ namespace HQB.WebApi.Migrations
                 name: "Artsen",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Naam = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Specialisatie = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -44,6 +43,8 @@ namespace HQB.WebApi.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Voornaam = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Achternaam = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -65,25 +66,10 @@ namespace HQB.WebApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OuderVoogden",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Voornaam = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Achternaam = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OuderVoogden", x => x.ID);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Trajecten",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Naam = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -95,8 +81,7 @@ namespace HQB.WebApi.Migrations
                 name: "ZorgMomenten",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Naam = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Url = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Plaatje = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
@@ -153,8 +138,8 @@ namespace HQB.WebApi.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -198,8 +183,8 @@ namespace HQB.WebApi.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -217,13 +202,12 @@ namespace HQB.WebApi.Migrations
                 name: "Patienten",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Voornaam = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Achternaam = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OuderVoogdID = table.Column<int>(type: "int", nullable: false),
-                    TrajectID = table.Column<int>(type: "int", nullable: false),
-                    ArtsID = table.Column<int>(type: "int", nullable: true)
+                    OuderVoogdId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TrajectID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ArtsID = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -235,10 +219,10 @@ namespace HQB.WebApi.Migrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
-                        name: "FK_Patienten_OuderVoogden_OuderVoogdID",
-                        column: x => x.OuderVoogdID,
-                        principalTable: "OuderVoogden",
-                        principalColumn: "ID",
+                        name: "FK_Patienten_AspNetUsers_OuderVoogdId",
+                        column: x => x.OuderVoogdId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Patienten_Trajecten_TrajectID",
@@ -252,8 +236,8 @@ namespace HQB.WebApi.Migrations
                 name: "TrajectZorgMomenten",
                 columns: table => new
                 {
-                    TrajectID = table.Column<int>(type: "int", nullable: false),
-                    ZorgMomentID = table.Column<int>(type: "int", nullable: false),
+                    TrajectID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ZorgMomentID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Volgorde = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -324,9 +308,9 @@ namespace HQB.WebApi.Migrations
                 column: "ArtsID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Patienten_OuderVoogdID",
+                name: "IX_Patienten_OuderVoogdId",
                 table: "Patienten",
-                column: "OuderVoogdID");
+                column: "OuderVoogdId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Patienten_TrajectID",
@@ -379,13 +363,10 @@ namespace HQB.WebApi.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "Artsen");
 
             migrationBuilder.DropTable(
-                name: "OuderVoogden");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Trajecten");
