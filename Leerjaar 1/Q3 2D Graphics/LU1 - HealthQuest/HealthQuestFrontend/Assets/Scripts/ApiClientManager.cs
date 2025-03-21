@@ -6,7 +6,7 @@ public class ApiClientManager : MonoBehaviour
 
     // References to other components on the same GameObject
     public WebClient WebClient;
-    //public UserApiClient UserApiClient;
+    public OuderVoogdApiClient OuderVoogdApiClient;
 
     private void Awake()
     {
@@ -23,6 +23,6 @@ public class ApiClientManager : MonoBehaviour
         }
 
         if (!WebClient) WebClient = GetComponent<WebClient>();
-        //if (!UserApiClient) UserApiClient = GetComponent<UserApiClient>();
+        if (!OuderVoogdApiClient) OuderVoogdApiClient = GetComponent<OuderVoogdApiClient>();
     }
 }

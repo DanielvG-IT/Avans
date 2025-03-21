@@ -1,6 +1,10 @@
-using System.Collections;
+using TMPro;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
+using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Manages the Start, Login, and Registration panels with smooth fade transitions.
@@ -11,15 +15,23 @@ public class StartScreenManager : MonoBehaviour
     [SerializeField] private CanvasGroup startPanel;
     [SerializeField] private CanvasGroup loginPanel;
     [SerializeField] private CanvasGroup registerPanel;
+    [SerializeField] private TMP_InputField emailFieldLogin;
+    [SerializeField] private TMP_InputField passwordFieldLogin;
+    [SerializeField] private TMP_InputField emailFieldRegister;
+    [SerializeField] private TMP_InputField passwordFieldRegister;
+    [SerializeField] private TMP_InputField firstNameField;
+    [SerializeField] private TMP_InputField lastNameField;
 
     [Header("Animation Settings")]
     [SerializeField] private float fadeDuration = 0.5f;
 
     private CanvasGroup currentPanel;
+    private OuderVoogdApiClient apiClient;
 
     private void Start()
     {
         InitializePanels();
+        apiClient = ApiClientManager.Instance.OuderVoogdApiClient;
     }
 
     /// <summary>
@@ -84,6 +96,74 @@ public class StartScreenManager : MonoBehaviour
         }
 
         panel.alpha = endAlpha;
+    }
+
+    public async void RegisterAsync()
+    {
+        if (string.IsNullOrEmpty(emailFieldRegister.text) || string.IsNullOrEmpty(passwordFieldRegister.text) || string.IsNullOrEmpty(firstNameField.text) || string.IsNullOrEmpty(lastNameField.text))
+        {
+            Debug.LogError("All fields must be filled out.");
+            return;
+        }
+
+        var user = new OuderVoogd
+        {
+            firstName = firstNameField.text,
+            lastName = lastNameField.text,
+            email = emailFieldRegister.text,
+            password = passwordFieldRegister.text
+        };
+
+        try
+        {
+            var result = await apiClient.Register(user);
+            if (result is WebRequestData<string> data)
+            {
+                Debug.Log("Registration successful: " + data.Data);
+                ShowPanel(loginPanel);
+            }
+            else
+            {
+                Debug.LogError("Registration failed: " + result);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("An error occurred during registration: " + ex.Message);
+        }
+    }
+
+    public async void LoginAsync()
+    {
+        if (string.IsNullOrEmpty(emailFieldLogin.text) || string.IsNullOrEmpty(passwordFieldLogin.text))
+        {
+            Debug.LogError("Email and password fields cannot be empty.");
+            return;
+        }
+
+        var user = new OuderVoogd
+        {
+            email = emailFieldLogin.text,
+            password = passwordFieldLogin.text
+        };
+
+        try
+        {
+            var result = await apiClient.Login(user);
+            if (result is WebRequestData<string> data)
+            {
+                Debug.Log("Login successful: " + data.Data);
+                await SceneManager.LoadSceneAsync("GameScherm");
+            }
+            else
+            {
+                Debug.LogError("Login failed: " + result);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("An error occurred during login: " + ex.Message);
+        }
     }
 
     // Public UI Methods
