@@ -41,17 +41,17 @@ app.MapGet("/", (IOptions<IdentityOptions> identityOptions, IWebHostEnvironment 
         <head>
             <meta charset='UTF-8'>
             <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-            <title>CoreLink Web API - Status</title>
+            <title>HealthQuest Web API - Status</title>
             <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css'>
             <style>
-                body {{ background-color: #121212; color: #ffffff; font-family: Arial, sans-serif; }}
+                body {{ background-color: #f0f2f5; color: #333; font-family: 'Roboto', sans-serif; }}
                 .container {{ max-width: 800px; margin-top: 50px; }}
-                .card {{ border-radius: 12px; background: #1e1e1e; box-shadow: 0 8px 16px rgba(0,0,0,0.2); }}
-                .card-header {{ font-size: 1.8rem; font-weight: bold; background: linear-gradient(135deg, #007bff, #00c6ff); color: white; text-align: center; padding: 15px; }}
-                .list-group-item {{ font-size: 1.2rem; background: #1e1e1e; border-color: #333; color: #ffffff; }}
-                a {{ text-decoration: none; color: #00c6ff; font-weight: bold; }}
-                a:hover {{ text-decoration: underline; color: #ffffff; }}
-                .glow {{ text-shadow: 0 0 8px #00c6ff; }}
+                .card {{ border-radius: 12px; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }}
+                .card-header {{ font-size: 1.8rem; font-weight: bold; background: linear-gradient(135deg, #007bff, #00c6ff); color: white; text-align: center; padding: 15px; border-top-left-radius: 12px; border-top-right-radius: 12px; }}
+                .list-group-item {{ font-size: 1.2rem; background: #fff; border-color: #ddd; color: #333; }}
+                a {{ text-decoration: none; color: #007bff; font-weight: bold; }}
+                a:hover {{ text-decoration: underline; color: #0056b3; }}
+                .glow {{ text-shadow: 0 0 8px #007bff; }}
                 .fade-in {{ animation: fadeIn 1s ease-in-out; }}
                 @keyframes fadeIn {{ from {{ opacity: 0; }} to {{ opacity: 1; }} }}
             </style>
@@ -59,7 +59,7 @@ app.MapGet("/", (IOptions<IdentityOptions> identityOptions, IWebHostEnvironment 
         <body>
             <div class='container fade-in'>
                 <div class='card'>
-                    <div class='card-header glow'>CoreLink Web API - Status</div>
+                    <div class='card-header glow'>HealthQuest Web API - Status</div>
                     <div class='card-body'>
                         <ul class='list-group list-group-flush'>
                             <li class='list-group-item'><strong>Environment:</strong> {env.EnvironmentName}</li>
@@ -76,10 +76,9 @@ app.MapGet("/", (IOptions<IdentityOptions> identityOptions, IWebHostEnvironment 
                         </ul>
                         <h4 class='mt-4 glow'>Additional Info</h4>
                         <ul class='list-group list-group-flush'>
-                            <li class='list-group-item'><strong>Application:</strong> CoreLink Web API</li>
+                            <li class='list-group-item'><strong>Application:</strong> HealthQuest Web API</li>
                             <li class='list-group-item'><strong>Version:</strong> 1.0.4</li>
                             <li class='list-group-item'><strong>Developer Contact:</strong> <a href='mailto:dcj.vanginneken@student.avans.nl'>dcj.vanginneken@student.avans.nl</a></li>
-                            <li class='list-group-item'><strong>Documentation:</strong> <a href='https://github.com/DanielvG-IT/Avans/blob/main/Leerjaar%201/Q3%202D%20Graphics/LU2%20-%20Minimal%20Viable%20Product/docs/Design/APIEndpoints.md' target='_blank'>View Docs</a></li>
                         </ul>
                     </div>
                 </div>
