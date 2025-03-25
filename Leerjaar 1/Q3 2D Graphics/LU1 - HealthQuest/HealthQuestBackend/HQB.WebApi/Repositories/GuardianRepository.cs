@@ -1,5 +1,4 @@
-﻿
-using Dapper;
+﻿using Dapper;
 using HQB.WebApi.Models;
 using HQB.WebApi.Interfaces;
 using Microsoft.Data.SqlClient;
