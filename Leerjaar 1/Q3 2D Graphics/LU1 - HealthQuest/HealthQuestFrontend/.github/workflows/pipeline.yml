@@ -19,13 +19,6 @@ jobs:
         runs-on: ubuntu-latest
         needs: checkout
         steps:
-          - name: Cache Unity packages
-            uses: actions/cache@v2
-            with:
-              path: ~/.cache/unity
-              key: ${{ runner.os }}-unity-${{ hashFiles('**/Packages/manifest.json') }}
-              restore-keys: |
-                ${{ runner.os }}-unity-
           - name: Set up Unity
             uses: RageAgainstThePixel/unity-setup@v1.0.13
             with:
