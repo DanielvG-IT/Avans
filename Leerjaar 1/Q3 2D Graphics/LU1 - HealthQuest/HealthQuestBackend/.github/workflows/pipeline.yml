@@ -22,13 +22,13 @@ jobs:
               dotnet-version: '9.0.x'
 
         - name: Restore dependencies
-          run: dotnet restore HQB.WebApi/HQB.WebApi.csproj
+          run: dotnet restore
 
         - name: Build project
-          run: dotnet build HQB.WebApi/HQB.WebApi.csproj --configuration Release
+          run: dotnet build --configuration Release
 
         - name: Run tests
-          run: dotnet test HQB.WebApi/HQB.WebApi.csproj --configuration Release --verbosity normal
+          run: dotnet test --configuration Release --verbosity normal
 
     deploy:
         runs-on: ubuntu-latest
