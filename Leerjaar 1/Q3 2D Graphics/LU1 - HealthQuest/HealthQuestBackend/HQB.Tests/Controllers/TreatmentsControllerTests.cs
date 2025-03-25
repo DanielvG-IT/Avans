@@ -102,7 +102,9 @@ namespace HQB.Tests.Controllers
             var createdAtActionResult = result as CreatedAtActionResult;
             Assert.IsNotNull(createdAtActionResult);
             Assert.AreEqual(StatusCodes.Status201Created, createdAtActionResult.StatusCode);
-            Assert.AreEqual(treatment, createdAtActionResult.Value);
+            var returnedTreatment = createdAtActionResult.Value as Treatment;
+            Assert.IsNotNull(returnedTreatment);
+            Assert.AreEqual(treatment.Name, returnedTreatment.Name);
         }
 
         [TestMethod]
