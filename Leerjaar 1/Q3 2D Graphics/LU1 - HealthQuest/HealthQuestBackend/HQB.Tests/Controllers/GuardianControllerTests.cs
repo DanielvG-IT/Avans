@@ -10,13 +10,14 @@ namespace HQB.Tests.Controllers
     [TestClass]
     public class GuardianControllerTests
     {
-        public required Mock<IGuardianRepository> _mockRepo;
         public required Mock<ILogger<GuardianController>> _mockLogger;
+        public required Mock<IGuardianRepository> _mockRepo;
         public required GuardianController _controller;
 
         [TestInitialize]
         public void Setup()
         {
+            _mockRepo = new Mock<IGuardianRepository>();
             _mockLogger = new Mock<ILogger<GuardianController>>();
             _controller = new GuardianController(_mockRepo.Object, _mockLogger.Object);
         }
