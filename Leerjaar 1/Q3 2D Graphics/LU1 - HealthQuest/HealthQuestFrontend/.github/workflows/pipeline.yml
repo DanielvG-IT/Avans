@@ -1,0 +1,80 @@
+name: HQF CI/CD Pipeline
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    checkout:
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v2
+
+    setup:
+        runs-on: ubuntu-latest
+        needs: checkout
+        steps:
+          - name: Cache Unity packages
+            uses: actions/cache@v2
+            with:
+              path: ~/.cache/unity
+              key: ${{ runner.os }}-unity-${{ hashFiles('**/Packages/manifest.json') }}
+              restore-keys: |
+                ${{ runner.os }}-unity-
+          - name: Set up Unity
+            uses: RageAgainstThePixel/unity-setup@v1.0.13
+            with:
+              unity-version: auto
+
+    test:
+        runs-on: ubuntu-latest
+        needs: setup
+        steps:
+          - name: Test Unity project
+            run: |
+              xvfb-run --auto-servernum --server-args='-screen 0 2560x1440x24' \
+              /opt/unity/Editor/Unity \
+              -projectPath . \
+              -runTests \
+              -testPlatform PlayMode
+
+    build_android:
+        runs-on: ubuntu-latest
+        needs: test
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v2
+          - name: Set up Unity
+            uses: RageAgainstThePixel/unity-setup@v1.0.13
+            with:
+              unity-version: auto
+          - name: Build Android
+            run: |
+              /opt/unity/Editor/Unity \
+              -projectPath . \
+              -buildTarget Android \
+              -executeMethod BuildScript.BuildAndroid \
+              -quit
+
+    build_ios:
+        runs-on: macos-latest
+        needs: test
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v2
+          - name: Set up Unity
+            uses: RageAgainstThePixel/unity-setup@v1.0.13
+            with:
+              unity-version: auto
+          - name: Build iOS
+            run: |
+              /Applications/Unity/Hub/Editor/$(unity-version)/Unity.app/Contents/MacOS/Unity \
+              -projectPath . \
+              -buildTarget iOS \
+              -executeMethod BuildScript.BuildiOS \
+              -quit
