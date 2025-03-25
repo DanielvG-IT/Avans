@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HQB.WebApi.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 [ApiController]
 public class JournalController : ControllerBase
 {
