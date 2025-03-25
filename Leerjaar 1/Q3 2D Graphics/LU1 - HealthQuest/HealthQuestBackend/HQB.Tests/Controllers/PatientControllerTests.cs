@@ -3,6 +3,7 @@ using HQB.WebApi.Models;
 using HQB.WebApi.Interfaces;
 using HQB.WebApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace HQB.Tests.Controllers
 {
@@ -16,7 +17,8 @@ namespace HQB.Tests.Controllers
         public void Setup()
         {
             _mockRepo = new Mock<IPatientRepository>();
-            _controller = new PatientController(_mockRepo.Object);
+            var mockLogger = new Mock<ILogger<PatientController>>();
+            _controller = new PatientController(_mockRepo.Object, mockLogger.Object);
         }
 
         [TestMethod]

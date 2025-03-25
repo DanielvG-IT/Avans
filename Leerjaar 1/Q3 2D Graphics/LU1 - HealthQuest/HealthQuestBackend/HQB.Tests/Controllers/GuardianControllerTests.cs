@@ -3,6 +3,7 @@ using HQB.WebApi.Models;
 using HQB.WebApi.Interfaces;
 using HQB.WebApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace HQB.Tests.Controllers
 {
@@ -10,13 +11,14 @@ namespace HQB.Tests.Controllers
     public class GuardianControllerTests
     {
         public required Mock<IGuardianRepository> _mockRepo;
+        public required Mock<ILogger<GuardianController>> _mockLogger;
         public required GuardianController _controller;
 
         [TestInitialize]
         public void Setup()
         {
-            _mockRepo = new Mock<IGuardianRepository>();
-            _controller = new GuardianController(_mockRepo.Object);
+            _mockLogger = new Mock<ILogger<GuardianController>>();
+            _controller = new GuardianController(_mockRepo.Object, _mockLogger.Object);
         }
 
         [TestMethod]
