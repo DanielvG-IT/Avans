@@ -17,26 +17,23 @@ namespace HQB.WebApi.Controllers
     public class AuthController : ControllerBase
     {
         private readonly SignInManager<OuderVoogd> _signInManager;
+        private readonly JwtSecurityTokenHandler _tokenHandler;
         private readonly UserManager<OuderVoogd> _userManager;
         private readonly ILogger<AuthController> _logger;
-        private readonly IConfiguration _configuration;
         private readonly JwtOptions _jwtOptions;
-        private readonly JwtSecurityTokenHandler _tokenHandler;
 
         public AuthController(
             UserManager<OuderVoogd> userManager,
             SignInManager<OuderVoogd> signInManager,
-            IConfiguration configuration,
             ILogger<AuthController> logger,
             IOptions<JwtOptions> jwtOptions,
             JwtSecurityTokenHandler tokenHandler)
         {
-            _userManager = userManager;
             _signInManager = signInManager;
-            _configuration = configuration;
-            _logger = logger;
             _jwtOptions = jwtOptions.Value;
             _tokenHandler = tokenHandler;
+            _userManager = userManager;
+            _logger = logger;
         }
 
         /// <summary>

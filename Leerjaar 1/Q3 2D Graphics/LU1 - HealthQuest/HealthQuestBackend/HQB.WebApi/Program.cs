@@ -2,17 +2,20 @@ using System.Text;
 using HQB.WebApi.Data;
 using HQB.WebApi.Models;
 using System.Reflection;
+using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("HealthQuestConnectionString") ?? throw new InvalidOperationException("Connection string 'HealthQuestConnectionString' not found."); ;
 
 // 🔹 Load Configuration
 var configuration = builder.Configuration;
+
+// 🔹 Check if the connection string is present
+var connectionString = configuration.GetConnectionString("HealthQuestConnectionString") ?? throw new InvalidOperationException("Connection string 'HealthQuestConnectionString' not found."); ;
 
 // 🔹 Add Database Context (EF Core with SQL Server)
 builder.Services.AddDbContext<ZorgAppDbContext>(options =>
@@ -39,14 +42,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!))
         };
     });
+
+// 🔹 Configure JWT Options
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddSingleton<JwtSecurityTokenHandler>();
 
 // 🔹 Add Controllers
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Enable OpenApi in development
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
