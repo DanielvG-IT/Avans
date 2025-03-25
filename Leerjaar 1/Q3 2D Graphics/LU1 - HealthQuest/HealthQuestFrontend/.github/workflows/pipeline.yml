@@ -61,7 +61,7 @@ jobs:
               unity-version: ${{ needs.test.outputs.unity-version }}
           - name: Build iOS
             run: |
-              /Applications/Unity/Hub/Editor/${{ needs.setup.outputs.unity-version }}/Unity.app/Contents/MacOS/Unity \
+              /Applications/Unity/Hub/Editor/${{ needs.test.outputs.unity-version }}/Unity.app/Contents/MacOS/Unity \
               -projectPath . \
               -buildTarget iOS \
               -executeMethod BuildScript.BuildiOS \
