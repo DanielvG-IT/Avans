@@ -15,6 +15,8 @@ if (string.IsNullOrEmpty(sqlConnectionString))
 }
 
 builder.Services.AddIdentityApiEndpoints<IdentityUser>().AddRoles<IdentityRole>().AddDapperStores(options => options.ConnectionString = sqlConnectionString);
+builder.Services.AddTransient<IAppointmentRepository, AppointmentRepository>(_ => new AppointmentRepository(sqlConnectionString));
+builder.Services.AddTransient<ITreatmentRepository, TreatmentRepository>(_ => new TreatmentRepository(sqlConnectionString));
 builder.Services.AddTransient<IGuardianRepository, GuardianRepository>(_ => new GuardianRepository(sqlConnectionString));
 builder.Services.AddTransient<IPatientRepository, PatientRepository>(_ => new PatientRepository(sqlConnectionString));
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
