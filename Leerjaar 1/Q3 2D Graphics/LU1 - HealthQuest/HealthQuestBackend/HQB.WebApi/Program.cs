@@ -18,6 +18,7 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>().AddRoles<IdentityRole>(
 builder.Services.AddTransient<IAppointmentRepository, AppointmentRepository>(_ => new AppointmentRepository(sqlConnectionString));
 builder.Services.AddTransient<ITreatmentRepository, TreatmentRepository>(_ => new TreatmentRepository(sqlConnectionString));
 builder.Services.AddTransient<IGuardianRepository, GuardianRepository>(_ => new GuardianRepository(sqlConnectionString));
+builder.Services.AddTransient<IJournalRepository, JournalRepository>(_ => new JournalRepository(sqlConnectionString));
 builder.Services.AddTransient<IPatientRepository, PatientRepository>(_ => new PatientRepository(sqlConnectionString));
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 builder.Services.AddHttpContextAccessor();
