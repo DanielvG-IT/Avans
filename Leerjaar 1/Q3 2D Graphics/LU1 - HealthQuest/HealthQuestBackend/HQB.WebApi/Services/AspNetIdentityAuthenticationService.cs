@@ -1,7 +1,7 @@
+using HQB.WebApi.Interfaces;
 using System.Security.Claims;
-using CoreLink.WebApi.Interfaces;
 
-namespace CoreLink.WebApi.Services
+namespace HQB.WebApi.Services
 {
   /// <summary>
   /// Based on the example code provided by Microsoft

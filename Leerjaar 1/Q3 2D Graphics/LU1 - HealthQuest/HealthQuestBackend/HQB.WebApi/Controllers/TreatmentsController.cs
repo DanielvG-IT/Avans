@@ -1,9 +1,7 @@
-﻿using HQB.WebApi.Interfaces;
-using Microsoft.AspNetCore.Http;
+﻿using HQB.WebApi.Models;
+using HQB.WebApi.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace HQB.WebApi.Controllers
 {
