@@ -1,6 +1,0 @@
-@HQB.WebApi_HostAddress = http://localhost:5291
-
-GET {{HQB.WebApi_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
