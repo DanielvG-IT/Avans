@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
+using HQB.WebApi.Data;
+using Microsoft.Extensions.Options;
 
 namespace HQB.WebApi.Controllers
 {
@@ -14,21 +16,35 @@ namespace HQB.WebApi.Controllers
     [AllowAnonymous]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<OuderVoogd> _userManager;
         private readonly SignInManager<OuderVoogd> _signInManager;
-        private readonly IConfiguration _configuration;
+        private readonly UserManager<OuderVoogd> _userManager;
         private readonly ILogger<AuthController> _logger;
+        private readonly IConfiguration _configuration;
+        private readonly JwtOptions _jwtOptions;
+        private readonly JwtSecurityTokenHandler _tokenHandler;
 
-        public AuthController(UserManager<OuderVoogd> userManager, SignInManager<OuderVoogd> signInManager, IConfiguration configuration, ILogger<AuthController> logger)
+        public AuthController(
+            UserManager<OuderVoogd> userManager,
+            SignInManager<OuderVoogd> signInManager,
+            IConfiguration configuration,
+            ILogger<AuthController> logger,
+            IOptions<JwtOptions> jwtOptions,
+            JwtSecurityTokenHandler tokenHandler)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _logger = logger;
+            _jwtOptions = jwtOptions.Value;
+            _tokenHandler = tokenHandler;
         }
 
+        /// <summary>
+        /// Registers a new user.
+        /// </summary>
+        /// <param name="model">The registration model.</param>
+        /// <returns>An IActionResult indicating the result of the registration.</returns>
         [HttpPost("register")]
-        [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             if (!ModelState.IsValid)
@@ -41,8 +57,8 @@ namespace HQB.WebApi.Controllers
             {
                 UserName = model.Email,
                 Email = model.Email,
-                Voornaam = model.FirstName,
-                Achternaam = model.LastName
+                Voornaam = model.Voornaam,
+                Achternaam = model.Achternaam
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -62,14 +78,18 @@ namespace HQB.WebApi.Controllers
             return BadRequest(new { errors });
         }
 
+        /// <summary>
+        /// Logs in a user.
+        /// </summary>
+        /// <param name="model">The login model.</param>
+        /// <returns>An IActionResult containing the JWT token if successful.</returns>
         [HttpPost("login")]
-        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             if (!ModelState.IsValid)
             {
-                var modelErrors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                return BadRequest(new { code = "InvalidData", message = "Invalid data.", details = modelErrors });
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                return BadRequest(new { code = "InvalidData", message = "Invalid data.", details = errors });
             }
 
             var user = await _userManager.FindByEmailAsync(model.Email);
@@ -79,62 +99,67 @@ namespace HQB.WebApi.Controllers
                 return Unauthorized(new { code = "InvalidCredentials", message = "Invalid credentials." });
             }
 
-            var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
-
+            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
             if (!result.Succeeded)
             {
-                _logger.LogWarning("Login failed for {Email}: Invalid credentials.", model.Email);
+                _logger.LogWarning("Login failed for {Email}: Invalid password.", model.Email);
                 return Unauthorized(new { code = "InvalidCredentials", message = "Invalid credentials." });
             }
 
-            // Generate JWT Token
+            string tokenString = GenerateJwtToken(user);
+            _logger.LogInformation("User {Email} logged in successfully.", model.Email);
+            return Ok(new { token = new { accessToken = tokenString } });
+        }
+
+        /// <summary>
+        /// Generates a JWT token for the specified user.
+        /// </summary>
+        /// <param name="user">The user for whom to generate the token.</param>
+        /// <returns>The generated JWT token.</returns>
+        private string GenerateJwtToken(OuderVoogd user)
+        {
             var claims = new List<Claim>
             {
                 new(ClaimTypes.NameIdentifier, user.Id),
                 new(ClaimTypes.Name, user.UserName ?? string.Empty),
-                new(ClaimTypes.Email, user.Email ?? string.Empty),
+                new(ClaimTypes.Email, user.Email ?? string.Empty)
             };
 
-            var jwtConfig = new
-            {
-                Issuer = _configuration["Jwt:Issuer"],
-                Audience = _configuration["Jwt:Audience"],
-                Key = _configuration["Jwt:Key"],
-                ExpireDays = _configuration["Jwt:ExpireDays"]
-            };
-
-            if (string.IsNullOrEmpty(jwtConfig.Key) || jwtConfig.Key.Length < 32)
-            {
-                _logger.LogError("JWT key is not configured properly or is too short.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { code = "ServerError", message = "JWT key is not configured properly or is too short." });
-            }
-
-            if (jwtConfig.ExpireDays == null)
-            {
-                _logger.LogError("JWT expiration days configuration is missing.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { code = "ServerError", message = "JWT expiration days configuration is missing." });
-            }
-            if (!int.TryParse(jwtConfig.ExpireDays.ToString(), out var expireDays))
-            {
-                _logger.LogError("JWT expiration days configuration is invalid.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { code = "ServerError", message = "JWT expiration days configuration is invalid." });
-            }
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Key));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: jwtConfig.Issuer,
-                audience: jwtConfig.Audience,
+                issuer: _jwtOptions.Issuer,
+                audience: _jwtOptions.Audience,
                 claims: claims,
-                expires: DateTime.Now.AddDays(expireDays),
+                expires: DateTime.UtcNow.AddDays(_jwtOptions.ExpireDays),
                 signingCredentials: creds
             );
 
-            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
-            _logger.LogInformation("User {Email} logged in successfully.", model.Email);
-            return Ok(new { token = new { accessToken = tokenString } });
+            return _tokenHandler.WriteToken(token);
         }
+    }
+
+    public static class ResultExtensions
+    {
+        public static IActionResult ToBadRequest(this IdentityResult result)
+        {
+            var errors = result.Errors.Select(e => new { e.Code, e.Description });
+            return new BadRequestObjectResult(new { errors });
+        }
+    }
+
+    public class RegisterModel
+    {
+        public required string Email { get; set; }
+        public required string Password { get; set; }
+        public required string Voornaam { get; set; }
+        public required string Achternaam { get; set; }
+    }
+
+    public class LoginModel
+    {
+        public required string Email { get; set; }
+        public required string Password { get; set; }
     }
 }

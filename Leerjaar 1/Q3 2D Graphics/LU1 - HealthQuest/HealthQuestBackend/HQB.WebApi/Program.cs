@@ -39,6 +39,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!))
         };
     });
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 
 // 🔹 Add Controllers
 builder.Services.AddControllers();
