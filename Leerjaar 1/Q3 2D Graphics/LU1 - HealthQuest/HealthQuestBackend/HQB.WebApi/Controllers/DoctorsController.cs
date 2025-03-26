@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HQB.WebApi.Controllers
 {
     [ApiController]
-    [Route("api/doctors")]
+    [Route("api/v1/[controller]")]
     public class DoctorsController : ControllerBase
     {
         private readonly ILogger<DoctorsController> _logger;
