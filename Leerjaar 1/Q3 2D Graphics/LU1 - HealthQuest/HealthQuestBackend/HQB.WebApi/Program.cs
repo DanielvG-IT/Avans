@@ -14,8 +14,19 @@ if (string.IsNullOrEmpty(sqlConnectionString))
     throw new InvalidOperationException("Connection string 'SQLConnection' is not configured.");
 }
 
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddDapperStores(options => options.ConnectionString = sqlConnectionString)
+    .AddDefaultTokenProviders();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+});
+
+// Add other services
 builder.Services.AddTransient<ICompletedAppointmentsRepository, CompletedAppointmentsRepository>(_ => new CompletedAppointmentsRepository(sqlConnectionString));
-builder.Services.AddIdentityApiEndpoints<IdentityUser>().AddRoles<IdentityRole>().AddDapperStores(options => options.ConnectionString = sqlConnectionString);
 builder.Services.AddTransient<IAppointmentRepository, AppointmentRepository>(_ => new AppointmentRepository(sqlConnectionString));
 builder.Services.AddTransient<ITreatmentRepository, TreatmentRepository>(_ => new TreatmentRepository(sqlConnectionString));
 builder.Services.AddTransient<IStickersRepository, StickersRepository>(_ => new StickersRepository(sqlConnectionString));
@@ -24,7 +35,6 @@ builder.Services.AddTransient<IJournalRepository, JournalRepository>(_ => new Jo
 builder.Services.AddTransient<IPatientRepository, PatientRepository>(_ => new PatientRepository(sqlConnectionString));
 builder.Services.AddTransient<IDoctorRepository, DoctorRepository>(_ => new DoctorRepository(sqlConnectionString));
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
-builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
@@ -33,6 +43,7 @@ var app = builder.Build();
 app.MapGroup("/account").MapIdentityApi<IdentityUser>();
 app.MapControllers().RequireAuthorization();
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapOpenApi();
 
