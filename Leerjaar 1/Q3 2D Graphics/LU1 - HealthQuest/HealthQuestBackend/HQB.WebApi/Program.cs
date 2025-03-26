@@ -14,18 +14,20 @@ if (string.IsNullOrEmpty(sqlConnectionString))
     throw new InvalidOperationException("Connection string 'SQLConnection' is not configured.");
 }
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddDapperStores(options => options.ConnectionString = sqlConnectionString)
-    .AddDefaultTokenProviders();
-
-builder.Services.AddAuthentication(options =>
+// Configure Identity
+builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
 {
-    options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
-    options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
-    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-});
+    options.User.RequireUniqueEmail = true;
+    options.Password.RequiredLength = 10;
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+})
+.AddRoles<IdentityRole>()
+.AddDapperStores(options => options.ConnectionString = sqlConnectionString);
 
-// Add other services
+// Register services
 builder.Services.AddTransient<ICompletedAppointmentsRepository, CompletedAppointmentsRepository>(_ => new CompletedAppointmentsRepository(sqlConnectionString));
 builder.Services.AddTransient<IAppointmentRepository, AppointmentRepository>(_ => new AppointmentRepository(sqlConnectionString));
 builder.Services.AddTransient<ITreatmentRepository, TreatmentRepository>(_ => new TreatmentRepository(sqlConnectionString));
