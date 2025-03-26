@@ -52,4 +52,9 @@ public class JournalRepository : IJournalRepository
         const string query = "DELETE FROM JournalEntry WHERE ID = @ID";
         await connection.ExecuteAsync(query, new { ID = id });
     }
+
+    public Task<IEnumerable<JournalEntry>> GetJournalEntriesByPatientIdAsync(Guid id)
+    {
+        throw new NotImplementedException();
+    }
 }

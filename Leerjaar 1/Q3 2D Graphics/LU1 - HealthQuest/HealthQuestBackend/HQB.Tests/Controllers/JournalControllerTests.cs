@@ -114,7 +114,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.PutJournal(journalId, journal);
 
             // Assert
-            Assert.IsInstanceOfType(result, typeof(BadRequestResult));
+            Assert.IsInstanceOfType<BadRequestObjectResult>(result);
         }
 
         [TestMethod]

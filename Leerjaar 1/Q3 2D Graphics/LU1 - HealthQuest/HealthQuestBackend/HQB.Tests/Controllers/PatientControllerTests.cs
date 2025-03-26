@@ -18,7 +18,10 @@ namespace HQB.Tests.Controllers
         {
             _mockRepo = new Mock<IPatientRepository>();
             var mockLogger = new Mock<ILogger<PatientController>>();
-            _controller = new PatientController(_mockRepo.Object, mockLogger.Object);
+            var mockJournalRepo = new Mock<IJournalRepository>();
+            var mockStickersRepo = new Mock<IStickersRepository>();
+            var mockCompletedAppointmentsRepo = new Mock<ICompletedAppointmentsRepository>();
+            _controller = new PatientController(mockLogger.Object, _mockRepo.Object, mockJournalRepo.Object, mockStickersRepo.Object, mockCompletedAppointmentsRepo.Object);
         }
 
         [TestMethod]
@@ -32,7 +35,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.GetAllPatients();
 
             // Assert
-            var okResult = result as OkObjectResult;
+            var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200, okResult.StatusCode);
             Assert.AreEqual(patients, okResult.Value);
@@ -43,13 +46,13 @@ namespace HQB.Tests.Controllers
         {
             // Arrange
             var patient = new Patient { ID = Guid.NewGuid(), FirstName = "John", LastName = "Doe", Avatar = "defaultAvatar.png" };
-            _mockRepo.Setup(repo => repo.GetPatientByIdAsync(It.IsAny<int>())).ReturnsAsync(patient);
+            _mockRepo.Setup(repo => repo.GetPatientByIdAsync(It.IsAny<Guid>())).ReturnsAsync(patient);
 
             // Act
-            var result = await _controller.GetPatientById(1);
+            var result = await _controller.GetPatientById(Guid.NewGuid());
 
             // Assert
-            var okResult = result as OkObjectResult;
+            var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200, okResult.StatusCode);
             Assert.AreEqual(patient, okResult.Value);
@@ -59,13 +62,13 @@ namespace HQB.Tests.Controllers
         public async Task GetPatientById_ReturnsNotFoundResult_WhenPatientNotFound()
         {
             // Arrange
-            _mockRepo.Setup(repo => repo.GetPatientByIdAsync(It.IsAny<int>())).ReturnsAsync((Patient?)null);
+            _mockRepo.Setup(repo => repo.GetPatientByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Patient?)null);
 
             // Act
-            var result = await _controller.GetPatientById(1);
+            var result = await _controller.GetPatientById(Guid.NewGuid());
 
             // Assert
-            var notFoundResult = result as NotFoundResult;
+            var notFoundResult = result.Result as NotFoundResult;
             Assert.IsNotNull(notFoundResult);
             Assert.AreEqual(404, notFoundResult.StatusCode);
         }
@@ -81,7 +84,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.AddPatient(patient);
 
             // Assert
-            var createdAtActionResult = result as CreatedAtActionResult;
+            var createdAtActionResult = result.Result as CreatedAtActionResult;
             Assert.IsNotNull(createdAtActionResult);
             Assert.AreEqual(201, createdAtActionResult.StatusCode);
             Assert.AreEqual(patient, createdAtActionResult.Value);
@@ -92,11 +95,11 @@ namespace HQB.Tests.Controllers
         {
             // Arrange
             var patient = new Patient { ID = Guid.NewGuid(), FirstName = "John", LastName = "Doe", Avatar = "defaultAvatar.png" };
-            _mockRepo.Setup(repo => repo.GetPatientByIdAsync(It.IsAny<int>())).ReturnsAsync(patient);
+            _mockRepo.Setup(repo => repo.GetPatientByIdAsync(It.IsAny<Guid>())).ReturnsAsync(patient);
             _mockRepo.Setup(repo => repo.UpdatePatientAsync(It.IsAny<Patient>())).ReturnsAsync(1);
 
             // Act
-            var result = await _controller.UpdatePatient(1, patient);
+            var result = await _controller.UpdatePatient(Guid.NewGuid(), patient);
 
             // Assert
             var noContentResult = result as NoContentResult;
@@ -109,11 +112,11 @@ namespace HQB.Tests.Controllers
         {
             // Arrange
             var patient = new Patient { ID = Guid.NewGuid(), FirstName = "John", LastName = "Doe", Avatar = "defaultAvatar.png" };
-            _mockRepo.Setup(repo => repo.GetPatientByIdAsync(It.IsAny<int>())).ReturnsAsync(patient);
-            _mockRepo.Setup(repo => repo.DeletePatientAsync(It.IsAny<int>())).ReturnsAsync(1);
+            _mockRepo.Setup(repo => repo.GetPatientByIdAsync(It.IsAny<Guid>())).ReturnsAsync(patient);
+            _mockRepo.Setup(repo => repo.DeletePatientAsync(It.IsAny<Guid>())).ReturnsAsync(1);
 
             // Act
-            var result = await _controller.DeletePatient(1);
+            var result = await _controller.DeletePatient(Guid.NewGuid());
 
             // Assert
             var noContentResult = result as NoContentResult;
