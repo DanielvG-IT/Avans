@@ -1,14 +1,13 @@
 using Dapper;
 using HQB.WebApi.Models;
 using HQB.WebApi.Interfaces;
-using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 
+namespace HQB.WebApi.Repositories;
 public class AppointmentRepository : IAppointmentRepository
 {
     private readonly string _connectionString;
-
     public AppointmentRepository(string connectionString)
     {
         _connectionString = connectionString;
@@ -31,21 +30,21 @@ public class AppointmentRepository : IAppointmentRepository
     public async Task<Appointment?> GetAppointmentByTreatmentIdAsync(Guid id)
     {
         using var connection = new SqlConnection(_connectionString);
-        var sql = "SELECT * FROM Treatment_Appoinment WHERE TreatmentID = @TreatmentID";
+        var sql = "SELECT * FROM Treatment_Appointment WHERE TreatmentID = @TreatmentID";
         return await connection.QueryFirstOrDefaultAsync<Appointment>(sql, new { TreatmentID = id });
     }
 
     public async Task<int> AddAppointmentAsync(Appointment appointment)
     {
         using var connection = new SqlConnection(_connectionString);
-        var sql = "INSERT INTO Appointment (ID, PatientID, GuardianID, TreatmentID, Date, Time) VALUES (@ID, @PatientID, @GuardianID, @TreatmentID, @Date, @Time)";
+        var sql = "INSERT INTO Appointment (ID, Name, Url, Image, DurationInMinutes) VALUES (@ID, @Name, @Url, @Image, @DurationInMinutes)";
         return await connection.ExecuteAsync(sql, appointment);
     }
 
     public async Task<int> UpdateAppointmentAsync(Appointment appointment)
     {
         using var connection = new SqlConnection(_connectionString);
-        var sql = "UPDATE Appointment SET PatientID = @PatientID, GuardianID = @GuardianID, TreatmentID = @TreatmentID, Date = @Date, Time = @Time WHERE ID = @ID";
+        var sql = "UPDATE Appointment SET Name = @Name, Url = @Url, Image = @Image, DurationInMinutes = @DurationInMinutes WHERE ID = @ID";
         return await connection.ExecuteAsync(sql, appointment);
     }
 

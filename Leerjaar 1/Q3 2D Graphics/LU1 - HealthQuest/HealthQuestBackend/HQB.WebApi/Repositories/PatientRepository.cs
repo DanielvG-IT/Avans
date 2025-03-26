@@ -24,7 +24,7 @@ public class PatientRepository : IPatientRepository
     public async Task<Patient?> GetPatientByIdAsync(Guid id)
     {
         using var connection = new SqlConnection(_connectionString);
-        string sqlQuery = "SELECT * FROM Patients WHERE Id = @Id";
+        string sqlQuery = "SELECT * FROM Patients WHERE ID = @Id";
         return await connection.QueryFirstOrDefaultAsync<Patient>(sqlQuery, new { Id = id });
     }
 
@@ -45,21 +45,21 @@ public class PatientRepository : IPatientRepository
     public async Task<int> AddPatientAsync(Patient patient)
     {
         using var connection = new SqlConnection(_connectionString);
-        string sqlQuery = "INSERT INTO Patients (Name, Age, Address) VALUES (@Name, @Age, @Address)";
+        string sqlQuery = "INSERT INTO Patients (FirstName, LastName, GuardianID, TreatmentID, DoctorID, Avatar) VALUES (@FirstName, @LastName, @GuardianID, @TreatmentID, @DoctorID, @Avatar)";
         return await connection.ExecuteAsync(sqlQuery, patient);
     }
 
     public async Task<int> UpdatePatientAsync(Patient patient)
     {
         using var connection = new SqlConnection(_connectionString);
-        string sqlQuery = "UPDATE Patients SET Name = @Name, Age = @Age, Address = @Address WHERE Id = @Id";
+        string sqlQuery = "UPDATE Patients SET FirstName = @FirstName, LastName = @LastName, GuardianID = @GuardianID, TreatmentID = @TreatmentID, DoctorID = @DoctorID, Avatar = @Avatar WHERE ID = @Id";
         return await connection.ExecuteAsync(sqlQuery, patient);
     }
 
     public async Task<int> DeletePatientAsync(Guid id)
     {
         using var connection = new SqlConnection(_connectionString);
-        string sqlQuery = "DELETE FROM Patients WHERE Id = @Id";
+        string sqlQuery = "DELETE FROM Patients WHERE ID = @Id";
         return await connection.ExecuteAsync(sqlQuery, new { Id = id });
     }
 }
