@@ -40,7 +40,7 @@ namespace HQB.WebApi.Tests.Controllers
       var result = await _controller.GetDoctors();
 
       // Assert
-      var okResult = result as OkObjectResult;
+      var okResult = result.Result as OkObjectResult;
       Assert.IsNotNull(okResult);
       Assert.AreEqual(200, okResult.StatusCode);
       Assert.AreEqual(doctors, okResult.Value);
@@ -56,7 +56,7 @@ namespace HQB.WebApi.Tests.Controllers
       var result = await _controller.GetDoctors();
 
       // Assert
-      var notFoundResult = result as NotFoundObjectResult;
+      var notFoundResult = result.Result as NotFoundObjectResult;
       Assert.IsNotNull(notFoundResult);
       Assert.AreEqual(404, notFoundResult.StatusCode);
       Assert.AreEqual("No doctors found.", notFoundResult.Value);
@@ -74,7 +74,7 @@ namespace HQB.WebApi.Tests.Controllers
       var result = await _controller.GetDoctor(doctorId);
 
       // Assert
-      var okResult = result as OkObjectResult;
+      var okResult = result.Result as OkObjectResult;
       Assert.IsNotNull(okResult);
       Assert.AreEqual(200, okResult.StatusCode);
       Assert.AreEqual(doctor, okResult.Value);
@@ -91,7 +91,7 @@ namespace HQB.WebApi.Tests.Controllers
       var result = await _controller.GetDoctor(doctorId);
 
       // Assert
-      var notFoundResult = result as NotFoundObjectResult;
+      var notFoundResult = result.Result as NotFoundObjectResult;
       Assert.IsNotNull(notFoundResult);
       Assert.AreEqual(404, notFoundResult.StatusCode);
       Assert.AreEqual($"Doctor with ID {doctorId} not found.", notFoundResult.Value);
@@ -108,7 +108,7 @@ namespace HQB.WebApi.Tests.Controllers
       var result = await _controller.AddDoctor(doctor);
 
       // Assert
-      var createdAtActionResult = result as CreatedAtActionResult;
+      var createdAtActionResult = result.Result as CreatedAtActionResult;
       Assert.IsNotNull(createdAtActionResult);
       Assert.AreEqual(201, createdAtActionResult.StatusCode);
       Assert.AreEqual(doctor, createdAtActionResult.Value);

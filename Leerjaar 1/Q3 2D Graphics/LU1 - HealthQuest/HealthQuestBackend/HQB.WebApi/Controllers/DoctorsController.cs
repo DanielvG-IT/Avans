@@ -23,10 +23,16 @@ namespace HQB.WebApi.Controllers
         /// Get all doctors
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> GetDoctors()
+        public async Task<ActionResult<IEnumerable<Doctor>>> GetDoctors()
         {
             _logger.LogInformation("Fetching all doctors.");
             var doctors = await _doctorRepository.GetAllDoctorsAsync();
+
+            if (doctors == null)
+            {
+                _logger.LogError("Doctor repository returned null.");
+                return StatusCode(500, "Internal server error.");
+            }
 
             if (!doctors.Any())
             {
@@ -41,7 +47,7 @@ namespace HQB.WebApi.Controllers
         /// Get a single doctor by ID
         /// </summary>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetDoctor(Guid id)
+        public async Task<ActionResult<Doctor>> GetDoctor(Guid id)
         {
             if (id == Guid.Empty)
             {
@@ -51,6 +57,7 @@ namespace HQB.WebApi.Controllers
 
             _logger.LogInformation($"Fetching doctor with ID {id}.");
             var doctor = await _doctorRepository.GetDoctorByIdAsync(id);
+
             if (doctor == null)
             {
                 _logger.LogWarning($"Doctor with ID {id} not found.");
@@ -64,7 +71,7 @@ namespace HQB.WebApi.Controllers
         /// Get a doctor assigned to a specific patient
         /// </summary>
         [HttpGet("by-patient/{patientId}")]
-        public async Task<IActionResult> GetDoctorByPatientId(Guid patientId)
+        public async Task<ActionResult<Doctor>> GetDoctorByPatientId(Guid patientId)
         {
             if (patientId == Guid.Empty)
             {
@@ -81,6 +88,12 @@ namespace HQB.WebApi.Controllers
                 return NotFound($"No patient found with ID {patientId}.");
             }
 
+            if (patient.DoctorID == Guid.Empty)
+            {
+                _logger.LogWarning($"Patient with ID {patientId} has no assigned doctor.");
+                return NotFound($"Patient with ID {patientId} has no assigned doctor.");
+            }
+
             var doctor = await _doctorRepository.GetDoctorByIdAsync(patient.DoctorID);
             if (doctor == null)
             {
@@ -95,7 +108,7 @@ namespace HQB.WebApi.Controllers
         /// Get all patients assigned to a specific doctor
         /// </summary>
         [HttpGet("{id}/patients")]
-        public async Task<IActionResult> GetDoctorPatients(Guid id)
+        public async Task<ActionResult<IEnumerable<Patient>>> GetDoctorPatients(Guid id)
         {
             if (id == Guid.Empty)
             {
@@ -105,6 +118,19 @@ namespace HQB.WebApi.Controllers
 
             _logger.LogInformation($"Fetching patients for doctor with ID {id}.");
             var patients = await _patientRepository.GetPatientsByDoctorIdAsync(id);
+
+            if (patients == null)
+            {
+                _logger.LogError("Patient repository returned null.");
+                return StatusCode(500, "Internal server error.");
+            }
+
+            if (!patients.Any())
+            {
+                _logger.LogWarning($"No patients found for doctor with ID {id}.");
+                return NotFound($"No patients found for doctor with ID {id}.");
+            }
+
             return Ok(patients);
         }
 
@@ -112,12 +138,18 @@ namespace HQB.WebApi.Controllers
         /// Add a new doctor
         /// </summary>
         [HttpPost]
-        public async Task<IActionResult> AddDoctor([FromBody] Doctor doctor)
+        public async Task<ActionResult<Doctor>> AddDoctor([FromBody] Doctor doctor)
         {
             if (doctor == null)
             {
                 _logger.LogWarning("Doctor information is required.");
                 return BadRequest("Doctor information is required.");
+            }
+
+            if (doctor.ID == Guid.Empty)
+            {
+                _logger.LogWarning("Doctor ID is required.");
+                return BadRequest("Doctor ID is required.");
             }
 
             _logger.LogInformation($"Adding new doctor with ID {doctor.ID}.");
@@ -135,6 +167,12 @@ namespace HQB.WebApi.Controllers
             {
                 _logger.LogWarning("Invalid doctor ID provided.");
                 return BadRequest("Invalid doctor ID.");
+            }
+
+            if (doctor == null)
+            {
+                _logger.LogWarning("Doctor information is required.");
+                return BadRequest("Doctor information is required.");
             }
 
             if (id != doctor.ID)
@@ -161,6 +199,12 @@ namespace HQB.WebApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDoctor(Guid id)
         {
+            if (id == Guid.Empty)
+            {
+                _logger.LogWarning("Invalid doctor ID provided.");
+                return BadRequest("Invalid doctor ID.");
+            }
+
             _logger.LogInformation($"Deleting doctor with ID {id}.");
             var existingDoctor = await _doctorRepository.GetDoctorByIdAsync(id);
             if (existingDoctor == null)

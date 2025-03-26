@@ -36,7 +36,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.GetTreatmentsAsync();
 
             // Assert
-            var okResult = result as OkObjectResult;
+            var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
             Assert.AreEqual(treatments, okResult.Value);
@@ -53,7 +53,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.GetTreatmentAsync(treatmentId);
 
             // Assert
-            var notFoundResult = result as NotFoundResult;
+            var notFoundResult = result.Result as NotFoundResult;
             Assert.IsNotNull(notFoundResult);
             Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
         }
@@ -70,7 +70,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.GetTreatmentAsync(treatmentId);
 
             // Assert
-            var okResult = result as OkObjectResult;
+            var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
             Assert.AreEqual(treatment, okResult.Value);
@@ -83,9 +83,23 @@ namespace HQB.Tests.Controllers
             var result = await _controller.CreateTreatmentAsync(null!);
 
             // Assert
-            var badRequestResult = result as BadRequestResult;
+            var badRequestResult = result.Result as BadRequestObjectResult;
             Assert.IsNotNull(badRequestResult);
             Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
+            Assert.AreEqual("Treatment object is null.", badRequestResult.Value);
+        }
+
+        [TestMethod]
+        public async Task CreateTreatmentAsync_ReturnsBadRequest_WhenTreatmentNameIsEmpty()
+        {
+            // Act
+            var result = await _controller.CreateTreatmentAsync(new Treatment { Name = "" });
+
+            // Assert
+            var badRequestResult = result.Result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult);
+            Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
+            Assert.AreEqual("Treatment name is required", badRequestResult.Value);
         }
 
         [TestMethod]
@@ -99,7 +113,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.CreateTreatmentAsync(treatment);
 
             // Assert
-            var createdAtActionResult = result as CreatedAtActionResult;
+            var createdAtActionResult = result.Result as CreatedAtActionResult;
             Assert.IsNotNull(createdAtActionResult);
             Assert.AreEqual(StatusCodes.Status201Created, createdAtActionResult.StatusCode);
             var returnedTreatment = createdAtActionResult.Value as Treatment;
@@ -119,7 +133,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.UpdateTreatmentAsync(treatmentId, treatment);
 
             // Assert
-            var notFoundResult = result as NotFoundResult;
+            var notFoundResult = result.Result as NotFoundResult;
             Assert.IsNotNull(notFoundResult);
             Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
         }
@@ -137,7 +151,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.UpdateTreatmentAsync(treatmentId, treatment);
 
             // Assert
-            var okResult = result as OkObjectResult;
+            var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
             Assert.AreEqual(treatment, okResult.Value);

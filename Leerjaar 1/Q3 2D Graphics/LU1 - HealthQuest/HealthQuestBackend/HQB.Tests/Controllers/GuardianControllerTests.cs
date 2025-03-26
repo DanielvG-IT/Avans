@@ -35,8 +35,8 @@ namespace HQB.Tests.Controllers
             var result = await _controller.GetGuardian();
 
             // Assert
-            Assert.IsInstanceOfType<OkObjectResult>(result);
-            var okResult = result as OkObjectResult;
+            Assert.IsInstanceOfType<OkObjectResult>(result.Result);
+            var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.AreEqual(guardians, okResult.Value);
         }
@@ -52,7 +52,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.GetGuardianById(guardian.ID);
 
             // Assert
-            Assert.IsInstanceOfType<OkObjectResult>(result);
+            Assert.IsInstanceOfType<OkObjectResult>(result.Result);
         }
 
         [TestMethod]
@@ -65,7 +65,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.GetGuardianById(Guid.NewGuid());
 
             // Assert
-            Assert.IsInstanceOfType<NotFoundResult>(result);
+            Assert.IsInstanceOfType<NotFoundResult>(result.Result);
         }
 
         [TestMethod]
@@ -79,11 +79,11 @@ namespace HQB.Tests.Controllers
             var result = await _controller.AddGuardian(guardian);
 
             // Assert
-            Assert.IsInstanceOfType<CreatedAtActionResult>(result);
+            Assert.IsInstanceOfType<CreatedAtActionResult>(result.Result);
         }
 
         [TestMethod]
-        public async Task PutGuardian_ValidGuardian_ReturnsNoContent()
+        public async Task PutGuardian_ValidGuardian_ReturnsOk()
         {
             // Arrange
             var guardian = new Guardian { ID = Guid.NewGuid(), FirstName = "Updated", LastName = "Guardian", UserID = Guid.NewGuid().ToString() };
@@ -93,7 +93,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.UpdateGuardian(guardian.ID, guardian);
 
             // Assert
-            Assert.IsInstanceOfType<NoContentResult>(result);
+            Assert.IsInstanceOfType<OkObjectResult>(result.Result);
         }
 
         [TestMethod]

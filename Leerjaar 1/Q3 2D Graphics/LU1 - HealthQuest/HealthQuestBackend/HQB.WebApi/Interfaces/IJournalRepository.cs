@@ -19,6 +19,8 @@ public interface IJournalRepository
     /// <returns>A task that represents the asynchronous operation. The task result contains the journal entry if found; otherwise, null.</returns>
     Task<JournalEntry?> GetJournalEntryByIdAsync(Guid id);
 
+    Task<IEnumerable<JournalEntry>> GetJournalEntriesByPatientIdAsync(Guid id);
+
     /// <summary>
     /// Adds a new journal entry asynchronously.
     /// </summary>

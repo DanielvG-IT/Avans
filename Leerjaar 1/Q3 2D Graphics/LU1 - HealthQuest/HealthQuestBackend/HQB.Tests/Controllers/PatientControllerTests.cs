@@ -18,7 +18,10 @@ namespace HQB.Tests.Controllers
         {
             _mockRepo = new Mock<IPatientRepository>();
             var mockLogger = new Mock<ILogger<PatientController>>();
-            _controller = new PatientController(_mockRepo.Object, mockLogger.Object);
+            var mockJournalRepo = new Mock<IJournalRepository>();
+            var mockStickersRepo = new Mock<IStickersRepository>();
+            var mockCompletedAppointmentsRepo = new Mock<ICompletedAppointmentsRepository>();
+            _controller = new PatientController(mockLogger.Object, _mockRepo.Object, mockJournalRepo.Object, mockStickersRepo.Object, mockCompletedAppointmentsRepo.Object);
         }
 
         [TestMethod]
@@ -32,7 +35,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.GetAllPatients();
 
             // Assert
-            var okResult = result as OkObjectResult;
+            var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200, okResult.StatusCode);
             Assert.AreEqual(patients, okResult.Value);
@@ -49,7 +52,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.GetPatientById(Guid.NewGuid());
 
             // Assert
-            var okResult = result as OkObjectResult;
+            var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200, okResult.StatusCode);
             Assert.AreEqual(patient, okResult.Value);
@@ -65,7 +68,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.GetPatientById(Guid.NewGuid());
 
             // Assert
-            var notFoundResult = result as NotFoundResult;
+            var notFoundResult = result.Result as NotFoundResult;
             Assert.IsNotNull(notFoundResult);
             Assert.AreEqual(404, notFoundResult.StatusCode);
         }
@@ -81,7 +84,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.AddPatient(patient);
 
             // Assert
-            var createdAtActionResult = result as CreatedAtActionResult;
+            var createdAtActionResult = result.Result as CreatedAtActionResult;
             Assert.IsNotNull(createdAtActionResult);
             Assert.AreEqual(201, createdAtActionResult.StatusCode);
             Assert.AreEqual(patient, createdAtActionResult.Value);

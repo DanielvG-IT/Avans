@@ -33,7 +33,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.GetAppointments();
 
             // Assert
-            var okResult = result as OkObjectResult;
+            var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200, okResult.StatusCode);
             Assert.AreEqual(appointments, okResult.Value);
@@ -51,7 +51,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.GetAppointmentById(appointmentId);
 
             // Assert
-            var okResult = result as OkObjectResult;
+            var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.AreEqual(200, okResult.StatusCode);
             Assert.AreEqual(appointment, okResult.Value);
@@ -68,7 +68,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.GetAppointmentById(appointmentId);
 
             // Assert
-            var notFoundResult = result as NotFoundResult;
+            var notFoundResult = result.Result as NotFoundResult;
             Assert.IsNotNull(notFoundResult);
             Assert.AreEqual(404, notFoundResult.StatusCode);
         }
@@ -84,7 +84,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.CreateAppointment(appointment);
 
             // Assert
-            var createdAtActionResult = result as CreatedAtActionResult;
+            var createdAtActionResult = result.Result as CreatedAtActionResult;
             Assert.IsNotNull(createdAtActionResult);
             Assert.AreEqual(201, createdAtActionResult.StatusCode);
             Assert.AreEqual(appointment, createdAtActionResult.Value);
