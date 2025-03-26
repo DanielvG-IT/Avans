@@ -1,19 +1,37 @@
-CREATE DATABASE HealthQuest
+-- Drop tables in reverse order
+DROP TABLE IF EXISTS [dbo].[Treatment_Appoinment];
+DROP TABLE IF EXISTS [dbo].[Appoinment];
+DROP TABLE IF EXISTS [dbo].[JournalEntry];
+DROP TABLE IF EXISTS [dbo].[Patient];
+DROP TABLE IF EXISTS [dbo].[Treatment];
+DROP TABLE IF EXISTS [dbo].[Guardian];
+DROP TABLE IF EXISTS [dbo].[Doctor];
+DROP TABLE IF EXISTS [auth].[AspNetUserRoles];
+DROP TABLE IF EXISTS [auth].[AspNetRoleClaims];
+DROP TABLE IF EXISTS [auth].[AspNetUserClaims];
+DROP TABLE IF EXISTS [auth].[AspNetRoles];
+DROP TABLE IF EXISTS [auth].[AspNetUsers];
+
+-- Drop schema
+DROP SCHEMA IF EXISTS auth;
+
+-- Ensure the auth schema exists
+IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = 'auth')
+BEGIN
+    EXEC('CREATE SCHEMA auth')
+END;
 GO
 
-USE HealthQuest
-GO
-
-CREATE SCHEMA auth;
-GO
-
+-- Doctor Table
 CREATE TABLE [dbo].[Doctor] (
     ID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     FirstName NVARCHAR(50) NOT NULL,
     LastName NVARCHAR(50) NOT NULL,
     Specialization NVARCHAR(50) NOT NULL
 );
+GO
 
+-- User Table
 CREATE TABLE [auth].[AspNetUsers] (
     [Id]                   NVARCHAR (450)     NOT NULL,
     [UserName]             NVARCHAR (256)     NULL,
@@ -32,7 +50,9 @@ CREATE TABLE [auth].[AspNetUsers] (
     [AccessFailedCount]    INT                NOT NULL,
     CONSTRAINT [PK_AspNetUsers] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+GO
 
+-- Guardian Table
 CREATE TABLE [dbo].[Guardian] (
     ID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     FirstName NVARCHAR(50) NOT NULL,
@@ -40,12 +60,16 @@ CREATE TABLE [dbo].[Guardian] (
     UserID NVARCHAR(450) NOT NULL,
     FOREIGN KEY (UserID) REFERENCES auth.AspNetUsers(Id)
 );
+GO
 
+-- Treatment Table
 CREATE TABLE [dbo].[Treatment] (
     ID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     Name NVARCHAR(50) NOT NULL
 );
+GO
 
+-- Patient Table
 CREATE TABLE [dbo].[Patient] (
     ID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     FirstName NVARCHAR(50) NOT NULL,
@@ -58,7 +82,9 @@ CREATE TABLE [dbo].[Patient] (
     FOREIGN KEY (TreatmentID) REFERENCES Treatment(ID),
     FOREIGN KEY (DoctorID) REFERENCES Doctor(ID)
 );
+GO
 
+-- JournalEntry Table
 CREATE TABLE [dbo].[JournalEntry] (
     ID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     PatientID UNIQUEIDENTIFIER NOT NULL,
@@ -68,7 +94,9 @@ CREATE TABLE [dbo].[JournalEntry] (
     FOREIGN KEY (PatientID) REFERENCES Patient(ID),
     FOREIGN KEY (GuardianID) REFERENCES Guardian(ID)
 );
+GO
 
+-- Appoinment Table
 CREATE TABLE [dbo].[Appoinment] (
     ID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     Name NVARCHAR(50) NOT NULL,
@@ -76,7 +104,9 @@ CREATE TABLE [dbo].[Appoinment] (
     Image VARBINARY(MAX),
     DurationInMinutes INT NOT NULL
 );
+GO
 
+-- Treatment_Appoinment Table
 CREATE TABLE [dbo].[Treatment_Appoinment] (
     TreatmentID UNIQUEIDENTIFIER NOT NULL,
     AppoinmentID UNIQUEIDENTIFIER NOT NULL,
@@ -85,6 +115,32 @@ CREATE TABLE [dbo].[Treatment_Appoinment] (
     FOREIGN KEY (TreatmentID) REFERENCES Treatment(ID),
     FOREIGN KEY (AppoinmentID) REFERENCES Appoinment(ID)
 );
+GO
+
+-- Sticker Table
+CREATE TABLE [dbo].[Sticker] (
+    ID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    Name NVARCHAR(50) NOT NULL,
+    );
+GO
+
+-- StickerCollection Table
+CREATE TABLE [dbo].[StickerCollection] (
+    ID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    PatientID UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES Patient(ID),
+    StickerID UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES Sticker(ID),
+    UnlockedDate DATETIME NOT NULL DEFAULT GETDATE()
+);
+GO
+
+-- CompletedAppointments Table
+CREATE TABLE [dbo].[CompletedAppointments] (
+    ID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    PatientID UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES Patient(ID),
+    AppointmentID UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES Appoinment(ID),
+    CompletedDate DATETIME NOT NULL DEFAULT GETDATE(),
+);
+GO
 
 CREATE TABLE [auth].[AspNetRoles] (
     [Id]               NVARCHAR (450) NOT NULL,
