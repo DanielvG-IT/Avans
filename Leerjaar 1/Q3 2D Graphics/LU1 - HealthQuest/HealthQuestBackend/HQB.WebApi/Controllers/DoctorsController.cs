@@ -97,6 +97,12 @@ namespace HQB.WebApi.Controllers
         [HttpGet("{id}/patients")]
         public async Task<IActionResult> GetDoctorPatients(Guid id)
         {
+            if (id == Guid.Empty)
+            {
+                _logger.LogWarning("Invalid doctor ID provided.");
+                return BadRequest("Invalid doctor ID.");
+            }
+
             _logger.LogInformation($"Fetching patients for doctor with ID {id}.");
             var patients = await _patientRepository.GetPatientsByDoctorIdAsync(id);
             return Ok(patients);
@@ -125,6 +131,12 @@ namespace HQB.WebApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateDoctor(Guid id, [FromBody] Doctor doctor)
         {
+            if (id == Guid.Empty)
+            {
+                _logger.LogWarning("Invalid doctor ID provided.");
+                return BadRequest("Invalid doctor ID.");
+            }
+
             if (id != doctor.ID)
             {
                 _logger.LogWarning("ID in the URL and body must match.");

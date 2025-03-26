@@ -29,7 +29,7 @@ namespace HQB.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetPatientById(int id)
+        public async Task<IActionResult> GetPatientById(Guid id)
         {
             _logger.LogInformation("Getting patient with ID {PatientId}", id);
             var patient = await _patientRepository.GetPatientByIdAsync(id);
@@ -56,7 +56,7 @@ namespace HQB.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePatient(int id, [FromBody] Patient patient)
+        public async Task<IActionResult> UpdatePatient(Guid id, [FromBody] Patient patient)
         {
             if (!ModelState.IsValid)
             {
@@ -78,7 +78,7 @@ namespace HQB.WebApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePatient(int id)
+        public async Task<IActionResult> DeletePatient(Guid id)
         {
             _logger.LogInformation("Deleting patient with ID {PatientId}", id);
             var existingPatient = await _patientRepository.GetPatientByIdAsync(id);

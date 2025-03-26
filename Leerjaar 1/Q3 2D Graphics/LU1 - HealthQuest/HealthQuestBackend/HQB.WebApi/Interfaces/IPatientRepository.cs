@@ -27,6 +27,13 @@ public interface IPatientRepository
     Task<IEnumerable<Patient>> GetPatientsByDoctorIdAsync(Guid patientId);
 
     /// <summary>
+    /// Retrieves a list of patients associated with a specific guardian asynchronously.
+    /// </summary>
+    /// <param name="guardianId">The unique identifier of the guardian.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains an enumerable collection of patients associated with the specified guardian.</returns>
+    Task<IEnumerable<Patient>> GetPatientsByGuardianId(Guid guardianId);
+
+    /// <summary>
     /// Adds a new patient asynchronously.
     /// </summary>
     /// <param name="patient">The patient to add.</param>
@@ -45,5 +52,5 @@ public interface IPatientRepository
     /// </summary>
     /// <param name="id">The ID of the patient to delete.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the number of affected rows.</returns>
-    Task<int> DeletePatientAsync(int id);
+    Task<int> DeletePatientAsync(Guid id);
 }
