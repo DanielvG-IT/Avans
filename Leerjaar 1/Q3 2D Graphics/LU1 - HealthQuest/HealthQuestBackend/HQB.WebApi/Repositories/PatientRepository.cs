@@ -21,7 +21,7 @@ public class PatientRepository : IPatientRepository
         return await connection.QueryAsync<Patient>(sqlQuery);
     }
 
-    public async Task<Patient?> GetPatientByIdAsync(int id)
+    public async Task<Patient?> GetPatientByIdAsync(Guid id)
     {
         using var connection = new SqlConnection(_connectionString);
         string sqlQuery = "SELECT * FROM Patients WHERE Id = @Id";
@@ -47,5 +47,12 @@ public class PatientRepository : IPatientRepository
         using var connection = new SqlConnection(_connectionString);
         string sqlQuery = "DELETE FROM Patients WHERE Id = @Id";
         return await connection.ExecuteAsync(sqlQuery, new { Id = id });
+    }
+
+    public async Task<IEnumerable<Patient>> GetPatientsByDoctorIdAsync(Guid doctorId)
+    {
+        using var connection = new SqlConnection(_connectionString);
+        string sqlQuery = "SELECT * FROM Patients WHERE DoctorID = @DoctorId";
+        return await connection.QueryAsync<Patient>(sqlQuery, new { DoctorId = doctorId });
     }
 }

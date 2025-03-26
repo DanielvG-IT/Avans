@@ -17,7 +17,14 @@ public interface IPatientRepository
     /// </summary>
     /// <param name="id">The ID of the patient to retrieve.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the patient if found; otherwise, null.</returns>
-    Task<Patient?> GetPatientByIdAsync(int id);
+    Task<Patient?> GetPatientByIdAsync(Guid id);
+
+    /// <summary>
+    /// Retrieves a patient associated with a specific doctor by the patient's ID.
+    /// </summary>
+    /// <param name="patientId">The ID of the patient to retrieve.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the patient associated with the specified doctor, or null if no such patient exists.</returns>
+    Task<IEnumerable<Patient>> GetPatientsByDoctorIdAsync(Guid patientId);
 
     /// <summary>
     /// Adds a new patient asynchronously.

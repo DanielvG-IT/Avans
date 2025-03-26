@@ -20,6 +20,7 @@ builder.Services.AddTransient<ITreatmentRepository, TreatmentRepository>(_ => ne
 builder.Services.AddTransient<IGuardianRepository, GuardianRepository>(_ => new GuardianRepository(sqlConnectionString));
 builder.Services.AddTransient<IJournalRepository, JournalRepository>(_ => new JournalRepository(sqlConnectionString));
 builder.Services.AddTransient<IPatientRepository, PatientRepository>(_ => new PatientRepository(sqlConnectionString));
+builder.Services.AddTransient<IDoctorRepository, DoctorRepository>(_ => new DoctorRepository(sqlConnectionString));
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
