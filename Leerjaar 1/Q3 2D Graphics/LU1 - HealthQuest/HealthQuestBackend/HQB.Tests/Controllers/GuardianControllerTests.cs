@@ -11,6 +11,7 @@ namespace HQB.Tests.Controllers
     public class GuardianControllerTests
     {
         public required Mock<ILogger<GuardianController>> _mockLogger;
+        public required Mock<IPatientRepository> _mockPatientRepo;
         public required Mock<IGuardianRepository> _mockRepo;
         public required GuardianController _controller;
 
@@ -18,19 +19,20 @@ namespace HQB.Tests.Controllers
         public void Setup()
         {
             _mockRepo = new Mock<IGuardianRepository>();
+            _mockPatientRepo = new Mock<IPatientRepository>();
             _mockLogger = new Mock<ILogger<GuardianController>>();
-            _controller = new GuardianController(_mockRepo.Object, _mockLogger.Object);
+            _controller = new GuardianController(_mockLogger.Object, _mockRepo.Object, _mockPatientRepo.Object);
         }
 
         [TestMethod]
-        public async Task GetOuderVoogd_ReturnsOkResult_WithGuardians()
+        public async Task GetGuardian_ReturnsOkResult_WithGuardians()
         {
             // Arrange
             var guardians = new List<Guardian> { new() { ID = Guid.NewGuid(), FirstName = "John", LastName = "Doe", UserID = Guid.NewGuid().ToString() } };
             _mockRepo.Setup(repo => repo.GetAllGuardiansAsync()).ReturnsAsync(guardians);
 
             // Act
-            var result = await _controller.GetOuderVoogd();
+            var result = await _controller.GetGuardian();
 
             // Assert
             Assert.IsInstanceOfType<OkObjectResult>(result);
@@ -40,69 +42,69 @@ namespace HQB.Tests.Controllers
         }
 
         [TestMethod]
-        public async Task GetOuderVoogdById_GuardianExists_ReturnsOk()
+        public async Task GetGuardianById_GuardianExists_ReturnsOk()
         {
             // Arrange
             var guardian = new Guardian { ID = Guid.NewGuid(), FirstName = "Jane", LastName = "Doe", UserID = Guid.NewGuid().ToString() };
             _mockRepo.Setup(repo => repo.GetGuardianByIdAsync(guardian.ID)).ReturnsAsync(guardian);
 
             // Act
-            var result = await _controller.GetOuderVoogdById(guardian.ID);
+            var result = await _controller.GetGuardianById(guardian.ID);
 
             // Assert
             Assert.IsInstanceOfType<OkObjectResult>(result);
         }
 
         [TestMethod]
-        public async Task GetOuderVoogdById_GuardianNotFound_ReturnsNotFound()
+        public async Task GetGuardianById_GuardianNotFound_ReturnsNotFound()
         {
             // Arrange
             _mockRepo.Setup(repo => repo.GetGuardianByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Guardian?)null);
 
             // Act
-            var result = await _controller.GetOuderVoogdById(Guid.NewGuid());
+            var result = await _controller.GetGuardianById(Guid.NewGuid());
 
             // Assert
             Assert.IsInstanceOfType<NotFoundResult>(result);
         }
 
         [TestMethod]
-        public async Task PostOuderVoogd_ValidGuardian_ReturnsCreated()
+        public async Task PostGuardian_ValidGuardian_ReturnsCreated()
         {
             // Arrange
             var guardian = new Guardian { ID = Guid.NewGuid(), FirstName = "First", LastName = "Last", UserID = Guid.NewGuid().ToString() };
             _mockRepo.Setup(repo => repo.AddGuardianAsync(guardian)).ReturnsAsync(1);
 
             // Act
-            var result = await _controller.PostOuderVoogd(guardian);
+            var result = await _controller.AddGuardian(guardian);
 
             // Assert
             Assert.IsInstanceOfType<CreatedAtActionResult>(result);
         }
 
         [TestMethod]
-        public async Task PutOuderVoogd_ValidGuardian_ReturnsNoContent()
+        public async Task PutGuardian_ValidGuardian_ReturnsNoContent()
         {
             // Arrange
             var guardian = new Guardian { ID = Guid.NewGuid(), FirstName = "Updated", LastName = "Guardian", UserID = Guid.NewGuid().ToString() };
             _mockRepo.Setup(repo => repo.UpdateGuardianAsync(guardian)).ReturnsAsync(1);
 
             // Act
-            var result = await _controller.PutOuderVoogd(guardian.ID, guardian);
+            var result = await _controller.UpdateGuardian(guardian.ID, guardian);
 
             // Assert
             Assert.IsInstanceOfType<NoContentResult>(result);
         }
 
         [TestMethod]
-        public async Task DeleteOuderVoogd_GuardianExists_ReturnsNoContent()
+        public async Task DeleteGuardian_GuardianExists_ReturnsNoContent()
         {
             // Arrange
             var guardianId = Guid.NewGuid();
             _mockRepo.Setup(repo => repo.DeleteGuardianAsync(guardianId)).ReturnsAsync(1);
 
             // Act
-            var result = await _controller.DeleteOuderVoogd(guardianId);
+            var result = await _controller.DeleteGuardian(guardianId);
 
             // Assert
             Assert.IsInstanceOfType<NoContentResult>(result);
