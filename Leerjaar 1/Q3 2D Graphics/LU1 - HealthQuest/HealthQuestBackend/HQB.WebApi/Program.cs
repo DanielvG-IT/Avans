@@ -14,9 +14,11 @@ if (string.IsNullOrEmpty(sqlConnectionString))
     throw new InvalidOperationException("Connection string 'SQLConnection' is not configured.");
 }
 
+builder.Services.AddTransient<ICompletedAppointmentsRepository, CompletedAppointmentsRepository>(_ => new CompletedAppointmentsRepository(sqlConnectionString));
 builder.Services.AddIdentityApiEndpoints<IdentityUser>().AddRoles<IdentityRole>().AddDapperStores(options => options.ConnectionString = sqlConnectionString);
 builder.Services.AddTransient<IAppointmentRepository, AppointmentRepository>(_ => new AppointmentRepository(sqlConnectionString));
 builder.Services.AddTransient<ITreatmentRepository, TreatmentRepository>(_ => new TreatmentRepository(sqlConnectionString));
+builder.Services.AddTransient<IStickersRepository, StickersRepository>(_ => new StickersRepository(sqlConnectionString));
 builder.Services.AddTransient<IGuardianRepository, GuardianRepository>(_ => new GuardianRepository(sqlConnectionString));
 builder.Services.AddTransient<IJournalRepository, JournalRepository>(_ => new JournalRepository(sqlConnectionString));
 builder.Services.AddTransient<IPatientRepository, PatientRepository>(_ => new PatientRepository(sqlConnectionString));
