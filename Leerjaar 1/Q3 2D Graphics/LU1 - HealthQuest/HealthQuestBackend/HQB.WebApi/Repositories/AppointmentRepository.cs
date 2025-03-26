@@ -16,42 +16,42 @@ public class AppointmentRepository : IAppointmentRepository
     public async Task<IEnumerable<Appointment>> GetAllAppointmentsAsync()
     {
         using var connection = new SqlConnection(_connectionString);
-        var sql = "SELECT * FROM Appointment";
+        var sql = "SELECT * FROM Appoinment";
         return await connection.QueryAsync<Appointment>(sql);
     }
 
     public async Task<Appointment?> GetAppointmentByIdAsync(Guid id)
     {
         using var connection = new SqlConnection(_connectionString);
-        var sql = "SELECT * FROM Appointment WHERE ID = @ID";
+        var sql = "SELECT * FROM Appoinment WHERE ID = @ID";
         return await connection.QueryFirstOrDefaultAsync<Appointment>(sql, new { ID = id });
     }
 
     public async Task<Appointment?> GetAppointmentByTreatmentIdAsync(Guid id)
     {
         using var connection = new SqlConnection(_connectionString);
-        var sql = "SELECT * FROM Treatment_Appointment WHERE TreatmentID = @TreatmentID";
+        var sql = "SELECT * FROM Treatment_Appoinment WHERE TreatmentID = @TreatmentID";
         return await connection.QueryFirstOrDefaultAsync<Appointment>(sql, new { TreatmentID = id });
     }
 
     public async Task<int> AddAppointmentAsync(Appointment appointment)
     {
         using var connection = new SqlConnection(_connectionString);
-        var sql = "INSERT INTO Appointment (ID, Name, Url, Image, DurationInMinutes) VALUES (@ID, @Name, @Url, @Image, @DurationInMinutes)";
+        var sql = "INSERT INTO Appoinment (ID, Name, Url, Image, DurationInMinutes) VALUES (@ID, @Name, @Url, @Image, @DurationInMinutes)";
         return await connection.ExecuteAsync(sql, appointment);
     }
 
     public async Task<int> UpdateAppointmentAsync(Appointment appointment)
     {
         using var connection = new SqlConnection(_connectionString);
-        var sql = "UPDATE Appointment SET Name = @Name, Url = @Url, Image = @Image, DurationInMinutes = @DurationInMinutes WHERE ID = @ID";
+        var sql = "UPDATE Appoinment SET Name = @Name, Url = @Url, Image = @Image, DurationInMinutes = @DurationInMinutes WHERE ID = @ID";
         return await connection.ExecuteAsync(sql, appointment);
     }
 
     public async Task<int> DeleteAppointmentAsync(Guid id)
     {
         using var connection = new SqlConnection(_connectionString);
-        var sql = "DELETE FROM Appointment WHERE ID = @ID";
+        var sql = "DELETE FROM Appoinment WHERE ID = @ID";
         return await connection.ExecuteAsync(sql, new { ID = id });
     }
 }
