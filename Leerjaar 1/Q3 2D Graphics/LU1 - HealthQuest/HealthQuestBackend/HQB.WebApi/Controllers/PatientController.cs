@@ -139,12 +139,7 @@ namespace HQB.WebApi.Controllers
             }
 
             _logger.LogInformation("Adding new patient");
-            var result = await _patientRepository.AddPatientAsync(patient);
-            if (result == 0)
-            {
-                _logger.LogError("Error adding patient");
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error adding patient");
-            }
+            await _patientRepository.AddPatientAsync(patient);
             return CreatedAtAction(nameof(GetPatientById), new { id = patient.ID }, patient);
         }
 

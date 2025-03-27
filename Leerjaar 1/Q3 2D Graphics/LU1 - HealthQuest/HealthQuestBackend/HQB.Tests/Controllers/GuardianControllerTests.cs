@@ -13,15 +13,17 @@ namespace HQB.Tests.Controllers
         public required Mock<ILogger<GuardianController>> _mockLogger;
         public required Mock<IPatientRepository> _mockPatientRepo;
         public required Mock<IGuardianRepository> _mockRepo;
+        public required Mock<IAuthenticationService> _mockAuthService;
         public required GuardianController _controller;
 
         [TestInitialize]
         public void Setup()
         {
+            _mockLogger = new Mock<ILogger<GuardianController>>();
             _mockRepo = new Mock<IGuardianRepository>();
             _mockPatientRepo = new Mock<IPatientRepository>();
-            _mockLogger = new Mock<ILogger<GuardianController>>();
-            _controller = new GuardianController(_mockLogger.Object, _mockRepo.Object, _mockPatientRepo.Object);
+            _mockAuthService = new Mock<IAuthenticationService>();
+            _controller = new GuardianController(_mockLogger.Object, _mockRepo.Object, _mockPatientRepo.Object, _mockAuthService.Object);
         }
 
         [TestMethod]
@@ -73,6 +75,7 @@ namespace HQB.Tests.Controllers
         {
             // Arrange
             var guardian = new Guardian { ID = Guid.NewGuid(), FirstName = "First", LastName = "Last", UserID = Guid.NewGuid().ToString() };
+            _mockAuthService.Setup(service => service.GetCurrentAuthenticatedUserId()).Returns(Guid.NewGuid().ToString());
             _mockRepo.Setup(repo => repo.AddGuardianAsync(guardian)).ReturnsAsync(1);
 
             // Act

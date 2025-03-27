@@ -10,18 +10,41 @@ namespace HQB.Tests.Controllers
     [TestClass]
     public class PatientControllerTest
     {
-        public required Mock<IPatientRepository> _mockRepo;
         public required PatientController _controller;
+        public required Mock<IPatientRepository> _mockRepo;
+        public required Mock<IDoctorRepository> _mockDoctorRepo;
+        public required Mock<IJournalRepository> _mockJournalRepo;
+        public required Mock<IGuardianRepository> _mockGuardianRepo;
+        public required Mock<IStickersRepository> _mockStickersRepo;
+        public required Mock<ILogger<PatientController>> _mockLogger;
+        public required Mock<ITreatmentRepository> _mockTreatmentRepo;
+        public required Mock<IAuthenticationService> _mockAuthService;
+        public required Mock<ICompletedAppointmentsRepository> _mockCompletedAppointmentsRepo;
 
         [TestInitialize]
         public void Setup()
         {
             _mockRepo = new Mock<IPatientRepository>();
-            var mockLogger = new Mock<ILogger<PatientController>>();
-            var mockJournalRepo = new Mock<IJournalRepository>();
-            var mockStickersRepo = new Mock<IStickersRepository>();
-            var mockCompletedAppointmentsRepo = new Mock<ICompletedAppointmentsRepository>();
-            _controller = new PatientController(mockLogger.Object, _mockRepo.Object, mockJournalRepo.Object, mockStickersRepo.Object, mockCompletedAppointmentsRepo.Object);
+            _mockDoctorRepo = new Mock<IDoctorRepository>();
+            _mockJournalRepo = new Mock<IJournalRepository>();
+            _mockGuardianRepo = new Mock<IGuardianRepository>();
+            _mockStickersRepo = new Mock<IStickersRepository>();
+            _mockLogger = new Mock<ILogger<PatientController>>();
+            _mockTreatmentRepo = new Mock<ITreatmentRepository>();
+            _mockAuthService = new Mock<IAuthenticationService>();
+            _mockCompletedAppointmentsRepo = new Mock<ICompletedAppointmentsRepository>();
+
+            _controller = new PatientController(
+                _mockLogger.Object,
+                _mockDoctorRepo.Object,
+                _mockRepo.Object,
+                _mockJournalRepo.Object,
+                _mockStickersRepo.Object,
+                _mockGuardianRepo.Object,
+                _mockTreatmentRepo.Object,
+                _mockAuthService.Object,
+                _mockCompletedAppointmentsRepo.Object
+            );
         }
 
         [TestMethod]
@@ -78,7 +101,12 @@ namespace HQB.Tests.Controllers
         {
             // Arrange
             var patient = new Patient { ID = Guid.NewGuid(), FirstName = "John", LastName = "Doe", Avatar = "defaultAvatar.png" };
+            var guardian = new Guardian { ID = Guid.NewGuid(), FirstName = "Jane", LastName = "Doe" };
             _mockRepo.Setup(repo => repo.AddPatientAsync(It.IsAny<Patient>())).ReturnsAsync(1);
+            _mockGuardianRepo.Setup(repo => repo.GetGuardianByIdAsync(It.IsAny<Guid>())).ReturnsAsync(guardian);
+            _mockGuardianRepo.Setup(repo => repo.GetGuardianByUserIdAsync(It.IsAny<string>())).ReturnsAsync(guardian); // <-- Add this line
+            _mockAuthService.Setup(service => service.GetCurrentAuthenticatedUserId()).Returns(Guid.NewGuid().ToString());
+            _mockRepo.Setup(repo => repo.GetPatientByIdAsync(It.IsAny<Guid>())).ReturnsAsync(patient);
 
             // Act
             var result = await _controller.AddPatient(patient);
