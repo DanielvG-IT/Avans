@@ -31,7 +31,7 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-app.MapGroup("/account").MapIdentityApi<IdentityUser>();
+app.MapGroup("/account").AllowAnonymous().MapIdentityApi<IdentityUser>();
 app.MapControllers().RequireAuthorization();
 app.UseHttpsRedirection();
 app.UseAuthorization();
