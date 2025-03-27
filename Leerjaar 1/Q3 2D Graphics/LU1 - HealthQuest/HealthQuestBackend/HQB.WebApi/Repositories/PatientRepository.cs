@@ -45,7 +45,7 @@ public class PatientRepository : IPatientRepository
     public async Task<int> AddPatientAsync(Patient patient)
     {
         using var connection = new SqlConnection(_connectionString);
-        string sqlQuery = "INSERT INTO Patient (FirstName, LastName, GuardianID, TreatmentID, DoctorID, Avatar) VALUES (@FirstName, @LastName, @GuardianID, @TreatmentID, @DoctorID, @Avatar)";
+        string sqlQuery = "INSERT INTO Patient (ID, FirstName, LastName, GuardianID, TreatmentID, DoctorID, Avatar) VALUES (@Id, @FirstName, @LastName, @GuardianID, @TreatmentID, @DoctorID, @Avatar)";
         return await connection.ExecuteAsync(sqlQuery, patient);
     }
 

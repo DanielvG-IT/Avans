@@ -32,8 +32,8 @@ namespace HQB.WebApi.Repositories
         {
             using var connection = new SqlConnection(_connectionString);
             var sql = @"
-                INSERT INTO Doctor (FirstName, LastName, Specialization)
-                VALUES (@FirstName, @LastName, @Specialization)";
+                INSERT INTO Doctor (ID, FirstName, LastName, Specialization)
+                VALUES (@ID, @FirstName, @LastName, @Specialization)";
             return await connection.ExecuteAsync(sql, doctor);
         }
 
