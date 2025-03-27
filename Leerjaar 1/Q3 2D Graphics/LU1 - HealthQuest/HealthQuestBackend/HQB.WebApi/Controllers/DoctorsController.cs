@@ -1,5 +1,5 @@
-﻿using HQB.WebApi.Interfaces;
-using HQB.WebApi.Models;
+﻿using HQB.WebApi.Models;
+using HQB.WebApi.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HQB.WebApi.Controllers

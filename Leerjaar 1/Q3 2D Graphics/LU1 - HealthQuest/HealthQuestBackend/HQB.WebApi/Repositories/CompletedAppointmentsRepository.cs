@@ -2,7 +2,6 @@ using Dapper;
 using HQB.WebApi.Models;
 using HQB.WebApi.Interfaces;
 using Microsoft.Data.SqlClient;
-using System.Data;
 
 namespace HQB.WebApi.Repositories
 {

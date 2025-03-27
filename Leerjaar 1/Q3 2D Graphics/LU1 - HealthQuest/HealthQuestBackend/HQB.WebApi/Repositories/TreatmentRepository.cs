@@ -1,9 +1,7 @@
 using Dapper;
 using HQB.WebApi.Models;
 using HQB.WebApi.Interfaces;
-using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
-using System.Collections.Generic;
 
 namespace HQB.WebApi.Repositories;
 public class TreatmentRepository : ITreatmentRepository
