@@ -3,6 +3,7 @@ using HQB.WebApi.Interfaces;
 using HQB.WebApi.Repositories;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity;
+using HQB.WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
@@ -24,6 +25,7 @@ builder.Services.AddTransient<IGuardianRepository, GuardianRepository>(_ => new 
 builder.Services.AddTransient<IJournalRepository, JournalRepository>(_ => new JournalRepository(sqlConnectionString));
 builder.Services.AddTransient<IPatientRepository, PatientRepository>(_ => new PatientRepository(sqlConnectionString));
 builder.Services.AddTransient<IDoctorRepository, DoctorRepository>(_ => new DoctorRepository(sqlConnectionString));
+builder.Services.AddTransient<IAuthenticationService, AspNetIdentityAuthenticationService>();
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
@@ -34,6 +36,7 @@ var app = builder.Build();
 app.MapGroup("/api/v1/account").AllowAnonymous().MapIdentityApi<IdentityUser>();
 app.MapControllers().RequireAuthorization();
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapOpenApi();
 
