@@ -17,11 +17,13 @@ namespace HQB.WebApi.Controllers
         private readonly IGuardianRepository _guardianRepository;
         private readonly IPatientRepository _patientRepository;
         private readonly ILogger<GuardianController> _logger;
+        private readonly IAuthenticationService _authenticationService;
 
-        public GuardianController(ILogger<GuardianController> logger, IGuardianRepository guardianRepository, IPatientRepository patientRepository)
+        public GuardianController(ILogger<GuardianController> logger, IGuardianRepository guardianRepository, IPatientRepository patientRepository, IAuthenticationService authenticationService)
         {
             _guardianRepository = guardianRepository;
             _patientRepository = patientRepository;
+            _authenticationService = authenticationService;
             _logger = logger;
         }
 
@@ -110,6 +112,15 @@ namespace HQB.WebApi.Controllers
             }
 
             guardian.ID = Guid.NewGuid();
+
+            var userId = _authenticationService.GetCurrentAuthenticatedUserId();
+            if (userId == null)
+            {
+                _logger.LogWarning("Authenticated user ID is null.");
+                return BadRequest("Authenticated user ID is required.");
+            }
+
+            guardian.UserID = userId;
 
             _logger.LogInformation("Adding a new guardian with ID {guardian.ID}", guardian.ID);
             await _guardianRepository.AddGuardianAsync(guardian);
