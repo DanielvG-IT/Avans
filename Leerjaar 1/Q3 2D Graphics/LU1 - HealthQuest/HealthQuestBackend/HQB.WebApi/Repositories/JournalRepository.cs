@@ -27,6 +27,20 @@ public class JournalRepository : IJournalRepository
         return await connection.QueryFirstOrDefaultAsync<JournalEntry?>(query, new { ID = id });
     }
 
+    public async Task<IEnumerable<JournalEntry>> GetJournalEntriesByGuardianIdAsync(Guid guardianId)
+    {
+        using var connection = new SqlConnection(_connectionString);
+        const string query = "SELECT * FROM JournalEntry WHERE GuardianID = @GuardianID";
+        return await connection.QueryAsync<JournalEntry>(query, new { GuardianID = guardianId });
+    }
+
+    public async Task<IEnumerable<JournalEntry>> GetJournalEntriesByPatientIdAsync(Guid patientId)
+    {
+        using var connection = new SqlConnection(_connectionString);
+        const string query = "SELECT * FROM JournalEntry WHERE PatientID = @PatientID";
+        return await connection.QueryAsync<JournalEntry>(query, new { PatientID = patientId });
+    }
+
     public async Task AddJournalEntryAsync(JournalEntry journalEntry)
     {
         using var connection = new SqlConnection(_connectionString);
@@ -51,10 +65,5 @@ public class JournalRepository : IJournalRepository
         using var connection = new SqlConnection(_connectionString);
         const string query = "DELETE FROM JournalEntry WHERE ID = @ID";
         await connection.ExecuteAsync(query, new { ID = id });
-    }
-
-    public Task<IEnumerable<JournalEntry>> GetJournalEntriesByPatientIdAsync(Guid id)
-    {
-        throw new NotImplementedException();
     }
 }

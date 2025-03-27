@@ -8,26 +8,76 @@ namespace HQB.WebApi.Controllers;
 [ApiController]
 public class JournalController : ControllerBase
 {
+    private readonly IAuthenticationService _authenticationService;
+    private readonly IGuardianRepository _guardianRepository;
     private readonly IJournalRepository _journalRepository;
+    private readonly IPatientRepository _patientRepository;
     private readonly ILogger<JournalController> _logger;
 
-    public JournalController(IJournalRepository journalRepository, ILogger<JournalController> logger)
+    public JournalController(ILogger<JournalController> logger, IJournalRepository journalRepository, IAuthenticationService authenticationService, IGuardianRepository guardianRepository, IPatientRepository patientRepository)
     {
+        _authenticationService = authenticationService ?? throw new ArgumentNullException(nameof(authenticationService));
+        _guardianRepository = guardianRepository ?? throw new ArgumentNullException(nameof(guardianRepository));
         _journalRepository = journalRepository ?? throw new ArgumentNullException(nameof(journalRepository));
+        _patientRepository = patientRepository ?? throw new ArgumentNullException(nameof(patientRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<JournalEntry>>> GetJournals()
+    public async Task<ActionResult<IEnumerable<JournalEntry>>> GetJournals(Guid? guardianId, Guid? patientId)
     {
-        _logger.LogInformation("Getting all journal entries");
-        var journals = await _journalRepository.GetAllJournalEntriesAsync();
-        if (journals == null)
+        if (patientId != null)
         {
-            _logger.LogWarning("No journal entries found");
-            return NotFound();
+            _logger.LogInformation("Getting journal entries for PatientID: {PatientId}", patientId);
+            var journals = await _journalRepository.GetJournalEntriesByPatientIdAsync(patientId.Value);
+            if (journals == null || !journals.Any())
+            {
+                _logger.LogWarning("No journal entries found for PatientID: {PatientId}", patientId);
+                return NotFound();
+            }
+            return Ok(journals);
         }
-        return Ok(journals);
+        else if (guardianId != null)
+        {
+            _logger.LogInformation("Getting journal entries for GuardianID: {GuardianId}", guardianId);
+            var journals = await _journalRepository.GetJournalEntriesByGuardianIdAsync(guardianId.Value);
+            if (journals == null || !journals.Any())
+            {
+                _logger.LogWarning("No journal entries found for GuardianID: {GuardianId}", guardianId);
+                return NotFound();
+            }
+            return Ok(journals);
+        }
+        else
+        {
+            var loggedInUserId = User?.Identity?.Name; // Assuming the logged-in user's ID is stored in the Name claim
+            if (string.IsNullOrEmpty(loggedInUserId))
+            {
+                _logger.LogWarning("Unable to determine logged-in user ID");
+                return BadRequest("Unable to determine logged-in user ID");
+            }
+
+            _logger.LogInformation("Fetching guardian ID for logged-in user: {LoggedInUserId}", loggedInUserId);
+            var guardian = await _guardianRepository.GetGuardianByUserIdAsync(loggedInUserId);
+
+            if (guardian?.ID == null)
+            {
+                _logger.LogWarning("No guardian ID found for logged-in user: {LoggedInUserId}", loggedInUserId);
+                return NotFound("Guardian ID not found for logged-in user");
+            }
+
+            guardianId = guardian.ID;
+            _logger.LogInformation("Getting journal entries for GuardianID: {GuardianId}", guardianId);
+            var journals = await _journalRepository.GetJournalEntriesByGuardianIdAsync(guardianId.Value);
+
+            if (journals == null || !journals.Any())
+            {
+                _logger.LogWarning("No journal entries found for GuardianID: {GuardianId}", guardianId);
+                return NotFound("No journal entries found.");
+            }
+
+            return Ok(journals);
+        }
     }
 
     [HttpGet("{id}")]

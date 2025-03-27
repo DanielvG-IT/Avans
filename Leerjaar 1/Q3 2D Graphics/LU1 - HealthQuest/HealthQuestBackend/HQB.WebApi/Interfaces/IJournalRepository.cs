@@ -19,7 +19,25 @@ public interface IJournalRepository
     /// <returns>A task that represents the asynchronous operation. The task result contains the journal entry if found; otherwise, null.</returns>
     Task<JournalEntry?> GetJournalEntryByIdAsync(Guid id);
 
+    /// <summary>
+    /// Retrieves a collection of journal entries associated with a specific patient.
+    /// </summary>
+    /// <param name="id">The unique identifier of the patient.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains 
+    /// an enumerable collection of <see cref="JournalEntry"/> objects associated with the patient.
+    /// </returns>
     Task<IEnumerable<JournalEntry>> GetJournalEntriesByPatientIdAsync(Guid id);
+
+    /// <summary>
+    /// Retrieves a collection of journal entries associated with a specific guardian.
+    /// </summary>
+    /// <param name="guardianId">The unique identifier of the guardian.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains
+    /// an enumerable collection of <see cref="JournalEntry"/> objects associated with the guardian.
+    /// </returns>
+    Task<IEnumerable<JournalEntry>> GetJournalEntriesByGuardianIdAsync(Guid guardianId);
 
     /// <summary>
     /// Adds a new journal entry asynchronously.

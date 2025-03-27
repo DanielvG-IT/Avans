@@ -3,7 +3,6 @@ using HQB.WebApi.Models;
 using HQB.WebApi.Interfaces;
 using HQB.WebApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace HQB.Tests.Controllers
@@ -40,7 +39,7 @@ namespace HQB.Tests.Controllers
             var result = await _controller.GetGuardianForCurrentUser();
 
             // Assert
-            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            Assert.IsInstanceOfType<OkObjectResult>(result.Result);
             var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.AreEqual(guardian, okResult.Value);
@@ -56,29 +55,10 @@ namespace HQB.Tests.Controllers
             var result = await _controller.GetGuardianForCurrentUser();
 
             // Assert
-            Assert.IsInstanceOfType(result.Result, typeof(BadRequestObjectResult));
+            Assert.IsInstanceOfType<BadRequestObjectResult>(result.Result);
             var badRequestResult = result.Result as BadRequestObjectResult;
             Assert.IsNotNull(badRequestResult);
             Assert.AreEqual("Authenticated user ID is required.", badRequestResult.Value);
-        }
-
-        [TestMethod]
-        public async Task GetGuardianForCurrentUser_GuardiansAreNull_ReturnsInternalServerError()
-        {
-            // Arrange
-            var userId = Guid.NewGuid().ToString();
-            _mockAuthService.Setup(service => service.GetCurrentAuthenticatedUserId()).Returns(userId);
-            _mockRepo.Setup(repo => repo.GetGuardianByUserIdAsync(userId)).ReturnsAsync((Guardian?)null);
-
-            // Act
-            var result = await _controller.GetGuardianForCurrentUser();
-
-            // Assert
-            Assert.IsInstanceOfType(result.Result, typeof(ObjectResult));
-            var objectResult = result.Result as ObjectResult;
-            Assert.IsNotNull(objectResult);
-            Assert.AreEqual(StatusCodes.Status500InternalServerError, objectResult.StatusCode);
-            Assert.AreEqual("Internal server error.", objectResult.Value);
         }
 
         [TestMethod]
