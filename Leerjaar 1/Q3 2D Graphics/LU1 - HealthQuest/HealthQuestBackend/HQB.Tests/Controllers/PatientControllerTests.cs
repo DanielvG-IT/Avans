@@ -52,10 +52,13 @@ namespace HQB.Tests.Controllers
         {
             // Arrange
             var patients = new List<Patient> { new() { ID = Guid.NewGuid(), FirstName = "John", LastName = "Doe", Avatar = "defaultAvatar.png" } };
-            _mockRepo.Setup(repo => repo.GetAllPatientsAsync()).ReturnsAsync(patients);
+            _mockRepo.Setup(repo => repo.GetPatientsByGuardianId(It.IsAny<Guid>())).ReturnsAsync(patients);
+            var guardian = new Guardian { ID = Guid.NewGuid(), FirstName = "Jane", LastName = "Doe" };
+            _mockAuthService.Setup(service => service.GetCurrentAuthenticatedUserId()).Returns(Guid.NewGuid().ToString());
+            _mockGuardianRepo.Setup(repo => repo.GetGuardianByUserIdAsync(It.IsAny<string>())).ReturnsAsync(guardian);
 
             // Act
-            var result = await _controller.GetAllPatients();
+            var result = await _controller.GetPatientsForCurrentUser();
 
             // Assert
             var okResult = result.Result as OkObjectResult;

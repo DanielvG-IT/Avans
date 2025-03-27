@@ -28,7 +28,7 @@ namespace HQB.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Guardian>>> GetGuardiansForCurrentUser()
+        public async Task<ActionResult<IEnumerable<Guardian>>> GetGuardianForCurrentUser()
         {
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();
             if (userId == null)
