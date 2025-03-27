@@ -89,6 +89,20 @@ public class JournalController : ControllerBase
             return BadRequest("Invalid ID");
         }
 
+        var loggedInUserId = _authenticationService.GetCurrentAuthenticatedUserId();
+        if (string.IsNullOrEmpty(loggedInUserId))
+        {
+            _logger.LogWarning("Unable to determine logged-in user ID");
+            return BadRequest("Unable to determine logged-in user ID");
+        }
+
+        var guardian = await _guardianRepository.GetGuardianByUserIdAsync(loggedInUserId);
+        if (guardian?.ID == null)
+        {
+            _logger.LogWarning("No guardian ID found for logged-in user: {LoggedInUserId}", loggedInUserId);
+            return Forbid("You do not have permission to view this journal entry.");
+        }
+
         _logger.LogInformation("Getting journal entry with ID: {Id}", id);
         var journal = await _journalRepository.GetJournalEntryByIdAsync(id);
         if (journal == null)
@@ -96,6 +110,13 @@ public class JournalController : ControllerBase
             _logger.LogWarning("Journal entry with ID: {Id} not found", id);
             return NotFound();
         }
+
+        if (journal.GuardianID != guardian.ID)
+        {
+            _logger.LogWarning("User does not own the journal entry with ID: {Id}", id);
+            return Forbid("You do not have permission to view this journal entry.");
+        }
+
         return Ok(journal);
     }
 
@@ -130,9 +151,36 @@ public class JournalController : ControllerBase
             return BadRequest("ID mismatch");
         }
 
+        var loggedInUserId = _authenticationService.GetCurrentAuthenticatedUserId();
+        if (string.IsNullOrEmpty(loggedInUserId))
+        {
+            _logger.LogWarning("Unable to determine logged-in user ID");
+            return BadRequest("Unable to determine logged-in user ID");
+        }
+
+        var guardian = await _guardianRepository.GetGuardianByUserIdAsync(loggedInUserId);
+        if (guardian?.ID == null)
+        {
+            _logger.LogWarning("No guardian ID found for logged-in user: {LoggedInUserId}", loggedInUserId);
+            return Forbid("You do not have permission to modify this journal entry.");
+        }
+
+        var existingJournal = await _journalRepository.GetJournalEntryByIdAsync(id);
+        if (existingJournal == null)
+        {
+            _logger.LogWarning("Journal entry with ID: {Id} not found", id);
+            return NotFound("Journal entry not found.");
+        }
+
+        if (existingJournal.GuardianID != guardian.ID)
+        {
+            _logger.LogWarning("User does not own the journal entry with ID: {Id}", id);
+            return Forbid("You do not have permission to modify this journal entry.");
+        }
+
         _logger.LogInformation("Updating journal entry with ID: {Id}", id);
         await _journalRepository.UpdateJournalEntryAsync(journal);
-        return NoContent();
+        return Ok(journal);
     }
 
     [HttpDelete("{id}")]
@@ -142,6 +190,33 @@ public class JournalController : ControllerBase
         {
             _logger.LogWarning("Invalid journal entry ID: {Id}", id);
             return BadRequest("Invalid ID");
+        }
+
+        var loggedInUserId = _authenticationService.GetCurrentAuthenticatedUserId();
+        if (string.IsNullOrEmpty(loggedInUserId))
+        {
+            _logger.LogWarning("Unable to determine logged-in user ID");
+            return BadRequest("Unable to determine logged-in user ID");
+        }
+
+        var guardian = await _guardianRepository.GetGuardianByUserIdAsync(loggedInUserId);
+        if (guardian?.ID == null)
+        {
+            _logger.LogWarning("No guardian ID found for logged-in user: {LoggedInUserId}", loggedInUserId);
+            return Forbid("You do not have permission to delete this journal entry.");
+        }
+
+        var existingJournal = await _journalRepository.GetJournalEntryByIdAsync(id);
+        if (existingJournal == null)
+        {
+            _logger.LogWarning("Journal entry with ID: {Id} not found", id);
+            return NotFound("Journal entry not found.");
+        }
+
+        if (existingJournal.GuardianID != guardian.ID)
+        {
+            _logger.LogWarning("User does not own the journal entry with ID: {Id}", id);
+            return Forbid("You do not have permission to delete this journal entry.");
         }
 
         _logger.LogInformation("Deleting journal entry with ID: {Id}", id);
