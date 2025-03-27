@@ -50,7 +50,7 @@ public class JournalController : ControllerBase
         }
         else
         {
-            var loggedInUserId = User?.Identity?.Name; // Assuming the logged-in user's ID is stored in the Name claim
+            var loggedInUserId = _authenticationService.GetCurrentAuthenticatedUserId(); // Assuming the logged-in user's ID is stored in the Name claim
             if (string.IsNullOrEmpty(loggedInUserId))
             {
                 _logger.LogWarning("Unable to determine logged-in user ID");
