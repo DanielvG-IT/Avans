@@ -32,12 +32,12 @@ namespace HQB.WebApi.Controllers
             }
 
             _logger.LogInformation("Getting guardians for user with ID: {userId}", userId);
-            var guardians = await _guardianRepository.GetGuardianByUserIdAsync(userId);
 
+            var guardians = await _guardianRepository.GetGuardianByUserIdAsync(userId);
             if (guardians == null)
             {
-                _logger.LogWarning("Guardian data is null.");
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error.");
+                _logger.LogWarning("No guardians found for user with ID: {userId}.", userId);
+                return NotFound($"No guardians found for user with ID: {userId}.");
             }
 
             return Ok(guardians);
