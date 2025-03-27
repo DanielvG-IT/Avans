@@ -109,6 +109,8 @@ namespace HQB.WebApi.Controllers
                 return BadRequest("Guardian name is required.");
             }
 
+            guardian.ID = Guid.NewGuid();
+
             _logger.LogInformation("Adding a new guardian with ID {guardian.ID}", guardian.ID);
             await _guardianRepository.AddGuardianAsync(guardian);
             return CreatedAtAction(nameof(GetGuardianById), new { id = guardian.ID }, guardian);

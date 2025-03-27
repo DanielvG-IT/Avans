@@ -62,6 +62,8 @@ public class JournalController : ControllerBase
             return BadRequest("Journal entry cannot be null");
         }
 
+        journal.ID = Guid.NewGuid();
+
         _logger.LogInformation("Creating a new journal entry");
         await _journalRepository.AddJournalEntryAsync(journal);
         return CreatedAtAction("GetJournal", new { id = journal.ID }, journal);

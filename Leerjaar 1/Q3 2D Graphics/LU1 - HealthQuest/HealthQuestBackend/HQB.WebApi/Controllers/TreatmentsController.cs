@@ -95,20 +95,16 @@ namespace HQB.WebApi.Controllers
                 return BadRequest("Treatment name is required");
             }
 
-            var newTreatment = new Treatment
-            {
-                ID = Guid.NewGuid(),
-                Name = treatment.Name,
-            };
+            treatment.ID = Guid.NewGuid();
 
-            _logger.LogInformation("Creating new treatment with ID: {Id}", newTreatment.ID);
-            var result = await _treatmentRepository.AddTreatmentAsync(newTreatment);
+            _logger.LogInformation("Creating new treatment with ID: {Id}", treatment.ID);
+            var result = await _treatmentRepository.AddTreatmentAsync(treatment);
             if (result == 0)
             {
                 _logger.LogError("Error creating treatment");
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error creating treatment");
             }
-            return CreatedAtAction(nameof(GetTreatmentAsync), new { id = newTreatment.ID }, newTreatment);
+            return CreatedAtAction(nameof(GetTreatmentAsync), new { id = treatment.ID }, treatment);
         }
 
         [HttpPut("{id}")]

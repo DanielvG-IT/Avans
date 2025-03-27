@@ -146,6 +146,8 @@ namespace HQB.WebApi.Controllers
                 return BadRequest("Doctor information is required.");
             }
 
+            doctor.ID = Guid.NewGuid();
+
             if (doctor.ID == Guid.Empty)
             {
                 _logger.LogWarning("Doctor ID is required.");

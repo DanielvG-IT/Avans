@@ -75,6 +75,8 @@ namespace HQB.WebApi.Controllers
                 return BadRequest("Patient object is null");
             }
 
+            patient.ID = Guid.NewGuid();
+
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Invalid model state for patient");
