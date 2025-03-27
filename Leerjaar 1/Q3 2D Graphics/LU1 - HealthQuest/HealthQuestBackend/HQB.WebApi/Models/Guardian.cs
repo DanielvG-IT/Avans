@@ -23,5 +23,5 @@ public class Guardian
     /// Gets or sets the user ID associated with the guardian.
     /// This is a foreign key to the auth_AspNetUsers table.
     /// </summary>
-    public required string UserID { get; set; }
+    public string? UserID { get; set; }
 }

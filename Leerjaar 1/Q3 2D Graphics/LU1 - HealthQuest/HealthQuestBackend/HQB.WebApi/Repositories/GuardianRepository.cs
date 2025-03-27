@@ -48,4 +48,11 @@ public class GuardianRepository : IGuardianRepository
         var sql = "DELETE FROM Guardian WHERE ID = @ID";
         return await connection.ExecuteAsync(sql, new { ID = id });
     }
+
+    public async Task<Guardian?> GetGuardianByUserIdAsync(string userId)
+    {
+        using var connection = new SqlConnection(_connectionString);
+        var sql = "SELECT * FROM Guardian WHERE UserID = @UserID";
+        return await connection.QueryFirstOrDefaultAsync<Guardian>(sql, new { UserID = userId });
+    }
 }

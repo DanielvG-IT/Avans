@@ -14,23 +14,35 @@ namespace HQB.WebApi.Controllers
     public class PatientController : ControllerBase
     {
         private readonly ILogger<PatientController> _logger;
+        private readonly IDoctorRepository _doctorRepository;
         private readonly IPatientRepository _patientRepository;
         private readonly IJournalRepository _journalRepository;
         private readonly IStickersRepository _stickersRepository;
+        private readonly IGuardianRepository _guardianRepository;
+        private readonly ITreatmentRepository _treatmentRepository;
+        private readonly IAuthenticationService _authenticationService;
         private readonly ICompletedAppointmentsRepository _completedAppointmentsRepository;
 
         public PatientController(
             ILogger<PatientController> logger,
+            IDoctorRepository doctorRepository,
             IPatientRepository patientRepository,
             IJournalRepository journalRepository,
             IStickersRepository stickersRepository,
+            IGuardianRepository guardianRepository,
+            ITreatmentRepository treatmentRepository,
+            IAuthenticationService authenticationService,
             ICompletedAppointmentsRepository completedAppointmentsRepository
-            )
+        )
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _doctorRepository = doctorRepository ?? throw new ArgumentNullException(nameof(doctorRepository));
             _patientRepository = patientRepository ?? throw new ArgumentNullException(nameof(patientRepository));
             _journalRepository = journalRepository ?? throw new ArgumentNullException(nameof(journalRepository));
             _stickersRepository = stickersRepository ?? throw new ArgumentNullException(nameof(stickersRepository));
+            _guardianRepository = guardianRepository ?? throw new ArgumentNullException(nameof(guardianRepository));
+            _treatmentRepository = treatmentRepository ?? throw new ArgumentNullException(nameof(treatmentRepository));
+            _authenticationService = authenticationService ?? throw new ArgumentNullException(nameof(authenticationService));
             _completedAppointmentsRepository = completedAppointmentsRepository ?? throw new ArgumentNullException(nameof(completedAppointmentsRepository));
         }
 
@@ -76,6 +88,49 @@ namespace HQB.WebApi.Controllers
             }
 
             patient.ID = Guid.NewGuid();
+
+            var loggedInUserId = _authenticationService.GetCurrentAuthenticatedUserId();
+
+            if (string.IsNullOrEmpty(loggedInUserId))
+            {
+                _logger.LogWarning("User ID is required");
+                return BadRequest("User ID is required");
+            }
+
+            // Auto-link to guardian
+            /// Retrieves the guardian information for the patient. 
+            /// If the patient's GuardianID is not empty, fetches the guardian by their ID. 
+            /// Otherwise, fetches the guardian associated with the logged-in user's ID.
+            var guardian = patient.GuardianID != Guid.Empty
+                ? await _guardianRepository.GetGuardianByIdAsync(patient.GuardianID)
+                : await _guardianRepository.GetGuardianByUserIdAsync(loggedInUserId);
+
+            if (guardian == null)
+            {
+                _logger.LogWarning("Guardian with ID {GuardianId} not found", patient.GuardianID);
+                return BadRequest($"Guardian with ID {patient.GuardianID} not found");
+            }
+            patient.GuardianID = guardian.ID;
+
+            if (patient.DoctorID != Guid.Empty)
+            {
+                var doctor = await _doctorRepository.GetDoctorByIdAsync(patient.DoctorID);
+                if (doctor == null)
+                {
+                    _logger.LogWarning("Doctor with ID {DoctorId} not found", patient.DoctorID);
+                    return BadRequest($"Doctor with ID {patient.DoctorID} not found");
+                }
+            }
+
+            if (patient.TreatmentID != Guid.Empty)
+            {
+                var treatment = await _treatmentRepository.GetTreatmentByIdAsync(patient.TreatmentID);
+                if (treatment == null)
+                {
+                    _logger.LogWarning("Treatment with ID {TreatmentId} not found", patient.TreatmentID);
+                    return BadRequest($"Treatment with ID {patient.TreatmentID} not found");
+                }
+            }
 
             if (!ModelState.IsValid)
             {

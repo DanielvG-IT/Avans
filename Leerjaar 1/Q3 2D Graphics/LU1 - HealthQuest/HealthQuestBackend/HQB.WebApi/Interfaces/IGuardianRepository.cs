@@ -20,6 +20,16 @@ public interface IGuardianRepository
     Task<Guardian?> GetGuardianByIdAsync(Guid id);
 
     /// <summary>
+    /// Retrieves a guardian entity associated with the specified user ID.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains 
+    /// the <see cref="Guardian"/> object if found; otherwise, <c>null</c>.
+    /// </returns>
+    Task<Guardian?> GetGuardianByUserIdAsync(string userId);
+
+    /// <summary>
     /// Adds a new guardian asynchronously.
     /// </summary>
     /// <param name="guardian">The guardian to add.</param>
