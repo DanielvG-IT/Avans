@@ -28,21 +28,22 @@ namespace HQB.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Guardian>>> GetGuardian()
+        public async Task<ActionResult<IEnumerable<Guardian>>> GetGuardiansForCurrentUser()
         {
-            _logger.LogInformation("Getting all guardians");
-            var guardians = await _guardianRepository.GetAllGuardiansAsync();
+            var userId = _authenticationService.GetCurrentAuthenticatedUserId();
+            if (userId == null)
+            {
+                _logger.LogWarning("Authenticated user ID is null.");
+                return BadRequest("Authenticated user ID is required.");
+            }
+
+            _logger.LogInformation("Getting guardians for user with ID: {userId}", userId);
+            var guardians = await _guardianRepository.GetGuardianByUserIdAsync(userId);
 
             if (guardians == null)
             {
                 _logger.LogWarning("Guardian data is null.");
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error.");
-            }
-
-            if (!guardians.Any())
-            {
-                _logger.LogWarning("No guardians found.");
-                return NotFound("No guardians found.");
             }
 
             return Ok(guardians);

@@ -47,15 +47,31 @@ namespace HQB.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Patient>>> GetAllPatients()
+        public async Task<ActionResult<IEnumerable<Patient>>> GetPatientsForCurrentUser()
         {
-            _logger.LogInformation("Getting all patients");
-            var patients = await _patientRepository.GetAllPatientsAsync();
-            if (patients == null)
+            var loggedInUserId = _authenticationService.GetCurrentAuthenticatedUserId();
+            if (string.IsNullOrEmpty(loggedInUserId))
             {
-                _logger.LogWarning("No patients found");
-                return NotFound();
+                _logger.LogWarning("User ID is required but was not provided.");
+                return BadRequest("User ID is required but was not provided. Please ensure you are logged in.");
             }
+
+            var guardian = await _guardianRepository.GetGuardianByUserIdAsync(loggedInUserId);
+            if (guardian == null)
+            {
+                _logger.LogWarning("Guardian not found for the logged-in user with ID {UserId}.", loggedInUserId);
+                return NotFound($"Guardian not found for the logged-in user with ID {loggedInUserId}. Please ensure your account is correctly linked to a guardian.");
+            }
+
+            _logger.LogInformation("Fetching all patients associated with the guardian for user ID {UserId}.", loggedInUserId);
+
+            var patients = await _patientRepository.GetPatientsByGuardianId(guardian.ID);
+            if (patients == null || !patients.Any())
+            {
+                _logger.LogWarning("No patients found for the guardian with ID {GuardianId} associated with user ID {UserId}.", guardian.ID, loggedInUserId);
+                return NotFound($"No patients found for the guardian with ID {guardian.ID} associated with your account. Please ensure patients are correctly linked to your guardian.");
+            }
+
             return Ok(patients);
         }
 
@@ -97,7 +113,7 @@ namespace HQB.WebApi.Controllers
                 return BadRequest("User ID is required");
             }
 
-            // Auto-link to guardian
+            // Auto-link to guardian if not already linked
             /// Retrieves the guardian information for the patient. 
             /// If the patient's GuardianID is not empty, fetches the guardian by their ID. 
             /// Otherwise, fetches the guardian associated with the logged-in user's ID.
