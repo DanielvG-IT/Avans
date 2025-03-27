@@ -32,12 +32,12 @@ namespace HQB.WebApi.Controllers
             }
 
             _logger.LogInformation("Getting guardians for user with ID: {userId}", userId);
-            var guardians = await _guardianRepository.GetGuardianByUserIdAsync(userId);
 
+            var guardians = await _guardianRepository.GetGuardianByUserIdAsync(userId);
             if (guardians == null)
             {
-                _logger.LogWarning("Guardian data is null.");
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error.");
+                _logger.LogWarning("No guardians found for user with ID: {userId}.", userId);
+                return NotFound($"No guardians found for user with ID: {userId}.");
             }
 
             return Ok(guardians);
@@ -75,14 +75,9 @@ namespace HQB.WebApi.Controllers
             }
 
             _logger.LogInformation("Getting patients for guardian with ID: {id}.", id);
-            var patients = await _patientRepository.GetPatientsByGuardianId(id);
-            if (patients == null)
-            {
-                _logger.LogWarning("Patient data is null.");
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error.");
-            }
 
-            if (!patients.Any())
+            var patients = await _patientRepository.GetPatientsByGuardianId(id);
+            if (patients == null || !patients.Any())
             {
                 _logger.LogWarning("No patients found for guardian with ID: {Id}.", id);
                 return NotFound($"No patients found for guardian with ID: {id}.");
