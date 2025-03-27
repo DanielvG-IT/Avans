@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c0a01efae4ea09c4e8c2bd9b9b3b0676
+guid: 9955168f47bc3284fa18099be06ed68d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3626800675443826903
-    second: Stethoscope_0
+      213: 8594167769867608820
+    second: smiley_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Stethoscope_0
+      name: smiley_0
       rect:
         serializedVersion: 2
-        x: 81
-        y: 6
-        width: 396
-        height: 688
+        x: 121
+        y: 121
+        width: 738
+        height: 738
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7d0e9faaffbf45230800000000000000
-      internalID: 3626800675443826903
+      spriteID: 4f2e1178d0e944770800000000000000
+      internalID: 8594167769867608820
       vertices: []
       indices: 
       edges: []
