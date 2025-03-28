@@ -29,7 +29,7 @@ namespace HQB.Tests.Controllers
         public async Task GetTreatmentsAsync_ReturnsOkResult_WithListOfTreatments()
         {
             // Arrange
-            var treatments = new List<Treatment> { new Treatment { ID = Guid.NewGuid(), Name = "Test Treatment" } };
+            var treatments = new List<Treatment> { new() { ID = Guid.NewGuid(), Name = "Test Treatment" } };
             _mockTreatmentRepository.Setup(repo => repo.GetAllTreatmentsAsync()).ReturnsAsync(treatments);
 
             // Act
@@ -43,14 +43,14 @@ namespace HQB.Tests.Controllers
         }
 
         [TestMethod]
-        public async Task GetTreatmentAsync_ReturnsNotFound_WhenTreatmentDoesNotExist()
+        public async Task GetTreatmentByIdAsync_ReturnsNotFound_WhenTreatmentDoesNotExist()
         {
             // Arrange
             var treatmentId = Guid.NewGuid();
             _mockTreatmentRepository.Setup(repo => repo.GetTreatmentByIdAsync(treatmentId)).ReturnsAsync((Treatment?)null);
 
             // Act
-            var result = await _controller.GetTreatmentAsync(treatmentId);
+            var result = await _controller.GetTreatmentByIdAsync(treatmentId);
 
             // Assert
             var notFoundResult = result.Result as NotFoundResult;
@@ -59,7 +59,7 @@ namespace HQB.Tests.Controllers
         }
 
         [TestMethod]
-        public async Task GetTreatmentAsync_ReturnsOkResult_WithTreatment()
+        public async Task GetTreatmentByIdAsync_ReturnsOkResult_WithTreatment()
         {
             // Arrange
             var treatmentId = Guid.NewGuid();
@@ -67,7 +67,7 @@ namespace HQB.Tests.Controllers
             _mockTreatmentRepository.Setup(repo => repo.GetTreatmentByIdAsync(treatmentId)).ReturnsAsync(treatment);
 
             // Act
-            var result = await _controller.GetTreatmentAsync(treatmentId);
+            var result = await _controller.GetTreatmentByIdAsync(treatmentId);
 
             // Assert
             var okResult = result.Result as OkObjectResult;
