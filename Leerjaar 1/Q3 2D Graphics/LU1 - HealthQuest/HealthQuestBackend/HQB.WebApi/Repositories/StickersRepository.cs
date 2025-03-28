@@ -17,42 +17,46 @@ public class StickersRepository : IStickersRepository
   public async Task<IEnumerable<Sticker>> GetAllStickersAsync()
   {
     using var connection = new SqlConnection(_connectionString);
-    return await connection.QueryAsync<Sticker>("SELECT * FROM Sticker");
+    string query = "SELECT * FROM Sticker";
+    return await connection.QueryAsync<Sticker>(query);
   }
 
   public async Task<Sticker?> GetStickerByIdAsync(Guid id)
   {
     using var connection = new SqlConnection(_connectionString);
-    return await connection.QuerySingleOrDefaultAsync<Sticker>("SELECT * FROM Sticker WHERE ID = @ID", new { ID = id });
+    string query = "SELECT * FROM Sticker WHERE ID = @ID";
+    return await connection.QuerySingleOrDefaultAsync<Sticker>(query, new { ID = id });
   }
 
   public async Task<IEnumerable<Sticker>> GetUnlockedStickersByPatientId(Guid patientId)
   {
     using var connection = new SqlConnection(_connectionString);
-    return await connection.QueryAsync<Sticker>(
-      @"SELECT s.* 
-        FROM Sticker s
-        INNER JOIN StickerCollection sc ON s.ID = sc.StickerID
-        WHERE sc.PatientID = @PatientID", new { PatientID = patientId });
+    string query = @"
+      SELECT s.* 
+      FROM Sticker s
+      INNER JOIN StickerCollection sc ON s.ID = sc.StickerID
+      WHERE sc.PatientID = @PatientID";
+    return await connection.QueryAsync<Sticker>(query, new { PatientID = patientId });
   }
 
   public async Task AddStickerAsync(Sticker sticker)
   {
     using var connection = new SqlConnection(_connectionString);
-    await connection.ExecuteAsync(
-      "INSERT INTO Sticker (ID, Name, ImageUrl) VALUES (@ID, @Name, @ImageUrl)", sticker);
+    string query = "INSERT INTO Sticker (ID, Name) VALUES (@ID, @Name)";
+    await connection.ExecuteAsync(query, sticker);
   }
 
   public async Task UpdateStickerAsync(Sticker sticker)
   {
     using var connection = new SqlConnection(_connectionString);
-    await connection.ExecuteAsync(
-      "UPDATE Sticker SET Name = @Name, ImageUrl = @ImageUrl WHERE ID = @ID", sticker);
+    string query = "UPDATE Sticker SET Name = @Name WHERE ID = @ID";
+    await connection.ExecuteAsync(query, sticker);
   }
 
   public async Task DeleteStickerAsync(Guid id)
   {
     using var connection = new SqlConnection(_connectionString);
-    await connection.ExecuteAsync("DELETE FROM Sticker WHERE ID = @ID", new { ID = id });
+    string query = "DELETE FROM Sticker WHERE ID = @ID";
+    await connection.ExecuteAsync(query, new { ID = id });
   }
 }

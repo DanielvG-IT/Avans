@@ -8,12 +8,12 @@ namespace HQB.WebApi.Controllers
   [ApiController]
   public class StickersController : ControllerBase
   {
-    private readonly IStickersRepository _stickerService;
+    private readonly IStickersRepository _stickerRepository;
     private readonly ILogger<StickersController> _logger;
 
-    public StickersController(IStickersRepository stickerService, ILogger<StickersController> logger)
+    public StickersController(IStickersRepository stickerRepository, ILogger<StickersController> logger)
     {
-      _stickerService = stickerService ?? throw new ArgumentNullException(nameof(stickerService));
+      _stickerRepository = stickerRepository ?? throw new ArgumentNullException(nameof(stickerRepository));
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -23,7 +23,7 @@ namespace HQB.WebApi.Controllers
     {
       try
       {
-        var stickers = await _stickerService.GetAllStickersAsync();
+        var stickers = await _stickerRepository.GetAllStickersAsync();
         if (stickers == null)
         {
           _logger.LogWarning("No stickers found.");
@@ -51,7 +51,7 @@ namespace HQB.WebApi.Controllers
         }
 
         sticker.Id = Guid.NewGuid();
-        await _stickerService.AddStickerAsync(sticker);
+        await _stickerRepository.AddStickerAsync(sticker);
         return CreatedAtAction(nameof(GetStickerById), new { id = sticker.Id }, sticker);
       }
       catch (Exception ex)
@@ -73,7 +73,7 @@ namespace HQB.WebApi.Controllers
           return BadRequest("Invalid sticker ID.");
         }
 
-        var sticker = await _stickerService.GetStickerByIdAsync(id);
+        var sticker = await _stickerRepository.GetStickerByIdAsync(id);
         if (sticker == null)
         {
           _logger.LogWarning($"Sticker with ID {id} not found.");
@@ -107,14 +107,14 @@ namespace HQB.WebApi.Controllers
           return BadRequest("Sticker ID mismatch or invalid ID.");
         }
 
-        var existingSticker = await _stickerService.GetStickerByIdAsync(id);
+        var existingSticker = await _stickerRepository.GetStickerByIdAsync(id);
         if (existingSticker == null)
         {
           _logger.LogWarning($"Sticker with ID {id} not found.");
           return NotFound();
         }
 
-        await _stickerService.UpdateStickerAsync(sticker);
+        await _stickerRepository.UpdateStickerAsync(sticker);
 
         return NoContent();
       }
@@ -137,14 +137,14 @@ namespace HQB.WebApi.Controllers
           return BadRequest("Invalid sticker ID.");
         }
 
-        var sticker = await _stickerService.GetStickerByIdAsync(id);
+        var sticker = await _stickerRepository.GetStickerByIdAsync(id);
         if (sticker == null)
         {
           _logger.LogWarning($"Sticker with ID {id} not found.");
           return NotFound();
         }
 
-        await _stickerService.DeleteStickerAsync(id);
+        await _stickerRepository.DeleteStickerAsync(id);
         return NoContent();
       }
       catch (Exception ex)
