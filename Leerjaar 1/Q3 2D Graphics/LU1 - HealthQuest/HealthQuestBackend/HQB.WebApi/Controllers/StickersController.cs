@@ -95,16 +95,18 @@ namespace HQB.WebApi.Controllers
     {
       try
       {
+        if (id == Guid.Empty)
+        {
+          _logger.LogWarning("Sticker ID mismatch or invalid ID.");
+          return BadRequest("Sticker ID mismatch or invalid ID.");
+        }
+
+        sticker.Id = id;
+
         if (!ModelState.IsValid)
         {
           _logger.LogWarning("Invalid sticker model.");
           return BadRequest(ModelState);
-        }
-
-        if (id != sticker.Id || id == Guid.Empty)
-        {
-          _logger.LogWarning("Sticker ID mismatch or invalid ID.");
-          return BadRequest("Sticker ID mismatch or invalid ID.");
         }
 
         var existingSticker = await _stickerRepository.GetStickerByIdAsync(id);
