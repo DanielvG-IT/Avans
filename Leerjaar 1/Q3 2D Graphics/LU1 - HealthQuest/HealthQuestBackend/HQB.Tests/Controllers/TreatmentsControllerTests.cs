@@ -113,9 +113,12 @@ namespace HQB.Tests.Controllers
             var result = await _controller.CreateTreatmentAsync(treatment);
 
             // Assert
-            var createdAtActionResult = result.Result as CreatedAtActionResult;
+            var createdAtActionResult = result.Result as CreatedAtRouteResult;
             Assert.IsNotNull(createdAtActionResult);
             Assert.AreEqual(StatusCodes.Status201Created, createdAtActionResult.StatusCode);
+            Assert.AreEqual("GetTreatmentById", createdAtActionResult.RouteName);
+            Assert.IsNotNull(createdAtActionResult.RouteValues);
+            Assert.AreEqual(treatment.ID, createdAtActionResult.RouteValues["id"]);
             var returnedTreatment = createdAtActionResult.Value as Treatment;
             Assert.IsNotNull(returnedTreatment);
             Assert.AreEqual(treatment.Name, returnedTreatment.Name);
