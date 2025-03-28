@@ -19,7 +19,7 @@ namespace HQB.WebApi.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
+        [HttpGet(Name = "GetAppointmentsByTreatmentId")]
         public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentsByTreatmentId(Guid? treatmentId)
         {
             var loggedInUserId = _authenticationService.GetCurrentAuthenticatedUserId();
@@ -68,7 +68,7 @@ namespace HQB.WebApi.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetAppointmentById")]
         public async Task<ActionResult<Appointment>> GetAppointmentById(Guid id)
         {
             if (id == Guid.Empty)
@@ -87,7 +87,7 @@ namespace HQB.WebApi.Controllers
             return Ok(appointment);
         }
 
-        [HttpPost]
+        [HttpPost(Name = "CreateAppointment")]
         public async Task<ActionResult<Appointment>> CreateAppointment([FromBody] Appointment appointment)
         {
             if (appointment == null)
@@ -115,7 +115,7 @@ namespace HQB.WebApi.Controllers
             return CreatedAtAction(nameof(GetAppointmentById), new { id = appointment.ID }, appointment);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}", Name = "UpdateAppointment")]
         public async Task<IActionResult> UpdateAppointment(Guid id, [FromBody] Appointment appointment)
         {
             if (id == Guid.Empty || appointment == null || appointment.ID != id)
@@ -148,7 +148,7 @@ namespace HQB.WebApi.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}", Name = "DeleteAppointment")]
         public async Task<IActionResult> DeleteAppointment(Guid id)
         {
             if (id == Guid.Empty)

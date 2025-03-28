@@ -23,7 +23,7 @@ public class JournalController : ControllerBase
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    [HttpGet]
+    [HttpGet(Name = "GetJournals")]
     public async Task<ActionResult<IEnumerable<JournalEntry>>> GetJournals(Guid? guardianId, Guid? patientId)
     {
         if (patientId != null)
@@ -80,7 +80,7 @@ public class JournalController : ControllerBase
         }
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id}", Name = "GetJournal")]
     public async Task<ActionResult<JournalEntry>> GetJournal(Guid id)
     {
         if (id == Guid.Empty)
@@ -120,7 +120,7 @@ public class JournalController : ControllerBase
         return Ok(journal);
     }
 
-    [HttpPost]
+    [HttpPost(Name = "PostJournal")]
     public async Task<ActionResult<JournalEntry>> PostJournal(JournalEntry journal)
     {
         if (journal == null)
@@ -136,7 +136,7 @@ public class JournalController : ControllerBase
         return CreatedAtAction("GetJournal", new { id = journal.ID }, journal);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id}", Name = "PutJournal")]
     public async Task<IActionResult> PutJournal(Guid id, JournalEntry journal)
     {
         if (id == Guid.Empty || journal == null)
@@ -183,7 +183,7 @@ public class JournalController : ControllerBase
         return Ok(journal);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id}", Name = "DeleteJournal")]
     public async Task<IActionResult> DeleteJournal(Guid id)
     {
         if (id == Guid.Empty)

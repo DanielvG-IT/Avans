@@ -41,7 +41,7 @@ namespace HQB.WebApi.Controllers
             _completedAppointmentsRepository = completedAppointmentsRepository ?? throw new ArgumentNullException(nameof(completedAppointmentsRepository));
         }
 
-        [HttpGet]
+        [HttpGet(Name = "GetPatientsForCurrentUser")]
         public async Task<ActionResult<IEnumerable<Patient>>> GetPatientsForCurrentUser()
         {
             var loggedInUserId = _authenticationService.GetCurrentAuthenticatedUserId();
@@ -70,7 +70,7 @@ namespace HQB.WebApi.Controllers
             return Ok(patients);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetPatientById")]
         public async Task<ActionResult<Patient>> GetPatientById(Guid id)
         {
             if (id == Guid.Empty)
@@ -89,7 +89,7 @@ namespace HQB.WebApi.Controllers
             return Ok(patient);
         }
 
-        [HttpPost]
+        [HttpPost(Name = "AddPatient")]
         public async Task<ActionResult<Patient>> AddPatient([FromBody] Patient patient)
         {
             if (patient == null)
@@ -108,10 +108,6 @@ namespace HQB.WebApi.Controllers
                 return BadRequest("User ID is required");
             }
 
-            // Auto-link to guardian if not already linked
-            /// Retrieves the guardian information for the patient. 
-            /// If the patient's GuardianID is not empty, fetches the guardian by their ID. 
-            /// Otherwise, fetches the guardian associated with the logged-in user's ID.
             var guardian = patient.GuardianID != Guid.Empty
                 ? await _guardianRepository.GetGuardianByIdAsync(patient.GuardianID)
                 : await _guardianRepository.GetGuardianByUserIdAsync(loggedInUserId);
@@ -154,7 +150,7 @@ namespace HQB.WebApi.Controllers
             return CreatedAtAction(nameof(GetPatientById), new { id = patient.ID }, patient);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}", Name = "UpdatePatient")]
         public async Task<IActionResult> UpdatePatient(Guid id, [FromBody] Patient patient)
         {
             if (id == Guid.Empty)
@@ -193,7 +189,7 @@ namespace HQB.WebApi.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}", Name = "DeletePatient")]
         public async Task<IActionResult> DeletePatient(Guid id)
         {
             if (id == Guid.Empty)
@@ -219,7 +215,7 @@ namespace HQB.WebApi.Controllers
             return NoContent();
         }
 
-        [HttpGet("{id}/journal-entries")]
+        [HttpGet("{id}/journal-entries", Name = "GetJournalEntries")]
         public async Task<ActionResult<IEnumerable<JournalEntry>>> GetJournalEntries(Guid id)
         {
             if (id == Guid.Empty)
@@ -238,7 +234,7 @@ namespace HQB.WebApi.Controllers
             return Ok(journalEntries);
         }
 
-        [HttpGet("{id}/completed-appointments")]
+        [HttpGet("{id}/completed-appointments", Name = "GetCompletedAppointments")]
         public async Task<ActionResult<IEnumerable<CompletedAppointment>>> GetCompletedAppointments(Guid id)
         {
             if (id == Guid.Empty)
@@ -257,7 +253,7 @@ namespace HQB.WebApi.Controllers
             return Ok(completedAppointments);
         }
 
-        [HttpGet("{id}/stickers")]
+        [HttpGet("{id}/stickers", Name = "GetStickers")]
         public async Task<ActionResult<IEnumerable<Sticker>>> GetStickers(Guid id)
         {
             if (id == Guid.Empty)

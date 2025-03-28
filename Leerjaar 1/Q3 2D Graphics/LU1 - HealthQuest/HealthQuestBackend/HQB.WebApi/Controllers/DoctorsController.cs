@@ -22,7 +22,7 @@ namespace HQB.WebApi.Controllers
         /// <summary>
         /// Get all doctors
         /// </summary>
-        [HttpGet]
+        [HttpGet(Name = "GetAllDoctors")]
         public async Task<ActionResult<IEnumerable<Doctor>>> GetDoctors()
         {
             _logger.LogInformation("Fetching all doctors.");
@@ -46,7 +46,7 @@ namespace HQB.WebApi.Controllers
         /// <summary>
         /// Get a single doctor by ID
         /// </summary>
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetDoctorById")]
         public async Task<ActionResult<Doctor>> GetDoctor(Guid id)
         {
             if (id == Guid.Empty)
@@ -70,7 +70,7 @@ namespace HQB.WebApi.Controllers
         /// <summary>
         /// Get a doctor assigned to a specific patient
         /// </summary>
-        [HttpGet("by-patient/{patientId}")]
+        [HttpGet("by-patient/{patientId}", Name = "GetDoctorByPatientId")]
         public async Task<ActionResult<Doctor>> GetDoctorByPatientId(Guid patientId)
         {
             if (patientId == Guid.Empty)
@@ -107,7 +107,7 @@ namespace HQB.WebApi.Controllers
         /// <summary>
         /// Get all patients assigned to a specific doctor
         /// </summary>
-        [HttpGet("{id}/patients")]
+        [HttpGet("{id}/patients", Name = "GetPatientsByDoctorId")]
         public async Task<ActionResult<IEnumerable<Patient>>> GetDoctorPatients(Guid id)
         {
             if (id == Guid.Empty)
@@ -137,7 +137,7 @@ namespace HQB.WebApi.Controllers
         /// <summary>
         /// Add a new doctor
         /// </summary>
-        [HttpPost]
+        [HttpPost(Name = "AddDoctor")]
         public async Task<ActionResult<Doctor>> AddDoctor([FromBody] Doctor doctor)
         {
             if (doctor == null)
@@ -162,7 +162,7 @@ namespace HQB.WebApi.Controllers
         /// <summary>
         /// Update an existing doctor
         /// </summary>
-        [HttpPut("{id}")]
+        [HttpPut("{id}", Name = "UpdateDoctor")]
         public async Task<IActionResult> UpdateDoctor(Guid id, [FromBody] Doctor doctor)
         {
             if (id == Guid.Empty)
@@ -198,7 +198,7 @@ namespace HQB.WebApi.Controllers
         /// <summary>
         /// Delete a doctor
         /// </summary>
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}", Name = "DeleteDoctor")]
         public async Task<IActionResult> DeleteDoctor(Guid id)
         {
             if (id == Guid.Empty)

@@ -24,7 +24,7 @@ namespace HQB.WebApi.Controllers
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        [HttpGet]
+        [HttpGet(Name = "GetAllTreatments")]
         public async Task<ActionResult<IEnumerable<Treatment>>> GetTreatmentsAsync()
         {
             _logger.LogInformation("Getting all treatments");
@@ -37,7 +37,7 @@ namespace HQB.WebApi.Controllers
             return Ok(treatments);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetTreatmentById")]
         public async Task<ActionResult<Treatment>> GetTreatmentByIdAsync(Guid id)
         {
             if (id == Guid.Empty)
@@ -56,7 +56,7 @@ namespace HQB.WebApi.Controllers
             return Ok(treatment);
         }
 
-        [HttpGet("{treatmentId}/appointments")]
+        [HttpGet("{treatmentId}/appointments", Name = "GetAppointmentsByTreatmentId")]
         public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentByTreatmentId(Guid treatmentId)
         {
             if (treatmentId == Guid.Empty)
@@ -89,7 +89,7 @@ namespace HQB.WebApi.Controllers
             return Ok(sortedAppointments);
         }
 
-        [HttpPost]
+        [HttpPost(Name = "CreateTreatment")]
         public async Task<ActionResult<Treatment>> CreateTreatmentAsync([FromBody] Treatment treatment)
         {
             if (treatment == null)
@@ -116,7 +116,7 @@ namespace HQB.WebApi.Controllers
             return CreatedAtAction(nameof(GetTreatmentByIdAsync), new { id = treatment.ID }, treatment);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}", Name = "UpdateTreatment")]
         public async Task<ActionResult<Treatment>> UpdateTreatmentAsync(Guid id, [FromBody] Treatment treatment)
         {
             if (id == Guid.Empty)
@@ -156,7 +156,7 @@ namespace HQB.WebApi.Controllers
             return Ok(treatment);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}", Name = "DeleteTreatment")]
         public async Task<IActionResult> DeleteTreatmentAsync(Guid id)
         {
             if (id == Guid.Empty)

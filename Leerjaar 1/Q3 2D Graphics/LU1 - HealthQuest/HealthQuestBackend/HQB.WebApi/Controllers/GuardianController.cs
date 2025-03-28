@@ -21,7 +21,7 @@ namespace HQB.WebApi.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
+        [HttpGet(Name = "GetGuardianForCurrentUser")]
         public async Task<ActionResult<IEnumerable<Guardian>>> GetGuardianForCurrentUser()
         {
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();
@@ -44,7 +44,7 @@ namespace HQB.WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("{id}")]
+        [Route("{id}", Name = "GetGuardianById")]
         public async Task<ActionResult<Guardian>> GetGuardianById(Guid id)
         {
             if (id == Guid.Empty)
@@ -65,7 +65,7 @@ namespace HQB.WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("{id}/patients")]
+        [Route("{id}/patients", Name = "GetPatientsByGuardianId")]
         public async Task<ActionResult<IEnumerable<Patient>>> GetPatientsByGuardianId(Guid id)
         {
             if (id == Guid.Empty)
@@ -86,7 +86,7 @@ namespace HQB.WebApi.Controllers
             return Ok(patients);
         }
 
-        [HttpPost]
+        [HttpPost(Name = "AddGuardian")]
         public async Task<ActionResult<Guardian>> AddGuardian([FromBody] Guardian guardian)
         {
             if (guardian == null)
@@ -118,7 +118,7 @@ namespace HQB.WebApi.Controllers
         }
 
         [HttpPut]
-        [Route("{id}")]
+        [Route("{id}", Name = "UpdateGuardian")]
         public async Task<ActionResult<Guardian>> UpdateGuardian(Guid id, [FromBody] Guardian guardian)
         {
             if (id == Guid.Empty)
@@ -151,7 +151,7 @@ namespace HQB.WebApi.Controllers
         }
 
         [HttpDelete]
-        [Route("{id}")]
+        [Route("{id}", Name = "DeleteGuardian")]
         public async Task<IActionResult> DeleteGuardian(Guid id)
         {
             if (id == Guid.Empty)

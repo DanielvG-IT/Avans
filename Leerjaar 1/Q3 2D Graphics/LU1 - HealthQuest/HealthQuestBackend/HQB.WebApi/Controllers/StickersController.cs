@@ -18,7 +18,7 @@ namespace HQB.WebApi.Controllers
     }
 
     // GET: api/v1/stickers
-    [HttpGet]
+    [HttpGet(Name = "GetAllStickers")]
     public async Task<ActionResult<IEnumerable<Sticker>>> GetAllStickers()
     {
       var stickers = await _stickerService.GetAllStickersAsync();
@@ -31,7 +31,7 @@ namespace HQB.WebApi.Controllers
     }
 
     // POST: api/v1/stickers
-    [HttpPost]
+    [HttpPost(Name = "AddSticker")]
     public async Task<ActionResult<Sticker>> AddSticker([FromBody] Sticker sticker)
     {
       if (!ModelState.IsValid)
@@ -46,7 +46,7 @@ namespace HQB.WebApi.Controllers
     }
 
     // GET: api/v1/stickers/{id}
-    [HttpGet("{id}")]
+    [HttpGet("{id}", Name = "GetStickerById")]
     public async Task<ActionResult<Sticker>> GetStickerById(Guid id)
     {
       if (id == Guid.Empty)
@@ -66,7 +66,7 @@ namespace HQB.WebApi.Controllers
     }
 
     // PUT: api/v1/stickers/{id}
-    [HttpPut("{id}")]
+    [HttpPut("{id}", Name = "UpdateSticker")]
     public async Task<IActionResult> UpdateSticker(Guid id, [FromBody] Sticker sticker)
     {
       if (!ModelState.IsValid)
@@ -94,7 +94,7 @@ namespace HQB.WebApi.Controllers
     }
 
     // DELETE: api/v1/stickers/{id}
-    [HttpDelete("{id}")]
+    [HttpDelete("{id}", Name = "DeleteSticker")]
     public async Task<IActionResult> DeleteSticker(Guid id)
     {
       if (id == Guid.Empty)
