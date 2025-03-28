@@ -470,7 +470,7 @@ namespace HQB.WebApi.Controllers
             }
         }
 
-        [HttpPost("{id}/stickers", Name = "AddSticker")]
+        [HttpPost("{id}/stickers", Name = "AddStickerToPatient")]
         public async Task<IActionResult> AddStickerToPatient(Guid id, [FromBody] Guid stickerId)
         {
             if (id == Guid.Empty || stickerId == Guid.Empty)
@@ -515,7 +515,7 @@ namespace HQB.WebApi.Controllers
             }
         }
 
-        [HttpDelete("{id}/stickers/{stickerId}", Name = "DeleteSticker")]
+        [HttpDelete("{id}/stickers/{stickerId}", Name = "DeleteStickerFromPatient")]
         public async Task<IActionResult> DeleteSticker(Guid id, Guid stickerId)
         {
             if (id == Guid.Empty || stickerId == Guid.Empty)
