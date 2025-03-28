@@ -386,17 +386,137 @@ namespace HQB.WebApi.Controllers
                 }
 
                 _logger.LogInformation("Getting stickers for patient with ID {PatientId}", id);
-                var stickers = await _stickersRepository.GetUnlockedStickersByPatientId(id);
-                if (stickers == null)
+                var stickers = await _stickersRepository.GetUnlockedStickersByPatientIdAsync(id);
+                if (stickers == null || !stickers.Any())
                 {
-                    _logger.LogWarning("Stickers for patient with ID {PatientId} not found", id);
-                    return NotFound();
+                    _logger.LogWarning("No stickers found for patient with ID {PatientId}", id);
+                    return NotFound($"No stickers found for patient with ID {id}.");
                 }
                 return Ok(stickers);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while fetching stickers.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
+            }
+        }
+
+        [HttpPost("{id}/stickers", Name = "AddSticker")]
+        public async Task<IActionResult> AddStickerToPatient(Guid id, [FromBody] Guid stickerId)
+        {
+            if (id == Guid.Empty || stickerId == Guid.Empty)
+            {
+                _logger.LogWarning("Invalid patient ID or sticker ID");
+                return BadRequest("Patient ID and Sticker ID must be valid non-empty GUIDs.");
+            }
+
+            try
+            {
+                _logger.LogInformation("Adding sticker with ID {StickerId} to patient with ID {PatientId}", stickerId, id);
+
+                var patient = await _patientRepository.GetPatientByIdAsync(id);
+                if (patient == null)
+                {
+                    _logger.LogWarning("Patient with ID {PatientId} not found", id);
+                    return NotFound($"Patient with ID {id} not found.");
+                }
+
+                var sticker = await _stickersRepository.GetStickerByIdAsync(stickerId);
+                if (sticker == null)
+                {
+                    _logger.LogWarning("Sticker with ID {StickerId} not found", stickerId);
+                    return NotFound($"Sticker with ID {stickerId} not found.");
+                }
+
+                var isStickerUnlocked = await _stickersRepository.IsStickerUnlockedByPatientAsync(id, stickerId);
+                if (isStickerUnlocked)
+                {
+                    _logger.LogWarning("Sticker with ID {StickerId} is already unlocked for patient with ID {PatientId}", stickerId, id);
+                    return Conflict($"Sticker with ID {stickerId} is already unlocked for patient with ID {id}.");
+                }
+
+                await _stickersRepository.AddStickerToPatientAsync(id, stickerId);
+
+                return CreatedAtAction(nameof(GetStickers), new { id }, sticker);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while adding a sticker to the patient.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
+            }
+        }
+
+        [HttpDelete("{id}/stickers/{stickerId}", Name = "DeleteSticker")]
+        public async Task<IActionResult> DeleteSticker(Guid id, Guid stickerId)
+        {
+            if (id == Guid.Empty || stickerId == Guid.Empty)
+            {
+                _logger.LogWarning("Invalid patient ID or sticker ID");
+                return BadRequest("Patient ID and Sticker ID must be valid non-empty GUIDs.");
+            }
+
+            try
+            {
+                _logger.LogInformation("Deleting sticker with ID {StickerId} for patient with ID {PatientId}", stickerId, id);
+
+                var patient = await _patientRepository.GetPatientByIdAsync(id);
+                if (patient == null)
+                {
+                    _logger.LogWarning("Patient with ID {PatientId} not found", id);
+                    return NotFound($"Patient with ID {id} not found.");
+                }
+
+                var sticker = await _stickersRepository.GetStickerByIdAsync(stickerId);
+                if (sticker == null)
+                {
+                    _logger.LogWarning("Sticker with ID {StickerId} not found", stickerId);
+                    return NotFound($"Sticker with ID {stickerId} not found.");
+                }
+
+                var isStickerUnlocked = await _stickersRepository.IsStickerUnlockedByPatientAsync(id, stickerId);
+                if (!isStickerUnlocked)
+                {
+                    _logger.LogWarning("Sticker with ID {StickerId} is not unlocked for patient with ID {PatientId}", stickerId, id);
+                    return NotFound($"Sticker with ID {stickerId} is not unlocked for patient with ID {id}.");
+                }
+
+                await _stickersRepository.DeleteStickerFromPatientAsync(id, stickerId);
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while deleting the sticker from the patient.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
+            }
+        }
+
+        [HttpGet("{id}/stickers/{stickerId}/is-unlocked", Name = "IsStickerUnlockedByPatient")]
+        public async Task<ActionResult<bool>> IsStickerUnlockedByPatient(Guid id, Guid stickerId)
+        {
+            if (id == Guid.Empty || stickerId == Guid.Empty)
+            {
+                _logger.LogWarning("Invalid patient ID or sticker ID");
+                return BadRequest("Patient ID and Sticker ID must be valid non-empty GUIDs.");
+            }
+
+            try
+            {
+                _logger.LogInformation("Checking if sticker with ID {StickerId} is unlocked for patient with ID {PatientId}", stickerId, id);
+
+                var patient = await _patientRepository.GetPatientByIdAsync(id);
+                if (patient == null)
+                {
+                    _logger.LogWarning("Patient with ID {PatientId} not found", id);
+                    return NotFound($"Patient with ID {id} not found.");
+                }
+
+                var isStickerUnlocked = await _stickersRepository.IsStickerUnlockedByPatientAsync(id, stickerId);
+                return Ok(isStickerUnlocked);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while checking if the sticker is unlocked for the patient.");
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
             }
         }

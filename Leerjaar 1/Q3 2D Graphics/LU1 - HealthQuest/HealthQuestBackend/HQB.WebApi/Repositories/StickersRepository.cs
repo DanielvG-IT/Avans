@@ -28,17 +28,6 @@ public class StickersRepository : IStickersRepository
     return await connection.QuerySingleOrDefaultAsync<Sticker>(query, new { ID = id });
   }
 
-  public async Task<IEnumerable<Sticker>> GetUnlockedStickersByPatientId(Guid patientId)
-  {
-    using var connection = new SqlConnection(_connectionString);
-    const string query = @"
-      SELECT s.* 
-      FROM Sticker s
-      INNER JOIN StickerCollection sc ON s.ID = sc.StickerID
-      WHERE sc.PatientID = @PatientID";
-    return await connection.QueryAsync<Sticker>(query, new { PatientID = patientId });
-  }
-
   public async Task AddStickerAsync(Sticker sticker)
   {
     using var connection = new SqlConnection(_connectionString);
@@ -58,5 +47,65 @@ public class StickersRepository : IStickersRepository
     using var connection = new SqlConnection(_connectionString);
     const string query = "DELETE FROM Sticker WHERE ID = @ID";
     await connection.ExecuteAsync(query, new { ID = id });
+  }
+
+  // This method retrieves all unlocked stickers for a specific patient.
+
+  public async Task<IEnumerable<Sticker>> GetUnlockedStickersByPatientIdAsync(Guid patientId)
+  {
+    using var connection = new SqlConnection(_connectionString);
+    const string query = @"
+      SELECT s.ID, s.Name, sc.UnlockedDate
+      FROM Sticker s
+      INNER JOIN StickerCollection sc ON s.ID = sc.StickerID
+      WHERE sc.PatientID = @PatientID
+      ORDER BY sc.UnlockedDate DESC";
+    return await connection.QueryAsync<Sticker>(query, new { PatientID = patientId });
+  }
+
+  public async Task<Sticker?> GetUnlockedStickerByIdAsync(Guid patientId, Guid stickerId)
+  {
+    using var connection = new SqlConnection(_connectionString);
+    const string query = @"
+      SELECT s.ID, s.Name, sc.UnlockedDate
+      FROM Sticker s
+      INNER JOIN StickerCollection sc ON s.ID = sc.StickerID
+      WHERE sc.PatientID = @PatientID AND sc.StickerID = @StickerID";
+    return await connection.QuerySingleOrDefaultAsync<Sticker>(query, new { PatientID = patientId, StickerID = stickerId });
+  }
+
+  public async Task AddStickerToPatientAsync(Guid patientId, Guid stickerId)
+  {
+    using var connection = new SqlConnection(_connectionString);
+    const string query = @"
+      IF NOT EXISTS (
+        SELECT 1 
+        FROM StickerCollection 
+        WHERE PatientID = @PatientID AND StickerID = @StickerID
+      )
+      BEGIN
+        INSERT INTO StickerCollection (PatientID, StickerID, UnlockedDate) 
+        VALUES (@PatientID, @StickerID, GETDATE())
+      END";
+    await connection.ExecuteAsync(query, new { PatientID = patientId, StickerID = stickerId });
+  }
+
+  public async Task DeleteStickerFromPatientAsync(Guid patientId, Guid stickerId)
+  {
+    using var connection = new SqlConnection(_connectionString);
+    const string query = @"
+      DELETE FROM StickerCollection 
+      WHERE PatientID = @PatientID AND StickerID = @StickerID";
+    await connection.ExecuteAsync(query, new { PatientID = patientId, StickerID = stickerId });
+  }
+
+  public async Task<bool> IsStickerUnlockedByPatientAsync(Guid patientId, Guid stickerId)
+  {
+    using var connection = new SqlConnection(_connectionString);
+    const string query = @"
+      SELECT COUNT(1)
+      FROM StickerCollection
+      WHERE PatientID = @PatientID AND StickerID = @StickerID";
+    return await connection.ExecuteScalarAsync<int>(query, new { PatientID = patientId, StickerID = stickerId }) > 0;
   }
 }
