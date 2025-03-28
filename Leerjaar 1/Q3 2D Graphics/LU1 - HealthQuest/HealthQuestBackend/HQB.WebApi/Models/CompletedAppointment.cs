@@ -1,8 +1,26 @@
 namespace HQB.WebApi.Models;
+/// <summary>
+/// Represents a completed appointment in the system.
+/// </summary>
 public class CompletedAppointment
 {
-  public Guid Id { get; set; } // Primary Key
-  public Guid PatientId { get; set; } // Foreign Key
-  public Guid AppointmentId { get; set; } // Foreign Key
+  /// <summary>
+  /// Gets or sets the unique identifier for the completed appointment.
+  /// </summary>
+  public Guid Id { get; set; }
+
+  /// <summary>
+  /// Gets or sets the unique identifier of the patient associated with the completed appointment.
+  /// </summary>
+  public Guid PatientId { get; set; }
+
+  /// <summary>
+  /// Gets or sets the unique identifier of the appointment that was completed.
+  /// </summary>
+  public Guid AppointmentId { get; set; }
+
+  /// <summary>
+  /// Gets or sets the date and time when the appointment was completed.
+  /// </summary>
   public DateTime CompletedDate { get; set; }
 }

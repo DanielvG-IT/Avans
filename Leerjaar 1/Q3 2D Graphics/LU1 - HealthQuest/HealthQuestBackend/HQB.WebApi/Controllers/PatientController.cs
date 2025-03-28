@@ -360,16 +360,85 @@ namespace HQB.WebApi.Controllers
 
                 _logger.LogInformation("Getting completed appointments for patient with ID {PatientId}", id);
                 var completedAppointments = await _completedAppointmentsRepository.GetCompletedAppointmentsByPatientIdAsync(id);
-                if (completedAppointments == null)
+                if (completedAppointments == null || !completedAppointments.Any())
                 {
-                    _logger.LogWarning("Completed appointments for patient with ID {PatientId} not found", id);
-                    return NotFound();
+                    _logger.LogWarning("No completed appointments found for patient with ID {PatientId}", id);
+                    return NotFound($"No completed appointments found for patient with ID {id}.");
                 }
+
                 return Ok(completedAppointments);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while fetching completed appointments.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
+            }
+        }
+
+        [HttpPost("{id}/completed-appointments", Name = "AddCompletedAppointment")]
+        public async Task<IActionResult> AddCompletedAppointment(Guid id, [FromQuery] Guid appointmentId, [FromQuery] DateTime completedDate)
+        {
+            // TODO May change in the future to use [FromBody] instead of [FromQuery] for the whole object
+            try
+            {
+                if (id == Guid.Empty || appointmentId == Guid.Empty)
+                {
+                    _logger.LogWarning("Invalid patient ID or appointment ID");
+                    return BadRequest("Patient ID and Appointment ID must be valid non-empty GUIDs.");
+                }
+
+                if (completedDate == default)
+                {
+                    _logger.LogWarning("Completed date is missing");
+                    return BadRequest("Completed date is required.");
+                }
+
+                _logger.LogInformation("Adding completed appointment with ID {AppointmentId} for patient with ID {PatientId}", appointmentId, id);
+
+                var appointmentToAdd = new CompletedAppointment
+                {
+                    Id = Guid.NewGuid(),
+                    PatientId = id,
+                    AppointmentId = appointmentId,
+                    CompletedDate = completedDate,
+                };
+
+                await _completedAppointmentsRepository.AddCompletedAppointmentAsync(appointmentToAdd);
+
+                return CreatedAtAction(nameof(GetCompletedAppointments), new { id }, appointmentToAdd);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while adding a completed appointment.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
+            }
+        }
+
+        [HttpDelete("{id}/completed-appointments/{completedId}", Name = "DeleteCompletedAppointment")]
+        public async Task<IActionResult> DeleteCompletedAppointment(Guid id, Guid completedId)
+        {
+            try
+            {
+                if (id == Guid.Empty || completedId == Guid.Empty)
+                {
+                    _logger.LogWarning("Invalid patient ID or appointment ID");
+                    return BadRequest("Patient ID and Appointment ID must be valid non-empty GUIDs.");
+                }
+
+                _logger.LogInformation("Deleting completed appointment with ID {AppointmentId} for patient with ID {PatientId}", completedId, id);
+                var existingAppointment = await _completedAppointmentsRepository.GetCompletedAppointmentByIdAsync(completedId);
+                if (existingAppointment == null || existingAppointment.PatientId != id)
+                {
+                    _logger.LogWarning("Completed appointment with ID {AppointmentId} not found or does not belong to patient with ID {PatientId}", completedId, id);
+                    return NotFound($"Completed appointment with ID {completedId} not found or does not belong to patient with ID {id}.");
+                }
+
+                await _completedAppointmentsRepository.DeleteCompletedAppointmentAsync(completedId);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while deleting the completed appointment.");
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
             }
         }
