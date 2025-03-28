@@ -56,7 +56,7 @@ namespace HQB.WebApi.Controllers
             return Ok(treatment);
         }
 
-        [HttpGet("{treatmentId}/appointments", Name = "GetAppointmentsByTreatmentId")]
+        [HttpGet("{treatmentId}/appointments", Name = "GetAppointmentsByTreatmentIdInTreatments")]
         public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentByTreatmentId(Guid treatmentId)
         {
             if (treatmentId == Guid.Empty)
