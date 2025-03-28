@@ -65,14 +65,28 @@ namespace HQB.WebApi.Controllers
                 return BadRequest("Invalid treatment ID");
             }
 
-            _logger.LogInformation("Getting appointments for treatment ID: {TreatmentId}", treatmentId);
-            var appointment = await _appointmentRepository.GetAppointmentByTreatmentIdAsync(treatmentId);
-            if (appointment == null)
+            _logger.LogInformation("Fetching appointments for treatment ID: {TreatmentId} from the repository", treatmentId);
+
+            var treatmentAppointment = await _appointmentRepository.GetAppointmentsByTreatmentIdAsync(treatmentId);
+            if (treatmentAppointment == null || !treatmentAppointment.Any())
             {
-                _logger.LogWarning("Appointments for treatment ID: {TreatmentId} not found", treatmentId);
-                return NotFound();
+                _logger.LogWarning("No appointments found for the provided treatment ID: {TreatmentId}", treatmentId);
+                return NotFound($"No appointments found for the treatment ID: {treatmentId}");
             }
-            return Ok(appointment);
+
+            var appointments = new List<(Appointment Appointment, int SequenceNr)>();
+            foreach (var item in treatmentAppointment)
+            {
+                var appointmentDetails = await _appointmentRepository.GetAppointmentByIdAsync(item.AppointmentID);
+                if (appointmentDetails != null)
+                {
+                    appointments.Add((appointmentDetails, item.Sequence));
+                }
+            }
+
+            var sortedAppointments = appointments.OrderBy(a => a.SequenceNr).Select(a => a.Appointment).ToList();
+
+            return Ok(sortedAppointments);
         }
 
         [HttpPost]

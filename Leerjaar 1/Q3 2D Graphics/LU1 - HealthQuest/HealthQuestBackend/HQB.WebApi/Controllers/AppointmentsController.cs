@@ -9,25 +9,63 @@ namespace HQB.WebApi.Controllers
     public class AppointmentsController : ControllerBase
     {
         private readonly IAppointmentRepository _appointmentRepository;
+        private readonly IAuthenticationService _authenticationService;
         private readonly ILogger<AppointmentsController> _logger;
 
-        public AppointmentsController(IAppointmentRepository appointmentRepository, ILogger<AppointmentsController> logger)
+        public AppointmentsController(ILogger<AppointmentsController> logger, IAppointmentRepository appointmentRepository, IAuthenticationService authenticationService)
         {
             _appointmentRepository = appointmentRepository;
+            _authenticationService = authenticationService;
             _logger = logger;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointments()
+        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentsByTreatmentId(Guid? treatmentId)
         {
-            _logger.LogInformation("Getting all appointments");
-            var appointments = await _appointmentRepository.GetAllAppointmentsAsync();
-            if (appointments == null)
+            var loggedInUserId = _authenticationService.GetCurrentAuthenticatedUserId();
+            if (string.IsNullOrWhiteSpace(loggedInUserId))
             {
-                _logger.LogWarning("No appointments found");
-                return NotFound();
+                _logger.LogWarning("No authenticated user found");
+                return Unauthorized("No authenticated user found");
             }
-            return Ok(appointments);
+
+            if (treatmentId == null || treatmentId == Guid.Empty)
+            {
+                _logger.LogInformation("Fetching all appointments as no valid treatment ID was provided");
+                var allAppointments = await _appointmentRepository.GetAllAppointmentsAsync();
+                if (allAppointments == null || !allAppointments.Any())
+                {
+                    _logger.LogWarning("No appointments found in the repository");
+                    return NotFound("No appointments found");
+                }
+
+                return Ok(allAppointments);
+            }
+            else
+            {
+                _logger.LogInformation("Fetching appointments for treatment ID: {TreatmentId} from the repository", treatmentId);
+
+                var treatmentAppointment = await _appointmentRepository.GetAppointmentsByTreatmentIdAsync(treatmentId.Value);
+                if (treatmentAppointment == null || !treatmentAppointment.Any())
+                {
+                    _logger.LogWarning("No appointments found for the provided treatment ID: {TreatmentId}", treatmentId);
+                    return NotFound($"No appointments found for the treatment ID: {treatmentId}");
+                }
+
+                var appointments = new List<(Appointment Appointment, int SequenceNr)>();
+                foreach (var item in treatmentAppointment)
+                {
+                    var appointmentDetails = await _appointmentRepository.GetAppointmentByIdAsync(item.AppointmentID);
+                    if (appointmentDetails != null)
+                    {
+                        appointments.Add((appointmentDetails, item.Sequence));
+                    }
+                }
+
+                var sortedAppointments = appointments.OrderBy(a => a.SequenceNr).Select(a => a.Appointment).ToList();
+
+                return Ok(sortedAppointments);
+            }
         }
 
         [HttpGet("{id}")]
@@ -35,16 +73,16 @@ namespace HQB.WebApi.Controllers
         {
             if (id == Guid.Empty)
             {
-                _logger.LogWarning("Invalid appointment ID: {AppointmentId}", id);
-                return BadRequest("Invalid appointment ID");
+                _logger.LogWarning("Invalid appointment ID provided: {AppointmentId}", id);
+                return BadRequest("The provided appointment ID is invalid. Please provide a valid ID.");
             }
 
-            _logger.LogInformation("Getting appointment with ID: {AppointmentId}", id);
+            _logger.LogInformation("Fetching appointment with ID: {AppointmentId} from the repository", id);
             var appointment = await _appointmentRepository.GetAppointmentByIdAsync(id);
             if (appointment == null)
             {
-                _logger.LogWarning("Appointment with ID: {AppointmentId} not found", id);
-                return NotFound();
+                _logger.LogWarning("No appointment found with the provided ID: {AppointmentId}", id);
+                return NotFound($"No appointment found with the ID: {id}");
             }
             return Ok(appointment);
         }

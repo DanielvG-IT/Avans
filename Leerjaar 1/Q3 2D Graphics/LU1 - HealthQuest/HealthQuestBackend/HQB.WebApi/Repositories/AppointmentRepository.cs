@@ -26,13 +26,6 @@ public class AppointmentRepository : IAppointmentRepository
         return await connection.QueryFirstOrDefaultAsync<Appointment>(sql, new { ID = id });
     }
 
-    public async Task<Appointment?> GetAppointmentByTreatmentIdAsync(Guid id)
-    {
-        using var connection = new SqlConnection(_connectionString);
-        var sql = "SELECT * FROM Treatment_Appoinment WHERE TreatmentID = @TreatmentID";
-        return await connection.QueryFirstOrDefaultAsync<Appointment>(sql, new { TreatmentID = id });
-    }
-
     public async Task<int> AddAppointmentAsync(Appointment appointment)
     {
         using var connection = new SqlConnection(_connectionString);
@@ -52,5 +45,12 @@ public class AppointmentRepository : IAppointmentRepository
         using var connection = new SqlConnection(_connectionString);
         var sql = "DELETE FROM Appoinment WHERE ID = @ID";
         return await connection.ExecuteAsync(sql, new { ID = id });
+    }
+
+    public async Task<IEnumerable<TreatmentAppointment>> GetAppointmentsByTreatmentIdAsync(Guid id)
+    {
+        using var connection = new SqlConnection(_connectionString);
+        var sql = "SELECT * FROM Treatment_Appointment WHERE TreatmentID = @TreatmentID";
+        return await connection.QueryAsync<TreatmentAppointment>(sql, new { TreatmentID = id });
     }
 }
