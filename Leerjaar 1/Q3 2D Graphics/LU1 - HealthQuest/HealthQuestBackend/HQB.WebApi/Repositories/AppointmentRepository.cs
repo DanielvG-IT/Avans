@@ -50,7 +50,7 @@ public class AppointmentRepository : IAppointmentRepository
     public async Task<IEnumerable<TreatmentAppointment>> GetAppointmentsByTreatmentIdAsync(Guid id)
     {
         using var connection = new SqlConnection(_connectionString);
-        var sql = "SELECT * FROM Treatment_Appointment WHERE TreatmentID = @TreatmentID";
+        var sql = "SELECT * FROM Treatment_Appoinment WHERE TreatmentID = @TreatmentID";
         return await connection.QueryAsync<TreatmentAppointment>(sql, new { TreatmentID = id });
     }
 }
