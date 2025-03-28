@@ -38,7 +38,7 @@ namespace HQB.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Treatment>> GetTreatmentAsync(Guid id)
+        public async Task<ActionResult<Treatment>> GetTreatmentByIdAsync(Guid id)
         {
             if (id == Guid.Empty)
             {
@@ -113,7 +113,7 @@ namespace HQB.WebApi.Controllers
                 _logger.LogError("Error creating treatment");
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error creating treatment");
             }
-            return CreatedAtAction(nameof(GetTreatmentAsync), new { id = treatment.ID }, treatment);
+            return CreatedAtAction(nameof(GetTreatmentByIdAsync), new { id = treatment.ID }, treatment);
         }
 
         [HttpPut("{id}")]
