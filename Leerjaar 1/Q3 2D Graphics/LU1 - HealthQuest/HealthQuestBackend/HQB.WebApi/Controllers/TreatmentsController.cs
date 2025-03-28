@@ -27,14 +27,22 @@ namespace HQB.WebApi.Controllers
         [HttpGet(Name = "GetAllTreatments")]
         public async Task<ActionResult<IEnumerable<Treatment>>> GetTreatmentsAsync()
         {
-            _logger.LogInformation("Getting all treatments");
-            var treatments = await _treatmentRepository.GetAllTreatmentsAsync();
-            if (treatments == null || !treatments.Any())
+            try
             {
-                _logger.LogWarning("No treatments found");
-                return NotFound();
+                _logger.LogInformation("Getting all treatments");
+                var treatments = await _treatmentRepository.GetAllTreatmentsAsync();
+                if (treatments == null || !treatments.Any())
+                {
+                    _logger.LogWarning("No treatments found");
+                    return NotFound();
+                }
+                return Ok(treatments);
             }
-            return Ok(treatments);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while getting all treatments");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
+            }
         }
 
         [HttpGet("{id}", Name = "GetTreatmentById")]
@@ -46,14 +54,22 @@ namespace HQB.WebApi.Controllers
                 return BadRequest("Invalid treatment ID");
             }
 
-            _logger.LogInformation("Getting treatment with ID: {Id}", id);
-            var treatment = await _treatmentRepository.GetTreatmentByIdAsync(id);
-            if (treatment == null)
+            try
             {
-                _logger.LogWarning("Treatment with ID: {Id} not found", id);
-                return NotFound();
+                _logger.LogInformation("Getting treatment with ID: {Id}", id);
+                var treatment = await _treatmentRepository.GetTreatmentByIdAsync(id);
+                if (treatment == null)
+                {
+                    _logger.LogWarning("Treatment with ID: {Id} not found", id);
+                    return NotFound();
+                }
+                return Ok(treatment);
             }
-            return Ok(treatment);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while getting treatment by ID: {Id}", id);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
+            }
         }
 
         [HttpGet("{id}/appointments", Name = "GetAppointmentsByTreatmentIdInTreatments")]
@@ -65,28 +81,36 @@ namespace HQB.WebApi.Controllers
                 return BadRequest("Invalid treatment ID");
             }
 
-            _logger.LogInformation("Fetching appointments for treatment ID: {TreatmentId} from the repository", id);
-
-            var treatmentAppointment = await _appointmentRepository.GetAppointmentsByTreatmentIdAsync(id);
-            if (treatmentAppointment == null || !treatmentAppointment.Any())
+            try
             {
-                _logger.LogWarning("No appointments found for the provided treatment ID: {TreatmentId}", id);
-                return NotFound($"No appointments found for the treatment ID: {id}");
-            }
+                _logger.LogInformation("Fetching appointments for treatment ID: {TreatmentId} from the repository", id);
 
-            var appointments = new List<(Appointment Appointment, int SequenceNr)>();
-            foreach (var item in treatmentAppointment)
-            {
-                var appointmentDetails = await _appointmentRepository.GetAppointmentByIdAsync(item.AppointmentID);
-                if (appointmentDetails != null)
+                var treatmentAppointment = await _appointmentRepository.GetAppointmentsByTreatmentIdAsync(id);
+                if (treatmentAppointment == null || !treatmentAppointment.Any())
                 {
-                    appointments.Add((appointmentDetails, item.Sequence));
+                    _logger.LogWarning("No appointments found for the provided treatment ID: {TreatmentId}", id);
+                    return NotFound($"No appointments found for the treatment ID: {id}");
                 }
+
+                var appointments = new List<(Appointment Appointment, int SequenceNr)>();
+                foreach (var item in treatmentAppointment)
+                {
+                    var appointmentDetails = await _appointmentRepository.GetAppointmentByIdAsync(item.AppointmentID);
+                    if (appointmentDetails != null)
+                    {
+                        appointments.Add((appointmentDetails, item.Sequence));
+                    }
+                }
+
+                var sortedAppointments = appointments.OrderBy(a => a.SequenceNr).Select(a => a.Appointment).ToList();
+
+                return Ok(sortedAppointments);
             }
-
-            var sortedAppointments = appointments.OrderBy(a => a.SequenceNr).Select(a => a.Appointment).ToList();
-
-            return Ok(sortedAppointments);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while fetching appointments for treatment ID: {TreatmentId}", id);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
+            }
         }
 
         [HttpPost(Name = "CreateTreatment")]
@@ -104,16 +128,24 @@ namespace HQB.WebApi.Controllers
                 return BadRequest("Treatment name is required");
             }
 
-            treatment.ID = Guid.NewGuid();
-
-            _logger.LogInformation("Creating new treatment with ID: {Id}", treatment.ID);
-            var result = await _treatmentRepository.AddTreatmentAsync(treatment);
-            if (result == 0)
+            try
             {
-                _logger.LogError("Error creating treatment");
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error creating treatment");
+                treatment.ID = Guid.NewGuid();
+
+                _logger.LogInformation("Creating new treatment with ID: {Id}", treatment.ID);
+                var result = await _treatmentRepository.AddTreatmentAsync(treatment);
+                if (result == 0)
+                {
+                    _logger.LogError("Error creating treatment");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Error creating treatment");
+                }
+                return CreatedAtRoute("GetTreatmentById", new { id = treatment.ID }, treatment);
             }
-            return CreatedAtRoute("GetTreatmentById", new { id = treatment.ID }, treatment);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while creating a new treatment");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
+            }
         }
 
         [HttpPut("{id}", Name = "UpdateTreatment")]
@@ -137,23 +169,31 @@ namespace HQB.WebApi.Controllers
                 return BadRequest("Treatment name is required");
             }
 
-            var existingTreatment = await _treatmentRepository.GetTreatmentByIdAsync(id);
-            if (existingTreatment == null)
+            try
             {
-                _logger.LogWarning("Treatment with ID: {Id} not found", id);
-                return NotFound();
+                var existingTreatment = await _treatmentRepository.GetTreatmentByIdAsync(id);
+                if (existingTreatment == null)
+                {
+                    _logger.LogWarning("Treatment with ID: {Id} not found", id);
+                    return NotFound();
+                }
+
+                treatment.ID = id;
+
+                _logger.LogInformation("Updating treatment with ID: {Id}", id);
+                var result = await _treatmentRepository.UpdateTreatmentAsync(treatment);
+                if (result == 0)
+                {
+                    _logger.LogError("Error updating treatment");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Error updating treatment");
+                }
+                return Ok(treatment);
             }
-
-            treatment.ID = id;
-
-            _logger.LogInformation("Updating treatment with ID: {Id}", id);
-            var result = await _treatmentRepository.UpdateTreatmentAsync(treatment);
-            if (result == 0)
+            catch (Exception ex)
             {
-                _logger.LogError("Error updating treatment");
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error updating treatment");
+                _logger.LogError(ex, "An error occurred while updating treatment with ID: {Id}", id);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
             }
-            return Ok(treatment);
         }
 
         [HttpDelete("{id}", Name = "DeleteTreatment")]
@@ -165,15 +205,23 @@ namespace HQB.WebApi.Controllers
                 return BadRequest("Invalid treatment ID");
             }
 
-            _logger.LogInformation("Deleting treatment with ID: {Id}", id);
-            var existingTreatment = await _treatmentRepository.GetTreatmentByIdAsync(id);
-            if (existingTreatment == null)
+            try
             {
-                _logger.LogWarning("Treatment with ID: {Id} not found", id);
-                return NotFound();
+                _logger.LogInformation("Deleting treatment with ID: {Id}", id);
+                var existingTreatment = await _treatmentRepository.GetTreatmentByIdAsync(id);
+                if (existingTreatment == null)
+                {
+                    _logger.LogWarning("Treatment with ID: {Id} not found", id);
+                    return NotFound();
+                }
+                await _treatmentRepository.DeleteTreatmentAsync(id);
+                return NoContent();
             }
-            await _treatmentRepository.DeleteTreatmentAsync(id);
-            return NoContent();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while deleting treatment with ID: {Id}", id);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
+            }
         }
     }
 }
