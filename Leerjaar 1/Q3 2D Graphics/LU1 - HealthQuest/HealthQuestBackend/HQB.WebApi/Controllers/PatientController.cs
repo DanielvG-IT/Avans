@@ -116,14 +116,20 @@ namespace HQB.WebApi.Controllers
                     return BadRequest("Patient object is null");
                 }
 
+                if (string.IsNullOrWhiteSpace(patient.FirstName) || string.IsNullOrWhiteSpace(patient.LastName))
+                {
+                    _logger.LogWarning("Patient's first name or last name is missing");
+                    return BadRequest("Patient's first name and last name are required");
+                }
+
                 patient.ID = Guid.NewGuid();
 
                 var loggedInUserId = _authenticationService.GetCurrentAuthenticatedUserId();
 
                 if (string.IsNullOrEmpty(loggedInUserId))
                 {
-                    _logger.LogWarning("User ID is required");
-                    return BadRequest("User ID is required");
+                    _logger.LogWarning("User ID is required but was not provided");
+                    return BadRequest("User ID is required but was not provided");
                 }
 
                 var guardian = patient.GuardianID != Guid.Empty
@@ -155,6 +161,17 @@ namespace HQB.WebApi.Controllers
                         _logger.LogWarning("Treatment with ID {TreatmentId} not found", patient.TreatmentID);
                         return BadRequest($"Treatment with ID {patient.TreatmentID} not found");
                     }
+                }
+
+                if (patient.Avatar == null)
+                {
+                    patient.Avatar ??= "default_avatar.png";
+                }
+
+                if (patient.ID == Guid.Empty || patient.GuardianID == Guid.Empty)
+                {
+                    _logger.LogWarning("Patient ID or Guardian ID is required but was not provided");
+                    return BadRequest("Patient ID or Guardian ID is required but was not provided");
                 }
 
                 if (!ModelState.IsValid)
@@ -195,6 +212,54 @@ namespace HQB.WebApi.Controllers
                 {
                     _logger.LogWarning("Invalid model state for patient");
                     return BadRequest(ModelState);
+                }
+
+                if (patient.GuardianID == Guid.Empty)
+                {
+                    var loggedInUserId = _authenticationService.GetCurrentAuthenticatedUserId();
+                    if (string.IsNullOrEmpty(loggedInUserId))
+                    {
+                        _logger.LogWarning("User ID is required but was not provided.");
+                        return BadRequest("User ID is required but was not provided. Please ensure you are logged in.");
+                    }
+
+                    var guardian = await _guardianRepository.GetGuardianByUserIdAsync(loggedInUserId);
+                    if (guardian == null)
+                    {
+                        _logger.LogWarning("Guardian not found for the logged-in user with ID {UserId}.", loggedInUserId);
+                        return BadRequest($"Guardian not found for the logged-in user with ID {loggedInUserId}. Please ensure your account is correctly linked to a guardian.");
+                    }
+
+                    patient.GuardianID = guardian.ID;
+                }
+                else
+                {
+                    var guardian = await _guardianRepository.GetGuardianByIdAsync(patient.GuardianID);
+                    if (guardian == null)
+                    {
+                        _logger.LogWarning("Guardian with ID {GuardianId} not found", patient.GuardianID);
+                        return BadRequest($"Guardian with ID {patient.GuardianID} not found");
+                    }
+                }
+
+                if (patient.DoctorID != Guid.Empty)
+                {
+                    var doctor = await _doctorRepository.GetDoctorByIdAsync(patient.DoctorID);
+                    if (doctor == null)
+                    {
+                        _logger.LogWarning("Doctor with ID {DoctorId} not found", patient.DoctorID);
+                        return BadRequest($"Doctor with ID {patient.DoctorID} not found");
+                    }
+                }
+
+                if (patient.TreatmentID != Guid.Empty)
+                {
+                    var treatment = await _treatmentRepository.GetTreatmentByIdAsync(patient.TreatmentID);
+                    if (treatment == null)
+                    {
+                        _logger.LogWarning("Treatment with ID {TreatmentId} not found", patient.TreatmentID);
+                        return BadRequest($"Treatment with ID {patient.TreatmentID} not found");
+                    }
                 }
 
                 _logger.LogInformation("Updating patient with ID {PatientId}", id);
