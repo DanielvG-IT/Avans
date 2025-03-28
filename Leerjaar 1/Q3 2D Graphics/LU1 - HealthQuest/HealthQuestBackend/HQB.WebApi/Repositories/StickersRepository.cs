@@ -17,21 +17,21 @@ public class StickersRepository : IStickersRepository
   public async Task<IEnumerable<Sticker>> GetAllStickersAsync()
   {
     using var connection = new SqlConnection(_connectionString);
-    string query = "SELECT * FROM Sticker";
+    const string query = "SELECT * FROM Sticker";
     return await connection.QueryAsync<Sticker>(query);
   }
 
   public async Task<Sticker?> GetStickerByIdAsync(Guid id)
   {
     using var connection = new SqlConnection(_connectionString);
-    string query = "SELECT * FROM Sticker WHERE ID = @ID";
+    const string query = "SELECT * FROM Sticker WHERE ID = @ID";
     return await connection.QuerySingleOrDefaultAsync<Sticker>(query, new { ID = id });
   }
 
   public async Task<IEnumerable<Sticker>> GetUnlockedStickersByPatientId(Guid patientId)
   {
     using var connection = new SqlConnection(_connectionString);
-    string query = @"
+    const string query = @"
       SELECT s.* 
       FROM Sticker s
       INNER JOIN StickerCollection sc ON s.ID = sc.StickerID
@@ -42,21 +42,21 @@ public class StickersRepository : IStickersRepository
   public async Task AddStickerAsync(Sticker sticker)
   {
     using var connection = new SqlConnection(_connectionString);
-    string query = "INSERT INTO Sticker (ID, Name) VALUES (@ID, @Name)";
+    const string query = "INSERT INTO Sticker (ID, Name) VALUES (@ID, @Name)";
     await connection.ExecuteAsync(query, sticker);
   }
 
   public async Task UpdateStickerAsync(Sticker sticker)
   {
     using var connection = new SqlConnection(_connectionString);
-    string query = "UPDATE Sticker SET Name = @Name WHERE ID = @ID";
+    const string query = "UPDATE Sticker SET Name = @Name WHERE ID = @ID";
     await connection.ExecuteAsync(query, sticker);
   }
 
   public async Task DeleteStickerAsync(Guid id)
   {
     using var connection = new SqlConnection(_connectionString);
-    string query = "DELETE FROM Sticker WHERE ID = @ID";
+    const string query = "DELETE FROM Sticker WHERE ID = @ID";
     await connection.ExecuteAsync(query, new { ID = id });
   }
 }
