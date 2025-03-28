@@ -113,7 +113,7 @@ namespace HQB.WebApi.Controllers
                 _logger.LogError("Error creating treatment");
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error creating treatment");
             }
-            return CreatedAtAction(nameof(GetTreatmentByIdAsync), new { id = treatment.ID }, treatment);
+            return CreatedAtRoute("GetTreatmentById", new { id = treatment.ID }, treatment);
         }
 
         [HttpPut("{id}", Name = "UpdateTreatment")]
