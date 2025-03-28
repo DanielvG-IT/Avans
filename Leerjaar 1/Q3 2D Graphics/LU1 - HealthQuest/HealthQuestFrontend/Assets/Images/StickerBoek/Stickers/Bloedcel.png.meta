@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Bloedcel_0: -4670193751504118221
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
