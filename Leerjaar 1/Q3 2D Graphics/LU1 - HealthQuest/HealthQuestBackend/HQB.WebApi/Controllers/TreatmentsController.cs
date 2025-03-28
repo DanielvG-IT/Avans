@@ -56,22 +56,22 @@ namespace HQB.WebApi.Controllers
             return Ok(treatment);
         }
 
-        [HttpGet("{treatmentId}/appointments", Name = "GetAppointmentsByTreatmentIdInTreatments")]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentByTreatmentId(Guid treatmentId)
+        [HttpGet("{id}/appointments", Name = "GetAppointmentsByTreatmentIdInTreatments")]
+        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentByTreatmentId(Guid id)
         {
-            if (treatmentId == Guid.Empty)
+            if (id == Guid.Empty)
             {
                 _logger.LogWarning("Invalid treatment ID");
                 return BadRequest("Invalid treatment ID");
             }
 
-            _logger.LogInformation("Fetching appointments for treatment ID: {TreatmentId} from the repository", treatmentId);
+            _logger.LogInformation("Fetching appointments for treatment ID: {TreatmentId} from the repository", id);
 
-            var treatmentAppointment = await _appointmentRepository.GetAppointmentsByTreatmentIdAsync(treatmentId);
+            var treatmentAppointment = await _appointmentRepository.GetAppointmentsByTreatmentIdAsync(id);
             if (treatmentAppointment == null || !treatmentAppointment.Any())
             {
-                _logger.LogWarning("No appointments found for the provided treatment ID: {TreatmentId}", treatmentId);
-                return NotFound($"No appointments found for the treatment ID: {treatmentId}");
+                _logger.LogWarning("No appointments found for the provided treatment ID: {TreatmentId}", id);
+                return NotFound($"No appointments found for the treatment ID: {id}");
             }
 
             var appointments = new List<(Appointment Appointment, int SequenceNr)>();
