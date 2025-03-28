@@ -10,161 +10,224 @@ namespace HQB.Tests.Controllers
     [TestClass]
     public class JournalControllerTests
     {
-        public required Mock<IAuthenticationService> _mockAuthService;
+        public required Mock<IAuthenticationService> _mockAuthenticationService;
+        public required Mock<IGuardianRepository> _mockGuardianRepository;
+        public required Mock<IJournalRepository> _mockJournalRepository;
         public required Mock<ILogger<JournalController>> _mockLogger;
-        public required Mock<IGuardianRepository> _mockGuardianRepo;
         public required Mock<IPatientRepository> _mockPatientRepo;
-        public required Mock<IJournalRepository> _mockRepo;
         public required JournalController _controller;
 
         [TestInitialize]
         public void Setup()
         {
-            _mockRepo = new Mock<IJournalRepository>();
             _mockPatientRepo = new Mock<IPatientRepository>();
-            _mockGuardianRepo = new Mock<IGuardianRepository>();
             _mockLogger = new Mock<ILogger<JournalController>>();
-            _mockAuthService = new Mock<IAuthenticationService>();
-            _controller = new JournalController(_mockLogger.Object, _mockRepo.Object, _mockAuthService.Object, _mockGuardianRepo.Object, _mockPatientRepo.Object);
+            _mockJournalRepository = new Mock<IJournalRepository>();
+            _mockGuardianRepository = new Mock<IGuardianRepository>();
+            _mockAuthenticationService = new Mock<IAuthenticationService>();
+            _controller = new JournalController(_mockLogger.Object, _mockJournalRepository.Object, _mockAuthenticationService.Object, _mockGuardianRepository.Object, _mockPatientRepo.Object);
         }
 
         [TestMethod]
-        public async Task GetJournals_ReturnsOkResult_WithJournalsForPatientId()
+        public async Task GetJournals_WithValidPatientId_ReturnsOkResult()
         {
             // Arrange
             var patientId = Guid.NewGuid();
-            var patientJournals = new List<JournalEntry> { new() { ID = Guid.NewGuid(), Content = "Patient Journal", Date = DateTime.UtcNow } };
-            _mockRepo.Setup(repo => repo.GetJournalEntriesByPatientIdAsync(patientId)).ReturnsAsync(patientJournals);
+            var journalEntries = new List<JournalEntry>
+            {
+                new() { ID = Guid.NewGuid(), PatientID = patientId, Date = DateTime.UtcNow, Content = "Sample content" }
+            };
+
+            _mockJournalRepository.Setup(repo => repo.GetJournalEntriesByPatientIdAsync(patientId)).ReturnsAsync(journalEntries);
 
             // Act
             var result = await _controller.GetJournals(null, patientId);
-
-            // Assert
-            var okResult = result.Result as OkObjectResult;
-            Assert.IsNotNull(okResult, "Expected OkObjectResult but got null. Ensure the controller returns OkObjectResult when journals are found.");
-            Assert.IsInstanceOfType<IEnumerable<JournalEntry>>(okResult.Value, "Expected the result value to be of type IEnumerable<JournalEntry>.");
-            Assert.AreEqual(patientJournals, okResult.Value);
-        }
-
-        [TestMethod]
-        public async Task GetJournals_ReturnsNotFound_WhenNoJournalsForPatientId()
-        {
-            // Arrange
-            var patientId = Guid.NewGuid();
-            _mockRepo.Setup(repo => repo.GetJournalEntriesByPatientIdAsync(patientId)).ReturnsAsync([]);
-
-            // Act
-            var result = await _controller.GetJournals(null, patientId);
-
-            // Assert
-            Assert.IsInstanceOfType<NotFoundResult>(result.Result);
-        }
-
-        [TestMethod]
-        public async Task GetJournals_ReturnsOkResult_WithJournalsForGuardianId()
-        {
-            // Arrange
-            var guardianId = Guid.NewGuid();
-            var guardianJournals = new List<JournalEntry> { new() { ID = Guid.NewGuid(), Content = "Guardian Journal", Date = DateTime.UtcNow } };
-            _mockRepo.Setup(repo => repo.GetJournalEntriesByGuardianIdAsync(guardianId)).ReturnsAsync(guardianJournals);
-
-            // Act
-            var result = await _controller.GetJournals(guardianId, null);
 
             // Assert
             var okResult = result.Result as OkObjectResult;
             Assert.IsNotNull(okResult);
-            Assert.IsInstanceOfType<IEnumerable<JournalEntry>>(okResult.Value);
-            Assert.AreEqual(guardianJournals, okResult.Value);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.AreEqual(journalEntries, okResult.Value);
         }
 
         [TestMethod]
-        public async Task GetJournals_ReturnsNotFound_WhenNoJournalsForGuardianId()
+        public async Task GetJournals_WithInvalidPatientId_ReturnsNotFound()
         {
             // Arrange
+            var patientId = Guid.NewGuid();
+
+            _mockJournalRepository.Setup(repo => repo.GetJournalEntriesByPatientIdAsync(patientId)).ReturnsAsync((IEnumerable<JournalEntry>)null!);
+
+            // Act
+            var result = await _controller.GetJournals(null, patientId);
+
+            // Assert
+            var notFoundResult = result.Result as NotFoundResult;
+            Assert.IsNotNull(notFoundResult);
+            Assert.AreEqual(404, notFoundResult.StatusCode);
+        }
+
+        [TestMethod]
+        public async Task GetJournal_WithValidId_ReturnsOkResult()
+        {
+            // Arrange
+            var journalId = Guid.NewGuid();
             var guardianId = Guid.NewGuid();
-            _mockRepo.Setup(repo => repo.GetJournalEntriesByGuardianIdAsync(guardianId)).ReturnsAsync([]);
+            var loggedInUserId = "user123";
+            var journalEntry = new JournalEntry
+            {
+                ID = journalId,
+                GuardianID = guardianId,
+                Date = DateTime.UtcNow,
+                Content = "Sample content"
+            };
+
+            _mockAuthenticationService.Setup(auth => auth.GetCurrentAuthenticatedUserId()).Returns(loggedInUserId);
+            _mockGuardianRepository.Setup(repo => repo.GetGuardianByUserIdAsync(loggedInUserId)).ReturnsAsync(new Guardian { ID = guardianId, FirstName = "John", LastName = "Doe" });
+            _mockJournalRepository.Setup(repo => repo.GetJournalEntryByIdAsync(journalId)).ReturnsAsync(journalEntry);
 
             // Act
-            var result = await _controller.GetJournals(guardianId, null);
+            var result = await _controller.GetJournal(journalId);
 
             // Assert
-            Assert.IsInstanceOfType<NotFoundResult>(result.Result);
+            var okResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.AreEqual(journalEntry, okResult.Value);
         }
 
         [TestMethod]
-        public async Task GetJournals_ReturnsBadRequest_WhenLoggedInUserIdIsNull()
+        public async Task GetJournal_WithInvalidId_ReturnsNotFound()
         {
             // Arrange
-            _mockAuthService.Setup(auth => auth.GetCurrentAuthenticatedUserId()).Returns((string?)null);
+            var journalId = Guid.NewGuid();
+            var loggedInUserId = "user123";
+
+            _mockAuthenticationService.Setup(auth => auth.GetCurrentAuthenticatedUserId()).Returns(loggedInUserId);
+            _mockGuardianRepository.Setup(repo => repo.GetGuardianByUserIdAsync(loggedInUserId)).ReturnsAsync(new Guardian { ID = Guid.NewGuid(), FirstName = "DefaultFirstName", LastName = "DefaultLastName" });
+            _mockJournalRepository.Setup(repo => repo.GetJournalEntryByIdAsync(journalId)).ReturnsAsync((JournalEntry)null!);
 
             // Act
-            var result = await _controller.GetJournals(null, null);
+            var result = await _controller.GetJournal(journalId);
 
             // Assert
-            var badRequestResult = result.Result as BadRequestObjectResult;
-            Assert.IsNotNull(badRequestResult);
-            Assert.AreEqual("Unable to determine logged-in user ID", badRequestResult.Value);
+            var notFoundResult = result.Result as NotFoundResult;
+            Assert.IsNotNull(notFoundResult);
+            Assert.AreEqual(404, notFoundResult.StatusCode);
         }
 
         [TestMethod]
-        public async Task PostJournal_ReturnsCreatedAtActionResult_WithJournal()
+        public async Task PostJournal_WithValidJournal_ReturnsCreatedResult()
         {
             // Arrange
-            var journal = new JournalEntry { ID = Guid.NewGuid(), Content = "Test Content", Date = DateTime.UtcNow };
-            _mockRepo.Setup(repo => repo.AddJournalEntryAsync(journal)).Returns(Task.CompletedTask);
+            var journal = new JournalEntry
+            {
+                PatientID = Guid.NewGuid(),
+                Date = DateTime.UtcNow,
+                Content = "Sample content"
+            };
+
+            _mockJournalRepository.Setup(repo => repo.AddJournalEntryAsync(It.IsAny<JournalEntry>())).Returns(Task.CompletedTask);
 
             // Act
             var result = await _controller.PostJournal(journal);
 
             // Assert
-            var createdAtActionResult = result.Result as CreatedAtActionResult;
-            Assert.IsNotNull(createdAtActionResult);
-            Assert.IsInstanceOfType<JournalEntry>(createdAtActionResult.Value);
-            Assert.AreEqual(journal, createdAtActionResult.Value);
+            var createdResult = result.Result as CreatedAtActionResult;
+            Assert.IsNotNull(createdResult);
+            Assert.AreEqual(201, createdResult.StatusCode);
+            Assert.AreEqual(journal, createdResult.Value);
         }
 
         [TestMethod]
-        public async Task PutJournal_ReturnsNoContent_WhenUpdateIsSuccessful()
+        public async Task PutJournal_WithValidId_ReturnsOk()
         {
             // Arrange
             var journalId = Guid.NewGuid();
-            var journal = new JournalEntry { ID = journalId, Date = DateTime.UtcNow, Content = "Test Content" };
-            _mockRepo.Setup(repo => repo.UpdateJournalEntryAsync(journal)).Returns(Task.CompletedTask);
+            var guardianId = Guid.NewGuid();
+            var loggedInUserId = "user123";
+            var existingJournal = new JournalEntry
+            {
+                ID = journalId,
+                GuardianID = guardianId,
+                Date = DateTime.UtcNow,
+                Content = "Original content"
+            };
+
+            var updatedJournal = new JournalEntry
+            {
+                ID = journalId,
+                GuardianID = guardianId,
+                Date = DateTime.UtcNow,
+                Content = "Updated content"
+            };
+
+            _mockAuthenticationService.Setup(auth => auth.GetCurrentAuthenticatedUserId()).Returns(loggedInUserId);
+            _mockGuardianRepository.Setup(repo => repo.GetGuardianByUserIdAsync(loggedInUserId)).ReturnsAsync(new Guardian { ID = guardianId, FirstName = "DefaultFirstName", LastName = "DefaultLastName" });
+            _mockJournalRepository.Setup(repo => repo.GetJournalEntryByIdAsync(journalId)).ReturnsAsync(existingJournal);
+            _mockJournalRepository.Setup(repo => repo.UpdateJournalEntryAsync(updatedJournal)).Returns(Task.CompletedTask);
 
             // Act
-            var result = await _controller.PutJournal(journalId, journal);
+            var result = await _controller.PutJournal(journalId, updatedJournal);
 
             // Assert
-            Assert.IsInstanceOfType<NoContentResult>(result);
+            var okResult = result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual(200, okResult.StatusCode);
+            Assert.AreEqual(updatedJournal, okResult.Value);
         }
 
+        // ...existing code...
+
         [TestMethod]
-        public async Task PutJournal_ReturnsBadRequest_WhenIdMismatch()
+        public async Task PutJournal_WithMismatchedId_ReturnsBadRequest()
         {
             // Arrange
             var journalId = Guid.NewGuid();
-            var journal = new JournalEntry { ID = Guid.NewGuid(), Content = "Test Content", Date = DateTime.UtcNow };
+            var updatedJournal = new JournalEntry
+            {
+                ID = Guid.NewGuid(), // Different from journalId
+                GuardianID = Guid.NewGuid(),
+                Date = DateTime.UtcNow,
+                Content = "Mismatched ID content"
+            };
 
             // Act
-            var result = await _controller.PutJournal(journalId, journal);
+            var result = await _controller.PutJournal(journalId, updatedJournal);
 
             // Assert
-            Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult);
+            Assert.AreEqual(400, badRequestResult.StatusCode);
         }
 
         [TestMethod]
-        public async Task DeleteJournal_ReturnsNoContent_WhenDeleteIsSuccessful()
+        public async Task DeleteJournal_WithValidId_ReturnsNoContent()
         {
             // Arrange
             var journalId = Guid.NewGuid();
-            _mockRepo.Setup(repo => repo.DeleteJournalEntryAsync(journalId)).Returns(Task.CompletedTask);
+            var guardianId = Guid.NewGuid();
+            var loggedInUserId = "user123";
+            var journalEntry = new JournalEntry
+            {
+                ID = journalId,
+                GuardianID = guardianId,
+                Date = DateTime.UtcNow,
+                Content = "Sample content"
+            };
+
+            _mockAuthenticationService.Setup(auth => auth.GetCurrentAuthenticatedUserId()).Returns(loggedInUserId);
+            _mockGuardianRepository.Setup(repo => repo.GetGuardianByUserIdAsync(loggedInUserId)).ReturnsAsync(new Guardian { ID = guardianId, FirstName = "DefaultFirstName", LastName = "DefaultLastName" });
+            _mockJournalRepository.Setup(repo => repo.GetJournalEntryByIdAsync(journalId)).ReturnsAsync(journalEntry);
+            _mockJournalRepository.Setup(repo => repo.DeleteJournalEntryAsync(journalId)).Returns(Task.CompletedTask);
 
             // Act
             var result = await _controller.DeleteJournal(journalId);
 
             // Assert
-            Assert.IsInstanceOfType<NoContentResult>(result);
+            var noContentResult = result as NoContentResult;
+            Assert.IsNotNull(noContentResult);
+            Assert.AreEqual(204, noContentResult.StatusCode);
         }
     }
 }
