@@ -110,7 +110,7 @@ public class JournalController : ControllerBase
             if (guardian?.ID == null)
             {
                 _logger.LogWarning("No guardian ID found for logged-in user: {LoggedInUserId}", loggedInUserId);
-                return Forbid("You do not have permission to view this journal entry.");
+                return StatusCode(403, "You do not have permission to view this journal entry.");
             }
 
             _logger.LogInformation("Getting journal entry with ID: {Id}", id);
@@ -124,7 +124,7 @@ public class JournalController : ControllerBase
             if (journal.GuardianID != guardian.ID)
             {
                 _logger.LogWarning("User does not own the journal entry with ID: {Id}", id);
-                return Forbid("You do not have permission to view this journal entry.");
+                return StatusCode(403, "You do not have permission to view this journal entry.");
             }
 
             return Ok(journal);
@@ -188,7 +188,7 @@ public class JournalController : ControllerBase
             if (guardian?.ID == null)
             {
                 _logger.LogWarning("No guardian ID found for logged-in user: {LoggedInUserId}", loggedInUserId);
-                return Forbid("You do not have permission to modify this journal entry.");
+                return StatusCode(403, "You do not have permission to modify this journal entry.");
             }
 
             var existingJournal = await _journalRepository.GetJournalEntryByIdAsync(id);
@@ -201,7 +201,7 @@ public class JournalController : ControllerBase
             if (existingJournal.GuardianID != guardian.ID)
             {
                 _logger.LogWarning("User does not own the journal entry with ID: {Id}", id);
-                return Forbid("You do not have permission to modify this journal entry.");
+                return StatusCode(403, "You do not have permission to modify this journal entry.");
             }
 
             _logger.LogInformation("Updating journal entry with ID: {Id}", id);
@@ -237,7 +237,7 @@ public class JournalController : ControllerBase
             if (guardian?.ID == null)
             {
                 _logger.LogWarning("No guardian ID found for logged-in user: {LoggedInUserId}", loggedInUserId);
-                return Forbid("You do not have permission to delete this journal entry.");
+                return StatusCode(403, "You do not have permission to delete this journal entry.");
             }
 
             var existingJournal = await _journalRepository.GetJournalEntryByIdAsync(id);
@@ -250,7 +250,7 @@ public class JournalController : ControllerBase
             if (existingJournal.GuardianID != guardian.ID)
             {
                 _logger.LogWarning("User does not own the journal entry with ID: {Id}", id);
-                return Forbid("You do not have permission to delete this journal entry.");
+                return StatusCode(403, "You do not have permission to delete this journal entry.");
             }
 
             _logger.LogInformation("Deleting journal entry with ID: {Id}", id);
