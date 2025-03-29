@@ -108,6 +108,7 @@ namespace HQB.Tests.Controllers
         {
             // Arrange
             var guardian = new Guardian { ID = Guid.NewGuid(), FirstName = "Updated", LastName = "Guardian", UserID = Guid.NewGuid().ToString() };
+            _mockRepo.Setup(repo => repo.GetGuardianByIdAsync(guardian.ID)).ReturnsAsync(guardian);
             _mockRepo.Setup(repo => repo.UpdateGuardianAsync(guardian)).ReturnsAsync(1);
 
             // Act
