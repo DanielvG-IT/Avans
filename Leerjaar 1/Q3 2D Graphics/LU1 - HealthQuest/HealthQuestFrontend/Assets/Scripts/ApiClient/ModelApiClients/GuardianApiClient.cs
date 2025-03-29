@@ -41,9 +41,9 @@ public class GuardianApiClient : MonoBehaviour
     //    return ParseGuardianResponse(webRequestResponse);
     //}
 
-    public async Awaitable<IWebRequestReponse> DeleteGuardian(string environmentId)
+    public async Awaitable<IWebRequestReponse> DeleteGuardian(string guardianId)
     {
-        string route = "/api/v1/guardian/" + environmentId;
+        string route = "/api/v1/guardian/" + guardianId;
         return await webClient.SendDeleteRequestAsync(route);
     }
 
