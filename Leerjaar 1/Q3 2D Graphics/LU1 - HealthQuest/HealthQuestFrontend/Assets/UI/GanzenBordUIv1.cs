@@ -14,46 +14,40 @@ public class Ganzenbord : MonoBehaviour
     public GameObject[] levelButtons;
 
     public Camera mainCamera;
+    public float cameraSpeed = 5f;
 
     private bool appoinmentPopUpActive = true;
     private static int selectedLevel = 1;
     private SpriteRenderer levelColorChanger;
 
-    private string[] appointmentTitles = new string[] { "Afspraak 1", "Afspraak 2", "Afpsraak 3" };
+    private string[] appointmentTitles = new string[] { "Afspraak 1", "Afspraak 2", "Afspraak 3" };
     private string[] appointmentDescriptions = new string[] { "Description 1", "Description 2", "Description 3" };
     private float[] cameraPositions = new float[] { 283, 316, 467 };
     private bool[] unlockedLevels = new bool[] { true, false, false };
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private Vector3 targetPosition;
+
     private void Start()
     {
+        targetPosition = mainCamera.transform.position;
         ToggleSelection();
     }
 
-    // Update is called once per frame
     private void Update()
     {
-        switch (mainCamera.transform.position.x)
+        // Clamp de X-waarde van de target positie
+        targetPosition.x = Mathf.Clamp(targetPosition.x, 283f, 500f);
+
+        // Smooth movement van camera naar target positie
+        mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, targetPosition, Time.deltaTime * cameraSpeed);
+
+        // Input voor horizontale beweging (pijltjestoetsen of A/D)
+        float horizontalInput = Input.GetAxis("Horizontal");
+        if (Mathf.Abs(horizontalInput) > 0.1f)
         {
-            case < 283:
-                mainCamera.transform.position = new Vector3(283, mainCamera.transform.position.y, mainCamera.transform.position.z);
-                return;
-            case > 500:
-                mainCamera.transform.position = new Vector3(500, mainCamera.transform.position.y, mainCamera.transform.position.z);
-                return;
+            targetPosition += Vector3.right * horizontalInput * 2f;
         }
-
-        // Get the horizontal input (left/right)
-        var horizontalInput = Input.GetAxis("Horizontal");
-
-        // Move the camera only along the X-axis (right/left)
-        var movement = mainCamera.transform.right * horizontalInput;
-
-        // Update the camera's position by adding the movement to the current position, but keep the Y and Z unchanged
-        mainCamera.transform.position = new Vector3(mainCamera.transform.position.x + movement.x, mainCamera.transform.position.y, mainCamera.transform.position.z);
-        
     }
-
 
     public void OnLevelSelected(int level)
     {
@@ -71,7 +65,7 @@ public class Ganzenbord : MonoBehaviour
 
     public void ToggleSelection()
     {
-        if(appoinmentPopUpActive)
+        if (appoinmentPopUpActive)
         {
             appointmentErrorMessage.text = "";
             backdrop.gameObject.SetActive(false);
@@ -95,13 +89,14 @@ public class Ganzenbord : MonoBehaviour
 
     public void MoveMainCamera(float posX)
     {
-        mainCamera.transform.position = new Vector3(posX, mainCamera.transform.position.y, mainCamera.transform.position.z);
+        targetPosition = new Vector3(posX, mainCamera.transform.position.y, mainCamera.transform.position.z);
     }
 
     public void DoneWithSelectedLevel()
     {
-        if(selectedLevel - 1 >= 0)
-            if (unlockedLevels[selectedLevel-1])
+        if (selectedLevel - 1 >= 0)
+        {
+            if (unlockedLevels[selectedLevel - 1])
             {
                 unlockedLevels[selectedLevel] = true;
                 levelColorChanger = levelButtons[selectedLevel].GetComponent<SpriteRenderer>();
@@ -112,5 +107,6 @@ public class Ganzenbord : MonoBehaviour
             {
                 appointmentErrorMessage.text = "Je moet eerst het vorige level voltooien!";
             }
+        }
     }
 }
