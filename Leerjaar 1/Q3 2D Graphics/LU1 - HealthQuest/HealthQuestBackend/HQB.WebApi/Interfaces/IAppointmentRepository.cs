@@ -34,6 +34,13 @@ public interface IAppointmentRepository
     Task<int> AddAppointmentAsync(Appointment appointment);
 
     /// <summary>
+    /// Links an appointment to a treatment asynchronously.
+    /// </summary>
+    /// <param name="treatmentAppointment">The treatment appointment object containing the details of the link.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the number of state entries written to the database.</returns>
+    Task<int> LinkAppointmentToTreatmentAsync(TreatmentAppointment treatmentAppointment);
+
+    /// <summary>
     /// Updates an existing appointment asynchronously.
     /// </summary>
     /// <param name="appointment">The appointment to update.</param>

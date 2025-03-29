@@ -53,4 +53,11 @@ public class AppointmentRepository : IAppointmentRepository
         const string sql = "SELECT * FROM Treatment_Appoinment WHERE TreatmentID = @TreatmentID";
         return await connection.QueryAsync<TreatmentAppointment>(sql, new { TreatmentID = id });
     }
+
+    public async Task<int> LinkAppointmentToTreatmentAsync(TreatmentAppointment treatmentAppointment)
+    {
+        using var connection = new SqlConnection(_connectionString);
+        const string sql = "INSERT INTO Treatment_Appoinment (TreatmentID, AppointmentID) VALUES (@TreatmentID, @AppointmentID)";
+        return await connection.ExecuteAsync(sql, treatmentAppointment);
+    }
 }
