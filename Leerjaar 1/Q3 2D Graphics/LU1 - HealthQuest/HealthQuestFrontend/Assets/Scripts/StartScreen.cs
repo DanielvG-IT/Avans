@@ -1,10 +1,9 @@
 using TMPro;
 using System;
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
-using System.Threading.Tasks;
-using UnityEngine.SceneManagement;
+using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// Manages the Start, Login, and Registration panels with smooth fade transitions.
@@ -113,20 +112,37 @@ public class StartScreen : MonoBehaviour
 
         try
         {
-            var result = await userApiClient.Register(user);
-            if (result is WebRequestData<string> data)
+            var registrationResult = await userApiClient.Register(user);
+            if (registrationResult is WebRequestError loginError)
             {
-                Debug.Log("Registration successful: " + data.Data);
-                ShowPanel(loginPanel);
+                Debug.LogError("Failed to register user: " + loginError.ErrorMessage); // TODO: Show the user an error message
+                return;
             }
-            else
+
+            var loginResult = await userApiClient.Login(user);
+            if (loginResult is WebRequestError registerError)
             {
-                Debug.LogError("Registration failed: " + result);
+                Debug.LogError("Failed to login user: " + registerError.ErrorMessage); // TODO: Show the user an error message
+                return;
             }
+
+            var guardianResult = await guardianApiClient.CreateGuardian(guardian);
+            if (guardianResult is WebRequestError guardianError)
+            {
+                Debug.LogError("Failed to create guardian: " + guardianError.ErrorMessage); // TODO: Show the user an error message
+                return;
+            }
+
+            // Store the guardian data in the API client manager
+            var guardianData = (guardianResult as WebRequestData<Guardian>).Data;
+            ApiClientManager.Instance.SetCurrentGuardian(guardianData);
+
+            Debug.Log("Registration successful."); // TODO: Show the user a success message
+            // TODO: Load the patient creation scene
         }
         catch (Exception ex)
         {
-            Debug.LogError("An error occurred during registration: " + ex.Message);
+            Debug.LogError("An error occurred during login: " + ex.Message); // TODO: Show the user an error message
         }
     }
 
@@ -138,24 +154,43 @@ public class StartScreen : MonoBehaviour
             return;
         }
 
-        var user = new User
-        {
-            Email = emailFieldLogin.text,
-            Password = passwordFieldLogin.text
-        };
+        var user = new User { Email = emailFieldLogin.text, Password = passwordFieldLogin.text };
 
         try
         {
-            var result = await userApiClient.Login(user);
-            if (result is WebRequestData<string> data)
+            var loginResult = await userApiClient.Login(user);
+            if (loginResult is WebRequestError registerError)
             {
-                Debug.Log("Login successful: " + data.Data);
-                // TODO: Load the correct scene
+                Debug.LogError("Failed to login user: " + registerError.ErrorMessage); // TODO: Show the user an error message
+                return;
             }
-            else
+
+            var guardianResult = await guardianApiClient.ReadGuardian();
+            if (guardianResult is WebRequestError guardianError)
             {
-                Debug.LogError("Login failed: " + result);
+                Debug.LogError("Failed to login user: " + guardianError.ErrorMessage); // TODO: Show the user an error message
+                return;
             }
+
+            var guardianData = (guardianResult as WebRequestData<Guardian>).Data;
+            ApiClientManager.Instance.SetCurrentGuardian(guardianData);
+
+            //var patientResults = await patientApiClient.ReadPatients();
+            //if (patientResults is WebRequestError patientError)
+            //{
+            //    Debug.LogError("Failed to login user: " + patientError.ErrorMessage); // TODO: Show the user an error message
+            //    return;
+            //}
+            //List<Patient> patientData = (patientResults as WebRequestData<Patient>).Data;
+
+            //if (!patientData.Any())
+            //{
+            //    Debug.LogWarning("No patients found for this guardian.");
+            //    // TODO: Load the patient scene (creation)
+            //}
+
+            Debug.Log("Login successful."); // TODO: Show the user a success message
+            // TODO: Load the patient scene (selection
         }
         catch (Exception ex)
         {
