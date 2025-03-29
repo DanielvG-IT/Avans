@@ -4,7 +4,7 @@ public class GuardianApiClient : MonoBehaviour
 {
   public WebClient webClient;
 
-    public async Awaitable<IWebRequestReponse> ReadGuardian()
+    public async Awaitable<IWebRequestReponse> ReadGuardianAsync()
     {
         string route = "/api/v1/guardian";
 
@@ -20,7 +20,7 @@ public class GuardianApiClient : MonoBehaviour
         return JsonHelper.ParseGuardianResponse(webRequestResponse);
     }
 
-    public async Awaitable<IWebRequestReponse> CreateGuardian(Guardian guardianData)
+    public async Awaitable<IWebRequestReponse> CreateGuardianAsync(Guardian guardianData)
     {
         string route = "/api/v1/guardian";
         string data = JsonUtility.ToJson(guardianData);
@@ -29,7 +29,7 @@ public class GuardianApiClient : MonoBehaviour
         return JsonHelper.ParseGuardianResponse(webRequestResponse);
     }
 
-    public async Awaitable<IWebRequestReponse> UpdateGuardian(string guardianId, Guardian guardianData)
+    public async Awaitable<IWebRequestReponse> UpdateGuardianAsync(string guardianId, Guardian guardianData)
     {
         string route = "/api/v1/guardian/" + guardianId;
         string data = JsonUtility.ToJson(guardianData);
@@ -38,7 +38,7 @@ public class GuardianApiClient : MonoBehaviour
         return JsonHelper.ParseGuardianResponse(webRequestResponse);
     }
 
-    public async Awaitable<IWebRequestReponse> DeleteGuardian(string guardianId)
+    public async Awaitable<IWebRequestReponse> DeleteGuardianAsync(string guardianId)
     {
         string route = "/api/v1/guardian/" + guardianId;
         return await webClient.SendDeleteRequestAsync(route);

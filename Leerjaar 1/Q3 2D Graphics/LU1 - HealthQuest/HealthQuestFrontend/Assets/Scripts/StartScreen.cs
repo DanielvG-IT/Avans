@@ -126,7 +126,7 @@ public class StartScreen : MonoBehaviour
                 return;
             }
 
-            var guardianResult = await guardianApiClient.CreateGuardian(guardian);
+            var guardianResult = await guardianApiClient.CreateGuardianAsync(guardian);
             if (guardianResult is WebRequestError guardianError)
             {
                 Debug.LogError("Failed to create guardian: " + guardianError.ErrorMessage); // TODO: Show the user an error message
@@ -165,7 +165,7 @@ public class StartScreen : MonoBehaviour
                 return;
             }
 
-            var guardianResult = await guardianApiClient.ReadGuardian();
+            var guardianResult = await guardianApiClient.ReadGuardianAsync();
             if (guardianResult is WebRequestError guardianError)
             {
                 Debug.LogError("Failed to login user: " + guardianError.ErrorMessage); // TODO: Show the user an error message
