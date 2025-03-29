@@ -5,26 +5,22 @@ using System.Collections.Generic;
 
 public class GanzenBordUI : MonoBehaviour
 {
-    [Header("Instellingen")]
-    public TextAsset afsprakenJSON;
+    [Header("Referenties")]
+    public GanzenbordManager boardManager;
     public GameObject popUpPrefab;
     public Transform goose;
     public Camera mainCamera;
     public Transform levelsParent;
+
+    [Header("Instellingen")]
     public float cameraSpeed = 5f;
-    public bool debugMode = false;
-
-    [Header("Gans")]
     public float gooseSnelheid = 125f;
-
-    [Header("Level status kleur")]
     public Color afgerondKleur = Color.green;
+    public bool debugMode = false;
 
     private GameObject currentPopUp;
     private GameObject canvas;
     private List<GameObject> levelButtons = new List<GameObject>();
-    private Afspraak[] afspraken;
-    private bool[] unlockedLevels;
     private Vector3 cameraTarget;
     private int currentLevel = 0;
     private Vector3 gooseOriginalScale;
@@ -38,18 +34,15 @@ public class GanzenBordUI : MonoBehaviour
             return;
         }
 
-        // JSON inladen
-        var data = JsonUtility.FromJson<AfspraakList>("{\"afspraken\":" + afsprakenJSON.text + "}");
-        afspraken = data.afspraken;
-
-        // Levels unlocken
-        unlockedLevels = new bool[afspraken.Length];
-        unlockedLevels[0] = true;
+        if (boardManager == null)
+        {
+            Debug.LogError("❌ GanzenbordManager niet gekoppeld!");
+            return;
+        }
 
         if (debugMode)
         {
-            for (int i = 0; i < unlockedLevels.Length; i++)
-                unlockedLevels[i] = true;
+            boardManager.SetLevelsCompleted(boardManager.AantalLevels);
         }
 
         // Knoppen ophalen en listeners toevoegen
@@ -72,19 +65,27 @@ public class GanzenBordUI : MonoBehaviour
         goose.position = levelButtons[0].transform.position;
         gooseOriginalScale = goose.localScale;
         cameraTarget = mainCamera.transform.position;
+
+        // Kleur voltooide levels groen
+        for (int i = 0; i < levelButtons.Count; i++)
+        {
+            if (boardManager.IsLevelVoltooid(i))
+            {
+                KleurKnopCirkel(i, afgerondKleur);
+            }
+        }
     }
 
     void Update()
     {
-        // Smooth camera naar doelpositie (alleen bij klik)
         mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, cameraTarget, Time.deltaTime * cameraSpeed);
     }
 
     void OnLevelClicked(int index)
     {
-        if (!unlockedLevels[index])
+        if (!boardManager.IsLevelUnlocked(index))
         {
-            Debug.Log("🔒 Level is gelocked.");
+            Debug.Log("🔒 Level is nog gelocked.");
             return;
         }
 
@@ -126,12 +127,19 @@ public class GanzenBordUI : MonoBehaviour
         currentPopUp = Instantiate(popUpPrefab, canvas.transform);
         currentPopUp.transform.SetAsLastSibling();
 
+        Afspraak afspraak = boardManager.GetAfspraak(index);
+        if (afspraak == null)
+        {
+            Debug.LogError("❌ Geen afspraak gevonden voor index " + index);
+            return;
+        }
+
         PopUpUI ui = currentPopUp.GetComponent<PopUpUI>();
         if (ui != null)
         {
             ui.Setup(
-                afspraken[index].title,
-                afspraken[index].description,
+                afspraak.title,
+                afspraak.description,
                 () => CompleteLevel(index),
                 () => Destroy(currentPopUp)
             );
@@ -140,22 +148,22 @@ public class GanzenBordUI : MonoBehaviour
 
     void CompleteLevel(int index)
     {
-        // Specifiek de child "KnopCirkel" zoeken en van kleur veranderen
+        boardManager.VoltooiLevel(index);
+        KleurKnopCirkel(index, afgerondKleur);
+        Destroy(currentPopUp);
+        Debug.Log($"✅ Level {index + 1} gemarkeerd als voltooid!");
+    }
+
+    void KleurKnopCirkel(int index, Color kleur)
+    {
         Transform cirkel = levelButtons[index].transform.Find("KnopCirkel");
         if (cirkel != null)
         {
             Image img = cirkel.GetComponent<Image>();
             if (img != null)
             {
-                img.color = afgerondKleur;
+                img.color = kleur;
             }
         }
-
-        // Volgende level unlocken
-        if (index + 1 < unlockedLevels.Length)
-            unlockedLevels[index + 1] = true;
-
-        Destroy(currentPopUp);
-        Debug.Log($"✅ Level {index + 1} is nu unlocked!");
     }
 }
