@@ -167,25 +167,29 @@ namespace HQB.WebApi.Controllers
                     return BadRequest("Guardian information is required.");
                 }
 
-                if (id != guardian.ID)
+                _logger.LogInformation("Updating guardian with ID: {id}", id);
+                var existingGuardian = await _guardianRepository.GetGuardianByIdAsync(id);
+                if (existingGuardian == null)
                 {
-                    _logger.LogWarning("ID mismatch");
-                    return BadRequest("ID mismatch.");
+                    _logger.LogWarning("Guardian with ID: {id} not found.", id);
+                    return NotFound($"Guardian with ID: {id} not found.");
                 }
 
-                _logger.LogInformation($"Updating guardian with ID: {id}");
+                guardian.ID = id;
+
                 var result = await _guardianRepository.UpdateGuardianAsync(guardian);
                 if (result > 0)
                 {
-                    _logger.LogInformation("Guardian updated successfully");
+                    _logger.LogInformation("Guardian with ID: {id} updated successfully.", id);
                     return Ok(guardian);
                 }
-                _logger.LogWarning($"Guardian with ID: {id} not found");
-                return NotFound();
+
+                _logger.LogWarning("Failed to update guardian with ID: {id}.", id);
+                return StatusCode(500, "Failed to update the guardian.");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while updating the guardian.");
+                _logger.LogError(ex, "An error occurred while updating the guardian with ID: {id}.", id);
                 return StatusCode(500, "An error occurred while processing your request.");
             }
         }
