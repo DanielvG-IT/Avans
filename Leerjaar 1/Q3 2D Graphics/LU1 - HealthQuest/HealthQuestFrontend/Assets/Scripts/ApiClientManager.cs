@@ -4,9 +4,10 @@ public class ApiClientManager : MonoBehaviour
 {
     public static ApiClientManager Instance;
 
-    // References to other components on the same GameObject
+    [Header("ApiClients")]
     public WebClient WebClient;
-    public OuderVoogdApiClient OuderVoogdApiClient;
+    public UserApiClient UserApiClient;
+    public GuardianApiClient GuardianApiClient;
 
     private void Awake()
     {
@@ -14,15 +15,16 @@ public class ApiClientManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);  // <-- Key line to keep this GameObject across scenes
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
-            Destroy(gameObject); // If another instance already exists, destroy this one
+            Destroy(gameObject);
             return;
         }
 
-        if (!WebClient) WebClient = GetComponent<WebClient>();
-        if (!OuderVoogdApiClient) OuderVoogdApiClient = GetComponent<OuderVoogdApiClient>();
+        if (!WebClient) { WebClient = GetComponent<WebClient>(); }
+        if (!UserApiClient) { UserApiClient = GetComponent<UserApiClient>(); }
+        if (!GuardianApiClient) { GuardianApiClient = GetComponent<GuardianApiClient>(); }
     }
 }

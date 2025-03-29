@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// Manages the Start, Login, and Registration panels with smooth fade transitions.
 /// </summary>
-public class StartScreenManager : MonoBehaviour
+public class StartScreen : MonoBehaviour
 {
     [Header("UI Panels")]
     [SerializeField] private CanvasGroup startPanel;
@@ -26,12 +26,14 @@ public class StartScreenManager : MonoBehaviour
     [SerializeField] private float fadeDuration = 0.5f;
 
     private CanvasGroup currentPanel;
-    private OuderVoogdApiClient apiClient;
+    private UserApiClient userApiClient;
+    private GuardianApiClient guardianApiClient;
 
     private void Start()
     {
         InitializePanels();
-        apiClient = ApiClientManager.Instance.OuderVoogdApiClient;
+        userApiClient = ApiClientManager.Instance.UserApiClient;
+        guardianApiClient = ApiClientManager.Instance.GuardianApiClient;
     }
 
     /// <summary>
@@ -106,17 +108,12 @@ public class StartScreenManager : MonoBehaviour
             return;
         }
 
-        var user = new OuderVoogd
-        {
-            firstName = firstNameField.text,
-            lastName = lastNameField.text,
-            email = emailFieldRegister.text,
-            password = passwordFieldRegister.text
-        };
+        var user = new User { Email = emailFieldRegister.text, Password = passwordFieldRegister.text };
+        var guardian = new Guardian { FirstName = firstNameField.text, LastName = lastNameField.text };
 
         try
         {
-            var result = await apiClient.Register(user);
+            var result = await userApiClient.Register(user);
             if (result is WebRequestData<string> data)
             {
                 Debug.Log("Registration successful: " + data.Data);
@@ -141,19 +138,19 @@ public class StartScreenManager : MonoBehaviour
             return;
         }
 
-        var user = new OuderVoogd
+        var user = new User
         {
-            email = emailFieldLogin.text,
-            password = passwordFieldLogin.text
+            Email = emailFieldLogin.text,
+            Password = passwordFieldLogin.text
         };
 
         try
         {
-            var result = await apiClient.Login(user);
+            var result = await userApiClient.Login(user);
             if (result is WebRequestData<string> data)
             {
                 Debug.Log("Login successful: " + data.Data);
-                await SceneManager.LoadSceneAsync("GameScherm");
+                // TODO: Load the correct scene
             }
             else
             {

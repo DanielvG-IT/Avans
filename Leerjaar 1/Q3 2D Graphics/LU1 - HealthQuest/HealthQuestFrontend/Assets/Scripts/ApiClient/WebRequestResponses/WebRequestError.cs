@@ -1,12 +1,12 @@
 using System;
 using UnityEngine;
 
-public class WebRequestError<T> : IWebRequestReponse
+public class WebRequestError : IWebRequestReponse
 {
-    public readonly T Data;
+    public readonly string ErrorMessage;
 
-    public WebRequestError(T data)
+    public WebRequestError(string errormessage)
     {
-        Data = data;
+        ErrorMessage = errormessage;
     }
 }
