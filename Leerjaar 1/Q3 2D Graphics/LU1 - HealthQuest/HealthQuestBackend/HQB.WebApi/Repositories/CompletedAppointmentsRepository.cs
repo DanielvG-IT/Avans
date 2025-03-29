@@ -51,23 +51,20 @@ namespace HQB.WebApi.Repositories
       return await connection.QueryFirstOrDefaultAsync<CompletedAppointment>(query, new { ID = id });
     }
 
-    public async Task<IEnumerable<CompletedAppointment>> GetCompletedAppointmentsByPatientIdAsync(Guid patientId)
+    public async Task<IEnumerable<Appointment>> GetCompletedAppointmentsByPatientIdAsync(Guid patientId)
     {
       using var connection = new SqlConnection(_connectionString);
       const string query = @"
       SELECT 
-        ca.ID, 
-        ca.PatientID, 
-        ca.AppointmentID, 
-        ca.CompletedDate, 
-        a.Name AS AppointmentName, 
-        a.Url AS AppointmentUrl, 
-        a.Image AS AppointmentImage, 
-        a.DurationInMinutes AS AppointmentDurationInMinutes
+      a.ID, 
+      a.Name, 
+      a.Url, 
+      a.Image, 
+      a.DurationInMinutes
       FROM CompletedAppointments ca
       INNER JOIN Appoinment a ON ca.AppointmentID = a.ID
       WHERE ca.PatientID = @PatientID";
-      return await connection.QueryAsync<CompletedAppointment>(query, new { PatientID = patientId });
+      return await connection.QueryAsync<Appointment>(query, new { PatientID = patientId });
     }
 
     public async Task AddCompletedAppointmentAsync(CompletedAppointment completedAppointment)

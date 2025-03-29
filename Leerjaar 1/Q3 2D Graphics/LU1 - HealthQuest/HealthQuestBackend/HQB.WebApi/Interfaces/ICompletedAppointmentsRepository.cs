@@ -23,7 +23,7 @@ public interface ICompletedAppointmentsRepository
   /// Retrieves all completed appointments for a specific patient asynchronously.
   /// </summary>
   /// <returns>A task that represents the asynchronous operation. The task result contains a collection of completed appointments for the specified patient.</returns>
-  Task<IEnumerable<CompletedAppointment>> GetCompletedAppointmentsByPatientIdAsync(Guid patientId);
+  Task<IEnumerable<Appointment>> GetCompletedAppointmentsByPatientIdAsync(Guid patientId);
 
   /// <summary>
   /// Adds a new completed appointment asynchronously.

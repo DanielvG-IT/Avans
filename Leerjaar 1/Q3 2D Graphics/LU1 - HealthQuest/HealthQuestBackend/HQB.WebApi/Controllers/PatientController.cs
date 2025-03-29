@@ -348,7 +348,7 @@ namespace HQB.WebApi.Controllers
         }
 
         [HttpGet("{id}/completed-appointments", Name = "GetCompletedAppointments")]
-        public async Task<ActionResult<IEnumerable<CompletedAppointment>>> GetCompletedAppointments(Guid id)
+        public async Task<ActionResult<IEnumerable<Appointment>>> GetCompletedAppointments(Guid id)
         {
             try
             {
