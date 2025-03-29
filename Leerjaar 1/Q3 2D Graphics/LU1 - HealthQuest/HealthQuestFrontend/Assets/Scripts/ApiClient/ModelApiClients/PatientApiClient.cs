@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 class PatientApiClient
 {
@@ -9,7 +10,7 @@ class PatientApiClient
         string route = "/api/v1/patient";
 
         IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
-        return JsonHelper.ParsePatientResponse(webRequestResponse);
+        return JsonHelper.ParseResponse<Patient>(webRequestResponse);
     }
 
     public async Awaitable<IWebRequestReponse> ReadPatientByIdAsync(string patientId)
@@ -17,7 +18,7 @@ class PatientApiClient
         string route = "/api/v1/patient" + patientId;
 
         IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
-        return JsonHelper.ParsePatientResponse(webRequestResponse);
+        return JsonHelper.ParseResponse<Patient>(webRequestResponse);
     }
 
     public async Awaitable<IWebRequestReponse> CreatePatient(Patient patientData)
@@ -26,7 +27,7 @@ class PatientApiClient
         string data = JsonUtility.ToJson(patientData);
 
         IWebRequestReponse webRequestResponse = await webClient.SendPostRequestAsync(route, data);
-        return JsonHelper.ParsePatientResponse(webRequestResponse);
+        return JsonHelper.ParseResponse<Patient>(webRequestResponse);
     }
 
     public async Awaitable<IWebRequestReponse> UpdatePatient(string patientId, Patient patientData)
@@ -35,7 +36,7 @@ class PatientApiClient
         string data = JsonUtility.ToJson(patientData);
 
         IWebRequestReponse webRequestResponse = await webClient.SendPutRequestAsync(route, data);
-        return JsonHelper.ParsePatientResponse(webRequestResponse);
+        return JsonHelper.ParseResponse<Patient>(webRequestResponse);
     }
 
     public async Awaitable<IWebRequestReponse> DeletePatient(string patientId)
@@ -49,7 +50,7 @@ class PatientApiClient
         string route = "/api/v1/patient/" + patientId + "/stickers";
 
         IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
-        return JsonHelper.ParseStickerListResponse(webRequestResponse);
+        return JsonHelper.ParseListResponse<Sticker>(webRequestResponse);
     }
 
     public async Awaitable<IWebRequestReponse> AddUnlockedStickerToPatientAsync(string patientId, Sticker sticker)
@@ -58,14 +59,14 @@ class PatientApiClient
         string data = JsonUtility.ToJson(sticker);
 
         IWebRequestReponse webRequestResponse = await webClient.SendPostRequestAsync(route, data);
-        return JsonHelper.ParseStickerResponse(webRequestResponse);
+        return JsonHelper.ParseResponse<Sticker>(webRequestResponse);
     }
 
-    //public async Awaitable<IWebRequestReponse> ReadCompletedAppointmentsFromPatientAsync(string patientId)
-    //{
-    //    string route = "/api/v1/patient/" + patientId + "/completed-appointments";
+    public async Awaitable<IWebRequestReponse> ReadCompletedAppointmentsFromPatientAsync(string patientId)
+    {
+        string route = "/api/v1/patient/" + patientId + "/completed-appointments";
 
-    //    IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
-    //    return JsonHelper.ParseAppointmentResponse(webRequestResponse);
-    //}
+        IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
+        return JsonHelper.ParseListResponse<Appointment>(webRequestResponse);
+    }
 }
