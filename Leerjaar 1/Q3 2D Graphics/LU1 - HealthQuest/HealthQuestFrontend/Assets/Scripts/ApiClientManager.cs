@@ -27,4 +27,11 @@ public class ApiClientManager : MonoBehaviour
         if (!UserApiClient) { UserApiClient = GetComponent<UserApiClient>(); }
         if (!GuardianApiClient) { GuardianApiClient = GetComponent<GuardianApiClient>(); }
     }
+
+    // Properties and methodes for storing data like logged in user, etc.
+    public Guardian CurrentGuardian { get; private set; }
+    public void SetCurrentGuardian(Guardian guardian)
+    {
+        CurrentGuardian = guardian;
+    }
 }
