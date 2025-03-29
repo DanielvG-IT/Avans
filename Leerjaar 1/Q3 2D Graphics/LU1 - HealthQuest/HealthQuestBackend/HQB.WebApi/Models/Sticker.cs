@@ -14,4 +14,9 @@ public class Sticker
   /// Gets or sets the name of the sticker.
   /// </summary>
   public required string Name { get; set; }
+
+  /// <summary>
+  /// Gets or sets the optional unlocked date.
+  /// </summary>
+  public DateTime? UnlockedDate { get; set; }
 }
