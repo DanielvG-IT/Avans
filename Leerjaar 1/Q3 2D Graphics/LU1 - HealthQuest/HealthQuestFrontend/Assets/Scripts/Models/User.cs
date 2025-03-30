@@ -1,5 +1,5 @@
 ﻿public class User
 {
-    public string Email;
-    public string Password;
+    public string email;
+    public string password;
 }

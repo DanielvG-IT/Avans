@@ -9,20 +9,20 @@ public class CompletedAppointment
   /// <summary>
   /// Gets or sets the unique identifier for the completed appointment.
   /// </summary>
-  public Guid Id { get; set; }
+  public Guid id { get; set; }
 
   /// <summary>
   /// Gets or sets the unique identifier of the patient associated with the completed appointment.
   /// </summary>
-  public Guid PatientId { get; set; }
+  public Guid patientId { get; set; }
 
   /// <summary>
   /// Gets or sets the unique identifier of the appointment that was completed.
   /// </summary>
-  public Guid AppointmentId { get; set; }
+  public Guid appointmentId { get; set; }
 
   /// <summary>
   /// Gets or sets the date and time when the appointment was completed.
   /// </summary>
-  public DateTime CompletedDate { get; set; }
+  public DateTime completedDate { get; set; }
 }

@@ -31,7 +31,7 @@ public class StickerBoeken : MonoBehaviour
                 {
                     foreach (var sticker in dataResponse.Data)
                     {
-                        Debug.Log("Unlocked sticker: " + sticker.Name);
+                        Debug.Log("Unlocked sticker: " + sticker.name);
                     }
                     break;
                 }

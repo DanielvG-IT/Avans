@@ -9,15 +9,15 @@ public class Sticker
     /// <summary>
     /// Gets or sets the unique identifier for the sticker.
     /// </summary>
-    public Guid Id { get; set; }
+    public Guid id { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the sticker.
     /// </summary>
-    public string Name { get; set; }
+    public string name { get; set; }
 
     /// <summary>
     /// Gets or sets the date when the sticker got unlocked.
     /// </summary>
-    public DateTime UnlockedDate { get; set; }
+    public DateTime unlockedDate { get; set; }
 }
