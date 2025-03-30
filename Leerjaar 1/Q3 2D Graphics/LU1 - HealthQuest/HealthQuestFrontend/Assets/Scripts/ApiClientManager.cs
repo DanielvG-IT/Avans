@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class ApiClientManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class ApiClientManager : MonoBehaviour
     public PatientApiClient PatientApiClient;
     public GuardianApiClient GuardianApiClient;
     public TreatmentApiClient TreatmentApiClient;
+    public AppointmentApiClient AppointmentApiClient;
 
     private void Awake()
     {
@@ -25,11 +27,13 @@ public class ApiClientManager : MonoBehaviour
             return;
         }
 
+        // Get the ApiClients from the GameObjects
         if (WebClient == null) { WebClient = GetComponent<WebClient>(); }
         if (UserApiClient == null) { UserApiClient = GetComponent<UserApiClient>(); }
         if (PatientApiClient == null) { PatientApiClient = GetComponent<PatientApiClient>(); }
         if (GuardianApiClient == null) { GuardianApiClient = GetComponent<GuardianApiClient>(); }
         if (TreatmentApiClient == null) { TreatmentApiClient = GetComponent<TreatmentApiClient>(); }
+        if (AppointmentApiClient == null) { AppointmentApiClient = GetComponent<AppointmentApiClient>(); }
     }
 
     // Properties and methodes for storing data like logged in user, etc.
@@ -56,6 +60,8 @@ public class ApiClientManager : MonoBehaviour
     {
         CurrentTreatment = treatment;
     }
+
+    public List<Appointment> CurrentAppointments { get; set; }
 
     public void ClearData()
     {
