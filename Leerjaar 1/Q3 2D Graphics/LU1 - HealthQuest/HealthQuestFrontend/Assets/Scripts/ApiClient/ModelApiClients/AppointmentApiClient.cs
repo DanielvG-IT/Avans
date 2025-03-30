@@ -43,4 +43,12 @@ public class AppointmentApiClient : MonoBehaviour
         string route = "/api/v1/appointments/" + appointmentId;
         return await webClient.SendDeleteRequestAsync(route);
     }
+
+    public async Awaitable<IWebRequestReponse> ReadAppointmentsByTreatmentIdAsync(string treatmentId)
+    {
+        string route = "/api/v1/appointments?treatmentId=" + treatmentId;
+
+        IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
+        return JsonHelper.ParseListResponse<Appointment>(webRequestResponse);
+    }
 }
