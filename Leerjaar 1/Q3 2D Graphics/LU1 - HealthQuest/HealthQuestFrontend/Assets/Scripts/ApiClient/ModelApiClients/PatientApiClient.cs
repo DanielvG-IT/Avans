@@ -55,7 +55,7 @@ public class PatientApiClient : MonoBehaviour
 
     public async Awaitable<IWebRequestReponse> AddUnlockedStickerToPatientAsync(string patientId, Sticker sticker)
     {
-        string route = "/api/v1/patient/" + patientId + "/stickers";
+        string route = "/api/v1/patient/" + patientId + "/stickers?stickerId=" + sticker.Id;
         string data = JsonUtility.ToJson(sticker);
 
         IWebRequestReponse webRequestResponse = await webClient.SendPostRequestAsync(route, data);
