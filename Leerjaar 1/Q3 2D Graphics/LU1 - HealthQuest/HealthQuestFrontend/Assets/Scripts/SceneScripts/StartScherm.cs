@@ -26,12 +26,14 @@ public class StartScreen : MonoBehaviour
 
     private CanvasGroup currentPanel;
     private UserApiClient userApiClient;
+    private PatientApiClient patientApiClient;
     private GuardianApiClient guardianApiClient;
 
     private void Start()
     {
         InitializePanels();
         userApiClient = ApiClientManager.Instance.UserApiClient;
+        patientApiClient = ApiClientManager.Instance.PatientApiClient;
         guardianApiClient = ApiClientManager.Instance.GuardianApiClient;
     }
 
@@ -107,8 +109,8 @@ public class StartScreen : MonoBehaviour
             return;
         }
 
-        var user = new User { Email = emailFieldRegister.text, Password = passwordFieldRegister.text };
-        var guardian = new Guardian { FirstName = firstNameField.text, LastName = lastNameField.text };
+        var user = new User { email = emailFieldRegister.text, password = passwordFieldRegister.text };
+        var guardian = new Guardian { firstName = firstNameField.text, lastName = lastNameField.text };
 
         try
         {
@@ -154,7 +156,7 @@ public class StartScreen : MonoBehaviour
             return;
         }
 
-        var user = new User { Email = emailFieldLogin.text, Password = passwordFieldLogin.text };
+        var user = new User { email = emailFieldLogin.text, password = passwordFieldLogin.text };
 
         try
         {
@@ -172,25 +174,41 @@ public class StartScreen : MonoBehaviour
                 return;
             }
 
-            var guardianData = (guardianResult as WebRequestData<Guardian>).Data;
+            var guardianData = (guardianResult as WebRequestData<Guardian>)?.Data;
+            if (guardianData == null)
+            {
+                Debug.LogError("Guardian data is null."); // TODO: Show the user an error message
+                return;
+            }
+
             ApiClientManager.Instance.SetCurrentGuardian(guardianData);
 
-            //var patientResults = await patientApiClient.ReadPatients();
-            //if (patientResults is WebRequestError patientError)
-            //{
-            //    Debug.LogError("Failed to login user: " + patientError.ErrorMessage); // TODO: Show the user an error message
-            //    return;
-            //}
-            //List<Patient> patientData = (patientResults as WebRequestData<Patient>).Data;
-
-            //if (!patientData.Any())
-            //{
-            //    Debug.LogWarning("No patients found for this guardian.");
-            //    // TODO: Load the patient scene (creation)
-            //}
+            if (string.IsNullOrEmpty(guardianData.firstName) || string.IsNullOrEmpty(guardianData.lastName))
+            {
+                Debug.LogWarning("Guardian data is incomplete."); // TODO: Show the user a warning message
+            }
+            else
+            {
+                Debug.Log($"{guardianData.firstName}, {guardianData.lastName}");
+            }
 
             Debug.Log("Login successful."); // TODO: Show the user a success message
-            // TODO: Load the patient scene (selection
+
+            var patientResults = await patientApiClient.ReadPatientAsync();
+            if (patientResults is WebRequestError patientError)
+            {
+                Debug.LogError("Failed to retrieve patients: " + patientError.ErrorMessage); // TODO: Show the user an error message
+                return;
+            }
+
+            List<Patient> patientData = (patientResults as WebRequestData<List<Patient>>).Data;
+            if (!patientData.Any())
+            {
+                Debug.LogWarning("No patients found for this guardian.");
+                // TODO: Load the patient scene (creation)
+            }
+
+            // TODO: Load the patient scene (selection)
         }
         catch (Exception ex)
         {
