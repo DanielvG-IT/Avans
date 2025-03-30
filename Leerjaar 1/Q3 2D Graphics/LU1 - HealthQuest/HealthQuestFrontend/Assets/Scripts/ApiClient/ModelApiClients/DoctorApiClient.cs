@@ -44,4 +44,20 @@ public class DoctorApiClient : MonoBehaviour
         string route = "/api/v1/doctors/" + doctorId;
         return await webClient.SendDeleteRequestAsync(route);
     }
+
+    public async Awaitable<IWebRequestReponse> ReadDoctorFromPatientAsync(string patientId)
+    {
+        string route = "/api/v1/doctors/by-patient/" + patientId;
+
+        IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
+        return JsonHelper.ParseResponse<Doctor>(webRequestResponse);
+    }
+
+    public async Awaitable<IWebRequestReponse> ReadPatientsFromDoctorAsync(string doctorId)
+    {
+        string route = "/api/v1/doctors/" + doctorId + "/patients";
+
+        IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
+        return JsonHelper.ParseListResponse<Patient>(webRequestResponse);
+    }
 }
