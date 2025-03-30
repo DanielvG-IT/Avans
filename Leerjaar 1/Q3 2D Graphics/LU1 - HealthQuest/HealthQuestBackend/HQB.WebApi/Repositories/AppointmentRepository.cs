@@ -57,7 +57,7 @@ public class AppointmentRepository : IAppointmentRepository
     public async Task<int> LinkAppointmentToTreatmentAsync(TreatmentAppointment treatmentAppointment)
     {
         using var connection = new SqlConnection(_connectionString);
-        const string sql = "INSERT INTO Treatment_Appoinment (TreatmentID, AppointmentID, Sequence) VALUES (@TreatmentID, @AppointmentID, @Sequence)";
+        const string sql = "INSERT INTO Treatment_Appoinment (TreatmentID, AppoinmentID, Sequence) VALUES (@TreatmentID, @AppointmentID, @Sequence)";
         return await connection.ExecuteAsync(sql, treatmentAppointment);
     }
 }
