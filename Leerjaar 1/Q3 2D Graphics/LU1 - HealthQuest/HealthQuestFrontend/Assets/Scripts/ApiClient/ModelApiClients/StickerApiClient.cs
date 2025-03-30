@@ -20,6 +20,14 @@ public class StickerApiClient : MonoBehaviour
         return JsonHelper.ParseResponse<Sticker>(webRequestResponse);
     }
 
+    public async Awaitable<IWebRequestReponse> ReadStickerByNameAsync(string stickerName)
+    {
+        string route = $"/api/v1/stickers/search?name={stickerName}";
+
+        IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
+        return JsonHelper.ParseResponse<Sticker>(webRequestResponse);
+    }
+
     public async Awaitable<IWebRequestReponse> CreateStickerAsync(Sticker stickerData)
     {
         string route = $"/api/v1/stickers";
