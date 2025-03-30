@@ -7,8 +7,9 @@ public class ApiClientManager : MonoBehaviour
     [Header("ApiClients")]
     public WebClient WebClient;
     public UserApiClient UserApiClient;
-    public GuardianApiClient GuardianApiClient;
     public PatientApiClient PatientApiClient;
+    public GuardianApiClient GuardianApiClient;
+    public TreatmentApiClient TreatmentApiClient;
 
     private void Awake()
     {
@@ -24,10 +25,11 @@ public class ApiClientManager : MonoBehaviour
             return;
         }
 
-        if (!WebClient) { WebClient = GetComponent<WebClient>(); }
-        if (!UserApiClient) { UserApiClient = GetComponent<UserApiClient>(); }
-        if (!GuardianApiClient) { GuardianApiClient = GetComponent<GuardianApiClient>(); }
-        if (!PatientApiClient) { PatientApiClient = GetComponent<PatientApiClient>(); }
+        if (WebClient == null) { WebClient = GetComponent<WebClient>(); }
+        if (UserApiClient == null) { UserApiClient = GetComponent<UserApiClient>(); }
+        if (PatientApiClient == null) { PatientApiClient = GetComponent<PatientApiClient>(); }
+        if (GuardianApiClient == null) { GuardianApiClient = GetComponent<GuardianApiClient>(); }
+        if (TreatmentApiClient == null) { TreatmentApiClient = GetComponent<TreatmentApiClient>(); }
     }
 
     // Properties and methodes for storing data like logged in user, etc.
@@ -47,5 +49,19 @@ public class ApiClientManager : MonoBehaviour
     public void SetCurrentPatient(Patient patient)
     {
         CurrentPatient = patient;
+    }
+
+    public Treatment CurrentTreatment { get; private set; }
+    public void SetCurrentTreatment(Treatment treatment)
+    {
+        CurrentTreatment = treatment;
+    }
+
+    public void ClearData()
+    {
+        CurrentUser = null;
+        CurrentGuardian = null;
+        CurrentPatient = null;
+        CurrentTreatment = null;
     }
 }
