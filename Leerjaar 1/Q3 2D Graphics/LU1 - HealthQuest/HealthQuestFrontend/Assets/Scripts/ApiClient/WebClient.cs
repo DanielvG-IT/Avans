@@ -1,9 +1,7 @@
-using System;
 using UnityEngine;
-using System.Text;
-using System.Collections;
-using System.Threading.Tasks;
 using UnityEngine.Networking;
+using System.Text;
+using System.Threading.Tasks;
 
 public class WebClient : MonoBehaviour
 {
@@ -83,7 +81,7 @@ public class WebClient : MonoBehaviour
         else
         {
             string responseData = webRequest.downloadHandler.text;
-            return new WebRequestError<string>(responseData);
+            return new WebRequestError(responseData);
         }
     }
 
@@ -92,7 +90,7 @@ public class WebClient : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(token.accessToken))
         {
-            webRequest.SetRequestHeader("Authorization", "Bearer " + token);
+            webRequest.SetRequestHeader("Authorization", "Bearer " + token.accessToken);
         }
         else
         {

@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public static class JsonHelper
@@ -14,6 +14,32 @@ public static class JsonHelper
     public static Token ExtractToken(string data)
     {
         return JsonUtility.FromJson<Token>(data);
+    }
+
+    public static IWebRequestReponse ParseResponse<T>(IWebRequestReponse webRequestResponse)
+    {
+        switch (webRequestResponse)
+        {
+            case WebRequestData<string> data:
+                Debug.Log("Response data raw: " + data.Data); // TODO: remove debug log
+                T parsedData = JsonUtility.FromJson<T>(data.Data);
+                return new WebRequestData<T>(parsedData);
+            default:
+                return webRequestResponse;
+        }
+    }
+
+    public static IWebRequestReponse ParseListResponse<T>(IWebRequestReponse webRequestResponse)
+    {
+        switch (webRequestResponse)
+        {
+            case WebRequestData<string> data:
+                Debug.Log("Response data raw: " + data.Data); // TODO: remove debug log
+                List<T> parsedList = ParseJsonArray<T>(data.Data);
+                return new WebRequestData<List<T>>(parsedList);
+            default:
+                return webRequestResponse;
+        }
     }
 }
 
