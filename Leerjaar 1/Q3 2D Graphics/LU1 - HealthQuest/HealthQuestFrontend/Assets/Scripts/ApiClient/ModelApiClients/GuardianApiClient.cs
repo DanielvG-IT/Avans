@@ -14,7 +14,7 @@ public class GuardianApiClient : MonoBehaviour
 
     public async Awaitable<IWebRequestReponse> ReadGuardianById(string guardianId)
     {
-        string route = "/api/v1/guardian" + guardianId;
+        string route = "/api/v1/guardian/" + guardianId;
 
         IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
         return JsonHelper.ParseResponse<Guardian>(webRequestResponse);

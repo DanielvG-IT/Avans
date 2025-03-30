@@ -15,7 +15,7 @@ public class PatientApiClient
 
     public async Awaitable<IWebRequestReponse> ReadPatientByIdAsync(string patientId)
     {
-        string route = "/api/v1/patient" + patientId;
+        string route = "/api/v1/patient/" + patientId;
 
         IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
         return JsonHelper.ParseResponse<Patient>(webRequestResponse);
