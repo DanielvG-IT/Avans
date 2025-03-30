@@ -15,15 +15,15 @@ public class StickerBoeken : MonoBehaviour
     public static string[] oldUnlockedStickers = { "Ambulance", "Hart"}; //Wordt gebruikt om eventuele animatie af te spelen bij stickers die nieuw unlocked zijn.
 
     private Transform animationCanvas;
-    private PatientApiClient patientApiClient = ApiClientManager.Instance.PatientApiClient;
-    private StickerApiClient stickerApiClient = ApiClientManager.Instance.StickerApiClient;
+    private readonly PatientApiClient patientApiClient = ApiClientManager.Instance.PatientApiClient;
+    private readonly StickerApiClient stickerApiClient = ApiClientManager.Instance.StickerApiClient;
 
     // Sample code to show how to use the ApiClient classes
     private async void SamleMethode1()
     {
         // Get all unlocked stickers for the current patient
         var patient = ApiClientManager.Instance.CurrentPatient;
-        var unlockedStickersResponse = await patientApiClient.ReadUnlockedStickersFromPatientAsync(patient.ID.ToString());
+        var unlockedStickersResponse = await patientApiClient.ReadUnlockedStickersFromPatientAsync(patient.id.ToString());
 
         switch (unlockedStickersResponse)
         {
@@ -52,7 +52,7 @@ public class StickerBoeken : MonoBehaviour
         // If you have the sticker name:
         var searchStickerResponse = await stickerApiClient.ReadStickerByNameAsync(stickerName);
         var sticker = (searchStickerResponse as WebRequestData<Sticker>).Data;
-        var newUnlockedResponse = await patientApiClient.AddUnlockedStickerToPatientAsync(patient.ID.ToString(), sticker);
+        var newUnlockedResponse = await patientApiClient.AddUnlockedStickerToPatientAsync(patient.id.ToString(), sticker);
 
         // If you have the sticker object:
         //var newUnlockedResponse = await patientApiClient.AddUnlockedStickerToPatientAsync(patient.ID.ToString(), stickerObject);
