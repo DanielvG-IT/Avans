@@ -9,6 +9,7 @@ public class ApiClientManager : MonoBehaviour
     public WebClient WebClient;
     public UserApiClient UserApiClient;
     public PatientApiClient PatientApiClient;
+    public StickerApiClient StickerApiClient;
     public GuardianApiClient GuardianApiClient;
     public TreatmentApiClient TreatmentApiClient;
     public AppointmentApiClient AppointmentApiClient;
@@ -31,6 +32,7 @@ public class ApiClientManager : MonoBehaviour
         if (WebClient == null) { WebClient = GetComponent<WebClient>(); }
         if (UserApiClient == null) { UserApiClient = GetComponent<UserApiClient>(); }
         if (PatientApiClient == null) { PatientApiClient = GetComponent<PatientApiClient>(); }
+        if (StickerApiClient == null) { StickerApiClient = GetComponent<StickerApiClient>(); }
         if (GuardianApiClient == null) { GuardianApiClient = GetComponent<GuardianApiClient>(); }
         if (TreatmentApiClient == null) { TreatmentApiClient = GetComponent<TreatmentApiClient>(); }
         if (AppointmentApiClient == null) { AppointmentApiClient = GetComponent<AppointmentApiClient>(); }
@@ -62,6 +64,8 @@ public class ApiClientManager : MonoBehaviour
     }
 
     public List<Appointment> CurrentAppointments { get; set; }
+
+    public List<Sticker> CurrentStickers { get; set; }
 
     public void ClearData()
     {
