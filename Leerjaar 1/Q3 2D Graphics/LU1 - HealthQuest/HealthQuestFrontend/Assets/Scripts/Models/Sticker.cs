@@ -6,13 +6,18 @@ using System;
 [Serializable]
 public class Sticker
 {
-  /// <summary>
-  /// Gets or sets the unique identifier for the sticker.
-  /// </summary>
-  public Guid Id { get; set; }
+    /// <summary>
+    /// Gets or sets the unique identifier for the sticker.
+    /// </summary>
+    public Guid Id { get; set; }
 
-  /// <summary>
-  /// Gets or sets the name of the sticker.
-  /// </summary>
-  public string Name { get; set; }
+    /// <summary>
+    /// Gets or sets the name of the sticker.
+    /// </summary>
+    public string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date when the sticker got unlocked.
+    /// </summary>
+    public DateTime UnlockedDate { get; set; }
 }
