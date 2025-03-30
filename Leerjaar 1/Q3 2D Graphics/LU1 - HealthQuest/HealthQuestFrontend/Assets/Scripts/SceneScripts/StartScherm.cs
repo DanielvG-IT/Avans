@@ -103,7 +103,7 @@ public class StartScreen : MonoBehaviour
     {
         if (string.IsNullOrEmpty(emailFieldRegister.text) || string.IsNullOrEmpty(passwordFieldRegister.text) || string.IsNullOrEmpty(firstNameField.text) || string.IsNullOrEmpty(lastNameField.text))
         {
-            Debug.LogError("All fields must be filled out.");
+            Debug.LogError("All fields must be filled out."); // TODO: Show the user an error message
             return;
         }
 
@@ -134,7 +134,7 @@ public class StartScreen : MonoBehaviour
             }
 
             // Store the guardian data in the API client manager
-            var guardianData = (guardianResult as WebRequestData<Guardian>).Data;
+            var guardianData = (guardianResult as WebRequestData<Guardian>).Data; // TODO: Verify this is the correct way to get the guardian data
             ApiClientManager.Instance.SetCurrentGuardian(guardianData);
 
             Debug.Log("Registration successful."); // TODO: Show the user a success message
