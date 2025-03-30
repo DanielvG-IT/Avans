@@ -794,7 +794,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2056475638}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: StartScreenManager, Assembly-CSharp
         m_MethodName: ShowRegisterPanel
         m_Mode: 1
@@ -2370,8 +2370,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2a5d4e67e0b61844bdcea9bd674a7fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseUrl: https://localhost:7057
+  baseUrl: https://healthquestwebapi.azurewebsites.net
   token:
+    tokenType: 
     accessToken: 
     expiresIn: 0
     refreshToken: 
@@ -2974,7 +2975,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2056475638}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: StartScreenManager, Assembly-CSharp
         m_MethodName: ShowLoginPanel
         m_Mode: 1
@@ -4471,7 +4472,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2056475638}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: StartScreenManager, Assembly-CSharp
         m_MethodName: RegisterAsync
         m_Mode: 1
@@ -4656,7 +4657,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2056475638}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: StartScreenManager, Assembly-CSharp
         m_MethodName: LoginAsync
         m_Mode: 1
@@ -5272,7 +5273,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2056475638}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: StartScreenManager, Assembly-CSharp
         m_MethodName: BackToStart
         m_Mode: 1
@@ -7380,7 +7381,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2056475638}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: StartScreenManager, Assembly-CSharp
         m_MethodName: BackToStart
         m_Mode: 1
@@ -7439,15 +7440,30 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2056475639}
-  - component: {fileID: 2056475638}
+  - component: {fileID: 2056475640}
   m_Layer: 0
-  m_Name: StartScreenManager
+  m_Name: StartScherm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2056475638
+--- !u!4 &2056475639
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056475637}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 896.59125, y: 619.72485, z: 3163.875}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2056475640
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -7465,25 +7481,10 @@ MonoBehaviour:
   emailFieldLogin: {fileID: 90571460}
   passwordFieldLogin: {fileID: 1705692533}
   emailFieldRegister: {fileID: 979221183}
-  passwordFieldRegister: {fileID: 218011093}
+  passwordFieldRegister: {fileID: 979221183}
   firstNameField: {fileID: 1578182232}
   lastNameField: {fileID: 541238991}
   fadeDuration: 0.5
---- !u!4 &2056475639
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2056475637}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 896.59125, y: 619.72485, z: 3163.875}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2098662843
 GameObject:
   m_ObjectHideFlags: 0
