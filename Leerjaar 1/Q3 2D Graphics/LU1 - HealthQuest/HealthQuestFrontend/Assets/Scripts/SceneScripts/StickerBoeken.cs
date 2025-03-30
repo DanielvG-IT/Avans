@@ -11,8 +11,8 @@ public class StickerBoeken : MonoBehaviour
     public GameObject poofPrefab;
     
 
-    public static string[] newUnlockedStickers = {"Ziekenhuis"}; //Wordt gebruikt om eventuele animatie af te spelen bij stickers die nieuw unlocked zijn.
-    public static string[] oldUnlockedStickers = { "Ambulance", "Bed"}; //Wordt gebruikt om eventuele animatie af te spelen bij stickers die nieuw unlocked zijn.
+    public static string[] newUnlockedStickers = {"Ziekenhuis", "Auto"}; //Wordt gebruikt om eventuele animatie af te spelen bij stickers die nieuw unlocked zijn.
+    public static string[] oldUnlockedStickers = { "Ambulance", "Hart"}; //Wordt gebruikt om eventuele animatie af te spelen bij stickers die nieuw unlocked zijn.
 
     private Transform animationCanvas;
 
