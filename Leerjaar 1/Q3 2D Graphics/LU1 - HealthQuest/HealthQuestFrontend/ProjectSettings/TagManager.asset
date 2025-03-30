@@ -11,7 +11,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Animation
   - 
   - 
   - 
@@ -44,5 +44,9 @@ TagManager:
   - name: Ganzenbord
     uniqueID: 1966556537
     locked: 0
+  - name: Animations
+    uniqueID: 2600666233
+    locked: 0
   m_RenderingLayers:
   - Default
+  - Animations
