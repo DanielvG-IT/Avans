@@ -1,8 +1,8 @@
 ﻿using System;
 using UnityEngine;
 
-class TreatmentApiClient
-    {
+public class TreatmentApiClient : MonoBehaviour
+{
     public WebClient webClient;
 
     public async Awaitable<IWebRequestReponse> ReadTreatmentsAsync()

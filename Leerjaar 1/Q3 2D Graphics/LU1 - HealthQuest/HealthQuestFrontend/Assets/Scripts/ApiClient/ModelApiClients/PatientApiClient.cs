@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class PatientApiClient
+public class PatientApiClient : MonoBehaviour
 {
     public WebClient webClient;
 
