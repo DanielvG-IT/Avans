@@ -8,6 +8,7 @@ public class ApiClientManager : MonoBehaviour
     [Header("ApiClients")]
     public WebClient WebClient;
     public UserApiClient UserApiClient;
+    public DoctorApiClient DoctorApiClient;
     public JournalApiClient JournalApiClient;
     public PatientApiClient PatientApiClient;
     public StickerApiClient StickerApiClient;
@@ -32,6 +33,7 @@ public class ApiClientManager : MonoBehaviour
         // Get the ApiClients from the GameObjects
         if (WebClient == null) { WebClient = GetComponent<WebClient>(); }
         if (UserApiClient == null) { UserApiClient = GetComponent<UserApiClient>(); }
+        if (DoctorApiClient == null) { DoctorApiClient = GetComponent<DoctorApiClient>(); }
         if (JournalApiClient == null) { JournalApiClient = GetComponent<JournalApiClient>(); }
         if (PatientApiClient == null) { PatientApiClient = GetComponent<PatientApiClient>(); }
         if (StickerApiClient == null) { StickerApiClient = GetComponent<StickerApiClient>(); }
