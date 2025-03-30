@@ -58,7 +58,7 @@ public class TreatmentApiClient : MonoBehaviour
         string route = "/api/v1/treatments/" + treatmentId + "/appointments/ " + appointmentId + "?sequence=" + sequence;
         string data = "";
 
-        IWebRequestReponse webRequestResponse = await webClient.SendPostRequestAsync(route, data);
-        return JsonHelper.ParseResponse<Appointment>(webRequestResponse); // TODO: check if it should return a list
+        // Returns 204 No Content on success so no need to parse response
+        return await webClient.SendPostRequestAsync(route, data);
     }
 }
