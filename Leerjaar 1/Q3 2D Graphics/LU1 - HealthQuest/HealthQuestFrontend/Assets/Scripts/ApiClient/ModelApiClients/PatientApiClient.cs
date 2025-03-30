@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using UnityEngine;
 
 class PatientApiClient
@@ -68,5 +69,28 @@ class PatientApiClient
 
         IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
         return JsonHelper.ParseListResponse<Appointment>(webRequestResponse);
+    }
+
+    public async Awaitable<IWebRequestReponse> AddCompletedAppointmentsToPatientAsync(string patientId, string appointmentId, DateTime completedDateTime)
+    {
+        string route = "/api/v1/patient/" + patientId + "/completed-appointments?appointmentId=" + appointmentId + "&completedDate=" + completedDateTime;
+        string data = "";
+
+        IWebRequestReponse webRequestResponse = await webClient.SendPostRequestAsync(route, data);
+        return JsonHelper.ParseResponse<Sticker>(webRequestResponse);
+    }
+
+    public async Awaitable<IWebRequestReponse> DeleteCompletedAppointmentFromPatientAsync(string patientId, string appointmentId)
+    {
+        string route = "/api/v1/patient/" + patientId + "/completed-appointments/" + appointmentId;
+        return await webClient.SendDeleteRequestAsync(route);
+    }
+
+    public async Awaitable<IWebRequestReponse> ReadJournalEntriesFromPatientAsync(string patientId)
+    {
+        string route = "/api/v1/patient/" + patientId + "/journal-entries";
+
+        IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
+        return JsonHelper.ParseListResponse<JournalEntry>(webRequestResponse);
     }
 }
