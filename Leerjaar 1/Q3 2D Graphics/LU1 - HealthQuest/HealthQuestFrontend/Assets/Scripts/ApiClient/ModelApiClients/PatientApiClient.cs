@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Net;
 using UnityEngine;
 
-class PatientApiClient
+public class PatientApiClient
 {
     public WebClient webClient;
 
