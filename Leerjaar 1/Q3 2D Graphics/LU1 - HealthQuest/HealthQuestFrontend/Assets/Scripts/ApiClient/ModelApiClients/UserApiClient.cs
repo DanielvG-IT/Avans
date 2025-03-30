@@ -21,6 +21,8 @@ public class UserApiClient : MonoBehaviour
         return ProcessLoginResponse(response);
     }
 
+    // TODO: Add refresh token method here to refresh the token when it expires or is 
+
     private IWebRequestReponse ProcessLoginResponse(IWebRequestReponse webRequestResponse)
     {
         switch (webRequestResponse)
