@@ -21,7 +21,7 @@ public class PatientApiClient
         return JsonHelper.ParseResponse<Patient>(webRequestResponse);
     }
 
-    public async Awaitable<IWebRequestReponse> CreatePatient(Patient patientData)
+    public async Awaitable<IWebRequestReponse> CreatePatientAsync(Patient patientData)
     {
         string route = "/api/v1/patient";
         string data = JsonUtility.ToJson(patientData);
@@ -39,7 +39,7 @@ public class PatientApiClient
         return JsonHelper.ParseResponse<Patient>(webRequestResponse);
     }
 
-    public async Awaitable<IWebRequestReponse> DeletePatient(string patientId)
+    public async Awaitable<IWebRequestReponse> DeletePatientAsync(string patientId)
     {
         string route = "/api/v1/patient/" + patientId;
         return await webClient.SendDeleteRequestAsync(route);
