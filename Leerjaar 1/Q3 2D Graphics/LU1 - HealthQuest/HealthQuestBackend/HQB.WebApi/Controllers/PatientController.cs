@@ -471,7 +471,7 @@ namespace HQB.WebApi.Controllers
         }
 
         [HttpPost("{id}/stickers", Name = "AddStickerToPatient")]
-        public async Task<IActionResult> AddStickerToPatient(Guid id, [FromBody] Guid stickerId)
+        public async Task<IActionResult> AddStickerToPatient(Guid id, [FromQuery] Guid stickerId)
         {
             if (id == Guid.Empty || stickerId == Guid.Empty)
             {
