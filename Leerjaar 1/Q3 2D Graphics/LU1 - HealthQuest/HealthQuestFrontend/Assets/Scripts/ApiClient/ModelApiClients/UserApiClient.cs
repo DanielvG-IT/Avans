@@ -45,28 +45,15 @@ public class UserApiClient : MonoBehaviour
 
     // TODO: Add refresh token method here to refresh the token when it expires or is 
 
-    /// <summary>
-    /// Processes the server's response to a login request.
-    /// </summary>
-    /// <param name="webRequestResponse">The raw response from the server.</param>
-    /// <returns>
-    /// An <see cref="IWebRequestReponse"/> object that contains either a success message 
-    /// or the original response if processing fails.
-    /// </returns>
-    /// <remarks>
-    /// If the response contains a valid token, it is extracted and set in the <see cref="WebClient"/>.
-    /// </remarks>
-    private IWebRequestReponse ProcessLoginResponse(IWebRequestReponse webRequestResponse)
+
+    private IWebRequestReponse ProcessLoginResponse(IWebRequestReponse response)
     {
-        switch (webRequestResponse)
+        if (response is WebRequestData<string> data)
         {
-            case WebRequestData<string> data:
-                Debug.Log("Response data raw: " + data.Data); // TODO remove debug log
-                var token = JsonHelper.ExtractToken(data.Data);
-                webClient.SetToken(token);
-                return new WebRequestData<string>("Login succesfull!");
-            default:
-                return webRequestResponse;
+            webClient.SetToken(JsonHelper.ExtractToken(data.Data));
+            return new WebRequestData<string>("Login successful!");
         }
+
+        return new WebRequestError("Unknown error occurred during login.");
     }
 }
