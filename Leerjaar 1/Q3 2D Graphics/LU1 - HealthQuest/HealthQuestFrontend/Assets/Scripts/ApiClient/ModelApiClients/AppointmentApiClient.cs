@@ -35,7 +35,7 @@ public class AppointmentApiClient : MonoBehaviour
         string data = JsonUtility.ToJson(appointmentData);
 
         IWebRequestReponse webRequestResponse = await webClient.SendPutRequestAsync(route, data);
-        return JsonHelper.ParseResponse<Patient>(webRequestResponse);
+        return JsonHelper.ParseResponse<Appointment>(webRequestResponse);
     }
 
     public async Awaitable<IWebRequestReponse> DeleteAppointmentAsync(string appointmentId)
