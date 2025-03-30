@@ -155,5 +155,33 @@ namespace HQB.WebApi.Controllers
         return StatusCode(500, "Internal server error.");
       }
     }
+
+    // GET: api/v1/stickers/search
+    [HttpGet("search", Name = "SearchStickersByName")]
+    public async Task<ActionResult<IEnumerable<Sticker>>> SearchStickersByName([FromQuery] string name)
+    {
+      try
+      {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+          _logger.LogWarning("Search name is empty or null.");
+          return BadRequest("Search name cannot be empty or null.");
+        }
+
+        var sticker = (await _stickerRepository.GetAllStickersAsync())?.FirstOrDefault(s => s.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
+        if (sticker == null)
+        {
+          _logger.LogWarning($"No sticker found with name containing '{name}'.");
+          return NotFound($"No sticker found with name containing '{name}'.");
+        }
+
+        return Ok(sticker);
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, $"An error occurred while searching for stickers with name containing '{name}'.");
+        return StatusCode(500, "Internal server error.");
+      }
+    }
   }
 }
