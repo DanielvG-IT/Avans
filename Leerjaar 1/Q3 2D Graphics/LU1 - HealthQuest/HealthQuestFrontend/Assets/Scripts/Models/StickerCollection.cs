@@ -16,7 +16,7 @@ public class StickerCollection
   /// Gets or sets the unique identifier for the patient.
   /// </summary>
   /// <value>The unique identifier for the patient.</value>
-  public string patientID { get; set; } // FK
+  public string patientID; // FK
 
   /// <summary>
   /// Gets or sets the unique identifier for the sticker.

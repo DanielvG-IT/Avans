@@ -9,7 +9,7 @@ public class Sticker
     /// <summary>
     /// Gets or sets the unique identifier for the sticker.
     /// </summary>
-    public Guid id;
+    public string id;
 
     /// <summary>
     /// Gets or sets the name of the sticker.
