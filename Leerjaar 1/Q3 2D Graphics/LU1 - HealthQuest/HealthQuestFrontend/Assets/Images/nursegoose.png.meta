@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      nursegoose_0: 1220284519067964670
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

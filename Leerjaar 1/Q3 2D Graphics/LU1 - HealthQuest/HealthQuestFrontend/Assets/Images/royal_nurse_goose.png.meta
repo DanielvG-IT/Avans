@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      royal_nurse_goose_0: -821273641504018296
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
