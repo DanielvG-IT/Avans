@@ -66,14 +66,6 @@ public class GanzenBordUI : MonoBehaviour
         gooseOriginalScale = goose.localScale;
         cameraTarget = mainCamera.transform.position;
 
-        // Kleur voltooide levels groen
-        for (int i = 0; i < levelButtons.Count; i++)
-        {
-            if (boardManager.IsLevelVoltooid(i))
-            {
-                KleurKnopCirkel(i, afgerondKleur);
-            }
-        }
     }
 
     void Update()
