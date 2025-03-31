@@ -6,7 +6,7 @@ on:
             - main
 
 jobs:
-    test_and_build_android:
+    test_unity_android:
         runs-on: ubuntu-latest
         steps:
           - name: Checkout repository
@@ -22,24 +22,8 @@ jobs:
               -projectPath . \
               -runTests \
               -testPlatform PlayMode
-          - name: Build Android
-            if: success()
-            run: |
-              xvfb-run --auto-servernum --server-args='-screen 0 2560x1440x24' \
-              /opt/unity/Editor/Unity \
-              -projectPath . \
-              -buildTarget Android \
-              -executeMethod BuildScript.BuildAndroid \
-              -buildPath ./Builds/Android \
-              -quit
-          - name: Upload Android Build Artifact
-            if: success()
-            uses: actions/upload-artifact@v2
-            with:
-              name: android-build
-              path: ./Builds/Android
 
-    test_and_build_ios:
+    test_unity_ios:
         runs-on: macos-latest
         steps:
           - name: Checkout repository
@@ -55,18 +39,3 @@ jobs:
               -projectPath . \
               -runTests \
               -testPlatform PlayMode
-          - name: Build iOS
-            if: success()
-            run: |
-              /Applications/Unity/Hub/Editor/${{ steps.unity-setup.outputs['unity-setup'].outputs.unity-version }}/Unity.app/Contents/MacOS/Unity \
-              -projectPath . \
-              -buildTarget iOS \
-              -executeMethod BuildScript.BuildiOS \
-              -buildPath ./Builds/iOS \
-              -quit
-          - name: Upload iOS Build Artifact
-            if: success()
-            uses: actions/upload-artifact@v2
-            with:
-              name: ios-build
-              path: ./Builds/iOS
