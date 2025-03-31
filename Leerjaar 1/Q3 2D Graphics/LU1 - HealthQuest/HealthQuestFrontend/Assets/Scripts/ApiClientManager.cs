@@ -77,5 +77,8 @@ public class ApiClientManager : MonoBehaviour
         CurrentGuardian = null;
         CurrentPatient = null;
         CurrentTreatment = null;
+        CurrentAppointments = null;
+        CurrentStickers = null;
+        // TODO clear other data in this class
     }
 }
