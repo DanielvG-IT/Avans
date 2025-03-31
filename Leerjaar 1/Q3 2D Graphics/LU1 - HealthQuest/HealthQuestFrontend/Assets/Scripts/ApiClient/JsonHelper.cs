@@ -6,11 +6,11 @@ public static class JsonHelper
 {
     public static List<T> ParseJsonArray<T>(string jsonArray)
     {
-        string extendedJson = "{\"list\":" + jsonArray + "}";
-        JsonList<T> parsedList = JsonUtility.FromJson<JsonList<T>>(extendedJson);
-        return parsedList.list;
+        // Wrap the JSON array in a container object to use JsonUtility
+        string wrappedJson = $"{{\"list\":{jsonArray}}}";
+        JsonList<T> container = JsonUtility.FromJson<JsonList<T>>(wrappedJson);
+        return container.list;
     }
-
     public static Token ExtractToken(string data)
     {
         return JsonUtility.FromJson<Token>(data);
