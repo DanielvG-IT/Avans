@@ -194,21 +194,21 @@ public class StartScreen : MonoBehaviour
 
             Debug.Log("Login successful."); // TODO: Show the user a success message
 
-            var patientResults = await patientApiClient.ReadPatientAsync();
-            if (patientResults is WebRequestError patientError)
-            {
-                Debug.LogError("Failed to retrieve patients: " + patientError.ErrorMessage); // TODO: Show the user an error message
-                return;
-            }
+            // var patientResults = await patientApiClient.ReadPatientAsync();
+            // if (patientResults is WebRequestError patientError)
+            // {
+            //     Debug.LogError("Failed to retrieve patients: " + patientError.ErrorMessage); // TODO: Show the user an error message
+            //     return;
+            // }
 
-            List<Patient> patientData = (patientResults as WebRequestData<List<Patient>>).Data;
-            if (!patientData.Any())
-            {
-                Debug.LogWarning("No patients found for this guardian.");
-                // TODO: Load the patient scene (creation)
-            }
+            // List<Patient> patientData = (patientResults as WebRequestData<List<Patient>>).Data;
+            // if (!patientData.Any())
+            // {
+            //     Debug.LogWarning("No patients found for this guardian.");
+            //     // TODO: Load the patient scene (creation)
+            // }
 
-            // TODO: Load the patient scene (selection)
+            // // TODO: Load the patient scene (selection)
         }
         catch (Exception ex)
         {
