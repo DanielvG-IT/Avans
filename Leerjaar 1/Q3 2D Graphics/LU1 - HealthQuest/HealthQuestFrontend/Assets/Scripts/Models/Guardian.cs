@@ -9,7 +9,7 @@ public class Guardian
     /// <summary>
     /// Gets or sets the unique identifier for the guardian.
     /// </summary>
-    public Guid id { get; set; }
+    public string id;
 
     /// <summary>
     /// Gets or sets the first name of the guardian.

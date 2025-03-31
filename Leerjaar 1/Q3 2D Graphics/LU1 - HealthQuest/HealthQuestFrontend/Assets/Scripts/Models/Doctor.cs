@@ -9,20 +9,20 @@ public class Doctor
     /// <summary>
     /// Gets or sets the unique identifier for the doctor.
     /// </summary>
-    public Guid id { get; set; }
+    public string id;
 
     /// <summary>
     /// Gets or sets the first name of the doctor.
     /// </summary>
-    public string firstName { get; set; }
+    public string firstName;
 
     /// <summary>
     /// Gets or sets the last name of the doctor.
     /// </summary>
-    public string lastName { get; set; }
+    public string lastName;
 
     /// <summary>
     /// Gets or sets the specialization of the doctor.
     /// </summary>
-    public string specialization { get; set; }
+    public string specialization;
 }

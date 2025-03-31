@@ -9,35 +9,35 @@ public class Patient
     /// <summary>
     /// Gets or sets the unique identifier for the patient.
     /// </summary>
-    public Guid id { get; set; }
+    public string id;
 
     /// <summary>
     /// Gets or sets the first name of the patient.
     /// </summary>
-    public string firstName { get; set; }
+    public string firstName;
 
     /// <summary>
     /// Gets or sets the last name of the patient.
     /// </summary>
-    public string lastName { get; set; }
+    public string lastName;
 
     /// <summary>
     /// Gets or sets the unique identifier of the patient's guardian.
     /// </summary>
-    public Guid guardianID { get; set; }
+    public string guardianID;
 
     /// <summary>
     /// Gets or sets the unique identifier of the patient's treatment.
     /// </summary>
-    public Guid treatmentID { get; set; }
+    public string treatmentID;
 
     /// <summary>
     /// Gets or sets the unique identifier of the patient's doctor.
     /// </summary>
-    public Guid doctorID { get; set; }
+    public string doctorID;
 
     /// <summary>
     /// Gets or sets the URL or path to the patient's avatar image.
     /// </summary>
-    public string avatar { get; set; }
+    public string avatar;
 }
