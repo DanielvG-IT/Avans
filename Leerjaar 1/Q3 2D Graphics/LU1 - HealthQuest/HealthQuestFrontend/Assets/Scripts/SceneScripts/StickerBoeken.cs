@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class StickerBoeken : MonoBehaviour
 {
@@ -9,17 +10,17 @@ public class StickerBoeken : MonoBehaviour
     public GameObject[] stickers;
 
     public GameObject poofPrefab;
-    
 
-    public static string[] newUnlockedStickers = {"Ziekenhuis", "Auto"}; //Wordt gebruikt om eventuele animatie af te spelen bij stickers die nieuw unlocked zijn.
-    public static string[] oldUnlockedStickers = { "Ambulance", "Hart"}; //Wordt gebruikt om eventuele animatie af te spelen bij stickers die nieuw unlocked zijn.
+
+    public static List<string> newUnlockedStickers = new() { "Ziekenhuis", "Auto" }; //Gebruikt om poof te spawnen
+    public static List<string> oldUnlockedStickers = new(); //Wordt gebruikt om eventuele animatie af te spelen bij stickers die nieuw unlocked zijn.
 
     private Transform animationCanvas;
     private readonly PatientApiClient patientApiClient = ApiClientManager.Instance.PatientApiClient;
     private readonly StickerApiClient stickerApiClient = ApiClientManager.Instance.StickerApiClient;
 
     // Sample code to show how to use the ApiClient classes
-    private async void SamleMethode1()
+    private async Task GetPatientUnlockedStickers()
     {
         // Get all unlocked stickers for the current patient
         var patient = ApiClientManager.Instance.CurrentPatient;
@@ -31,6 +32,8 @@ public class StickerBoeken : MonoBehaviour
                 {
                     foreach (var sticker in dataResponse.Data)
                     {
+                        Debug.Log(dataResponse.Data);
+                        oldUnlockedStickers.Add(sticker.name);
                         Debug.Log("Unlocked sticker: " + sticker.name);
                     }
                     break;
@@ -44,40 +47,10 @@ public class StickerBoeken : MonoBehaviour
         }
     }
 
-    private async void SamleMethode2(string? stickerName /*, Sticker? stickerObject */) // Can also be sticker object
+    public async void Start()
     {
-        // Add new unlocked sticker to current patient
-        var patient = ApiClientManager.Instance.CurrentPatient;
+        await GetPatientUnlockedStickers();
 
-        // If you have the sticker name:
-        var searchStickerResponse = await stickerApiClient.ReadStickerByNameAsync(stickerName);
-        var sticker = (searchStickerResponse as WebRequestData<Sticker>).Data;
-        var newUnlockedResponse = await patientApiClient.AddUnlockedStickerToPatientAsync(patient.id.ToString(), sticker);
-
-        // If you have the sticker object:
-        //var newUnlockedResponse = await patientApiClient.AddUnlockedStickerToPatientAsync(patient.ID.ToString(), stickerObject);
-
-        switch (newUnlockedResponse)
-        {
-            case WebRequestData<List<Sticker>> dataResponse:
-                {
-                    Debug.Log("Sticker unlocked: " + stickerName);
-                    // Optionally, play animation for new sticker and make it visible
-                    // InstantiatePoof(stickerObject);
-                    break;
-                }
-
-            case WebRequestError errorResponse:
-                {
-                    Debug.Log("Error: " + errorResponse.ErrorMessage);
-                    break;
-                }
-        }
-    }
-    // End of sample code
-
-    public void Start()
-    {
         animationCanvas = GameObject.Find("Animation_Canvas").transform;
 
         foreach (var old in oldUnlockedStickers)
@@ -108,13 +81,10 @@ public class StickerBoeken : MonoBehaviour
     }
     public void InstantiatePoof(GameObject sticker)
     {
-        // Instantiate the poofPrefab at the sticker's position
         GameObject poof = Instantiate(poofPrefab, sticker.transform.position, Quaternion.identity);
 
-        // Set the parent of the poof to be the "Animation Canvas"
         poof.transform.SetParent(animationCanvas);
 
-        // Optionally, adjust the poof's position relative to the canvas if needed
         poof.transform.position = sticker.transform.position;
 
         DestroyPoofAfterDelay(poof, 2f);
