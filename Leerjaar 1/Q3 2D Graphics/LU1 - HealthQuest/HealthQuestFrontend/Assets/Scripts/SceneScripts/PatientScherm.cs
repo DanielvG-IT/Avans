@@ -119,7 +119,7 @@ public class PatientScherm : MonoBehaviour
 
     private async Task LoadPatientData()
     {
-        var patientResult = await patientApiClient.ReadPatientAsync();
+        var patientResult = await patientApiClient.ReadPatientsAsync();
         if (patientResult is WebRequestError patientError)
         {
             // TODO Check redirect to creation panel
