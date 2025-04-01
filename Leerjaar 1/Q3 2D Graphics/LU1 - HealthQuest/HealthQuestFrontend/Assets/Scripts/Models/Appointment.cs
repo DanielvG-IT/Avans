@@ -19,6 +19,11 @@ public class Appointment
     public string name = string.Empty;
 
     /// <summary>
+    /// Gets or sets the description of the appointment.
+    /// </summary>
+    public string description = string.Empty;
+
+    /// <summary>
     /// Gets or sets the URL associated with the appointment.
     /// </summary>
     public string? url;
