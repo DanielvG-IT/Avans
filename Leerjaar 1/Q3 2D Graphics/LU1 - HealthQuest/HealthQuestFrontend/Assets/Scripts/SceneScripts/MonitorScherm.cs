@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using System.Linq;
 using System;
 using System.Threading.Tasks;
+using UnityEngine.UI;
 
 public class MonitorScherm : MonoBehaviour
 {
@@ -18,7 +19,14 @@ public class MonitorScherm : MonoBehaviour
     [Header("BottomField")]
     public TMP_Text journalTitle;
     public TMP_Text journalDescription;
+    public TMP_Text journalRating;
 
+    [Header("LeftBar")]
+    public Transform journalView;
+    public Transform appointmentView;
+    public GameObject journalButtonPrefab;
+
+    [Header ("TopBar")]
     public TMP_Dropdown childSelector;
 
     private PatientApiClient patientApiClient;
@@ -126,6 +134,33 @@ public class MonitorScherm : MonoBehaviour
         {
             dagboekEntries.text = journalResponse.Data.Count().ToString();
             //TODO: gemiddelde cijfer berekenen van child dagboek entries.
+
+            foreach (Transform child in journalView)
+            {
+                Destroy(child.gameObject);
+            }
+
+            foreach (var journal in journalResponse.Data)
+            {
+                Debug.Log("Creating button: " + journal.content.ToString());
+
+                GameObject newButton = Instantiate(journalButtonPrefab, journalView);
+                TMP_Text buttonText = newButton.GetComponentInChildren<TMP_Text>();
+
+                if (buttonText != null)
+                {
+                    //TODO: replace content with title once database is ready
+                    buttonText.text = journal.content;
+
+                    Button btnComponent = newButton.GetComponent<Button>();
+                    if (btnComponent != null)
+                    {
+                        btnComponent.onClick.AddListener(() => OnJournalSelected(journal));
+                    }
+                }
+
+
+            }
         }
     }
 
@@ -159,5 +194,10 @@ public class MonitorScherm : MonoBehaviour
         Debug.Log($"Selected patient: {selectedPatient.firstName} {selectedPatient.lastName}");
 
         LoadSequence();
+    }
+
+    private void OnJournalSelected(JournalEntry journalEntry)
+    { 
+        journalDescription.text = journalEntry.content;
     }
 }
