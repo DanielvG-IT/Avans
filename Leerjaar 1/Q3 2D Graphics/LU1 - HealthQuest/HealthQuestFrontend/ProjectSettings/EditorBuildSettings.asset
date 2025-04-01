@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/GameTrajectMetZiekenhuisScherm.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
+    path: Assets/Scenes/GameTrajectZonderZiekenhuisScherm.unity
+    guid: d04ec8626de17dc40ac44867606f344c
+  - enabled: 1
     path: Assets/Scenes/StartScherm.unity
     guid: 0160ebe6c3713f84096f5d2b35f440ff
   - enabled: 1
@@ -20,6 +23,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Tussenscherm.unity
     guid: cb6b8112821bbea4ea76352ebe6c6dae
+  - enabled: 1
+    path: Assets/Scenes/MonitorScherm.unity
+    guid: ebab4950190e98548bfd2e22ad53b1a7
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 3590b91b4603b465dbb4216d601bff33, type: 3}
   m_UseUCBPForAssetBundles: 0
