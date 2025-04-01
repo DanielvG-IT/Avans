@@ -1,64 +1,89 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
-
-public class GanzenbordManager : MonoBehaviour
+public class GanzenboordManager : MonoBehaviour
 {
-    [Header("Data Instellingen")]
-    public TextAsset afsprakenJSON;
+    public TextAsset appointmentsJson;
 
-    private List<Afspraak> afspraken = new List<Afspraak>();
-    private int levelsCompleted = 0;
+    private List<Afspraak> appointments = new();
+    private int completedLevels = 0;
+    private ApiClientManager apiClientManager => ApiClientManager.Instance;
 
-    void Awake()
+    public int TotalLevels => appointments.Count;
+    public int CompletedLevelCount => completedLevels;
+
+    private async void Awake()
     {
-        LaadAfsprakenUitJSON();
+        LoadAppointmentsFromJson();
+        //await SyncProgressWithBackend();
     }
 
-    private void LaadAfsprakenUitJSON()
+    private void LoadAppointmentsFromJson()
     {
-        if (afsprakenJSON == null)
+        if (appointmentsJson == null)
         {
-            Debug.LogError("❌ JSON-bestand niet toegewezen.");
+            Debug.LogError("No JSON file assigned to GooseBoardManager.");
             return;
         }
 
-        var data = JsonUtility.FromJson<AfspraakList>("{\"afspraken\":" + afsprakenJSON.text + "}");
-        afspraken = new List<Afspraak>(data.afspraken);
-    }
-
-    public Afspraak GetAfspraak(int index)
-    {
-        if (index >= 0 && index < afspraken.Count)
+        try
         {
-            return afspraken[index];
+            string wrappedJson = $"{{\"afspraken\":{appointmentsJson.text}}}";
+            var data = JsonUtility.FromJson<AfspraakList>(wrappedJson);
+            appointments = new List<Afspraak>(data.afspraken);
         }
-
-        Debug.LogWarning("⚠️ Ongeldig index in GetAfspraak");
-        return null;
-    }
-
-    public void VoltooiLevel(int index)
-    {
-        if (index >= 0 && index < afspraken.Count && index >= levelsCompleted)
+        catch
         {
-            levelsCompleted = index + 1;
+            Debug.LogError("Failed to parse appointment JSON.");
         }
     }
 
-    public bool IsLevelUnlocked(int index)
+    public async Task SyncProgressWithBackend()
     {
-        return index <= levelsCompleted;
+        Debug.Log("Syncing completed levels with backend...");
+        var treatmentId = apiClientManager.CurrentTreatment.id;
+
+        IWebRequestReponse response = await apiClientManager.AppointmentApiClient.ReadAppointmentsByTreatmentIdAsync(treatmentId);
+
+        Debug.Log(response.ToString());
+
+        switch (response)
+        {
+            case WebRequestData<List<Appointment>> dataResponse:
+                {
+                    completedLevels = Mathf.Clamp(dataResponse.Data.Count, 0, TotalLevels);
+                    Debug.Log($"Synced completed levels: {dataResponse.Data}");
+                    break;
+                }
+
+            case WebRequestError errorResponse:
+                {
+                    Debug.LogWarning("Error syncing completed appointments: " + errorResponse.ErrorMessage);
+                    break;
+                }
+
+            default:
+                {
+                    Debug.LogWarning("Unexpected response type from backend.");
+                    break;
+                }
+        }
     }
 
-    public bool IsLevelVoltooid(int index)
+
+
+
+    public void MarkLevelCompleted(int index)
     {
-        return index < levelsCompleted;
+        if (!IsValidIndex(index)) return;
+        if (index >= completedLevels) completedLevels = index + 1;
     }
 
-    public int AantalLevels => afspraken.Count;
+    public bool IsLevelUnlocked(int index) => IsValidIndex(index) && index <= completedLevels;
+    public bool IsLevelCompleted(int index) => IsValidIndex(index) && index < completedLevels;
+    public Afspraak GetAppointment(int index) => IsValidIndex(index) ? appointments[index] : null;
+    public void SetCompletedLevelCount(int count) => completedLevels = Mathf.Clamp(count, 0, TotalLevels);
 
-    public int GetLevelsCompleted() => levelsCompleted;
-
-    public void SetLevelsCompleted(int count) => levelsCompleted = Mathf.Clamp(count, 0, AantalLevels);
+    private bool IsValidIndex(int index) => index >= 0 && index < TotalLevels;
 }
