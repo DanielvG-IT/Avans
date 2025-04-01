@@ -1,48 +1,71 @@
+using TMPro;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
-
+using UnityEngine.UI;
+using System.Collections;
+using UnityEngine.Profiling;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using UnityEngine.SceneManagement;
+using System.Linq;
 public class PatientScherm : MonoBehaviour
 {
     [Header("UI elementen")]
-    public GameObject schermPrefab;
-    private CanvasGroup selectionPanel;
-    private CanvasGroup creationPanel;
+    public CanvasGroup selectionPanel;
+    public CanvasGroup creationPanel;
+    public TMP_Text guardianName;
 
-    [Header("Prefabs")]
-    public GameObject HondProfilePrefab;
-    public GameObject KatProfilePrefab;
-    public GameObject PaardProfilePrefab;
-    public GameObject VogelProfilePrefab;
+    [Header("Profile elementen")]
+    public Transform profilesContainer;
+    public GameObject profilePrefab;
+    public Sprite VogelAvatar;
+    public Sprite PaardAvatar;
+    public Sprite HondAvatar;
+    public Sprite KatAvatar;
+
+    [Header("Create elementen")]
+    public TMP_InputField firstNameInput;
+    public TMP_InputField lastNameInput;
+    public TMP_Dropdown doctorDropdown;
+    public TMP_Dropdown trajectDropdown;
+    public TMP_Dropdown avatarDropdown;
 
     [Header("Animation Settings")]
     public float fadeDuration = 0.5f;
 
+    private DoctorApiClient doctorApiClient;
+    private PatientApiClient patientApiClient;
+    private GuardianApiClient guardianApiClient;
+    private TreatmentApiClient treatmentApiClient;
+
+    private Guardian guardian;
     private CanvasGroup currentPanel;
 
+    private List<Doctor> doctors;
     private List<Patient> patients;
-    private PatientApiClient PatientApiClient;
+    private List<Treatment> treatments;
 
     public async void Start()
     {
         InitializePanels();
 
-        PatientApiClient = ApiClientManager.Instance.PatientApiClient;
+        doctorApiClient = ApiClientManager.Instance.DoctorApiClient;
+        patientApiClient = ApiClientManager.Instance.PatientApiClient;
+        guardianApiClient = ApiClientManager.Instance.GuardianApiClient;
+        treatmentApiClient = ApiClientManager.Instance.TreatmentApiClient;
 
-        var patientResult = await PatientApiClient.ReadPatientAsync();
-        if (patientResult is WebRequestError patientError)
-        {
-            Debug.LogError("Failed to read patients: " + patientError.ErrorMessage); // TODO: Show the user an error message
-            return;
-        }
-        else if (patientResult is WebRequestData<List<Patient>> patientData)
-        {
-            patients = patientData.Data;
-        }
+        guardian = ApiClientManager.Instance.CurrentGuardian;
+        guardianName.text = $"{guardian.firstName} {guardian.lastName}";
 
+        await LoadSequence();
+    }
+
+    private async Task LoadSequence()
+    {
+        await LoadPatientData();
+        await LoadDropdownData();
         ShowPatientsOnUI();
+        PopulateDropdowns();
     }
 
     private void InitializePanels()
@@ -94,32 +117,157 @@ public class PatientScherm : MonoBehaviour
         panel.alpha = endAlpha;
     }
 
+    private async Task LoadPatientData()
+    {
+        var patientResult = await patientApiClient.ReadPatientAsync();
+        if (patientResult is WebRequestError patientError)
+        {
+            // TODO Check redirect to creation panel
+            if (patientError.ErrorMessage.Contains("404") || patientError.ErrorMessage.Contains("No patients found"))
+            {
+                ShowCreationPanel();
+                return;
+            }
+
+            Debug.LogError("Failed to read patients: " + patientError.ErrorMessage); // TODO: Show the user an error message
+            return;
+        }
+        else if (patientResult is WebRequestData<List<Patient>> patientData)
+        {
+            patients = patientData.Data;
+        }
+    }
+
+    private async Task LoadDropdownData()
+    {
+        var doctorResult = await doctorApiClient.ReadDoctorsAsync();
+        if (doctorResult is WebRequestError doctorError)
+        {
+            Debug.LogError("Failed to read doctors: " + doctorError.ErrorMessage); // TODO: Show the user an error message
+        }
+        else if (doctorResult is WebRequestData<List<Doctor>> doctorList)
+        {
+            doctors = doctorList.Data;
+
+        }
+
+        var treatmentResult = await treatmentApiClient.ReadTreatmentsAsync();
+        if (treatmentResult is WebRequestError treatmentError)
+        {
+            Debug.LogError("Failed to read treatments: " + treatmentError.ErrorMessage); // TODO: Show the user an error message
+        }
+        else if (treatmentResult is WebRequestData<List<Treatment>> treatmentList)
+        {
+            treatments = treatmentList.Data;
+        } 
+    }
+
+    private void PopulateDropdowns()
+    {
+        if (doctorDropdown == null || avatarDropdown == null || trajectDropdown == null)
+        {
+            Debug.LogError("One of the dropdown is null");
+            return;
+        }
+
+        // Populate the doctor dropdown
+        var doctorOptions = new List<string>();
+        foreach (var doctor in doctors)
+        {
+            doctorOptions.Add($"{doctor.firstName} {doctor.lastName}");
+        }
+
+        doctorDropdown.ClearOptions();
+        doctorDropdown.AddOptions(doctorOptions);
+
+        // Populate the avatar dropdown
+        var avatarOptions = new List<string> { "Hond", "Kat", "Paard", "Vogel" };
+        avatarDropdown.ClearOptions();
+        avatarDropdown.AddOptions(avatarOptions);
+
+        // Populate the traject dropdown
+        var trajectOptions = new List<string>();
+        foreach (var treatment in treatments)
+        {
+            trajectOptions.Add(treatment.name);
+        }
+        trajectDropdown.ClearOptions();
+        trajectDropdown.AddOptions(trajectOptions);
+    }
+
     private void ShowPatientsOnUI()
     {
         foreach (var patient in patients)
         {
-            switch (patient.avatar)
+            var toInstanciateSprite = patient.avatar switch
             {
-                    // TODO: Add buttons to prefab select this patient
-                case "Hond":
-                    Instantiate(HondProfilePrefab, schermPrefab.transform);
-                    break;
-                case "Kat":
-                    Instantiate(KatProfilePrefab, schermPrefab.transform);
-                    break;
-                case "Paard":
-                    Instantiate(PaardProfilePrefab, schermPrefab.transform);
-                    break;
-                case "Vogel":
-                    Instantiate(VogelProfilePrefab, schermPrefab.transform);
-                    break;
-                default:
-                    Debug.LogWarning("Unknown avatar type: " + patient.avatar);
-                    break;
-            }
-            // TODO: Set the patient's name and other details on the profile prefab
-            // TODO: Check if the transform values need to be adjusted
+                "Hond" => HondAvatar,
+                "Kat" => KatAvatar,
+                "Paard" => PaardAvatar,
+                "Vogel" => VogelAvatar,
+                _ => HondAvatar,
+            };
+
+            GameObject profileCard = Instantiate(profilePrefab, profilesContainer);
+
+            Image profileImage = profileCard.transform.Find("ProfileImage").GetComponent<Image>();
+            profileImage.sprite = toInstanciateSprite;
+
+            Text profileName = profileCard.transform.Find("ProfileName").GetComponent<Text>();
+            profileName.text = $"{patient.firstName} {patient.lastName}";
+
+            Button btn = profileCard.GetComponent<Button>();
+            btn.onClick.AddListener(() => SelectPatient(patient));
         }
+    }
+
+    public async void CreatePatient()
+    {
+        try
+        {
+            string selectedDoctorName = doctorDropdown.options[doctorDropdown.value].text;
+            string selectedTreatmentName = trajectDropdown.options[trajectDropdown.value].text;
+
+            var selectedDoctor = doctors.FirstOrDefault(d => $"{d.firstName} {d.lastName}" == selectedDoctorName);
+            var selectedTreatment = treatments.FirstOrDefault(t => t.name == selectedTreatmentName);
+
+            if (selectedDoctor == null || selectedTreatment == null)
+            {
+                Debug.LogError("Invalid selection: doctor or treatment not found");
+                return;
+            }
+
+            var newPatient = new Patient
+            {
+                firstName = firstNameInput.text,
+                lastName = lastNameInput.text,
+                doctorID = selectedDoctor.id,
+                treatmentID = selectedTreatment.id,
+                avatar = avatarDropdown.options[avatarDropdown.value].text
+            };
+
+            var createResult = await patientApiClient.CreatePatientAsync(newPatient);
+            if (createResult is WebRequestError createError)
+            {
+                Debug.LogError("Failed to create patient: " + createError.ErrorMessage);
+                return;
+            }
+            else if (createResult is WebRequestData<Patient> createdPatient)
+            {
+                patients.Add(createdPatient.Data);
+                await LoadSequence();
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Failed to create patient: " + e.Message);
+        }
+    }
+
+    public void Back()
+    {
+        ApiClientManager.Instance.ClearData();
+        SceneManager.LoadScene("StartScherm");
     }
 
     private async void SelectPatient(Patient patient)
@@ -127,7 +275,7 @@ public class PatientScherm : MonoBehaviour
         try
         {
             // Verify the patient exists
-            var verifyResult = await PatientApiClient.ReadPatientByIdAsync(patient.id);
+            var verifyResult = await patientApiClient.ReadPatientByIdAsync(patient.id);
             if (verifyResult is WebRequestError verifyError)
             {
                 Debug.LogError("Failed to verify patient: " + verifyError.ErrorMessage);
@@ -139,6 +287,26 @@ public class PatientScherm : MonoBehaviour
         catch (Exception e)
         {
             Debug.LogError("Failed to set current patient: " + e.Message);
+        }
+    }
+
+    public async void SelectParent()
+    {
+        try
+        {
+            // Verify the patient exists
+            var verifyResult = await guardianApiClient.ReadGuardianById(guardian.id);
+            if (verifyResult is WebRequestError verifyError)
+            {
+                Debug.LogError("Failed to verify patient: " + verifyError.ErrorMessage);
+                return;
+            }
+
+            //SceneManager.LoadScene(""); // TODO Figure out what scene to load
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Failed to load parent: " + e.Message);
         }
     }
 
