@@ -29,8 +29,8 @@ namespace HQB.Tests.Controllers
         {
             // Arrange
             var treatmentId = Guid.NewGuid();
-            var appointment1 = new Appointment { ID = Guid.NewGuid(), Name = "Appointment 1" };
-            var appointment2 = new Appointment { ID = Guid.NewGuid(), Name = "Appointment 2" };
+            var appointment1 = new Appointment { ID = Guid.NewGuid(), Name = "Appointment 1", Description = "Description for Appointment 1" };
+            var appointment2 = new Appointment { ID = Guid.NewGuid(), Name = "Appointment 2", Description = "Description for Appointment 2" };
             var treatmentAppointments = new List<(Guid AppointmentID, int Sequence)>
             {
             (appointment1.ID, 2),
@@ -97,8 +97,8 @@ namespace HQB.Tests.Controllers
             // Arrange
             var appointments = new List<Appointment>
             {
-            new() { ID = Guid.NewGuid(), Name = "Appointment 1" },
-            new() { ID = Guid.NewGuid(), Name = "Appointment 2" }
+            new() { ID = Guid.NewGuid(), Name = "Appointment 1", Description = "Description for Appointment 1" },
+            new() { ID = Guid.NewGuid(), Name = "Appointment 2", Description = "Description for Appointment 2" }
             };
 
             _mockAuthService.Setup(auth => auth.GetCurrentAuthenticatedUserId()).Returns("user123");
@@ -119,7 +119,7 @@ namespace HQB.Tests.Controllers
         {
             // Arrange
             var appointmentId = Guid.NewGuid();
-            var appointment = new Appointment { ID = appointmentId, Name = "Test Appointment" };
+            var appointment = new Appointment { ID = appointmentId, Name = "Test Appointment", Description = "Test Description" };
             _mockRepo.Setup(repo => repo.GetAppointmentByIdAsync(appointmentId)).ReturnsAsync(appointment);
 
             // Act
@@ -152,7 +152,7 @@ namespace HQB.Tests.Controllers
         public async Task CreateAppointment_ReturnsCreatedAtActionResult_WithNewAppointment()
         {
             // Arrange
-            var appointment = new Appointment { ID = Guid.NewGuid(), Name = "New Appointment" };
+            var appointment = new Appointment { ID = Guid.NewGuid(), Name = "New Appointment", Description = "Description for New Appointment" };
             _mockRepo.Setup(repo => repo.AddAppointmentAsync(It.IsAny<Appointment>())).ReturnsAsync(1);
 
             // Act
@@ -170,7 +170,7 @@ namespace HQB.Tests.Controllers
         {
             // Arrange
             var appointmentId = Guid.NewGuid();
-            var appointment = new Appointment { ID = appointmentId, Name = "Updated Appointment" };
+            var appointment = new Appointment { ID = appointmentId, Name = "Updated Appointment", Description = "Updated Description" };
             _mockRepo.Setup(repo => repo.GetAppointmentByIdAsync(appointmentId)).ReturnsAsync(appointment);
             _mockRepo.Setup(repo => repo.UpdateAppointmentAsync(appointment)).Returns(Task.FromResult(1));
 
@@ -188,7 +188,7 @@ namespace HQB.Tests.Controllers
         {
             // Arrange
             var appointmentId = Guid.NewGuid();
-            var appointment = new Appointment { ID = appointmentId, Name = "Test Appointment" };
+            var appointment = new Appointment { ID = appointmentId, Name = "Test Appointment", Description = "Test Description" };
             _mockRepo.Setup(repo => repo.GetAppointmentByIdAsync(appointmentId)).ReturnsAsync(appointment);
             _mockRepo.Setup(repo => repo.DeleteAppointmentAsync(appointmentId)).ReturnsAsync(1);
 
