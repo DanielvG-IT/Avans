@@ -55,6 +55,7 @@ erDiagram
         UUID ID PK
         string Name
         string Url
+        text Description
         blob Image
         int DurationInMinutes
     }

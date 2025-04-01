@@ -120,6 +120,12 @@ namespace HQB.WebApi.Controllers
                     return BadRequest("Appointment name cannot be empty");
                 }
 
+                if (string.IsNullOrWhiteSpace(appointment.Description))
+                {
+                    _logger.LogWarning("Attempted to create an appointment with an empty description");
+                    return BadRequest("Appointment description cannot be empty");
+                }
+
                 appointment.ID = Guid.NewGuid();
 
                 var result = await _appointmentRepository.AddAppointmentAsync(appointment);
@@ -154,6 +160,12 @@ namespace HQB.WebApi.Controllers
                 {
                     _logger.LogWarning("Attempted to update an appointment with an empty title");
                     return BadRequest("Appointment title cannot be empty");
+                }
+
+                if (string.IsNullOrWhiteSpace(appointment.Description))
+                {
+                    _logger.LogWarning("Attempted to update an appointment with an empty description");
+                    return BadRequest("Appointment description cannot be empty");
                 }
 
                 var existingAppointment = await _appointmentRepository.GetAppointmentByIdAsync(id);

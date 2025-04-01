@@ -29,14 +29,14 @@ public class AppointmentRepository : IAppointmentRepository
     public async Task<int> AddAppointmentAsync(Appointment appointment)
     {
         using var connection = new SqlConnection(_connectionString);
-        const string sql = "INSERT INTO Appoinment (ID, Name, Url, Image, DurationInMinutes) VALUES (@ID, @Name, @Url, @Image, @DurationInMinutes)";
+        const string sql = "INSERT INTO Appoinment (ID, Name, Url, Description, Image, DurationInMinutes) VALUES (@ID, @Name, @Url, @Description, @Image, @DurationInMinutes)";
         return await connection.ExecuteAsync(sql, appointment);
     }
 
     public async Task<int> UpdateAppointmentAsync(Appointment appointment)
     {
         using var connection = new SqlConnection(_connectionString);
-        const string sql = "UPDATE Appoinment SET Name = @Name, Url = @Url, Image = @Image, DurationInMinutes = @DurationInMinutes WHERE ID = @ID";
+        const string sql = "UPDATE Appoinment SET Name = @Name, Url = @Url, Description = @Description, Image = @Image, DurationInMinutes = @DurationInMinutes WHERE ID = @ID";
         return await connection.ExecuteAsync(sql, appointment);
     }
 

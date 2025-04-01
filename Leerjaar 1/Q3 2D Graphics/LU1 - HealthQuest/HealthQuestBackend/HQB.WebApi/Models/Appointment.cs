@@ -15,6 +15,11 @@ public class Appointment
     public required string Name { get; set; }
 
     /// <summary>
+    /// Gets or sets the description of the appointment.
+    /// </summary>
+    public required string Description { get; set; }
+
+    /// <summary>
     /// Gets or sets the URL associated with the appointment.
     /// </summary>
     public string? Url { get; set; }

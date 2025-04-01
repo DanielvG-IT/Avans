@@ -48,6 +48,7 @@ erDiagram
     APPOINMENT {
         NVARCHAR Name
         NVARCHAR Url
+        NVARCHAR Description
         VARBINARY Image
         INT DurationInMinutes
     }
