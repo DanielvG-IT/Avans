@@ -28,7 +28,20 @@ public class JournalEntry
     public DateTime date;
 
     /// <summary>
+    /// Gets or sets the title of the journal entry.
+    /// </summary>
+    public string? title;
+
+    /// <summary>
     /// Gets or sets the content of the journal entry.
     /// </summary>
     public string? content;
+
+    /// <summary>
+    /// Gets or sets the rating of the journal entry.
+    /// </summary>
+    /// <remarks>
+    /// The rating is a value between 1 and 10.
+    /// </remarks>
+    public int rating;
 }
