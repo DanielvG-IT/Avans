@@ -378,7 +378,6 @@ namespace HQB.WebApi.Controllers
         [HttpPost("{id}/completed-appointments", Name = "AddCompletedAppointment")]
         public async Task<IActionResult> AddCompletedAppointment(Guid id, [FromQuery] Guid appointmentId, [FromQuery] DateTime completedDate)
         {
-            // TODO May change in the future to use [FromBody] instead of [FromQuery] for the whole object
             try
             {
                 if (id == Guid.Empty || appointmentId == Guid.Empty)
