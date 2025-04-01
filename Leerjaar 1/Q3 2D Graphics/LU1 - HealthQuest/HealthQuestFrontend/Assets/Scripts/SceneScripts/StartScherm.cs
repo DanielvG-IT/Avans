@@ -230,7 +230,7 @@ public class StartScreen : MonoBehaviour
             ApiClientManager.Instance.SetCurrentTreatment(treatment);
 
             // // TODO: Load the patient scene (selection)
-            SceneManager.LoadScene("TussenScherm");
+            SceneManager.LoadScene("MonitorScherm");
         }
         catch (Exception ex)
         {
