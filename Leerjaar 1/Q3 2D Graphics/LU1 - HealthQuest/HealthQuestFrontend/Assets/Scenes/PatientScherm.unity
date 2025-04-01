@@ -7147,10 +7147,10 @@ MonoBehaviour:
   guardianName: {fileID: 790219766}
   profilesContainer: {fileID: 493276002}
   profilePrefab: {fileID: 7770253069838026007, guid: 544c7f7664c814940b6795b0ae1451e1, type: 3}
-  VogelAvatar: {fileID: 0}
-  PaardAvatar: {fileID: 0}
-  HondAvatar: {fileID: 0}
-  KatAvatar: {fileID: 0}
+  VogelAvatar: {fileID: 8287716109363918729, guid: 9230c5af4f217d84a8953e93ea181161, type: 3}
+  PaardAvatar: {fileID: 4439769646914453581, guid: 52031fa900212bf41b1ca2c5846989fb, type: 3}
+  HondAvatar: {fileID: 5993558626319221549, guid: 55cf4b686eb6d3a4a9f12168a4ac5395, type: 3}
+  KatAvatar: {fileID: 3427169251989188627, guid: 50b5530efe977b846af71f62c8f4d765, type: 3}
   firstNameInput: {fileID: 90571460}
   lastNameInput: {fileID: 1705692533}
   doctorDropdown: {fileID: 631934790}
