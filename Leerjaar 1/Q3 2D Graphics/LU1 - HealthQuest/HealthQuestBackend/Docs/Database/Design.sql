@@ -90,7 +90,9 @@ CREATE TABLE [dbo].[JournalEntry] (
     PatientID UNIQUEIDENTIFIER NOT NULL,
     GuardianID UNIQUEIDENTIFIER NOT NULL,
     Date DATETIME NOT NULL,
+    Title NVARCHAR(50) NOT NULL,
     Content NVARCHAR(MAX) NOT NULL,
+    INT Rating NOT NULL,
     FOREIGN KEY (PatientID) REFERENCES Patient(ID),
     FOREIGN KEY (GuardianID) REFERENCES Guardian(ID)
 );

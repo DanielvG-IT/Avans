@@ -147,6 +147,42 @@ public class JournalController : ControllerBase
                 return BadRequest("Journal entry cannot be null");
             }
 
+            if (journal.PatientID == null)
+            {
+                _logger.LogWarning("PatientID is required");
+                return BadRequest("PatientID is required");
+            }
+
+            if (journal.GuardianID == null)
+            {
+                _logger.LogWarning("GuardianID is required");
+                return BadRequest("GuardianID is required");
+            }
+
+            if (journal.Date == default)
+            {
+                _logger.LogWarning("Date is required");
+                return BadRequest("Date is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(journal.Title))
+            {
+                _logger.LogWarning("Title is required");
+                return BadRequest("Title is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(journal.Content))
+            {
+                _logger.LogWarning("Content is required");
+                return BadRequest("Content is required");
+            }
+
+            if (journal.Rating < 1 || journal.Rating > 10)
+            {
+                _logger.LogWarning("Rating must be between 1 and 10");
+                return BadRequest("Rating must be between 1 and 10");
+            }
+
             journal.ID = Guid.NewGuid();
 
             _logger.LogInformation("Creating a new journal entry");
@@ -175,6 +211,30 @@ public class JournalController : ControllerBase
             {
                 _logger.LogWarning("Journal entry ID mismatch: {Id} != {JournalId}", id, journal.ID);
                 return BadRequest("ID mismatch");
+            }
+
+                        if (journal.Date == default)
+            {
+                _logger.LogWarning("Date is required");
+                return BadRequest("Date is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(journal.Title))
+            {
+                _logger.LogWarning("Title is required");
+                return BadRequest("Title is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(journal.Content))
+            {
+                _logger.LogWarning("Content is required");
+                return BadRequest("Content is required");
+            }
+
+            if (journal.Rating < 1 || journal.Rating > 10)
+            {
+                _logger.LogWarning("Rating must be between 1 and 10");
+                return BadRequest("Rating must be between 1 and 10");
             }
 
             var loggedInUserId = _authenticationService.GetCurrentAuthenticatedUserId();

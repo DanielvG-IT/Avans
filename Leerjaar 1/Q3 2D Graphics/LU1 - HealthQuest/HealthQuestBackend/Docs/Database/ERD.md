@@ -43,7 +43,9 @@ erDiagram
         UUID PatientID
         UUID GuardianID
         DATETIME Date
+        NVARCHAR Title
         NVARCHAR Content
+        INT Rating
     }
     APPOINMENT {
         NVARCHAR Name

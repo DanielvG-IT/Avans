@@ -49,7 +49,9 @@ erDiagram
         UUID PatientID FK
         UUID GuardianID FK
         datetime Date
+        string Title
         string Content
+        int Rating
     }
     APPOINMENT {
         UUID ID PK
