@@ -29,7 +29,18 @@ public class GanzenbordManager : MonoBehaviour
 
     public Afspraak GetAfspraak(int index)
     {
+<<<<<<< Updated upstream
         if (index >= 0 && index < afspraken.Count)
+=======
+        Debug.Log("Syncing completed levels with backend...");
+        var treatmentId = apiClientManager.CurrentTreatment.id;
+
+        IWebRequestReponse response = await apiClientManager.AppointmentApiClient.ReadAppointmentsByTreatmentIdAsync(treatmentId);
+
+        Debug.Log(JsonUtility.ToJson(response, true));
+
+        switch (response)
+>>>>>>> Stashed changes
         {
             return afspraken[index];
         }
