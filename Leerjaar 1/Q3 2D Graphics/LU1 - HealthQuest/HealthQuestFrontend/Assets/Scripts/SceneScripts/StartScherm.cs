@@ -1,7 +1,6 @@
 using TMPro;
 using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -209,28 +208,7 @@ public class StartScreen : MonoBehaviour
             //     // TODO: Load the patient scene (creation)
             // }
 
-            var patient = new Patient
-            {
-                id = "3472dd56-87ab-4b3c-a4cd-cc204f9ffd3a",
-                firstName = "Karel",
-                lastName = "de Jong",
-                guardianID = "dba48b25-c779-44fc-b12a-0b42c6b6765d",
-                treatmentID = "7bc92028-da56-4142-bd46-34a0d75b7d3e",
-                doctorID = "c4183f21-95ed-4637-aef1-dce8b4394221",
-                avatar = "Kat"
-            };
-
-            var treatment = new Treatment
-            {
-                id = "312dd56-87ab-4b3c-a4cd-cc204f9ffd3a",
-                name = "Zonder Ziekenhuis Opname"
-            };
-
-            ApiClientManager.Instance.SetCurrentPatient(patient);
-            ApiClientManager.Instance.SetCurrentTreatment(treatment);
-
             // // TODO: Load the patient scene (selection)
-            SceneManager.LoadScene("MonitorScherm");
         }
         catch (Exception ex)
         {
