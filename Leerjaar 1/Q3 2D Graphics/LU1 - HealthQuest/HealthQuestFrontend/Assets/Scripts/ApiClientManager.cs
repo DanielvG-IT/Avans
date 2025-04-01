@@ -67,18 +67,11 @@ public class ApiClientManager : MonoBehaviour
         CurrentTreatment = treatment;
     }
 
-    public List<Appointment> CurrentAppointments { get; set; }
-
-    public List<Sticker> CurrentStickers { get; set; }
-
     public void ClearData()
     {
         CurrentUser = null;
         CurrentGuardian = null;
         CurrentPatient = null;
         CurrentTreatment = null;
-        CurrentAppointments = null;
-        CurrentStickers = null;
-        // TODO clear other data in this class
     }
 }

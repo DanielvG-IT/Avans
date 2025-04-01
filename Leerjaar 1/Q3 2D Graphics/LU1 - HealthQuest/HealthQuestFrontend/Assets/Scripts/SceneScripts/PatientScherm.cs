@@ -1,13 +1,13 @@
 using TMPro;
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using UnityEngine.Profiling;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
-using System.Linq;
+
 public class PatientScherm : MonoBehaviour
 {
     [Header("UI elementen")]
@@ -33,6 +33,7 @@ public class PatientScherm : MonoBehaviour
     [Header("Animation Settings")]
     public float fadeDuration = 0.5f;
 
+    // Private fields
     private DoctorApiClient doctorApiClient;
     private PatientApiClient patientApiClient;
     private GuardianApiClient guardianApiClient;
@@ -58,6 +59,11 @@ public class PatientScherm : MonoBehaviour
         guardianName.text = $"{guardian.firstName} {guardian.lastName}";
 
         await LoadSequence();
+
+        if (patients.Count == 0)
+        {
+            ShowCreationPanel();
+        }
     }
 
     private async Task LoadSequence()
@@ -210,10 +216,10 @@ public class PatientScherm : MonoBehaviour
 
             GameObject profileCard = Instantiate(profilePrefab, profilesContainer);
 
-            Image profileImage = profileCard.transform.Find("ProfileImage").GetComponent<Image>();
+            Image profileImage = profileCard.transform.Find("Avatar").GetComponent<Image>();
             profileImage.sprite = toInstanciateSprite;
 
-            Text profileName = profileCard.transform.Find("ProfileName").GetComponent<Text>();
+            Text profileName = profileCard.transform.Find("Text").GetComponent<Text>();
             profileName.text = $"{patient.firstName} {patient.lastName}";
 
             Button btn = profileCard.GetComponent<Button>();
@@ -282,7 +288,24 @@ public class PatientScherm : MonoBehaviour
                 return;
             }
 
+            var treatmentResponse = await treatmentApiClient.ReadTreatmentByIdAsync(patient.treatmentID);
+            if (treatmentResponse is WebRequestError treatmentError)
+            {
+                Debug.LogError("Failed to verify patient: " + treatmentError.ErrorMessage);
+                return;
+            }
+
+            var appointmentResponse = await treatmentApiClient.ReadAppointmentsByTreatmentIdAsync(patient.treatmentID);
+            if (treatmentResponse is WebRequestError appointmentError)
+            {
+                Debug.LogError("Failed to verify patient: " + appointmentError.ErrorMessage);
+                return;
+            }
+
             ApiClientManager.Instance.SetCurrentPatient(patient);
+            ApiClientManager.Instance.SetCurrentTreatment((treatmentResponse as WebRequestData<Treatment>).Data);
+
+            await SceneManager.LoadSceneAsync("TussenScherm");
         }
         catch (Exception e)
         {
@@ -301,8 +324,10 @@ public class PatientScherm : MonoBehaviour
                 Debug.LogError("Failed to verify patient: " + verifyError.ErrorMessage);
                 return;
             }
-
-            //SceneManager.LoadScene(""); // TODO Figure out what scene to load
+            else if (verifyResult is WebRequestData<Guardian> parentData)
+            {
+                await SceneManager.LoadSceneAsync("MonitorScherm");
+            }
         }
         catch (Exception e)
         {
