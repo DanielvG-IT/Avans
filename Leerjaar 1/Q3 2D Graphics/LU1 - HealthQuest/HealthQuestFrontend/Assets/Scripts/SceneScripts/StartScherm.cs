@@ -15,10 +15,10 @@ public class StartScreen : MonoBehaviour
     [SerializeField] private CanvasGroup registerPanel;
     [SerializeField] private TMP_InputField emailFieldLogin;
     [SerializeField] private TMP_InputField passwordFieldLogin;
-    [SerializeField] private TMP_InputField emailFieldRegister;
-    [SerializeField] private TMP_InputField passwordFieldRegister;
     [SerializeField] private TMP_InputField firstNameField;
     [SerializeField] private TMP_InputField lastNameField;
+    [SerializeField] private TMP_InputField emailFieldRegister;
+    [SerializeField] private TMP_InputField passwordFieldRegister;
 
     [Header("Animation Settings")]
     [SerializeField] private float fadeDuration = 0.5f;

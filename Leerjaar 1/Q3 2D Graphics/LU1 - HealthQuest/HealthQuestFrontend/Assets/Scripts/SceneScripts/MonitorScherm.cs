@@ -6,6 +6,7 @@ using System.Linq;
 using System;
 using System.Threading.Tasks;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class MonitorScherm : MonoBehaviour
 {
@@ -55,6 +56,11 @@ public class MonitorScherm : MonoBehaviour
         await LoadProgress();
         await LoadJournalEntriesAsync();
         UpdatePatientUI();
+    }
+
+    public void Back()
+    {
+        SceneManager.LoadScene("PatientScherm");
     }
 
     private async Task LoadPatients()

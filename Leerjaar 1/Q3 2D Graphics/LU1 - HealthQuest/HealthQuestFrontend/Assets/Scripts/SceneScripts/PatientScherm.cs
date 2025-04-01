@@ -60,7 +60,7 @@ public class PatientScherm : MonoBehaviour
 
         await LoadSequence();
 
-        if (patients.Count == 0)
+        if (patients == null || patients.Count == 0)
         {
             ShowCreationPanel();
         }
@@ -128,7 +128,7 @@ public class PatientScherm : MonoBehaviour
         var patientResult = await patientApiClient.ReadPatientsAsync();
         if (patientResult is WebRequestError patientError)
         {
-            // TODO Check redirect to creation panel
+            // TODO Add a field for status code in WebRequestError and WebRequestData
             if (patientError.ErrorMessage.Contains("404") || patientError.ErrorMessage.Contains("No patients found"))
             {
                 ShowCreationPanel();
@@ -203,6 +203,11 @@ public class PatientScherm : MonoBehaviour
 
     private void ShowPatientsOnUI()
     {
+        if (patients == null || patients.Count() == 0)
+        {
+            return;
+        }
+
         foreach (var patient in patients)
         {
             var toInstanciateSprite = patient.avatar switch
@@ -270,10 +275,22 @@ public class PatientScherm : MonoBehaviour
         }
     }
 
-    public void Back()
+    public void Logout()
     {
         ApiClientManager.Instance.ClearData();
         SceneManager.LoadScene("StartScherm");
+    }
+
+    public void BackOnCreation()
+    {
+        if (patients.Count() != 0)
+        {
+            ShowSelectionPanel();
+        }
+        else
+        {
+            Logout();
+        }
     }
 
     private async void SelectPatient(Patient patient)
@@ -326,7 +343,14 @@ public class PatientScherm : MonoBehaviour
             }
             else if (verifyResult is WebRequestData<Guardian> parentData)
             {
-                await SceneManager.LoadSceneAsync("MonitorScherm");
+                if (patients.Count() != 0)
+                {
+                    await SceneManager.LoadSceneAsync("MonitorScherm");
+                }
+                else
+                {
+                    ShowCreationPanel();
+                }
             }
         }
         catch (Exception e)
