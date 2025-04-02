@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class TussenScherm : MonoBehaviour
+public class Avatar : MonoBehaviour
 {
     private Patient currentPatient;
     private Treatment currentTreatment;
@@ -14,8 +14,6 @@ public class TussenScherm : MonoBehaviour
     private string patientGameScene;
 
     public TMP_Text patientName;
-    public Button logoutButton;
-    public Button startGame;
 
     [Header("Avatar")]
     public Image avatar;
@@ -53,19 +51,5 @@ public class TussenScherm : MonoBehaviour
                 Debug.LogWarning("Avatar not found.");
                 break;
         }
-
-        logoutButton.onClick.AddListener(Logout);
-        startGame.onClick.AddListener(() => LoadGameScene(patientGameScene));
     }
-
-    public void Logout()
-    {
-        SceneManager.LoadScene("StartScherm");
-    }
-
-    public void LoadGameScene(string trajectScene)
-    {
-        SceneManager.LoadScene(trajectScene);
-    }
-
 }
