@@ -112,7 +112,7 @@ GO
 -- Treatment_Appoinment Table
 CREATE TABLE [dbo].[Treatment_Appoinment] (
     TreatmentID UNIQUEIDENTIFIER NOT NULL,
-    AppoinmentID UNIQUEIDENTIFIER NOT NULL,
+    AppointmentID UNIQUEIDENTIFIER NOT NULL,
     Sequence INT NOT NULL,
     PRIMARY KEY (TreatmentID, AppoinmentID),
     FOREIGN KEY (TreatmentID) REFERENCES Treatment(ID),
