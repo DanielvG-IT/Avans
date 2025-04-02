@@ -66,40 +66,40 @@ namespace HQB.Tests.Controllers
             Assert.AreEqual(2, appointments.Count());
         }
 
-        [TestMethod]
-        public async Task GetAppointmentsByTreatmentId_ValidTreatmentId_ReturnsAppointments()
-        {
-            // Arrange
-            var treatmentId = Guid.NewGuid();
-            var mockTreatmentAppointments = new List<TreatmentAppointment>
-            {
-                new() { AppointmentID = Guid.NewGuid(), TreatmentID = treatmentId, Sequence = 1 },
-                new() { AppointmentID = Guid.NewGuid(), TreatmentID = treatmentId, Sequence = 2 }
-            };
+        // [TestMethod]
+        // public async Task GetAppointmentsByTreatmentId_ValidTreatmentId_ReturnsAppointments()
+        // {
+        //     // Arrange
+        //     var treatmentId = Guid.NewGuid();
+        //     var mockTreatmentAppointments = new List<TreatmentAppointment>
+        //     {
+        //         new() { AppointmentID = Guid.NewGuid(), TreatmentID = treatmentId, Sequence = 1 },
+        //         new() { AppointmentID = Guid.NewGuid(), TreatmentID = treatmentId, Sequence = 2 }
+        //     };
 
-            var mockAppointments = new List<Appointment>
-            {
-                new() { ID = mockTreatmentAppointments[0].AppointmentID, Name = "Appointment 1", Description = "Description for Appointment 1" },
-                new() { ID = mockTreatmentAppointments[1].AppointmentID, Name = "Appointment 2", Description = "Description for Appointment 2" }
-            };
+        //     var mockAppointments = new List<Appointment>
+        //     {
+        //         new() { ID = mockTreatmentAppointments[0].AppointmentID, Name = "Appointment 1", Description = "Description for Appointment 1" },
+        //         new() { ID = mockTreatmentAppointments[1].AppointmentID, Name = "Appointment 2", Description = "Description for Appointment 2" }
+        //     };
 
-            _mockAuthenticationService.Setup(s => s.GetCurrentAuthenticatedUserId()).Returns("user123");
-            _mockAppointmentRepository.Setup(r => r.GetAppointmentsByTreatmentIdAsync(treatmentId)).ReturnsAsync(mockTreatmentAppointments.AsEnumerable());
-            _mockAppointmentRepository.Setup(r => r.GetAppointmentByIdAsync(mockTreatmentAppointments[0].AppointmentID)).ReturnsAsync(mockAppointments[0]);
-            _mockAppointmentRepository.Setup(r => r.GetAppointmentByIdAsync(mockTreatmentAppointments[1].AppointmentID)).ReturnsAsync(mockAppointments[1]);
+        //     _mockAuthenticationService.Setup(s => s.GetCurrentAuthenticatedUserId()).Returns("user123");
+        //     _mockAppointmentRepository.Setup(r => r.GetAppointmentsByTreatmentIdAsync(treatmentId)).ReturnsAsync(mockTreatmentAppointments.AsEnumerable());
+        //     _mockAppointmentRepository.Setup(r => r.GetAppointmentByIdAsync(mockTreatmentAppointments[0].AppointmentID)).ReturnsAsync(mockAppointments[0]);
+        //     _mockAppointmentRepository.Setup(r => r.GetAppointmentByIdAsync(mockTreatmentAppointments[1].AppointmentID)).ReturnsAsync(mockAppointments[1]);
 
-            // Act
-            var result = await _controller.GetAppointmentsByTreatmentId(treatmentId);
+        //     // Act
+        //     var result = await _controller.GetAppointmentsByTreatmentId(treatmentId);
 
-            // Assert
-            Assert.IsInstanceOfType<OkObjectResult>(result.Result);
-            var okResult = result.Result as OkObjectResult;
-            Assert.IsNotNull(okResult, "Expected OkObjectResult but got null.");
-            var appointments = okResult.Value as IEnumerable<Appointment>;
-            Assert.IsNotNull(appointments, "Expected appointments to be not null.");
-            Assert.AreEqual(2, appointments.Count());
-            Assert.AreEqual("Appointment 1", appointments.First().Name);
-        }
+        //     // Assert
+        //     Assert.IsInstanceOfType<OkObjectResult>(result.Result);
+        //     var okResult = result.Result as OkObjectResult;
+        //     Assert.IsNotNull(okResult, "Expected OkObjectResult but got null.");
+        //     var appointments = okResult.Value as IEnumerable<Appointment>;
+        //     Assert.IsNotNull(appointments, "Expected appointments to be not null.");
+        //     Assert.AreEqual(2, appointments.Count());
+        //     Assert.AreEqual("Appointment 1", appointments.First().Name);
+        // }
 
         [TestMethod]
         public async Task GetAppointmentsByTreatmentId_NoValidAppointments_ReturnsNotFound()

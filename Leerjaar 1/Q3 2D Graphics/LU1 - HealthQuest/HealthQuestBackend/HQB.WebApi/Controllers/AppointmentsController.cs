@@ -80,8 +80,40 @@ namespace HQB.WebApi.Controllers
                         try
                         {
                             var appointmentDetails = await _appointmentRepository.GetAppointmentByIdAsync(item.AppointmentID);
-                            if (appointmentDetails != null)
+                            if (appointmentDetails != null && appointmentDetails.ID != Guid.Empty && appointmentDetails.ID == item.AppointmentID)
                             {
+                                if (string.IsNullOrWhiteSpace(appointmentDetails.Name))
+                                {
+                                    _logger.LogWarning("Appointment name is empty for AppointmentID: {AppointmentID}", item.AppointmentID);
+                                    continue;
+                                }
+                                if (string.IsNullOrWhiteSpace(appointmentDetails.Description))
+                                {
+                                    _logger.LogWarning("Appointment description is empty for AppointmentID: {AppointmentID}", item.AppointmentID);
+                                    continue;
+                                }
+                                if (string.IsNullOrWhiteSpace(appointmentDetails.Url))
+                                {
+                                    _logger.LogWarning("Appointment URL is empty for AppointmentID: {AppointmentID}", item.AppointmentID);
+                                    continue;
+                                }
+                                if (appointmentDetails.Image == null || appointmentDetails.Image.Length == 0)
+                                {
+                                    _logger.LogWarning("Appointment image is empty for AppointmentID: {AppointmentID}", item.AppointmentID);
+                                    continue;
+                                }
+                                if (appointmentDetails.DurationInMinutes <= 0)
+                                {
+                                    _logger.LogWarning("Appointment duration is invalid for AppointmentID: {AppointmentID}", item.AppointmentID);
+                                    continue;
+                                }
+                                if (appointmentDetails.ID != item.AppointmentID)
+                                {
+                                    _logger.LogWarning("Appointment ID mismatch for AppointmentID: {AppointmentID}", item.AppointmentID);
+                                    continue;
+                                }
+                            
+                                _logger.LogInformation("Fetched appointment details for AppointmentID: {AppointmentID}", item.AppointmentID);
                                 appointments.Add((appointmentDetails, item.Sequence));
                             }
                             else
