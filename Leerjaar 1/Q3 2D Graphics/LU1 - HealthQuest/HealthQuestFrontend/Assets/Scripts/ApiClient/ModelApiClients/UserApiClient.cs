@@ -51,9 +51,9 @@ public class UserApiClient : MonoBehaviour
         if (response is WebRequestData<string> data)
         {
             webClient.SetToken(JsonHelper.ExtractToken(data.Data));
-            return new WebRequestData<string>("Login successful!");
+            return new WebRequestData<string>("Login successful!", 200);
         }
 
-        return new WebRequestError("Unknown error occurred during login.");
+        return new WebRequestError("Unknown error occurred during login.", 400);
     }
 }

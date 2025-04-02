@@ -1,10 +1,16 @@
 fileFormatVersion: 2
-guid: 5556ea4d10774684a858897b92e029ec
+guid: 9224902d207ca8c4da680ee67e76abe0
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -821273641504018296
-    second: royal_nurse_goose_0
+      213: 5930903584976301920
+    second: newton_0
+  - first:
+      213: 371050913541808114
+    second: newton_1
+  - first:
+      213: 8271752327389208957
+    second: newton_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -109,27 +115,40 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: royal_nurse_goose_0
+      name: newton_0
       rect:
         serializedVersion: 2
-        x: 131
-        y: 77
-        width: 892
-        height: 859
+        x: 0
+        y: 11
+        width: 1024
+        height: 1504
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 880f2ce69ff3a94f0800000000000000
-      internalID: -821273641504018296
+      spriteID: 06f6a93236dce4250800000000000000
+      internalID: 5930903584976301920
       vertices: []
       indices: 
       edges: []
@@ -138,7 +157,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 7136539e36060be43bc6955fa49c559c
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +167,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      royal_nurse_goose_0: -821273641504018296
+      newton_0: 5930903584976301920
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

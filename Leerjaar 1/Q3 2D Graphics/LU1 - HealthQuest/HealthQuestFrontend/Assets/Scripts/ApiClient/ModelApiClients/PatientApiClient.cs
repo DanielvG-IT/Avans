@@ -15,12 +15,12 @@ public class PatientApiClient : MonoBehaviour
     /// <returns>
     /// An <see cref="IWebRequestReponse"/> containing the response data parsed as a list of <see cref="Patient"/>.
     /// </returns>
-    public async Awaitable<IWebRequestReponse> ReadPatientAsync()
+    public async Awaitable<IWebRequestReponse> ReadPatientsAsync()
     {
         string route = $"/api/v1/patient";
 
         IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
-        return JsonHelper.ParseResponse<Patient>(webRequestResponse);
+        return JsonHelper.ParseListResponse<Patient>(webRequestResponse);
     }
 
     /// <summary>
