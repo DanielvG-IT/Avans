@@ -22,15 +22,15 @@ namespace HQB.WebApi.Controllers
         [HttpGet(Name = "GetAppointmentsByTreatmentId")]
         public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentsByTreatmentId(Guid? treatmentId)
         {
+            var loggedInUserId = _authenticationService.GetCurrentAuthenticatedUserId();
+            if (string.IsNullOrWhiteSpace(loggedInUserId))
+            {
+                _logger.LogWarning("No authenticated user found");
+                return Unauthorized("No authenticated user found");
+            }
+
             try
             {
-                var loggedInUserId = _authenticationService.GetCurrentAuthenticatedUserId();
-                if (string.IsNullOrWhiteSpace(loggedInUserId))
-                {
-                    _logger.LogWarning("No authenticated user found");
-                    return Unauthorized("No authenticated user found");
-                }
-
                 if (treatmentId == null || treatmentId == Guid.Empty)
                 {
                     _logger.LogInformation("Fetching all appointments as no valid treatment ID was provided");
@@ -57,11 +57,28 @@ namespace HQB.WebApi.Controllers
                     var appointments = new List<(Appointment Appointment, int SequenceNr)>();
                     foreach (var item in treatmentAppointment)
                     {
-                        var appointmentDetails = await _appointmentRepository.GetAppointmentByIdAsync(item.AppointmentID);
-                        if (appointmentDetails != null)
+                        try
                         {
-                            appointments.Add((appointmentDetails, item.Sequence));
+                            var appointmentDetails = await _appointmentRepository.GetAppointmentByIdAsync(item.AppointmentID);
+                            if (appointmentDetails != null)
+                            {
+                                appointments.Add((appointmentDetails, item.Sequence));
+                            }
+                            else
+                            {
+                                _logger.LogWarning("Appointment details not found for AppointmentID: {AppointmentID}", item.AppointmentID);
+                            }
                         }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "Error fetching appointment details for AppointmentID: {AppointmentID}", item.AppointmentID);
+                        }
+                    }
+
+                    if (appointments.Count == 0)
+                    {
+                        _logger.LogWarning("No valid appointments found for the provided treatment ID: {TreatmentId}", treatmentId);
+                        return NotFound($"No valid appointments found for the treatment ID: {treatmentId}");
                     }
 
                     var sortedAppointments = appointments.OrderBy(a => a.SequenceNr).Select(a => a.Appointment).ToList();
