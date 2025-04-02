@@ -171,10 +171,22 @@ public class JournalController : ControllerBase
                 return BadRequest("Title is required");
             }
 
+            if (journal.Title.Length > 25)
+            {
+                _logger.LogWarning("Title exceeds maximum length of 25 characters");
+                return BadRequest("Title exceeds maximum length of 25 characters");
+            }
+
             if (string.IsNullOrWhiteSpace(journal.Content))
             {
                 _logger.LogWarning("Content is required");
                 return BadRequest("Content is required");
+            }
+
+            if (journal.Content.Length > 850)
+            {
+                _logger.LogWarning("Content exceeds maximum length of 850 characters");
+                return BadRequest("Content exceeds maximum length of 850 characters");
             }
 
             if (journal.Rating < 1 || journal.Rating > 10)
