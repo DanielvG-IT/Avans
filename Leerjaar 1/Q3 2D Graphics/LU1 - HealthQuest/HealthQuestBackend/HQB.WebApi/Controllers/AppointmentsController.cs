@@ -80,7 +80,7 @@ namespace HQB.WebApi.Controllers
                         try
                         {
                             var appointmentDetails = await _appointmentRepository.GetAppointmentByIdAsync(item.AppointmentID);
-                            if (appointmentDetails != null && appointmentDetails.ID != Guid.Empty && appointmentDetails.ID == item.AppointmentID)
+                            if (appointmentDetails != null)
                             {
                                 if (string.IsNullOrWhiteSpace(appointmentDetails.Name))
                                 {
