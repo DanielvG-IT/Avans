@@ -23,7 +23,7 @@ public static class JsonHelper
             case WebRequestData<string> data:
                 Debug.Log("Response data raw: " + data.Data); // TODO: remove debug log
                 T parsedData = JsonUtility.FromJson<T>(data.Data);
-                return new WebRequestData<T>(parsedData);
+                return new WebRequestData<T>(parsedData, data.StatusCode);
             default:
                 return webRequestResponse;
         }
@@ -36,7 +36,7 @@ public static class JsonHelper
             case WebRequestData<string> data:
                 Debug.Log("Response data raw: " + data.Data); // TODO: remove debug log
                 List<T> parsedList = ParseJsonArray<T>(data.Data);
-                return new WebRequestData<List<T>>(parsedList);
+                return new WebRequestData<List<T>>(parsedList, data.StatusCode);
             default:
                 return webRequestResponse;
         }
