@@ -25,7 +25,7 @@ public class JournalEntry
     /// <summary>
     /// Gets or sets the date of the journal entry.
     /// </summary>
-    public DateTime date;
+    public string? date;
 
     /// <summary>
     /// Gets or sets the title of the journal entry.
