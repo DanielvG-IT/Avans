@@ -76,12 +76,16 @@ public class WebClient : MonoBehaviour
         if (webRequest.result == UnityWebRequest.Result.Success)
         {
             string responseData = webRequest.downloadHandler.text;
-            return new WebRequestData<string>(responseData);
+            int statusCode = (int)webRequest.responseCode;
+
+            return new WebRequestData<string>(responseData, statusCode);
         }
         else
         {
             string responseData = webRequest.downloadHandler.text;
-            return new WebRequestError(responseData);
+            int statusCode = (int)webRequest.responseCode;
+
+            return new WebRequestError(responseData, statusCode);
         }
     }
 

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: d57e3be5c32f5b447818264f0a16d818
+guid: 9230c5af4f217d84a8953e93ea181161
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3987028293495897233
-    second: farmergoose_0
+      213: 8287716109363918729
+    second: Vogel_Remove_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,30 +96,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: farmergoose_0
+      name: Vogel_Remove_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 1024
-        height: 1024
+        x: 230
+        y: 173
+        width: 504
+        height: 533
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f63ceb824ea3ba8c0800000000000000
-      internalID: -3987028293495897233
+      spriteID: 9873be924e1e30370800000000000000
+      internalID: 8287716109363918729
       vertices: []
       indices: 
       edges: []
@@ -148,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      farmergoose_0: -3987028293495897233
+      Vogel_Remove_0: 8287716109363918729
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

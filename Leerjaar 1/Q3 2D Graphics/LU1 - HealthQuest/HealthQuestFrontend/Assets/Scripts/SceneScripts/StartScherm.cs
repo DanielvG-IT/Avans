@@ -2,8 +2,7 @@ using TMPro;
 using System;
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Manages the Start, Login, and Registration panels with smooth fade transitions.
@@ -16,24 +15,22 @@ public class StartScreen : MonoBehaviour
     [SerializeField] private CanvasGroup registerPanel;
     [SerializeField] private TMP_InputField emailFieldLogin;
     [SerializeField] private TMP_InputField passwordFieldLogin;
-    [SerializeField] private TMP_InputField emailFieldRegister;
-    [SerializeField] private TMP_InputField passwordFieldRegister;
     [SerializeField] private TMP_InputField firstNameField;
     [SerializeField] private TMP_InputField lastNameField;
+    [SerializeField] private TMP_InputField emailFieldRegister;
+    [SerializeField] private TMP_InputField passwordFieldRegister;
 
     [Header("Animation Settings")]
     [SerializeField] private float fadeDuration = 0.5f;
 
     private CanvasGroup currentPanel;
     private UserApiClient userApiClient;
-    private PatientApiClient patientApiClient;
     private GuardianApiClient guardianApiClient;
 
     private void Start()
     {
         InitializePanels();
         userApiClient = ApiClientManager.Instance.UserApiClient;
-        patientApiClient = ApiClientManager.Instance.PatientApiClient;
         guardianApiClient = ApiClientManager.Instance.GuardianApiClient;
     }
 
@@ -134,13 +131,14 @@ public class StartScreen : MonoBehaviour
                 Debug.LogError("Failed to create guardian: " + guardianError.ErrorMessage); // TODO: Show the user an error message
                 return;
             }
-
-            // Store the guardian data in the API client manager
-            var guardianData = (guardianResult as WebRequestData<Guardian>).Data; // TODO: Verify this is the correct way to get the guardian data
-            ApiClientManager.Instance.SetCurrentGuardian(guardianData);
+            else if (guardianResult is WebRequestData<Guardian> guardianData)
+            {
+                Debug.Log("Guardian created successfully."); // TODO: Show the user a success message
+                ApiClientManager.Instance.SetCurrentGuardian(guardianData.Data);
+            }
 
             Debug.Log("Registration successful."); // TODO: Show the user a success message
-            // TODO: Load the patient creation scene
+            await SceneManager.LoadSceneAsync("PatientScherm");
         }
         catch (Exception ex)
         {
@@ -193,22 +191,7 @@ public class StartScreen : MonoBehaviour
             }
 
             Debug.Log("Login successful."); // TODO: Show the user a success message
-
-            // var patientResults = await patientApiClient.ReadPatientAsync();
-            // if (patientResults is WebRequestError patientError)
-            // {
-            //     Debug.LogError("Failed to retrieve patients: " + patientError.ErrorMessage); // TODO: Show the user an error message
-            //     return;
-            // }
-
-            // List<Patient> patientData = (patientResults as WebRequestData<List<Patient>>).Data;
-            // if (!patientData.Any())
-            // {
-            //     Debug.LogWarning("No patients found for this guardian.");
-            //     // TODO: Load the patient scene (creation)
-            // }
-
-            // // TODO: Load the patient scene (selection)
+            await SceneManager.LoadSceneAsync("PatientScherm");
         }
         catch (Exception ex)
         {

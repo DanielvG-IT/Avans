@@ -37,7 +37,7 @@ public class Patient
     public string doctorID;
 
     /// <summary>
-    /// Gets or sets the URL or path to the patient's avatar image.
+    /// Gets or sets the name of the patient's avatar image.
     /// </summary>
     public string avatar;
 }

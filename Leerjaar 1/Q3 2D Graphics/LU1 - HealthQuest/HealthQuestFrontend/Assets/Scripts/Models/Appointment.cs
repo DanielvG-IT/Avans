@@ -11,12 +11,17 @@ public class Appointment
     /// <summary>
     /// Gets or sets the unique identifier for the appointment.
     /// </summary>
-    public string id;
+    public string? id;
 
     /// <summary>
     /// Gets or sets the name of the appointment.
     /// </summary>
     public string name = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the description of the appointment.
+    /// </summary>
+    public string description = string.Empty;
 
     /// <summary>
     /// Gets or sets the URL associated with the appointment.
