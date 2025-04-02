@@ -29,8 +29,6 @@ public class GanzenBordUI : MonoBehaviour
 
     public async void Start()
     {
-        await boardManager.SyncProgressWithBackend();
-
         canvas = GameObject.Find("UserHUD");
 
         if (debugMode)

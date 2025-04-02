@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -13,10 +14,9 @@ public class GanzenboordManager : MonoBehaviour
     public int TotalLevels => appointments.Count;
     public int CompletedLevelCount => completedLevels;
 
-    private async void Awake()
+    void Awake()
     {
         LoadAppointmentsFromJson();
-        //await SyncProgressWithBackend();
     }
 
     private void LoadAppointmentsFromJson()
@@ -38,41 +38,6 @@ public class GanzenboordManager : MonoBehaviour
             Debug.LogError("Failed to parse appointment JSON.");
         }
     }
-
-    public async Task SyncProgressWithBackend()
-    {
-        Debug.Log("Syncing completed levels with backend...");
-        var treatmentId = apiClientManager.CurrentTreatment.id;
-
-        IWebRequestReponse response = await apiClientManager.AppointmentApiClient.ReadAppointmentsByTreatmentIdAsync(treatmentId);
-
-        Debug.Log(response.ToString());
-
-        switch (response)
-        {
-            case WebRequestData<List<Appointment>> dataResponse:
-                {
-                    completedLevels = Mathf.Clamp(dataResponse.Data.Count, 0, TotalLevels);
-                    Debug.Log($"Synced completed levels: {dataResponse.Data}");
-                    break;
-                }
-
-            case WebRequestError errorResponse:
-                {
-                    Debug.LogWarning("Error syncing completed appointments: " + errorResponse.ErrorMessage);
-                    break;
-                }
-
-            default:
-                {
-                    Debug.LogWarning("Unexpected response type from backend.");
-                    break;
-                }
-        }
-    }
-
-
-
 
     public void MarkLevelCompleted(int index)
     {

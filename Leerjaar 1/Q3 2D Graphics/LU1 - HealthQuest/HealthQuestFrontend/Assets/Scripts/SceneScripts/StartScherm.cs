@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Manages the Start, Login, and Registration panels with smooth fade transitions.
@@ -194,6 +195,16 @@ public class StartScreen : MonoBehaviour
 
             Debug.Log("Login successful."); // TODO: Show the user a success message
 
+
+            var treatment = new Treatment
+            {
+                id = "312dd56-87ab-4b3c-a4cd-cc204f9ffd3a",
+                name = "Zonder Ziekenhuis Opname"
+            };
+
+            ApiClientManager.Instance.SetCurrentTreatment(treatment);
+
+            SceneManager.LoadScene("GameTrajectZonder");
             // var patientResults = await patientApiClient.ReadPatientAsync();
             // if (patientResults is WebRequestError patientError)
             // {
