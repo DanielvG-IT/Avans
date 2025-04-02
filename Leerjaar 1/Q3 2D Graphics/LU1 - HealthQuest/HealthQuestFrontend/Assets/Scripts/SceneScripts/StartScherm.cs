@@ -2,6 +2,8 @@ using TMPro;
 using System;
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -191,6 +193,7 @@ public class StartScreen : MonoBehaviour
             }
 
             Debug.Log("Login successful."); // TODO: Show the user a success message
+
             await SceneManager.LoadSceneAsync("PatientScherm");
         }
         catch (Exception ex)

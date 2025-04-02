@@ -5823,7 +5823,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1155007154}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.999986
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -6086,13 +6086,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boardManager: {fileID: 861765413}
-  popUpPrefab: {fileID: 2800570743221530583, guid: 0945f88271dd498499711cb1d7529fbc, type: 3}
+  popupPrefab: {fileID: 2800570743221530583, guid: 0945f88271dd498499711cb1d7529fbc, type: 3}
   goose: {fileID: 1534646655}
   mainCamera: {fileID: 519420031}
   levelsParent: {fileID: 922608494}
   cameraSpeed: 5
-  gooseSnelheid: 125
-  afgerondKleur: {r: 0, g: 1, b: 0, a: 1}
+  gooseSpeed: 125
+  completedColor: {r: 0, g: 1, b: 0, a: 1}
   debugMode: 1
 --- !u!114 &861765413
 MonoBehaviour:
@@ -6106,7 +6106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27a5b02e1091892449d6ce0374db49f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  afsprakenJSON: {fileID: 4900000, guid: 9fe8d7c816197c042aa0a0d697f69d77, type: 3}
+  appointmentsJson: {fileID: 4900000, guid: 9fe8d7c816197c042aa0a0d697f69d77, type: 3}
 --- !u!1 &891165546
 GameObject:
   m_ObjectHideFlags: 0
@@ -6999,7 +6999,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.000030517578, y: 0.0002027149}
+  m_AnchoredPosition: {x: -0.000030517578, y: -0.000051132218}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!21 &1132699539

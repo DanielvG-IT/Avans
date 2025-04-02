@@ -1,2 +1,12 @@
 fileFormatVersion: 2
 guid: 27a5b02e1091892449d6ce0374db49f0
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - appointmentsJson: {fileID: 4900000, guid: 9fe8d7c816197c042aa0a0d697f69d77, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
