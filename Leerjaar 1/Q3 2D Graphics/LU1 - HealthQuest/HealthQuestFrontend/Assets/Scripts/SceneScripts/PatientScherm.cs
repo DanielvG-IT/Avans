@@ -129,7 +129,7 @@ public class PatientScherm : MonoBehaviour
         if (patientResult is WebRequestError patientError)
         {
             // TODO Add a field for status code in WebRequestError and WebRequestData
-            if (patientError.ErrorMessage.Contains("404") || patientError.ErrorMessage.Contains("No patients found"))
+            if (patientError.StatusCode == 404)
             {
                 ShowCreationPanel();
                 return;
