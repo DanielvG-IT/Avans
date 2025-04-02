@@ -92,7 +92,7 @@ CREATE TABLE [dbo].[JournalEntry] (
     Date DATETIME NOT NULL,
     Title NVARCHAR(50) NOT NULL,
     Content NVARCHAR(MAX) NOT NULL,
-    INT Rating NOT NULL,
+    Rating INT NOT NULL,
     FOREIGN KEY (PatientID) REFERENCES Patient(ID),
     FOREIGN KEY (GuardianID) REFERENCES Guardian(ID)
 );
