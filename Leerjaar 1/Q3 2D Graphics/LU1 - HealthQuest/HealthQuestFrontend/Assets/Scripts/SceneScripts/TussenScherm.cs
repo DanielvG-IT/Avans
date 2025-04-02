@@ -16,6 +16,7 @@ public class TussenScherm : MonoBehaviour
     public TMP_Text patientName;
     public Button logoutButton;
     public Button startGame;
+    public Button gameCompleted;
 
     [Header("Avatar")]
     public Image avatar;
