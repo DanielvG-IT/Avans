@@ -20,7 +20,7 @@ namespace HQB.WebApi.Controllers
         }
 
         [HttpGet(Name = "GetAppointmentsByTreatmentId")]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentsByTreatmentId(Guid? treatmentId)
+        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentsByTreatmentId([FromQuery] Guid? treatmentId)
         {
             var loggedInUserId = _authenticationService.GetCurrentAuthenticatedUserId();
             if (string.IsNullOrWhiteSpace(loggedInUserId))
@@ -57,6 +57,26 @@ namespace HQB.WebApi.Controllers
                     var appointments = new List<(Appointment Appointment, int SequenceNr)>();
                     foreach (var item in treatmentAppointment)
                     {
+                        if (item.AppointmentID == Guid.Empty)
+                        {
+                            _logger.LogWarning("Invalid AppointmentID found in Treatment_Appoinment: {AppointmentID}", item.AppointmentID);
+                            continue;
+                        }
+
+                        if (item.Sequence <= 0)
+                        {
+                            _logger.LogWarning("Invalid Sequence number found in Treatment_Appoinment: {Sequence}", item.Sequence);
+                            continue;
+                        }
+
+                        if (item.TreatmentID != treatmentId)
+                        {
+                            _logger.LogWarning("TreatmentID mismatch in Treatment_Appoinment: {TreatmentID}", item.TreatmentID);
+                            continue;
+                        }
+
+                        _logger.LogInformation("Fetching appointment details for AppointmentID: {AppointmentID}", item.AppointmentID);
+
                         try
                         {
                             var appointmentDetails = await _appointmentRepository.GetAppointmentByIdAsync(item.AppointmentID);
