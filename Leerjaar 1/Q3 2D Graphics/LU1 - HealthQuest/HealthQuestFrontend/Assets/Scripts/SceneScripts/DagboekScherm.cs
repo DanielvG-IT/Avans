@@ -15,6 +15,9 @@ public class DagboekScherm : MonoBehaviour
     private Patient currentPatient;
     private List<JournalEntry> journalEntries;
 
+    //Variabele voor de level clear tag (bij terug button click altijd zetten op false, bij game 'klaar knop' zet op true. Dan bij opsturen LevelCleared())
+    public static bool clearingLevel = false;
+
     public async void Start()
     {
         journalApiClient = ApiClientManager.Instance.JournalApiClient;
