@@ -26,7 +26,12 @@ public class AppointmentListUI : MonoBehaviour
         {
             case WebRequestData<List<AppointmentWithNr>> dataResponse:
                 {
-                    Debug.Log("Data: " + dataResponse.Data.Count);
+                    if (dataResponse.Data == null || dataResponse.Data.Count == 0)
+                    {
+                        Debug.Log("No appointments found for this treatment.");
+                        return;
+                    }
+
                     foreach (var appointment in dataResponse.Data)
                     {
                         GameObject appointmentGO = Instantiate(appointmentPrefab, contentParent);
