@@ -3,41 +3,61 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class DagboekScherm : MonoBehaviour
 {
     [Header("UI elements")]
     public Transform journalListContent;
     public GameObject journalListItemPrefab;
+    public Button backButton;
+
+    [Header("Avatar")]
+    public Image avatar;
+    public Sprite Kat;
+    public Sprite Hond;
+    public Sprite Paard;
+    public Sprite Vogel;
+    public TMP_Text patientName;
 
     private PatientApiClient patientApiClient;
     private JournalApiClient journalApiClient;
     private Patient currentPatient;
     private List<JournalEntry> journalEntries;
+    private Scenemanager sceneManager;
+    private Animator animator;
+    private string currentScene;
 
-    //Variabele voor de level clear tag (bij terug button click altijd zetten op false, bij game 'klaar knop' zet op true. Dan bij opsturen LevelCleared())
+    //TODO: Variabele voor de level clear tag (bij terug button click altijd zetten op false, bij game 'klaar knop' zet op true. Dan bij opsturen LevelCleared())
     public static bool clearingLevel = false;
 
     public async void Start()
     {
+        sceneManager = new Scenemanager();
         journalApiClient = ApiClientManager.Instance.JournalApiClient;
         patientApiClient = ApiClientManager.Instance.PatientApiClient;
         currentPatient = ApiClientManager.Instance.CurrentPatient;
+        animator = backButton.GetComponent<Animator>();
+
 
         await LoadJournalEntries();
-        ShowJournalsOnUI();
     }
 
     private async Task LoadJournalEntries()
-    { 
+    {
         var journalResponse = await journalApiClient.ReadJournalEntriesAsync(currentPatient.id);
         if (journalResponse is WebRequestError journalError)
         {
             Debug.LogError($"Failed to load journal entries: {journalError.ErrorMessage}");
             return;
         }
+        else if (journalResponse is WebRequestData<List<JournalEntry>> journalEntry)
+        {
 
-        journalEntries = journalResponse as List<JournalEntry>;
+            journalEntries = journalEntry.Data;
+        }
     }
 
     public async Task CreateJournalEntry()
@@ -62,20 +82,21 @@ public class DagboekScherm : MonoBehaviour
         journalEntries.Add(journalCreateResponse as JournalEntry);
     }
 
-    private void ShowJournalsOnUI()
+    public void OnBackButtonClick()
     {
-        if (journalEntries == null)
-        {
-            return;
-        }
+        clearingLevel = false;
+        var gameOriginScene = ApiClientManager.Instance.CurrentTreatment.name;
+        gameOriginScene = gameOriginScene == "Zonder Ziekenhuis Opname" ? "GameTrajectZonder" : "GameTrajectMet";
 
-        foreach (var journalEntry in journalEntries)
-        {
-            var journalListItem = Instantiate(journalListItemPrefab, journalListContent);
-            var titleText = journalListItem.transform.Find("Text (TMP)").GetComponent<TMP_Text>();
-            titleText.text = journalEntry.title;
 
-            // TODO: Add click event to open journal entry
-        }
+
+        animator.Play("RedButton");
+        StartCoroutine(SwitchSceneAfterDelay(gameOriginScene));
+    }
+
+    private IEnumerator SwitchSceneAfterDelay(string scene)
+    {
+        yield return new WaitForSeconds(0.3f);
+        sceneManager.SwitchScene(scene);
     }
 }
