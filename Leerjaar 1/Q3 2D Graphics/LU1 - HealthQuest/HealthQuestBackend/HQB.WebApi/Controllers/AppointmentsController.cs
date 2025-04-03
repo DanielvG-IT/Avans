@@ -54,7 +54,7 @@ namespace HQB.WebApi.Controllers
                         return NotFound($"No appointments found for the treatment ID: {treatmentId}");
                     }
 
-                    var appointments = new List<(Appointment Appointment, int SequenceNr)>();
+                    var appointments = new List<AppointmentWithNr>();
                     foreach (var item in treatmentAppointment)
                     {
                         if (item.AppointmentID == Guid.Empty)
@@ -114,7 +114,19 @@ namespace HQB.WebApi.Controllers
                                 }
                             
                                 _logger.LogInformation("Fetched appointment details for AppointmentID: {AppointmentID}", item.AppointmentID);
-                                appointments.Add((appointmentDetails, item.Sequence));
+                                
+                                var appointment = new AppointmentWithNr
+                                {
+                                    ID = appointmentDetails.ID,
+                                    Name = appointmentDetails.Name,
+                                    Description = appointmentDetails.Description,
+                                    Url = appointmentDetails.Url,
+                                    Image = appointmentDetails.Image,
+                                    DurationInMinutes = appointmentDetails.DurationInMinutes,
+                                    AppointmentNr = item.Sequence
+                                };
+
+                                appointments.Add(appointment);
                             }
                             else
                             {
@@ -133,7 +145,7 @@ namespace HQB.WebApi.Controllers
                         return NotFound($"No valid appointments found for the treatment ID: {treatmentId}");
                     }
 
-                    var sortedAppointments = appointments.OrderBy(a => a.SequenceNr).Select(a => a.Appointment).ToList();
+                    var sortedAppointments = appointments.OrderBy(a => a.AppointmentNr);
 
                     return Ok(sortedAppointments);
                 }
