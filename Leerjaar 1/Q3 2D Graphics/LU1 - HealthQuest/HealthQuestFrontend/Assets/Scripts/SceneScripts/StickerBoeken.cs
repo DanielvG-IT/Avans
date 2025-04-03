@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TMPro;
+using System.Linq;
 
 public class StickerBoeken : MonoBehaviour
 {
@@ -10,20 +12,28 @@ public class StickerBoeken : MonoBehaviour
     public GameObject[] stickers;
 
     public GameObject poofPrefab;
+    public TMP_Text patientName;
+    public TMP_Text patientUnlockedStickerAmount;
 
+    [Header("Avatar")]
+    public Image avatar;
+    public Sprite Kat;
+    public Sprite Hond;
+    public Sprite Paard;
+    public Sprite Vogel;
 
-    public static List<string> newUnlockedStickers = new() { "Ziekenhuis", "Auto" }; //Gebruikt om poof te spawnen
-    public static List<string> oldUnlockedStickers = new(); //Wordt gebruikt om eventuele animatie af te spelen bij stickers die nieuw unlocked zijn.
+    public static List<string> newUnlockedStickers = new(); //Gebruikt om poof te spawnen
+    private List<string> oldUnlockedStickers = new(); //Wordt gebruikt om eventuele animatie af te spelen bij stickers die nieuw unlocked zijn.
 
     private Transform animationCanvas;
-    private readonly PatientApiClient patientApiClient = ApiClientManager.Instance.PatientApiClient;
-    private readonly StickerApiClient stickerApiClient = ApiClientManager.Instance.StickerApiClient;
+    private Patient currentPatient;
+    private PatientApiClient patientApiClient;
 
-    // Sample code to show how to use the ApiClient classes
-    private async Task GetPatientUnlockedStickers()
+
+    //private readonly StickerApiClient stickerApiClient = ApiClientManager.Instance.StickerApiClient;
+
+    private async Task GetPatientUnlockedStickers(Patient patient)
     {
-        // Get all unlocked stickers for the current patient
-        var patient = ApiClientManager.Instance.CurrentPatient;
         var unlockedStickersResponse = await patientApiClient.ReadUnlockedStickersFromPatientAsync(patient.id.ToString());
 
         switch (unlockedStickersResponse)
@@ -36,6 +46,9 @@ public class StickerBoeken : MonoBehaviour
                         oldUnlockedStickers.Add(sticker.name);
                         Debug.Log("Unlocked sticker: " + sticker.name);
                     }
+
+                    patientUnlockedStickerAmount.text = dataResponse.Data.Count().ToString();
+
                     break;
                 }
 
@@ -45,11 +58,16 @@ public class StickerBoeken : MonoBehaviour
                     break;
                 }
         }
+        
     }
 
     public async void Start()
     {
-        await GetPatientUnlockedStickers();
+        currentPatient = ApiClientManager.Instance.CurrentPatient;
+        patientApiClient = ApiClientManager.Instance.PatientApiClient;
+
+
+        await GetPatientUnlockedStickers(currentPatient);
 
         animationCanvas = GameObject.Find("Animation_Canvas").transform;
 
@@ -78,7 +96,33 @@ public class StickerBoeken : MonoBehaviour
             }
         }
 
+        patientName.text = $"{currentPatient.firstName} {currentPatient.lastName}";
+        var currentAvatar = currentPatient.avatar;
+        
+        
+        switch (currentAvatar)
+        {
+            case "Kat":
+                avatar.sprite = Kat;
+                break;
+            case "Hond":
+                avatar.sprite = Hond;
+                break;
+            case "Paard":
+                avatar.sprite = Paard;
+                break;
+            case "Vogel":
+                avatar.sprite = Vogel;
+                break;
+            default:
+                Debug.LogWarning("Avatar not found.");
+                break;
+        }
     }
+
+
+
+
     public void InstantiatePoof(GameObject sticker)
     {
         GameObject poof = Instantiate(poofPrefab, sticker.transform.position, Quaternion.identity);
@@ -105,6 +149,11 @@ public class StickerBoeken : MonoBehaviour
 
         // Destroy the poof object
         Destroy(poof);
+    }
+
+    public void ClearNewlyUnlockedStickers()
+    {
+        newUnlockedStickers.Clear();
     }
 
 }

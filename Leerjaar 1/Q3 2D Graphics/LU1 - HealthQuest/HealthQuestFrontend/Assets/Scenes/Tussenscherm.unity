@@ -169,7 +169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.8365791, b: 0.4481132, a: 1}
+  m_Color: {r: 1, g: 0.8365791, b: 0.4481132, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1180,7 +1180,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ....
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1306,7 +1306,7 @@ MonoBehaviour:
   patientName: {fileID: 763641004}
   logoutButton: {fileID: 1772450183}
   startGame: {fileID: 1013479288}
-  gameCompleted: {fileID: 0}
+  gameCompleted: {fileID: 222755100}
   avatar: {fileID: 84414409}
   Kat: {fileID: 3427169251989188627, guid: 50b5530efe977b846af71f62c8f4d765, type: 3}
   Hond: {fileID: 5993558626319221549, guid: 55cf4b686eb6d3a4a9f12168a4ac5395, type: 3}
