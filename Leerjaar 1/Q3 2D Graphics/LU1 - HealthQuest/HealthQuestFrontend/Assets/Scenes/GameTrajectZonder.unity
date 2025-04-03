@@ -6216,7 +6216,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1155007154}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.99906063
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -6478,7 +6478,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 861765409}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e87f0bf5a1e096141af3bb8aeddead32, type: 3}
+  m_Script: {fileID: 11500000, guid: aebb73d5f39b6f34382e56d103d74a96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   boardManager: {fileID: 861765413}
@@ -6502,7 +6502,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27a5b02e1091892449d6ce0374db49f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  appointmentsJson: {fileID: 4900000, guid: 9fe8d7c816197c042aa0a0d697f69d77, type: 3}
+  appointments: []
 --- !u!114 &861765414
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6512,7 +6512,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 861765409}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d72a33ee4f292ab478f810643d7428a7, type: 3}
+  m_Script: {fileID: 11500000, guid: ff3197bf19136394aa36cce116a3f759, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   patientName: {fileID: 421650016}
@@ -6530,10 +6530,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 861765409}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c092fa8f084b8d74e999ceac417828f9, type: 3}
+  m_Script: {fileID: 11500000, guid: bb1fbe10046d5214eb04418ef1447e9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Sticker: {fileID: 148555859}
+  appointmentPrefab: {fileID: 4002148426973102871, guid: 1c0f3a66babf58c438ffbd2b3e40318b, type: 3}
+  contentParent: {fileID: 1129565434}
 --- !u!114 &861765416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6543,11 +6544,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 861765409}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 47f802871985d6e4dae4f106a3fcc472, type: 3}
+  m_Script: {fileID: 11500000, guid: 1237bd05ba849d0468a7268f6dae27db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  appointmentPrefab: {fileID: 4002148426973102871, guid: 1c0f3a66babf58c438ffbd2b3e40318b, type: 3}
-  contentParent: {fileID: 1129565434}
+  Sticker: {fileID: 148555859}
 --- !u!1 &891165546
 GameObject:
   m_ObjectHideFlags: 0

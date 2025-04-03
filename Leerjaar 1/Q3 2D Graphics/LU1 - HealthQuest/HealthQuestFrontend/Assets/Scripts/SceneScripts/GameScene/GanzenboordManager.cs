@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class GanzenboordManager : MonoBehaviour
 {
-    public TextAsset appointmentsJson;
     private int completedAppointments;
     public List<Appointment> appointments = new();
     private ApiClientManager apiClientManager => ApiClientManager.Instance;
