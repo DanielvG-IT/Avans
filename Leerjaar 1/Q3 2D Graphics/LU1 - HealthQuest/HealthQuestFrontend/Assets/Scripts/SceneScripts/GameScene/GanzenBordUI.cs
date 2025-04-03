@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System;
-using System.Threading.Tasks;
-using UnityEngine.SceneManagement;
 
 public class GanzenBordUI : MonoBehaviour
 {
@@ -35,11 +34,11 @@ public class GanzenBordUI : MonoBehaviour
         patientApiClient = ApiClientManager.Instance.PatientApiClient;
         canvas = GameObject.Find("UserHUD");
 
-        //var savedLevel = DagboekScherm.clearingLevel;
-        //if (savedLevel != 0)
-        //{
-        //    CompleteLevel(savedLevel);
-        //}
+        var savedLevel = DagboekScherm.clearingLevel;
+        if (savedLevel != 0)
+        {
+            CompleteLevel(savedLevel);
+        }
 
         Debug.Log("GanzenBordUI started.");
         Debug.Log(boardManager.Appointments);
@@ -197,7 +196,7 @@ public class GanzenBordUI : MonoBehaviour
 
     private void RedirectToDagboekForLevelComplete(int index)
     {
-        //DagboekScherm.clearingLevel = index;
+        DagboekScherm.clearingLevel = index;
         Destroy(currentPopup);
         SceneManager.LoadScene("DagboekScherm");
     }

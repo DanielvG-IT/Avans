@@ -10,19 +10,21 @@ public class Navigation : MonoBehaviour
     private string currentAvatar;
     private string patientStickerScene;
 
-    public Button Sticker;
-    // private Button Dagboek;
+    public Button StickerButton;
+    public Button DagboekButton;
 
     void Start()
     {
         currentPatient = ApiClientManager.Instance.CurrentPatient;
         currentTreatment = ApiClientManager.Instance.CurrentTreatment;
-        if (currentTreatment.name == "Zonder Ziekenhuis Opname") patientStickerScene = "StickerBoek_TrajectZonder" ?? "StickerBoek_TrajectMet";
 
-        Sticker.onClick.AddListener(OnStickerClick);
+        patientStickerScene = currentTreatment.name == "Zonder Ziekenhuis Opname" ? "StickerBoek_TrajectZonder" : "StickerBoek_TrajectMet";
+
+        StickerButton.onClick.AddListener(OnStickerClick);
+        DagboekButton.onClick.AddListener(OnDagboekClick);
     }
 
-    void OnStickerClick()
+    public void OnStickerClick()
     {
         if (currentPatient != null && !string.IsNullOrEmpty(patientStickerScene))
         {
@@ -30,8 +32,8 @@ public class Navigation : MonoBehaviour
         }
     }
 
-    // void OnDagboekClick()
-    // {
-    //     SceneManager.LoadScene("TargetSceneName");
-    // }
+    public void OnDagboekClick()
+    {
+        SceneManager.LoadScene("DagboekScherm");
+    }
 }
