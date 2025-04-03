@@ -128,7 +128,6 @@ public class PatientScherm : MonoBehaviour
         var patientResult = await patientApiClient.ReadPatientsAsync();
         if (patientResult is WebRequestError patientError)
         {
-            // TODO Add a field for status code in WebRequestError and WebRequestData
             if (patientError.StatusCode == 404)
             {
                 ShowCreationPanel();
@@ -308,14 +307,7 @@ public class PatientScherm : MonoBehaviour
             var treatmentResponse = await treatmentApiClient.ReadTreatmentByIdAsync(patient.treatmentID);
             if (treatmentResponse is WebRequestError treatmentError)
             {
-                Debug.LogError("Failed to verify patient: " + treatmentError.ErrorMessage);
-                return;
-            }
-
-            var appointmentResponse = await treatmentApiClient.ReadAppointmentsByTreatmentIdAsync(patient.treatmentID);
-            if (treatmentResponse is WebRequestError appointmentError)
-            {
-                Debug.LogError("Failed to verify patient: " + appointmentError.ErrorMessage);
+                Debug.LogError("Failed to verify treatment: " + treatmentError.ErrorMessage);
                 return;
             }
 
