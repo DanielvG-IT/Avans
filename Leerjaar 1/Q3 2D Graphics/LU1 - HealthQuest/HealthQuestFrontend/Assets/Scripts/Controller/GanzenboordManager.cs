@@ -1,83 +1,41 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class GanzenboordManager : MonoBehaviour
 {
+    public TextAsset appointmentsJson;
+
+    private List<Afspraak> appointments = new();
+    private int completedLevels = 0;
+    private ApiClientManager apiClientManager => ApiClientManager.Instance;
+
+    public int TotalLevels => appointments.Count;
     public int CompletedLevelCount => completedLevels;
-    public int TotalLevels => totalLevelsCount;
-    public bool IsReady => isReady;
 
-    // Private vars
-    private AppointmentApiClient appointmentApiClient;
-    private PatientApiClient patientApiClient;
-    private List<Appointment> appointments;
-    private List<Appointment> completedAppointments;
-    private Treatment currentTreatment;
-    private Patient currentPatient;
-    private int totalLevelsCount;
-    private int completedLevels;
-    private bool isReady;
-
-    public async void Start()
+    void Awake()
     {
-        await InitializeAsync();
+        LoadAppointmentsFromJson();
     }
 
-    public async Task InitializeAsync()
+    private void LoadAppointmentsFromJson()
     {
-        currentPatient = ApiClientManager.Instance.CurrentPatient;
-        currentTreatment = ApiClientManager.Instance.CurrentTreatment;
-
-        patientApiClient = ApiClientManager.Instance.PatientApiClient;
-        appointmentApiClient = ApiClientManager.Instance.AppointmentApiClient;
-
-        totalLevelsCount = 0;
-        completedLevels = 0;
-
-        await LoadAppointments();
-        await LoadCompletedAppointments();
-        isReady = true;
-    }
-
-    private async Task LoadAppointments()
-    {
-        if (currentTreatment == null)
+        if (appointmentsJson == null)
         {
-            Debug.LogError("Current treatment is null.");
+            Debug.LogError("No JSON file assigned to GooseBoardManager.");
             return;
         }
 
-        var appointmentResult = await appointmentApiClient.ReadAppointmentsByTreatmentIdAsync(currentTreatment.id);
-        if (appointmentResult is WebRequestData<List<Appointment>> appointmentSuccess)
+        try
         {
-            appointments = appointmentSuccess.Data;
-            totalLevelsCount = appointments.Count;
+            string wrappedJson = $"{{\"afspraken\":{appointmentsJson.text}}}";
+            var data = JsonUtility.FromJson<AfspraakList>(wrappedJson);
+            appointments = new List<Afspraak>(data.afspraken);
         }
-        else if (appointmentResult is WebRequestError appointmentError)
+        catch
         {
-            Debug.LogError($"Failed to retrieve appointments: {appointmentError.ErrorMessage}");
-        }
-    }
-
-    private async Task LoadCompletedAppointments()
-    {
-        if (currentPatient == null)
-        {
-            Debug.LogError("Current patient is null.");
-            return;
-        }
-
-        var completedResult = await patientApiClient.ReadCompletedAppointmentsFromPatientAsync(currentPatient.id);
-        if (completedResult is WebRequestData<List<Appointment>> completedSuccess)
-        {
-            completedAppointments = completedSuccess.Data;
-            completedLevels = completedAppointments.Count;
-        }
-        else if (completedResult is WebRequestError appointmentError)
-        {
-            Debug.LogError($"Failed to retrieve completed appointments: {appointmentError.ErrorMessage}");
+            Debug.LogError("Failed to parse appointment JSON.");
         }
     }
 
@@ -89,7 +47,7 @@ public class GanzenboordManager : MonoBehaviour
 
     public bool IsLevelUnlocked(int index) => IsValidIndex(index) && index <= completedLevels;
     public bool IsLevelCompleted(int index) => IsValidIndex(index) && index < completedLevels;
-    public Appointment GetAppointment(int index) => IsValidIndex(index) ? appointments[index] : null;
+    public Afspraak GetAppointment(int index) => IsValidIndex(index) ? appointments[index] : null;
     public void SetCompletedLevelCount(int count) => completedLevels = Mathf.Clamp(count, 0, TotalLevels);
 
     private bool IsValidIndex(int index) => index >= 0 && index < TotalLevels;
