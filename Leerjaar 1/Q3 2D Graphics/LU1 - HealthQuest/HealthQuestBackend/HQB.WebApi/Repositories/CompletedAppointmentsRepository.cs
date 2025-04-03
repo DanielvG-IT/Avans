@@ -57,7 +57,8 @@ namespace HQB.WebApi.Repositories
       const string query = @"
       SELECT 
       a.ID, 
-      a.Name, 
+      a.Name,
+      a.Description,  
       a.Url, 
       a.Image, 
       a.DurationInMinutes
