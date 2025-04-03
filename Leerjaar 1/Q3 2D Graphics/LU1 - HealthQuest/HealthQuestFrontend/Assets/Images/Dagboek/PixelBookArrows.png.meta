@@ -172,7 +172,9 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      PixelBookArrows_0: 2526211031966015338
+      PixelBookArrows_1: 4794724906134834695
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      DagboekBackground_0: -8289772785722189620
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
