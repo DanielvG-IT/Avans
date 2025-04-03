@@ -167,13 +167,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 2800570743221530583}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: affd8d1a3494e0347a8b023555e1ad77, type: 3}
+  m_Script: {fileID: 11500000, guid: a59f8b140ac651f4eb3574086d674664, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   titleText: {fileID: 155356762687167245}
   descriptionText: {fileID: 5548894463097109697}
+  question: {fileID: 0}
+  videoPlayer: {fileID: 0}
   doneButton: {fileID: 8045259657606346670}
   closeButton: {fileID: 7920737726537623178}
+  answerButtons: []
 --- !u!1 &2852813109015689589
 GameObject:
   m_ObjectHideFlags: 0
