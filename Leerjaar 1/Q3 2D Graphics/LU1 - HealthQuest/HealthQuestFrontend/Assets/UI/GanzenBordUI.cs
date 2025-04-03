@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Threading.Tasks;
 using System.Collections.Generic;
-using System;
 
 public class GanzenBordUI : MonoBehaviour
 {
@@ -31,6 +31,11 @@ public class GanzenBordUI : MonoBehaviour
     {
         canvas = GameObject.Find("UserHUD");
 
+        while (!boardManager.IsReady)
+        {
+            await Task.Delay(100); // Check every 100ms
+        }
+
         if (debugMode)
         {
             boardManager.SetCompletedLevelCount(boardManager.TotalLevels);
@@ -47,8 +52,7 @@ public class GanzenBordUI : MonoBehaviour
                 levelRoots.Add(level);
 
                 int index = levelButtons.Count - 1;
-                Button btn = buttonObj.GetComponent<Button>();
-                if (btn != null)
+                if (buttonObj.TryGetComponent<Button>(out var btn))
                 {
                     btn.onClick.AddListener(() => OnLevelClicked(index));
                 }
@@ -79,7 +83,6 @@ public class GanzenBordUI : MonoBehaviour
         }
 
         gooseOriginalScale = goose.localScale;
-
     }
 
     private void Update()
@@ -98,7 +101,7 @@ public class GanzenBordUI : MonoBehaviour
                 float minX = boardCenter - boardWidth / 2f;
                 float maxX = boardCenter + boardWidth / 2f;
 
-                float oldX = cameraTarget.x;
+                float oldX = cameraTarget.x; // TODO: Fix unnesesary assignment of value (IDE0059)
 
                 cameraTarget.x += input * (cameraSpeed * 50) * Time.deltaTime;
                 cameraTarget.x = Mathf.Clamp(cameraTarget.x, minX, maxX);
@@ -118,7 +121,7 @@ public class GanzenBordUI : MonoBehaviour
 
         if (!boardManager.IsLevelUnlocked(index))
         {
-            Debug.Log("Level is locked.");
+            Debug.LogWarning("Level is locked.");
             return;
         }
 
@@ -168,7 +171,7 @@ public class GanzenBordUI : MonoBehaviour
         currentPopup = Instantiate(popupPrefab, canvas.transform);
         currentPopup.transform.SetAsLastSibling();
 
-        Afspraak appointment = boardManager.GetAppointment(index);
+        Appointment appointment = boardManager.GetAppointment(index);
         if (appointment == null)
         {
             Debug.LogError("No appointment found for index " + index);
@@ -179,7 +182,7 @@ public class GanzenBordUI : MonoBehaviour
         if (popup != null)
         {
             popup.Setup(
-                appointment.title,
+                appointment.name,
                 appointment.description,
                 () => CompleteLevel(index),
                 () => Destroy(currentPopup)
