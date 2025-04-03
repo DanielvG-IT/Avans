@@ -74,6 +74,7 @@ public class GanzenboordManager : MonoBehaviour
                         break;
                     }
             }
+            Debug.LogWarning(completedAppointments.ToString());
         }
         catch (Exception ex)
         {
