@@ -7,18 +7,26 @@ public class AppointmentListUI : MonoBehaviour
     public GameObject appointmentPrefab;
     public Transform contentParent;
 
+    private AppointmentApiClient appointmentApiClient;
+    private Treatment treatment;
 
-    private readonly AppointmentApiClient appointmentApiClient = ApiClientManager.Instance.AppointmentApiClient;
 
-    async void Start()
+    public async void Start()
     {
-        string treatmentId = ApiClientManager.Instance.CurrentTreatment.id;
-        var response = await appointmentApiClient.ReadAppointmentsByTreatmentIdAsync(treatmentId);
+        appointmentApiClient = ApiClientManager.Instance.AppointmentApiClient;
+        treatment = ApiClientManager.Instance.CurrentTreatment;
+        var response = await appointmentApiClient.ReadAppointmentsByTreatmentIdAsync(treatment.id);
+        if (response == null)
+        {
+            Debug.LogError("Failed to load appointments from API.");
+            return;
+        }
 
         switch (response)
         {
             case WebRequestData<List<AppointmentWithNr>> dataResponse:
                 {
+                    Debug.Log("Data: " + dataResponse.Data.Count);
                     foreach (var appointment in dataResponse.Data)
                     {
                         GameObject appointmentGO = Instantiate(appointmentPrefab, contentParent);
