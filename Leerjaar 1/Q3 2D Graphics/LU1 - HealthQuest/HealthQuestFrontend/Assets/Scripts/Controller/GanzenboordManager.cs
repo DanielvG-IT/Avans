@@ -1,54 +1,98 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GanzenboordManager : MonoBehaviour
 {
     public TextAsset appointmentsJson;
-
-    private List<Afspraak> appointments = new();
-    private int completedLevels = 0;
+    private int completedAppointments;
+    public List<Appointment> appointments = new();
     private ApiClientManager apiClientManager => ApiClientManager.Instance;
 
     public int TotalLevels => appointments.Count;
-    public int CompletedLevelCount => completedLevels;
+    public int completedLevels => completedAppointments;
 
+    public List<Appointment> Appointments => appointments;
     void Awake()
     {
-        LoadAppointmentsFromJson();
+        LoadAppointments();
+        LoadCompletedAppointments();
     }
 
-    private void LoadAppointmentsFromJson()
+    private async void LoadAppointments()
     {
-        if (appointmentsJson == null)
-        {
-            Debug.LogError("No JSON file assigned to GooseBoardManager.");
-            return;
-        }
-
         try
         {
-            string wrappedJson = $"{{\"afspraken\":{appointmentsJson.text}}}";
-            var data = JsonUtility.FromJson<AfspraakList>(wrappedJson);
-            appointments = new List<Afspraak>(data.afspraken);
+            var response = await apiClientManager.AppointmentApiClient.ReadAppointmentsAsync();
+
+            switch (response)
+            {
+                case WebRequestData<List<Appointment>> dataResponse:
+                    {
+                        foreach (var appointment in dataResponse.Data)
+                        {
+                            appointments.Add(new Appointment
+                            {
+                                name = appointment.name,
+                                description = appointment.description
+                            });
+                        }
+                        break;
+                    }
+
+                case WebRequestError errorResponse:
+                    {
+                        Debug.LogError("Error: " + errorResponse.ErrorMessage);
+                        break;
+                    }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("Failed to load appointments from API: " + ex.Message);
+        }
+    }
+
+    private async void LoadCompletedAppointments()
+    {
+        try
+        {
+            var treatmentId = ApiClientManager.Instance.CurrentTreatment.id;
+            var response = await apiClientManager.PatientApiClient.ReadCompletedAppointmentsFromPatientAsync(treatmentId);
+
+            switch (response)
+            {
+                case WebRequestData<List<Appointment>> dataResponse:
+                    {
+                        completedAppointments = dataResponse.Data.Count;
+                        break;
+                    }
+
+                case WebRequestError errorResponse:
+                    {
+                        Debug.LogError("Error: " + errorResponse.ErrorMessage);
+                        break;
+                    }
+            }
         }
         catch
         {
-            Debug.LogError("Failed to parse appointment JSON.");
+
+            Debug.LogError("Failed to load completed appointments from API.");
         }
     }
 
     public void MarkLevelCompleted(int index)
     {
         if (!IsValidIndex(index)) return;
-        if (index >= completedLevels) completedLevels = index + 1;
+        //if (index >= completedLevels) completedLevels = index + 1;
     }
 
     public bool IsLevelUnlocked(int index) => IsValidIndex(index) && index <= completedLevels;
     public bool IsLevelCompleted(int index) => IsValidIndex(index) && index < completedLevels;
-    public Afspraak GetAppointment(int index) => IsValidIndex(index) ? appointments[index] : null;
-    public void SetCompletedLevelCount(int count) => completedLevels = Mathf.Clamp(count, 0, TotalLevels);
+    public Appointment GetAppointment(int index) => IsValidIndex(index) ? appointments[index] : null;
 
     private bool IsValidIndex(int index) => index >= 0 && index < TotalLevels;
 }

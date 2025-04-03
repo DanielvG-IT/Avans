@@ -31,10 +31,13 @@ public class GanzenBordUI : MonoBehaviour
     {
         canvas = GameObject.Find("UserHUD");
 
-        if (debugMode)
-        {
-            boardManager.SetCompletedLevelCount(boardManager.TotalLevels);
-        }
+        Debug.Log("GanzenBordUI started.");
+        Debug.Log(boardManager.Appointments);
+
+            //if (debugMode)
+            //{
+            //    boardManager.SetCompletedLevelCount(boardManager.TotalLevels);
+            //}
 
         foreach (Transform level in levelsParent)
         {
@@ -60,9 +63,9 @@ public class GanzenBordUI : MonoBehaviour
             }
         }
 
-        if (boardManager.CompletedLevelCount > 0)
+        if (boardManager.completedLevels > 0)
         {
-            int lastIndex = boardManager.CompletedLevelCount - 1;
+            int lastIndex = boardManager.completedLevels - 1;
             goose.position = levelButtons[lastIndex].transform.position;
             currentLevel = lastIndex;
 
@@ -168,7 +171,7 @@ public class GanzenBordUI : MonoBehaviour
         currentPopup = Instantiate(popupPrefab, canvas.transform);
         currentPopup.transform.SetAsLastSibling();
 
-        Afspraak appointment = boardManager.GetAppointment(index);
+        Appointment appointment = boardManager.GetAppointment(index);
         if (appointment == null)
         {
             Debug.LogError("No appointment found for index " + index);
@@ -179,7 +182,7 @@ public class GanzenBordUI : MonoBehaviour
         if (popup != null)
         {
             popup.Setup(
-                appointment.title,
+                appointment.name,
                 appointment.description,
                 () => CompleteLevel(index),
                 () => Destroy(currentPopup)
