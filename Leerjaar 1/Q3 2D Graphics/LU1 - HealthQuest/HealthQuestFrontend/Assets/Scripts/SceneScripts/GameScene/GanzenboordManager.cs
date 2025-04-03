@@ -14,21 +14,22 @@ public class GanzenboordManager : MonoBehaviour
     public int CompletedLevels => completedAppointments;
 
     public List<Appointment> Appointments => appointments;
-    void Awake()
+    
+    public async void Awake()
     {
-        LoadAppointments();
-        LoadCompletedAppointments();
+        await LoadAppointments();
+        await LoadCompletedAppointments();
     }
 
-    private async void LoadAppointments()
+    private async Task LoadAppointments()
     {
         try
         {
-            var response = await apiClientManager.AppointmentApiClient.ReadAppointmentsAsync();
-
+            var treatmentId = ApiClientManager.Instance.CurrentPatient.id;
+            var response = await apiClientManager.AppointmentApiClient.ReadAppointmentsByTreatmentIdAsync(apiClientManager.CurrentTreatment.id);
             switch (response)
             {
-                case WebRequestData<List<Appointment>> dataResponse:
+                case WebRequestData<List<AppointmentWithNr>> dataResponse:
                     {
                         foreach (var appointment in dataResponse.Data)
                         {
@@ -40,7 +41,6 @@ public class GanzenboordManager : MonoBehaviour
                         }
                         break;
                     }
-
                 case WebRequestError errorResponse:
                     {
                         Debug.LogError("Error: " + errorResponse.ErrorMessage);
@@ -54,13 +54,12 @@ public class GanzenboordManager : MonoBehaviour
         }
     }
 
-    private async void LoadCompletedAppointments()
+    private async Task LoadCompletedAppointments()
     {
         try
         {
-            var treatmentId = ApiClientManager.Instance.CurrentTreatment.id;
-            var response = await apiClientManager.PatientApiClient.ReadCompletedAppointmentsFromPatientAsync(treatmentId);
-
+            var patientId = ApiClientManager.Instance.CurrentPatient.id;
+            var response = await apiClientManager.PatientApiClient.ReadCompletedAppointmentsFromPatientAsync(patientId);
             switch (response)
             {
                 case WebRequestData<List<Appointment>> dataResponse:
@@ -76,33 +75,40 @@ public class GanzenboordManager : MonoBehaviour
                     }
             }
         }
-        catch
+        catch (Exception ex)
         {
-
-            Debug.LogError("Failed to load completed appointments from API.");
+            Debug.LogError("Failed to load completed appointments from API: " + ex.Message);
         }
     }
 
     public async Task<bool> MarkLevelCompleted(int index)
     {
-        if (!IsValidIndex(index))
+        try
         {
+            if (!IsValidIndex(index))
+            {
+                return false;
+            }
+
+            var addResponse = await apiClientManager.PatientApiClient.AddCompletedAppointmentsToPatientAsync(
+                apiClientManager.CurrentPatient.id,
+                GetAppointment(index).id,
+                DateTime.Now
+            );
+
+            if (addResponse is WebRequestError errorResponse)
+            {
+                Debug.LogError("Error: " + errorResponse.ErrorMessage);
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Failed to mark level {index} as completed: " + ex.Message);
             return false;
         }
-
-        var addResponse = await apiClientManager.PatientApiClient.AddCompletedAppointmentsToPatientAsync(
-            apiClientManager.CurrentPatient.id,
-            GetAppointment(index).id,
-            DateTime.Now
-        );
-
-        if (addResponse is WebRequestError errorResponse)
-        {
-            Debug.LogError("Error: " + errorResponse.ErrorMessage);
-            return false;
-        }
-
-        return true;
     }
 
     public bool IsLevelUnlocked(int index) => IsValidIndex(index) && index <= CompletedLevels;

@@ -41,7 +41,7 @@ public class GanzenBordUI : MonoBehaviour
         }
 
         Debug.Log("GanzenBordUI started.");
-        Debug.Log(boardManager.Appointments);
+        Debug.Log(boardManager.Appointments.Count);
 
             //if (debugMode)
             //{
@@ -71,9 +71,13 @@ public class GanzenBordUI : MonoBehaviour
             }
         }
 
+        Debug.Log($"Total levels: {boardManager.TotalLevels}");
+        Debug.Log($"Completed levels: {boardManager.CompletedLevels}");
+
         if (boardManager.CompletedLevels > 0)
         {
-            int lastIndex = boardManager.CompletedLevels - 1;
+            int lastIndex = boardManager.CompletedLevels;
+            Debug.Log($"Last index: {lastIndex}");
             goose.position = levelButtons[lastIndex].transform.position;
             currentLevel = lastIndex;
 
@@ -108,8 +112,6 @@ public class GanzenBordUI : MonoBehaviour
                 float boardCenter = rect.position.x;
                 float minX = boardCenter - boardWidth / 2f;
                 float maxX = boardCenter + boardWidth / 2f;
-
-                float oldX = cameraTarget.x;
 
                 cameraTarget.x += input * (cameraSpeed * 50) * Time.deltaTime;
                 cameraTarget.x = Mathf.Clamp(cameraTarget.x, minX, maxX);
@@ -216,8 +218,7 @@ public class GanzenBordUI : MonoBehaviour
 
     private void SetLevelColor(int index, Color color)
     {
-        SpriteRenderer spriteRenderer = levelRoots[index].GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
+        if (levelRoots[index].TryGetComponent<SpriteRenderer>(out var spriteRenderer))
         {
             spriteRenderer.color = color;
         }
