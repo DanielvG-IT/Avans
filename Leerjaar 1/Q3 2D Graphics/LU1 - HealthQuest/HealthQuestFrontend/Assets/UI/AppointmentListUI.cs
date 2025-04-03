@@ -17,7 +17,7 @@ public class AppointmentListUI : MonoBehaviour
 
         switch (response)
         {
-            case WebRequestData<List<Appointment>> dataResponse:
+            case WebRequestData<List<AppointmentWithNr>> dataResponse:
                 {
                     foreach (var appointment in dataResponse.Data)
                     {

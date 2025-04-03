@@ -109,6 +109,6 @@ public class AppointmentApiClient : MonoBehaviour
         string route = $"/api/v1/appointments?treatmentId={treatmentId}";
 
         IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
-        return JsonHelper.ParseListResponse<Appointment>(webRequestResponse);
+        return JsonHelper.ParseListResponse<AppointmentWithNr>(webRequestResponse);
     }
 }
