@@ -84,7 +84,7 @@ public class JournalApiClient : MonoBehaviour
     /// <exception cref="HttpRequestException">Thrown if the HTTP request fails.</exception>
     public async Awaitable<IWebRequestReponse> ReadJournalEntryByIdAsync(string journalEntryId)
     {
-        string route = $"/api/v1/stickers/{journalEntryId}";
+        string route = $"/api/v1/journal/{journalEntryId}";
 
         IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
         return JsonHelper.ParseResponse<Sticker>(webRequestResponse);
@@ -100,7 +100,7 @@ public class JournalApiClient : MonoBehaviour
     /// <exception cref="HttpRequestException">Thrown if the HTTP request fails.</exception>
     public async Awaitable<IWebRequestReponse> CreateJournalEntryAsync(JournalEntry journalData)
     {
-        string route = $"/api/v1/stickers";
+        string route = $"/api/v1/journal";
         string data = JsonUtility.ToJson(journalData);
 
         IWebRequestReponse webRequestResponse = await webClient.SendPostRequestAsync(route, data);
@@ -118,7 +118,7 @@ public class JournalApiClient : MonoBehaviour
     /// <exception cref="HttpRequestException">Thrown if the HTTP request fails.</exception>
     public async Awaitable<IWebRequestReponse> UpdateJournalEntryAsync(string journalEntryId, JournalEntry journalData)
     {
-        string route = $"/api/v1/stickers/{journalEntryId}";
+        string route = $"/api/v1/journal/{journalEntryId}";
         string data = JsonUtility.ToJson(journalData);
 
         IWebRequestReponse webRequestResponse = await webClient.SendPutRequestAsync(route, data);
@@ -135,7 +135,7 @@ public class JournalApiClient : MonoBehaviour
     /// <exception cref="HttpRequestException">Thrown if the HTTP request fails.</exception>
     public async Awaitable<IWebRequestReponse> DeleteJournalEntryAsync(string journalEntryId)
     {
-        string route = $"/api/v1/stickers/{journalEntryId}";
+        string route = $"/api/v1/journal/{journalEntryId}";
         return await webClient.SendDeleteRequestAsync(route);
     }
 }
