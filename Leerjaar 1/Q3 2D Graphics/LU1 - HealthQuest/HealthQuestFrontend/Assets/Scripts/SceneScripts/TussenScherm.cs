@@ -32,8 +32,8 @@ public class TussenScherm : MonoBehaviour
 
         currentPatient = ApiClientManager.Instance.CurrentPatient;
         currentTreatment = ApiClientManager.Instance.CurrentTreatment;
-        if (currentTreatment.name == "Zonder Ziekenhuis Opname") patientGameScene = "GameTrajectZonder" ?? "GameTrajectMetZiekenhuisScherm";
 
+        patientGameScene = currentTreatment.name == "Zonder Ziekenhuis Opname" ? "GameTrajectZonder" : "GameTrajectMet";
 
         patientName.text = currentPatient.firstName + " " + currentPatient.lastName;
         currentAvatar = currentPatient.avatar;
@@ -65,6 +65,7 @@ public class TussenScherm : MonoBehaviour
     public void Logout()
     {
         SceneManager.LoadScene("StartScherm");
+        ApiClientManager.Instance.ClearData();
     }
 
     public void LoadGameScene(string trajectScene)
