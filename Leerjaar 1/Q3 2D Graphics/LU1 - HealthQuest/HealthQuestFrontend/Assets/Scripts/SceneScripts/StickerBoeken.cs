@@ -14,6 +14,7 @@ public class StickerBoeken : MonoBehaviour
     public GameObject poofPrefab;
     public TMP_Text patientName;
     public TMP_Text patientUnlockedStickerAmount;
+    public Button backButton;
 
     [Header("Avatar")]
     public Image avatar;
@@ -24,10 +25,12 @@ public class StickerBoeken : MonoBehaviour
 
     public static List<string> newUnlockedStickers = new(); //Gebruikt om poof te spawnen
     private List<string> oldUnlockedStickers = new(); //Wordt gebruikt om eventuele animatie af te spelen bij stickers die nieuw unlocked zijn.
+    private Scenemanager scenemanager;
 
     private Transform animationCanvas;
     private Patient currentPatient;
     private PatientApiClient patientApiClient;
+    private Animator animator;
 
 
     //private readonly StickerApiClient stickerApiClient = ApiClientManager.Instance.StickerApiClient;
@@ -63,6 +66,8 @@ public class StickerBoeken : MonoBehaviour
 
     public async void Start()
     {
+        scenemanager = new Scenemanager();
+        animator = backButton.GetComponent<Animator>();
         currentPatient = ApiClientManager.Instance.CurrentPatient;
         patientApiClient = ApiClientManager.Instance.PatientApiClient;
 
@@ -156,4 +161,16 @@ public class StickerBoeken : MonoBehaviour
         newUnlockedStickers.Clear();
     }
 
+    public void OnBackButtonClick(string scene)
+    {
+        Debug.Log("Playing RedButton animation...");
+        animator.Play("RedButton");
+        StartCoroutine(SwitchSceneAfterDelay(scene));
+    }
+
+    private IEnumerator SwitchSceneAfterDelay(string scene)
+    {
+        yield return new WaitForSeconds(0.3f);
+        scenemanager.SwitchScene(scene);
+    }
 }
