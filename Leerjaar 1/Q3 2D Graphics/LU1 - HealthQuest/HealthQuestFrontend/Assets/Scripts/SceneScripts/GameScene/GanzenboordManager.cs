@@ -11,7 +11,7 @@ public class GanzenboordManager : MonoBehaviour
     private ApiClientManager apiClientManager => ApiClientManager.Instance;
 
     public int TotalLevels => appointments.Count;
-    public int completedLevels => completedAppointments;
+    public int CompletedLevels => completedAppointments;
 
     public List<Appointment> Appointments => appointments;
     void Awake()
@@ -83,14 +83,30 @@ public class GanzenboordManager : MonoBehaviour
         }
     }
 
-    public void MarkLevelCompleted(int index)
+    public async Task<bool> MarkLevelCompleted(int index)
     {
-        if (!IsValidIndex(index)) return;
-        //if (index >= completedLevels) completedLevels = index + 1;
+        if (!IsValidIndex(index))
+        {
+            return false;
+        }
+
+        var addResponse = await apiClientManager.PatientApiClient.AddCompletedAppointmentsToPatientAsync(
+            apiClientManager.CurrentPatient.id,
+            GetAppointment(index).id,
+            DateTime.Now
+        );
+
+        if (addResponse is WebRequestError errorResponse)
+        {
+            Debug.LogError("Error: " + errorResponse.ErrorMessage);
+            return false;
+        }
+
+        return true;
     }
 
-    public bool IsLevelUnlocked(int index) => IsValidIndex(index) && index <= completedLevels;
-    public bool IsLevelCompleted(int index) => IsValidIndex(index) && index < completedLevels;
+    public bool IsLevelUnlocked(int index) => IsValidIndex(index) && index <= CompletedLevels;
+    public bool IsLevelCompleted(int index) => IsValidIndex(index) && index < CompletedLevels;
     public Appointment GetAppointment(int index) => IsValidIndex(index) ? appointments[index] : null;
 
     private bool IsValidIndex(int index) => index >= 0 && index < TotalLevels;

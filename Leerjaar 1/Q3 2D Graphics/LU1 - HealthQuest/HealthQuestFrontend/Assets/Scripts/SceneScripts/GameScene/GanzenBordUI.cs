@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
 
 public class GanzenBordUI : MonoBehaviour
 {
@@ -26,10 +28,18 @@ public class GanzenBordUI : MonoBehaviour
     private Vector3 cameraTarget;
     private int currentLevel = 0;
     private Vector3 gooseOriginalScale;
+    private PatientApiClient patientApiClient;
 
     public void Start()
     {
+        patientApiClient = ApiClientManager.Instance.PatientApiClient;
         canvas = GameObject.Find("UserHUD");
+
+        //var savedLevel = DagboekScherm.clearingLevel;
+        //if (savedLevel != 0)
+        //{
+        //    CompleteLevel(savedLevel);
+        //}
 
         Debug.Log("GanzenBordUI started.");
         Debug.Log(boardManager.Appointments);
@@ -50,8 +60,7 @@ public class GanzenBordUI : MonoBehaviour
                 levelRoots.Add(level);
 
                 int index = levelButtons.Count - 1;
-                Button btn = buttonObj.GetComponent<Button>();
-                if (btn != null)
+                if (buttonObj.TryGetComponent<Button>(out var btn))
                 {
                     btn.onClick.AddListener(() => OnLevelClicked(index));
                 }
@@ -63,9 +72,9 @@ public class GanzenBordUI : MonoBehaviour
             }
         }
 
-        if (boardManager.completedLevels > 0)
+        if (boardManager.CompletedLevels > 0)
         {
-            int lastIndex = boardManager.completedLevels - 1;
+            int lastIndex = boardManager.CompletedLevels - 1;
             goose.position = levelButtons[lastIndex].transform.position;
             currentLevel = lastIndex;
 
@@ -112,8 +121,6 @@ public class GanzenBordUI : MonoBehaviour
         Vector3 oldCamPos = mainCamera.transform.position;
         mainCamera.transform.position = Vector3.Lerp(oldCamPos, cameraTarget, Time.deltaTime * cameraSpeed);
     }
-
-
 
     private void OnLevelClicked(int index)
     {
@@ -163,7 +170,6 @@ public class GanzenBordUI : MonoBehaviour
         ShowPopup(targetIndex);
     }
 
-
     private void ShowPopup(int index)
     {
         if (currentPopup) Destroy(currentPopup);
@@ -178,8 +184,7 @@ public class GanzenBordUI : MonoBehaviour
             return;
         }
 
-        PopUpUI popup = currentPopup.GetComponent<PopUpUI>();
-        if (popup != null)
+        if (currentPopup.TryGetComponent<PopUpUI>(out var popup))
         {
             popup.Setup(
                 appointment.name,
@@ -190,11 +195,23 @@ public class GanzenBordUI : MonoBehaviour
         }
     }
 
-    private void CompleteLevel(int index)
+    private void RedirectToDagboekForLevelComplete(int index)
     {
-        boardManager.MarkLevelCompleted(index);
-        SetLevelColor(index, completedColor);
+        //DagboekScherm.clearingLevel = index;
         Destroy(currentPopup);
+        SceneManager.LoadScene("DagboekScherm");
+    }
+
+    private async void CompleteLevel(int index)
+    {
+        var successful = await boardManager.MarkLevelCompleted(index);
+        if (!successful)
+        {
+            Debug.LogError("Failed to mark level as completed."); // TODO Show error message to user
+            return;
+        }
+
+        SetLevelColor(index, completedColor);
         Debug.Log($"Level {index + 1} marked as completed.");
     }
 
