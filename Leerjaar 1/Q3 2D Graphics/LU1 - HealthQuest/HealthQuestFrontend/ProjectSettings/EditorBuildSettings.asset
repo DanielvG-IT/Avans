@@ -18,7 +18,7 @@ EditorBuildSettings:
     path: Assets/Scenes/MonitorScherm.unity
     guid: ebab4950190e98548bfd2e22ad53b1a7
   - enabled: 1
-    path: Assets/Scenes/GameTrajectMetZiekenhuisScherm.unity
+    path: Assets/Scenes/GameTrajectZonder.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
     path: Assets/Scenes/GameTrajectZonderZiekenhuisScherm.unity
