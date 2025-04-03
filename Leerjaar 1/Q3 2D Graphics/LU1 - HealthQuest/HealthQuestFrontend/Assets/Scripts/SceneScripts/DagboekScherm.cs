@@ -6,6 +6,9 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.InputSystem.Controls;
+using UnityEditor.Search;
+using System.Linq;
 
 public class DagboekScherm : MonoBehaviour
 {
@@ -13,6 +16,7 @@ public class DagboekScherm : MonoBehaviour
     public TMP_Text entryTitle;
     public TMP_Text entryDescription;
     public TMP_Text entryFillDate;
+    public TMP_Text entryRating;
     public Button backButton;
 
     [Header("Avatar")]
@@ -29,6 +33,7 @@ public class DagboekScherm : MonoBehaviour
     private List<JournalEntry> journalEntries;
     private Scenemanager sceneManager;
     private Animator animator;
+    private int journalPage = 0;
     private string currentScene;
     private bool sentJournalEntry = false;
     private string currentAvatar;
@@ -38,17 +43,16 @@ public class DagboekScherm : MonoBehaviour
 
     public async void Start()
     {
-        sceneManager = new Scenemanager();
+        sceneManager = gameObject.AddComponent<Scenemanager>();
         journalApiClient = ApiClientManager.Instance.JournalApiClient;
         patientApiClient = ApiClientManager.Instance.PatientApiClient;
         currentPatient = ApiClientManager.Instance.CurrentPatient;
         animator = backButton.GetComponent<Animator>();
         currentAvatar = currentPatient.avatar;
 
-
         await LoadJournalEntries();
         SetAvatar();
-        ShowJournalEntry(0);
+        ShowJournalEntry(journalPage);
     }
 
     private async Task LoadJournalEntries()
@@ -56,7 +60,7 @@ public class DagboekScherm : MonoBehaviour
         var journalResponse = await journalApiClient.ReadJournalEntriesAsync(currentPatient.id);
         if (journalResponse is WebRequestError journalError)
         {
-            Debug.LogError($"Failed to load journal entries: {journalError.ErrorMessage}");
+            Debug.LogWarning($"Failed to load journal entries: {journalError.ErrorMessage}");
             return;
         }
         else if (journalResponse is WebRequestData<List<JournalEntry>> journalEntry)
@@ -64,12 +68,82 @@ public class DagboekScherm : MonoBehaviour
             journalEntries = journalEntry.Data;
         }
     }
-
     public void ShowJournalEntry(int entryNumber)
     {
+        if (journalEntries == null || !journalEntries.Any())
+        {
+            Debug.Log("No journal entries to load");
+            return;
+        }
         entryTitle.text = journalEntries[entryNumber].title;
         entryDescription.text = journalEntries[entryNumber].content;
-        entryFillDate.text = journalEntries[entryNumber].date;
+        entryFillDate.text = $"Aangemaakt op: {journalEntries[entryNumber].date.Substring(0, 10)}";
+        entryRating.text = $"Beoordeling: {journalEntries[entryNumber].rating}/10";
+    }
+
+    public async void DeleteEntry()
+    {
+        if (!journalEntries.Any())
+        {
+            Debug.LogWarning("No Journal entries to remove!");
+            return;
+        }
+        else if (journalEntries.Count == 1)
+        {
+            await journalApiClient.DeleteJournalEntryAsync(journalEntries[journalPage].id);
+            journalEntries.RemoveAt(0);
+            entryTitle.text = string.Empty;
+            entryDescription.text = string.Empty;
+            entryFillDate.text = string.Empty;
+            entryRating.text = string.Empty;
+            journalPage = 0;
+        }
+        else if (journalPage == 0 && journalEntries.Count > 1)
+        {
+            await journalApiClient.DeleteJournalEntryAsync(journalEntries[journalPage].id);
+            journalEntries.RemoveAt(journalPage);
+            ShowJournalEntry(journalPage);
+        }
+        else
+        {
+            var removeResponse = await journalApiClient.DeleteJournalEntryAsync(journalEntries[journalPage].id);
+            if (removeResponse is WebRequestError removeError)
+            {
+                Debug.Log($"Failed to remove Journal Entry: {removeError.ErrorMessage}");
+            }
+            else if (removeResponse is WebRequestData<string> removeSucces)
+            {
+                Debug.Log($"Removed succesfully: { removeSucces.Data} - {removeSucces.StatusCode}");
+                journalEntries.RemoveAt(journalPage);
+                journalPage--;
+                ShowJournalEntry(journalPage);
+            }
+        }
+    }
+
+    public void CycleJournalPage(bool goingForward)
+    {
+        if (journalEntries == null || !journalEntries.Any())
+        {
+            Debug.Log("No journal entries to load");
+            return;
+        }
+        if (goingForward)
+        {
+            if (journalPage < journalEntries.Count - 1)
+            {
+                journalPage++;
+                ShowJournalEntry(journalPage);
+            }
+        }
+        else
+        {
+            if (journalPage > 0)
+            {
+                journalPage--;
+                ShowJournalEntry(journalPage);
+            }
+        }
     }
 
     public async Task CreateJournalEntry()
