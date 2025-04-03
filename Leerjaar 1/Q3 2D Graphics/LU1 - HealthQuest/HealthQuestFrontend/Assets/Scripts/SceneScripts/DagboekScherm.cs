@@ -46,7 +46,7 @@ public class DagboekScherm : MonoBehaviour
         {
             patientID = currentPatient.id,
             guardianID = currentPatient.guardianID,
-            date = DateTime.Now,
+            date = DateTime.Now.ToString(),
             title = "titlefield.text", // TODO: replace with actual title field
             content = "contentfield.text", // TODO: replace with actual content field
             rating = int.Parse("ratingfield.text") // TODO: replace with actual rating field
