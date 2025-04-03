@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// Handles API interactions related to appointments.
@@ -100,7 +103,7 @@ public class AppointmentApiClient : MonoBehaviour
     /// </summary>
     /// <param name="treatmentId">The unique identifier of the treatment to filter appointments by.</param>
     /// <returns>
-    /// An awaitable task that resolves to an <see cref="IWebRequestReponse"/> containing a list of appointments.
+    /// An awaitable task that resolves to an <see cref="IWebRequestReponse"/> containing a <see cref="List{T}"/> of <see cref="AppointmentWithNr"/>
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="treatmentId"/> is null or empty.</exception>
     /// <exception cref="HttpRequestException">Thrown if the HTTP request fails.</exception>
