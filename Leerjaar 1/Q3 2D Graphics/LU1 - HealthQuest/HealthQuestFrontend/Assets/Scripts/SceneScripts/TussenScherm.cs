@@ -27,6 +27,9 @@ public class TussenScherm : MonoBehaviour
 
     public void Start()
     {
+        //TODO: Gametraject ended later miss bij herkansing (voor reminders na traject etc.)
+        gameCompleted.gameObject.SetActive(false);
+
         currentPatient = ApiClientManager.Instance.CurrentPatient;
         currentTreatment = ApiClientManager.Instance.CurrentTreatment;
         if (currentTreatment.name == "Zonder Ziekenhuis Opname") patientGameScene = "GameTrajectZonder" ?? "GameTrajectMetZiekenhuisScherm";
