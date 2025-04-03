@@ -27,7 +27,7 @@ public class GanzenBordUI : MonoBehaviour
     private int currentLevel = 0;
     private Vector3 gooseOriginalScale;
 
-    public async void Start()
+    public void Start()
     {
         canvas = GameObject.Find("UserHUD");
 
