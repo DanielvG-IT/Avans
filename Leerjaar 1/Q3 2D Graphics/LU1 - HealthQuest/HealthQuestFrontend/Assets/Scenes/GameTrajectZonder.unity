@@ -6446,6 +6446,7 @@ GameObject:
   - component: {fileID: 861765413}
   - component: {fileID: 861765414}
   - component: {fileID: 861765415}
+  - component: {fileID: 861765416}
   m_Layer: 0
   m_Name: GanzenbordScript
   m_TagString: Untagged
@@ -6533,6 +6534,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Sticker: {fileID: 148555859}
+--- !u!114 &861765416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 861765409}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47f802871985d6e4dae4f106a3fcc472, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appointmentPrefab: {fileID: 4002148426973102871, guid: 1c0f3a66babf58c438ffbd2b3e40318b, type: 3}
+  contentParent: {fileID: 1129565434}
 --- !u!1 &891165546
 GameObject:
   m_ObjectHideFlags: 0
@@ -7402,6 +7417,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1129565434}
+  - component: {fileID: 1129565436}
+  - component: {fileID: 1129565437}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -7425,9 +7442,49 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.000030517578, y: 0.00028323583}
-  m_SizeDelta: {x: 0, y: 300}
+  m_AnchoredPosition: {x: -0.000030517578, y: -0.00008110669}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &1129565436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1129565433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 1
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
+--- !u!114 &1129565437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1129565433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
 --- !u!21 &1132699539
 Material:
   serializedVersion: 8
