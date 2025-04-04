@@ -77,6 +77,7 @@ public class DagboekScherm : MonoBehaviour
         if (journalResponse is WebRequestError journalError)
         {
             Debug.LogWarning($"Failed to load journal entries: {journalError.ErrorMessage}");
+            journalEntries = new();
             return;
         }
         else if (journalResponse is WebRequestData<List<JournalEntry>> journalEntry)
@@ -84,6 +85,7 @@ public class DagboekScherm : MonoBehaviour
             journalEntries = journalEntry.Data;
         }
     }
+
     public void ShowJournalEntry(int entryNumber)
     {
         if (journalEntries == null || !journalEntries.Any())
