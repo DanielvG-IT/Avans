@@ -9,6 +9,7 @@ public class AppointmentListUI : MonoBehaviour
 
     private AppointmentApiClient appointmentApiClient;
     private Treatment treatment;
+    private int counter = 1;
 
 
     public async void Start()
@@ -39,7 +40,8 @@ public class AppointmentListUI : MonoBehaviour
 
                         if (tmpText != null)
                         {
-                            tmpText.text = appointment.name;
+                            tmpText.text = $"{counter}: {appointment.name}";
+                            counter++;
                         }
                     }
                     break;
