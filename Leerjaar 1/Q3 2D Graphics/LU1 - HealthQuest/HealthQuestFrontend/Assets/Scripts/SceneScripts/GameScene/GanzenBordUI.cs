@@ -208,6 +208,17 @@ public class GanzenBordUI : MonoBehaviour
 
     private void RedirectToDagboek(int index)
     {
+        if (currentPopup)
+        {
+            Destroy(currentPopup);
+        }
+
+        if (boardManager.IsLevelCompleted(index))
+        {
+            Debug.Log("Level is already completed.");
+            return;
+        }
+
         DagboekScherm.clearingLevel = index + 1; // Compensate for counting from 1
         Debug.Log($"Redirecting to Dagboek scherm with index {index + 1}");
         Destroy(this);
