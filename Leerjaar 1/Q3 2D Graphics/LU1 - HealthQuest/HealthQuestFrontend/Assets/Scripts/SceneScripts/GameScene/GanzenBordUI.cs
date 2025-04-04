@@ -231,6 +231,7 @@ public class GanzenBordUI : MonoBehaviour
         {
             SetLevelColor(index, completedColor);
             await UnlockSticker(index);
+            await boardManager.LoadCompletedAppointments();
             StartCoroutine(MoveGooseToLevel(index + 1));
 
             Debug.Log($"Level {index + 1} completed.");

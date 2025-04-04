@@ -44,7 +44,7 @@ public class GanzenboordManager : MonoBehaviour
         }
     }
 
-    private async Task LoadCompletedAppointments()
+    public async Task LoadCompletedAppointments()
     {
         try
         {
