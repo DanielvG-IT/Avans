@@ -249,6 +249,8 @@ public class PatientScherm : MonoBehaviour
 
             var newPatient = new Patient
             {
+                id = Guid.NewGuid().ToString(),
+                guardianID = guardian.id,
                 firstName = firstNameInput.text,
                 lastName = lastNameInput.text,
                 doctorID = selectedDoctor.id,
@@ -266,6 +268,7 @@ public class PatientScherm : MonoBehaviour
             {
                 patients.Add(createdPatient.Data);
                 await LoadSequence();
+                ShowSelectionPanel();
             }
         }
         catch (Exception e)
