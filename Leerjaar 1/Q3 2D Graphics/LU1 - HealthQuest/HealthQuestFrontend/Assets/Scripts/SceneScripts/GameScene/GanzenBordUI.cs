@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 public class GanzenBordUI : MonoBehaviour
@@ -29,24 +30,31 @@ public class GanzenBordUI : MonoBehaviour
     private Vector3 gooseOriginalScale;
     private PatientApiClient patientApiClient;
 
-    public void Start()
+    private async void Awake()
     {
         patientApiClient = ApiClientManager.Instance.PatientApiClient;
         canvas = GameObject.Find("UserHUD");
 
+        Debug.Log("GanzenBordUI started.");
+
+        // Start async part separately
+        await boardManager.Initialize();
+        await InitializeGame();
+    }
+
+    private async Task InitializeGame()
+    {
         var savedLevel = DagboekScherm.clearingLevel;
         if (savedLevel != 0)
         {
             CompleteLevel(savedLevel);
         }
 
-        Debug.Log("GanzenBordUI started.");
-        Debug.Log(boardManager.Appointments.Count);
+        Debug.Log($"Total levels: {boardManager.TotalLevels}");
+        Debug.Log($"Completed levels: {boardManager.CompletedLevels}");
 
-            //if (debugMode)
-            //{
-            //    boardManager.SetCompletedLevelCount(boardManager.TotalLevels);
-            //}
+        levelButtons.Clear();
+        levelRoots.Clear();
 
         foreach (Transform level in levelsParent)
         {
@@ -71,13 +79,21 @@ public class GanzenBordUI : MonoBehaviour
             }
         }
 
-        Debug.Log($"Total levels: {boardManager.TotalLevels}");
-        Debug.Log($"Completed levels: {boardManager.CompletedLevels}");
+        if (levelButtons.Count == 0)
+        {
+            Debug.LogError("No level buttons found!");
+            return;
+        }
 
-        if (boardManager.CompletedLevels > 0)
+        // Let Unity finish layout pass before reading positions
+        while (levelButtons[0].transform.position == Vector3.zero)
+        {
+            await Task.Yield();
+        }
+
+        if (boardManager.CompletedLevels > 0 && boardManager.CompletedLevels < levelButtons.Count)
         {
             int lastIndex = boardManager.CompletedLevels;
-            Debug.Log($"Last index: {lastIndex}");
             goose.position = levelButtons[lastIndex].transform.position;
             currentLevel = lastIndex;
 
@@ -94,7 +110,6 @@ public class GanzenBordUI : MonoBehaviour
         }
 
         gooseOriginalScale = goose.localScale;
-
     }
 
     private void Update()

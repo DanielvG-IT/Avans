@@ -6,17 +6,23 @@ using UnityEngine;
 
 public class GanzenboordManager : MonoBehaviour
 {
-    private int completedAppointments;
-    public List<Appointment> appointments = new();
-    private ApiClientManager apiClientManager => ApiClientManager.Instance;
-
-    public int TotalLevels => appointments.Count;
     public int CompletedLevels => completedAppointments;
+    public int TotalLevels => appointments.Count;
+    public List<AppointmentWithNr> Appointments => appointments;
 
-    public List<Appointment> Appointments => appointments;
-    
-    public async void Awake()
+    private int completedAppointments;
+    private ApiClientManager apiClientManager;
+    private List<AppointmentWithNr> appointments;
+
+    //public async void Awake() // May change to start (what is better?)
+    //{
+    //    await Initialize();
+    //}
+
+    public async Task Initialize()
     {
+        apiClientManager = ApiClientManager.Instance;
+
         await LoadAppointments();
         await LoadCompletedAppointments();
     }
@@ -25,32 +31,21 @@ public class GanzenboordManager : MonoBehaviour
     {
         try
         {
-            var treatmentId = ApiClientManager.Instance.CurrentPatient.id;
-            var response = await apiClientManager.AppointmentApiClient.ReadAppointmentsByTreatmentIdAsync(apiClientManager.CurrentTreatment.id);
-            switch (response)
+            var treatmentId = apiClientManager.CurrentTreatment.id;
+            var response = await apiClientManager.AppointmentApiClient.ReadAppointmentsByTreatmentIdAsync(treatmentId);
+
+            if (response is WebRequestData<List<AppointmentWithNr>> dataResponse)
             {
-                case WebRequestData<List<AppointmentWithNr>> dataResponse:
-                    {
-                        foreach (var appointment in dataResponse.Data)
-                        {
-                            appointments.Add(new Appointment
-                            {
-                                name = appointment.name,
-                                description = appointment.description
-                            });
-                        }
-                        break;
-                    }
-                case WebRequestError errorResponse:
-                    {
-                        Debug.LogError("Error: " + errorResponse.ErrorMessage);
-                        break;
-                    }
+                appointments = dataResponse.Data;
+            }
+            else if (response is WebRequestError errorResponse)
+            {
+                Debug.LogError($"Error: {errorResponse.ErrorMessage}");
             }
         }
         catch (Exception ex)
         {
-            Debug.LogError("Failed to load appointments from API: " + ex.Message);
+            Debug.LogError($"Failed to load appointments from API: {ex.Message}");
         }
     }
 
@@ -60,27 +55,24 @@ public class GanzenboordManager : MonoBehaviour
         {
             var patientId = ApiClientManager.Instance.CurrentPatient.id;
             var response = await apiClientManager.PatientApiClient.ReadCompletedAppointmentsFromPatientAsync(patientId);
-            switch (response)
-            {
-                case WebRequestData<List<Appointment>> dataResponse:
-                    {
-                        completedAppointments = dataResponse.Data.Count;
-                        break;
-                    }
 
-                case WebRequestError errorResponse:
-                    {
-                        Debug.LogError("Error: " + errorResponse.ErrorMessage);
-                        break;
-                    }
+            if (response is WebRequestData<List<Appointment>> dataResponse)
+            {
+                completedAppointments = dataResponse.Data.Count;
             }
+            else if (response is WebRequestError errorResponse)
+            {
+                Debug.LogError($"Error: {errorResponse.ErrorMessage}");
+            }
+
             Debug.LogWarning(completedAppointments.ToString());
         }
         catch (Exception ex)
         {
-            Debug.LogError("Failed to load completed appointments from API: " + ex.Message);
+            Debug.LogError($"Failed to load completed appointments from API: {ex.Message}");
         }
     }
+
 
     public async Task<bool> MarkLevelCompleted(int index)
     {
