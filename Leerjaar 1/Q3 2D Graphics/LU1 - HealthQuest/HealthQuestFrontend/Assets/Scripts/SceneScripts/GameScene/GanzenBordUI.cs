@@ -234,8 +234,8 @@ public class GanzenBordUI : MonoBehaviour
     {
         string[] stickers = ApiClientManager.Instance.CurrentTreatment.name switch
         {
-            "Zonder Ziekenhuis Opname" => new[] { "Arts", "Ziekenhuis", "Pleister", "Microscope", "Hart", "Medicijn", "Syringe", "Brood", "Auto", "Troffee" },
-            "Met Ziekenhuis Opname" => new[] { "Ambulance", "Stethoscope", "Ziekenhuis", "Syringe", "Bed", "Microscope", "Hart", "Informatie (Ouders uitleg)", "Bloedcellen", "Brood", "Smiley", "Medicijnen", "Auto", "Troffee" },
+            "Zonder Ziekenhuis Opname" => new[] { "Dokter", "Ziekenhuis", "Pleister", "Microscope", "Hart", "Medicijn", "Syringe", "Brood", "Auto", "Troffee" },
+            "Met Ziekenhuis Opname" => new[] { "Ambulance", "Stethoscope", "Ziekenhuis", "Syringe", "Bed", "Microscope", "Hart", "Informatie", "Bloedcellen", "Brood", "Smiley", "Medicijnen", "Auto", "Troffee" },
             _ => null
         };
 
