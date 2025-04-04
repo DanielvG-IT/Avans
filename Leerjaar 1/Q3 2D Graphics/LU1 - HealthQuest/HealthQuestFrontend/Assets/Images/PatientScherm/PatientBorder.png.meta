@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      PatientBorder_0: -5752127530816445206
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

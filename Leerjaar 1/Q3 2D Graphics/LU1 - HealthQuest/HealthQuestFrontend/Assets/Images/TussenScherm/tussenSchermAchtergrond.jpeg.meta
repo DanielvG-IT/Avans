@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      tussenSchermAchtergrond_0: -7797667568901030404
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
