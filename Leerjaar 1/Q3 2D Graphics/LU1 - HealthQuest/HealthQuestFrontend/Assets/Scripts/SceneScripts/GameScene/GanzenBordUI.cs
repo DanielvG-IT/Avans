@@ -230,37 +230,37 @@ public class GanzenBordUI : MonoBehaviour
         }
     }
 
-    private void UnlockSticker(int index)
+    private async Task UnlockSticker(int index)
     {
-        string[] stickers;
-        switch (ApiClientManager.Instance.CurrentTreatment.name)
+        string[] stickers = ApiClientManager.Instance.CurrentTreatment.name switch
         {
-            case "Zonder Ziekenhuis Opname":
-                {
-                    stickers = new[] { "Arts", "Ziekenhuis", "Pleister", "Microscope", "Hart", "Medicijn", "Syringe", "Brood", "Auto", "Troffee" };
-                    break;
-                }
-            case "Met Ziekenhuis Opname":
-                {
-                    stickers = new[] { "Ambulance", "Stethoscope", "Ziekenhuis", "Syringe", "Bed", "Microscope", "Hart", "Informatie (Ouders uitleg)", "Bloedcellen", "Brood", "Smiley", "Medicijnen", "Auto", "Troffee" };
-                    break;
-                }
-            default:
-                {
-                    Debug.LogWarning("No stickers available for this treatment.");
-                    return;
-                }
+            "Zonder Ziekenhuis Opname" => new[] { "Arts", "Ziekenhuis", "Pleister", "Microscope", "Hart", "Medicijn", "Syringe", "Brood", "Auto", "Troffee" },
+            "Met Ziekenhuis Opname" => new[] { "Ambulance", "Stethoscope", "Ziekenhuis", "Syringe", "Bed", "Microscope", "Hart", "Informatie (Ouders uitleg)", "Bloedcellen", "Brood", "Smiley", "Medicijnen", "Auto", "Troffee" },
+            _ => null
+        };
+
+        if (stickers == null)
+        {
+            Debug.LogWarning("No stickers available for this treatment.");
+            return;
         }
 
-        if (index >= 0 && index < stickers.Length)
+        if (index < 0 || index >= stickers.Length)
         {
-            string stickerName = stickers[index];
+            Debug.LogError($"Index {index} is out of range for stickers.");
+            return;
+        }
+
+        string stickerName = stickers[index];
+        if (await boardManager.MarkStickerCompleted(stickerName))
+        {
             Debug.Log($"Unlocking sticker: {stickerName}");
             StickerBoeken.newUnlockedStickers.Add(stickerName);
+            Debug.Log($"Sticker {stickerName} unlocked.");
         }
         else
         {
-            Debug.LogError($"Index {index} is out of range for stickers.");
+            Debug.LogError($"Failed to unlock sticker: {stickerName}");
         }
     }
 

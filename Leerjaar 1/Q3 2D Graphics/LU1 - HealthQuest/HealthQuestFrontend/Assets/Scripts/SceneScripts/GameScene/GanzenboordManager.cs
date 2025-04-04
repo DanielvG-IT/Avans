@@ -94,6 +94,48 @@ public class GanzenboordManager : MonoBehaviour
         }
     }
 
+    public async Task<bool> MarkStickerCompleted(string stickerName)
+    {
+        try
+        {
+            var stickerResponse = await apiClientManager.StickerApiClient.ReadStickerByNameAsync(stickerName);
+            if (stickerResponse is WebRequestError stickerError)
+            {
+                Debug.LogError($"Error: {stickerError.ErrorMessage}");
+                return false;
+            }
+
+            if (stickerResponse is not WebRequestData<Sticker> stickerSuccess)
+            {
+                Debug.LogError("Unexpected response when reading sticker.");
+                return false;
+            }
+
+            var addResponse = await apiClientManager.PatientApiClient.AddUnlockedStickerToPatientAsync(
+                apiClientManager.CurrentPatient.id, stickerSuccess.Data);
+
+            if (addResponse is WebRequestError addError)
+            {
+                Debug.LogError($"Error: {addError.ErrorMessage}");
+                return false;
+            }
+
+            if (addResponse is WebRequestData<Sticker>)
+            {
+                Debug.Log($"Sticker {stickerName} marked as completed.");
+                return true;
+            }
+
+            Debug.LogError("Unexpected response when adding sticker.");
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Exception marking sticker {stickerName} as completed: {ex.Message}");
+            return false;
+        }
+    }
+
     public bool IsLevelUnlocked(int index) => IsValidIndex(index) && index <= CompletedLevels;
     public bool IsLevelCompleted(int index) => IsValidIndex(index) && index < CompletedLevels;
     public Appointment GetAppointment(int index) => IsValidIndex(index) ? appointments[index] : null;
