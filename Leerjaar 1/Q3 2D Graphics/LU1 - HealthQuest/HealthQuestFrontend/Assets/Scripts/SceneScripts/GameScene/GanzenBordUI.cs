@@ -90,7 +90,7 @@ public class GanzenBordUI : MonoBehaviour
 
         if (boardManager.CompletedLevels > 0)
         {
-            int lastIndex = boardManager.CompletedLevels - 1;
+            int lastIndex = DagboekScherm.clearingLevel < 0 ? boardManager.CompletedLevels - 1 : boardManager.CompletedLevels;
             goose.position = levelButtons[lastIndex].transform.position;
             currentLevel = lastIndex;
 
@@ -210,6 +210,7 @@ public class GanzenBordUI : MonoBehaviour
     {
         DagboekScherm.clearingLevel = index + 1; // Compensate for counting from 1
         Debug.Log($"Redirecting to Dagboek scherm with index {index + 1}");
+        Destroy(this);
         SceneManager.LoadScene("DagboekScherm");
     }
 
