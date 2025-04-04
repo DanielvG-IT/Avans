@@ -103,7 +103,9 @@ namespace HQB.WebApi.Controllers
                     return NotFound($"Patient with ID {patientId} has no assigned doctor.");
                 }
 
-                var doctor = await _doctorRepository.GetDoctorByIdAsync(patient.DoctorID);
+                var doctor = patient.DoctorID.HasValue
+                    ? await _doctorRepository.GetDoctorByIdAsync(patient.DoctorID.Value)
+                    : null;
                 if (doctor == null)
                 {
                     _logger.LogWarning($"No doctor found for patient ID {patientId}.");

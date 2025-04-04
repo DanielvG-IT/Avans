@@ -133,7 +133,7 @@ namespace HQB.WebApi.Controllers
                 }
 
                 var guardian = patient.GuardianID != Guid.Empty
-                    ? await _guardianRepository.GetGuardianByIdAsync(patient.GuardianID)
+                    ? (patient.GuardianID.HasValue ? await _guardianRepository.GetGuardianByIdAsync(patient.GuardianID.Value) : null)
                     : await _guardianRepository.GetGuardianByUserIdAsync(loggedInUserId);
 
                 if (guardian == null)
@@ -145,7 +145,7 @@ namespace HQB.WebApi.Controllers
 
                 if (patient.DoctorID != Guid.Empty)
                 {
-                    var doctor = await _doctorRepository.GetDoctorByIdAsync(patient.DoctorID);
+                    var doctor = patient.DoctorID.HasValue ? await _doctorRepository.GetDoctorByIdAsync(patient.DoctorID.Value) : null;
                     if (doctor == null)
                     {
                         _logger.LogWarning("Doctor with ID {DoctorId} not found", patient.DoctorID);
@@ -155,7 +155,7 @@ namespace HQB.WebApi.Controllers
 
                 if (patient.TreatmentID != Guid.Empty)
                 {
-                    var treatment = await _treatmentRepository.GetTreatmentByIdAsync(patient.TreatmentID);
+                    var treatment = patient.TreatmentID.HasValue ? await _treatmentRepository.GetTreatmentByIdAsync(patient.TreatmentID.Value) : null;
                     if (treatment == null)
                     {
                         _logger.LogWarning("Treatment with ID {TreatmentId} not found", patient.TreatmentID);
@@ -234,7 +234,7 @@ namespace HQB.WebApi.Controllers
                 }
                 else
                 {
-                    var guardian = await _guardianRepository.GetGuardianByIdAsync(patient.GuardianID);
+                    var guardian = patient.GuardianID.HasValue ? await _guardianRepository.GetGuardianByIdAsync(patient.GuardianID.Value) : null;
                     if (guardian == null)
                     {
                         _logger.LogWarning("Guardian with ID {GuardianId} not found", patient.GuardianID);
@@ -244,7 +244,9 @@ namespace HQB.WebApi.Controllers
 
                 if (patient.DoctorID != Guid.Empty)
                 {
-                    var doctor = await _doctorRepository.GetDoctorByIdAsync(patient.DoctorID);
+                    var doctor = patient.DoctorID.HasValue
+                        ? await _doctorRepository.GetDoctorByIdAsync(patient.DoctorID.Value)
+                        : null;
                     if (doctor == null)
                     {
                         _logger.LogWarning("Doctor with ID {DoctorId} not found", patient.DoctorID);
@@ -254,11 +256,14 @@ namespace HQB.WebApi.Controllers
 
                 if (patient.TreatmentID != Guid.Empty)
                 {
-                    var treatment = await _treatmentRepository.GetTreatmentByIdAsync(patient.TreatmentID);
-                    if (treatment == null)
+                    if (patient.TreatmentID.HasValue)
                     {
-                        _logger.LogWarning("Treatment with ID {TreatmentId} not found", patient.TreatmentID);
-                        return BadRequest($"Treatment with ID {patient.TreatmentID} not found");
+                        var treatment = await _treatmentRepository.GetTreatmentByIdAsync(patient.TreatmentID.Value);
+                        if (treatment == null)
+                        {
+                            _logger.LogWarning("Treatment with ID {TreatmentId} not found", patient.TreatmentID);
+                            return BadRequest($"Treatment with ID {patient.TreatmentID} not found");
+                        }
                     }
                 }
 
