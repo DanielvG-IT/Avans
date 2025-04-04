@@ -63,6 +63,7 @@ public class PatientScherm : MonoBehaviour
         if (patients == null || patients.Count == 0)
         {
             ShowCreationPanel();
+            patients = new();
         }
     }
 
