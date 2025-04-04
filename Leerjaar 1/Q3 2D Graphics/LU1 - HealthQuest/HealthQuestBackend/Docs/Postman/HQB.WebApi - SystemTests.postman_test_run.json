@@ -1,0 +1,294 @@
+{
+	"id": "70bcb778-3849-4819-bed2-d07922747173",
+	"name": "HQB.WebApi - SystemTests",
+	"timestamp": "2025-04-04T21:43:19.746Z",
+	"collection_id": "41979928-213d4e23-ada6-4a96-8836-8dc671cda643",
+	"folder_id": 0,
+	"environment_id": "41979928-cfb2e1f6-660b-47d7-b3e9-d181f2aa1722",
+	"totalPass": 12,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2025-04-04T21:43:18.137Z",
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "97db55e7-0d6b-4508-9019-4bc31f471b89",
+			"name": "Login User",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/account/login",
+			"time": 211,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Login - Success": true
+			},
+			"testPassFailCounts": {
+				"Login - Success": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				211
+			],
+			"allTests": [
+				{
+					"Login - Success": true
+				}
+			]
+		},
+		{
+			"id": "a44c9845-ae4d-4471-9b46-e1b9f9ca6d3e",
+			"name": "Get Guardian For Current User",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/guardian",
+			"time": 35,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Get Guardian - Success": true
+			},
+			"testPassFailCounts": {
+				"Get Guardian - Success": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				35
+			],
+			"allTests": [
+				{
+					"Get Guardian - Success": true
+				}
+			]
+		},
+		{
+			"id": "800eaa88-b5b5-40e9-97fe-97488ea67bb3",
+			"name": "Get All Doctors",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/doctors",
+			"time": 29,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Get Doctors - Status code is 200": true
+			},
+			"testPassFailCounts": {
+				"Get Doctors - Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				29
+			],
+			"allTests": [
+				{
+					"Get Doctors - Status code is 200": true
+				}
+			]
+		},
+		{
+			"id": "c81594cc-20d2-4329-b317-c0a69b2ca3a0",
+			"name": "Get All Treatments",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/treatments",
+			"time": 29,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Get Treatments - Status code is 200": true
+			},
+			"testPassFailCounts": {
+				"Get Treatments - Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				29
+			],
+			"allTests": [
+				{
+					"Get Treatments - Status code is 200": true
+				}
+			]
+		},
+		{
+			"id": "2e34ed9c-7d33-4b16-b31b-96a6389c8505",
+			"name": "Add Patient",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/patient",
+			"time": 148,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Create Patient - Status code is 201": true
+			},
+			"testPassFailCounts": {
+				"Create Patient - Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				148
+			],
+			"allTests": [
+				{
+					"Create Patient - Status code is 201": true
+				}
+			]
+		},
+		{
+			"id": "f1a475a9-6dc7-4af5-842f-01150cdd966c",
+			"name": "Get Patient By Id",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/patient/a8371262-f83c-403d-b096-9af8a5a87225",
+			"time": 47,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Get Created Patient - Status code is 200": true
+			},
+			"testPassFailCounts": {
+				"Get Created Patient - Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				47
+			],
+			"allTests": [
+				{
+					"Get Created Patient - Status code is 200": true
+				}
+			]
+		},
+		{
+			"id": "8e54db98-cc21-4986-acb1-c61c8624a7fe",
+			"name": "Get Appointments By Treatment Id",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/appointments?treatmentId=7bc92028-da56-4142-bd46-34a0d75b7d3e",
+			"time": 202,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Content type is application/json": true,
+				"Response is an array with at least one element": true,
+				"Validate appointmentNr is a non-negative integer": true,
+				"Id, name, description, url, and image are non-empty strings": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content type is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is an array with at least one element": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Validate appointmentNr is a non-negative integer": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Id, name, description, url, and image are non-empty strings": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				202
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Content type is application/json": true,
+					"Response is an array with at least one element": true,
+					"Validate appointmentNr is a non-negative integer": true,
+					"Id, name, description, url, and image are non-empty strings": true
+				}
+			]
+		},
+		{
+			"id": "899b6f95-91ca-4004-a22e-519f2ca459b8",
+			"name": "Delete Patient",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/patient/a8371262-f83c-403d-b096-9af8a5a87225",
+			"time": 47,
+			"responseCode": {
+				"code": 204,
+				"name": "No Content"
+			},
+			"tests": {
+				"Delete Patient - Status code is 204": true
+			},
+			"testPassFailCounts": {
+				"Delete Patient - Status code is 204": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				47
+			],
+			"allTests": [
+				{
+					"Delete Patient - Status code is 204": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 748,
+	"collection": {
+		"requests": [
+			{
+				"id": "97db55e7-0d6b-4508-9019-4bc31f471b89",
+				"method": "POST"
+			},
+			{
+				"id": "a44c9845-ae4d-4471-9b46-e1b9f9ca6d3e",
+				"method": "GET"
+			},
+			{
+				"id": "800eaa88-b5b5-40e9-97fe-97488ea67bb3",
+				"method": "GET"
+			},
+			{
+				"id": "c81594cc-20d2-4329-b317-c0a69b2ca3a0",
+				"method": "GET"
+			},
+			{
+				"id": "2e34ed9c-7d33-4b16-b31b-96a6389c8505",
+				"method": "POST"
+			},
+			{
+				"id": "f1a475a9-6dc7-4af5-842f-01150cdd966c",
+				"method": "GET"
+			},
+			{
+				"id": "8e54db98-cc21-4986-acb1-c61c8624a7fe",
+				"method": "GET"
+			},
+			{
+				"id": "899b6f95-91ca-4004-a22e-519f2ca459b8",
+				"method": "DELETE"
+			}
+		]
+	}
+}
