@@ -219,15 +219,51 @@ public class GanzenBordUI : MonoBehaviour
         if (await boardManager.MarkLevelCompleted(index))
         {
             SetLevelColor(index, completedColor);
-            Debug.Log($"Level {index + 1} completed.");
-
+            UnlockSticker(index);
             StartCoroutine(MoveGooseToLevel(index + 1));
+
+            Debug.Log($"Level {index + 1} completed.");
         }
         else
         {
             Debug.LogError("Failed to complete level.");
         }
     }
+
+    private void UnlockSticker(int index)
+    {
+        string[] stickers;
+        switch (ApiClientManager.Instance.CurrentTreatment.name)
+        {
+            case "Zonder Ziekenhuis Opname":
+                {
+                    stickers = new[] { "Arts", "Ziekenhuis", "Pleister", "Microscope", "Hart", "Medicijn", "Syringe", "Brood", "Auto", "Troffee" };
+                    break;
+                }
+            case "Met Ziekenhuis Opname":
+                {
+                    stickers = new[] { "Ambulance", "Stethoscope", "Ziekenhuis", "Syringe", "Bed", "Microscope", "Hart", "Informatie (Ouders uitleg)", "Bloedcellen", "Brood", "Smiley", "Medicijnen", "Auto", "Troffee" };
+                    break;
+                }
+            default:
+                {
+                    Debug.LogWarning("No stickers available for this treatment.");
+                    return;
+                }
+        }
+
+        if (index >= 0 && index < stickers.Length)
+        {
+            string stickerName = stickers[index];
+            Debug.Log($"Unlocking sticker: {stickerName}");
+            StickerBoeken.newUnlockedStickers.Add(stickerName);
+        }
+        else
+        {
+            Debug.LogError($"Index {index} is out of range for stickers.");
+        }
+    }
+
 
     private void SetLevelColor(int index, Color color)
     {

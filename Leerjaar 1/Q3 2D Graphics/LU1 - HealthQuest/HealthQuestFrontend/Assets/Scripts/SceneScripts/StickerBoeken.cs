@@ -66,7 +66,7 @@ public class StickerBoeken : MonoBehaviour
 
     public async void Start()
     {
-        scenemanager = new Scenemanager();
+        scenemanager = gameObject.AddComponent<Scenemanager>();
         animator = backButton.GetComponent<Animator>();
         currentPatient = ApiClientManager.Instance.CurrentPatient;
         patientApiClient = ApiClientManager.Instance.PatientApiClient;
@@ -165,6 +165,7 @@ public class StickerBoeken : MonoBehaviour
     {
         Debug.Log("Playing RedButton animation...");
         animator.Play("RedButton");
+        ClearNewlyUnlockedStickers();
         StartCoroutine(SwitchSceneAfterDelay(scene));
     }
 

@@ -72,5 +72,4 @@ public class TussenScherm : MonoBehaviour
     {
         SceneManager.LoadScene(trajectScene);
     }
-
 }
