@@ -15,6 +15,7 @@ public class GanzenBordUI : MonoBehaviour
     public Camera mainCamera;
     public GameObject Ganzenboard;
     public Transform levelsParent;
+    public GameObject UserHUD;
 
     [Header("Settings")]
     public float cameraSpeed = 5f;
@@ -22,43 +23,42 @@ public class GanzenBordUI : MonoBehaviour
     public Color completedColor = Color.green;
     public bool debugMode = false;
 
-    private readonly float cameraY = -1.496704f;
-    private readonly float cameraZ = -10f;
+    //private readonly float cameraY = -1.496704f;
+    //private readonly float cameraZ = -10f;
 
     private GameObject currentPopup;
-    private GameObject canvas;
     private List<GameObject> levelButtons = new();
     private List<Transform> levelRoots = new();
     private Vector3 cameraTarget;
     private int currentLevel = 0;
     private Vector3 gooseOriginalScale;
 
-    private async void Awake()
+    private async void Start()
     {
-        canvas = GameObject.Find("UserHUD");
-
-        int savedLevel = DagboekScherm.clearingLevel;
-        if (savedLevel != 0)
-        {
-            CompleteLevel(savedLevel);
-        }
-
         await boardManager.Initialize();
-        await InitializeGame();
+
+        InitializeLevels();
+        InitializeGoose();
+
+        if (DagboekScherm.clearingLevel != 0)
+        {
+            CompleteLevel(DagboekScherm.clearingLevel);
+        }
     }
 
-    private async Task InitializeGame()
+    private void InitializeLevels()
     {
+        Debug.Log("Initializing...");
         Debug.Log($"Total levels: {boardManager.TotalLevels}");
         Debug.Log($"Completed levels: {boardManager.CompletedLevels}");
 
-        levelButtons.Clear();
-        levelRoots.Clear();
+        //levelButtons.Clear();
+        //levelRoots.Clear();
 
-        // Set up level buttons and their interactions
         foreach (Transform level in levelsParent)
         {
-            var buttonTransform = level.Find("Button" + level.name);
+            string buttonName = "Button" + level.name;
+            Transform buttonTransform = level.Find(buttonName);
             if (buttonTransform != null)
             {
                 GameObject buttonObj = buttonTransform.gameObject;
@@ -66,8 +66,10 @@ public class GanzenBordUI : MonoBehaviour
                 levelRoots.Add(level);
 
                 int index = levelButtons.Count - 1;
-                buttonObj.TryGetComponent<Button>(out var btn);
-                btn?.onClick.AddListener(() => OnLevelClicked(index));
+                if (buttonObj.TryGetComponent<Button>(out var btn))
+                {
+                    btn.onClick.AddListener(() => OnLevelClicked(index));
+                }
 
                 if (boardManager.IsLevelCompleted(index))
                 {
@@ -75,28 +77,36 @@ public class GanzenBordUI : MonoBehaviour
                 }
             }
         }
+    }
 
-        // Ensure level buttons are set up correctly
+    private void InitializeGoose()
+    {
         if (levelButtons.Count == 0)
         {
-            Debug.LogError("No level buttons found!");
+            Debug.LogError("No levels found under levelsParent!");
             return;
         }
 
-        // Wait until Unity finishes layout to get correct positions
-        while (levelButtons[0].transform.position == Vector3.zero)
+        if (boardManager.CompletedLevels > 0)
         {
-            await Task.Yield();
+            int lastIndex = boardManager.CompletedLevels - 1;
+            goose.position = levelButtons[lastIndex].transform.position;
+            currentLevel = lastIndex;
+
+            cameraTarget = new Vector3(
+                levelButtons[lastIndex].transform.position.x,
+                mainCamera.transform.position.y,
+                mainCamera.transform.position.z
+            );
+        }
+        else
+        {
+            goose.position = levelButtons[0].transform.position;
+            cameraTarget = mainCamera.transform.position;
         }
 
-        // Set camera and goose position based on completed levels
-        int targetIndex = boardManager.CompletedLevels > 0 && boardManager.CompletedLevels < levelButtons.Count
-            ? boardManager.CompletedLevels
-            : 0;
-
-        cameraTarget = new Vector3(levelButtons[targetIndex].transform.position.x, cameraY, cameraZ);
-        goose.position = levelButtons[targetIndex].transform.position;
         gooseOriginalScale = goose.localScale;
+        mainCamera.transform.position = cameraTarget;
     }
 
     private void Update()
@@ -109,20 +119,19 @@ public class GanzenBordUI : MonoBehaviour
 
         if (Ganzenboard == null)
         {
-            return;
+            Debug.LogWarning("GanzenBoard is not assign in Unity editor!");
         }
 
         RectTransform rect = Ganzenboard.GetComponent<RectTransform>();
+
         float boardWidth = rect.rect.width * rect.lossyScale.x;
-        float boardCenter = Ganzenboard.transform.position.x;
+        float boardCenter = rect.position.x;
         float minX = boardCenter - boardWidth / 2f;
         float maxX = boardCenter + boardWidth / 2f;
 
-        // Update camera target position and clamp it within bounds
-        cameraTarget.x += input * cameraSpeed * 50 * Time.deltaTime;
+        cameraTarget.x += input * (cameraSpeed * 50) * Time.deltaTime;
         cameraTarget.x = Mathf.Clamp(cameraTarget.x, minX, maxX);
 
-        // Smoothly move the camera to the target position
         mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, cameraTarget, Time.deltaTime * cameraSpeed);
     }
 
@@ -146,7 +155,7 @@ public class GanzenBordUI : MonoBehaviour
         {
             Vector3 targetPos = levelButtons[i].transform.position;
 
-            while (Vector3.Distance(goose.position, targetPos) > 0.05f)
+            while (Vector3.Distance(goose.position, targetPos) > 0.2f)
             {
                 // Update goose scale based on movement direction
                 goose.localScale = new Vector3(
@@ -171,10 +180,13 @@ public class GanzenBordUI : MonoBehaviour
     private void ShowPopup(int index)
     {
         // Destroy previous popup if it exists
-        if (currentPopup) Destroy(currentPopup);
+        if (currentPopup)
+        {
+            Destroy(currentPopup);
+        }
 
         // Instantiate new popup
-        currentPopup = Instantiate(popupPrefab, canvas.transform);
+        currentPopup = Instantiate(popupPrefab, UserHUD.transform);
         currentPopup.transform.SetAsLastSibling();
 
         // Get appointment details
@@ -189,7 +201,7 @@ public class GanzenBordUI : MonoBehaviour
         if (currentPopup.TryGetComponent<PopUpUI>(out var popup))
         {
             popup.Setup(appointment.name, appointment.description,
-                () => CompleteLevel(index), () => Destroy(currentPopup));
+                () => RedirectToDagboek(index), () => Destroy(currentPopup));
         }
     }
 
@@ -206,14 +218,7 @@ public class GanzenBordUI : MonoBehaviour
             SetLevelColor(index, completedColor);
             Debug.Log($"Level {index + 1} completed.");
 
-            // Set camera and goose position based on completed levels
-            int targetIndex = boardManager.CompletedLevels > 0 && boardManager.CompletedLevels < levelButtons.Count
-                ? boardManager.CompletedLevels
-                : 0;
-
-            cameraTarget = new Vector3(levelButtons[targetIndex].transform.position.x, cameraY, cameraZ);
-            goose.position = levelButtons[targetIndex].transform.position;
-            gooseOriginalScale = goose.localScale;
+            StartCoroutine(MoveGooseToLevel(index + 1));
         }
         else
         {

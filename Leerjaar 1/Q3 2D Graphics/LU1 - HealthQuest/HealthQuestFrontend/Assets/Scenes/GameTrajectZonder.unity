@@ -6624,6 +6624,7 @@ MonoBehaviour:
   mainCamera: {fileID: 519420031}
   Ganzenboard: {fileID: 1286397501}
   levelsParent: {fileID: 922608494}
+  UserHUD: {fileID: 1669804702}
   cameraSpeed: 5
   gooseSpeed: 125
   completedColor: {r: 0, g: 1, b: 0, a: 1}
