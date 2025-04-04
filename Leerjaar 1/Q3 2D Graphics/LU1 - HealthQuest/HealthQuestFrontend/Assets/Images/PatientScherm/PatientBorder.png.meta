@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: fa959e9f53fe57d44a8267a43e8e21e9
+guid: b1c518749d6a4dc41acc99b96cd69b1f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8788728563432601155
-    second: DagboekForm_0
+      213: -5752127530816445206
+    second: PatientBorder_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: DagboekForm_0
+      name: PatientBorder_0
       rect:
         serializedVersion: 2
-        x: 9
-        y: 5
-        width: 802
-        height: 245
+        x: 126
+        y: 101
+        width: 263
+        height: 305
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 346bab25016d7f970800000000000000
-      internalID: 8788728563432601155
+      spriteID: ae4e0fe9c765c20b0800000000000000
+      internalID: -5752127530816445206
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      DagboekForm_0: 8788728563432601155
+      PatientBorder_0: -5752127530816445206
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

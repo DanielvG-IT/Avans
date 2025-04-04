@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: fa959e9f53fe57d44a8267a43e8e21e9
+guid: da268dda392e12b4ab66fcaeb36897f9
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8788728563432601155
-    second: DagboekForm_0
+      213: 172714424174675913
+    second: IntroBackground_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: DagboekForm_0
+      name: IntroBackground_0
       rect:
         serializedVersion: 2
-        x: 9
-        y: 5
-        width: 802
-        height: 245
+        x: 0
+        y: 0
+        width: 705
+        height: 344
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 346bab25016d7f970800000000000000
-      internalID: 8788728563432601155
+      spriteID: 9c7848c8ada956200800000000000000
+      internalID: 172714424174675913
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      DagboekForm_0: 8788728563432601155
+      IntroBackground_0: 172714424174675913
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
