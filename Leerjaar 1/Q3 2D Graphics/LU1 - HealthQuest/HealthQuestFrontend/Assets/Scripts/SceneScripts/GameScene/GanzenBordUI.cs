@@ -43,6 +43,7 @@ public class GanzenBordUI : MonoBehaviour
         if (DagboekScherm.clearingLevel != 0)
         {
             CompleteLevel(DagboekScherm.clearingLevel - 1); // Compensate for counting from 1
+            DagboekScherm.clearingLevel = 0;
         }
     }
 
