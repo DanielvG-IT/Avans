@@ -42,7 +42,7 @@ public class GanzenBordUI : MonoBehaviour
 
         if (DagboekScherm.clearingLevel != 0)
         {
-            CompleteLevel(DagboekScherm.clearingLevel);
+            CompleteLevel(DagboekScherm.clearingLevel - 1); // Compensate for counting from 1
         }
     }
 
@@ -207,7 +207,8 @@ public class GanzenBordUI : MonoBehaviour
 
     private void RedirectToDagboek(int index)
     {
-        DagboekScherm.clearingLevel = index;
+        DagboekScherm.clearingLevel = index + 1; // Compensate for counting from 1
+        Debug.Log($"Redirecting to Dagboek scherm with index {index + 1}");
         SceneManager.LoadScene("DagboekScherm");
     }
 
