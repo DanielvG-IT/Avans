@@ -12,12 +12,18 @@ using System.Linq;
 
 public class DagboekScherm : MonoBehaviour
 {
-    [Header("UI elements")]
+    [Header("LeftCanvas")]
     public TMP_Text entryTitle;
     public TMP_Text entryDescription;
     public TMP_Text entryFillDate;
     public TMP_Text entryRating;
     public Button backButton;
+
+    [Header("RightCanvas")]
+    public TMP_InputField inputTitle;
+    public TMP_InputField inputDescription;
+    public TMP_InputField inputRating;
+    public Canvas popUpBeforeSend;
 
     [Header("Avatar")]
     public Image avatar;
@@ -26,6 +32,10 @@ public class DagboekScherm : MonoBehaviour
     public Sprite Paard;
     public Sprite Vogel;
     public TMP_Text patientName;
+
+    [Header("PopUp")]
+    public TMP_Text userErrorMessageNL;
+    public TMP_Text userErrorMessageEN;
 
     private PatientApiClient patientApiClient;
     private JournalApiClient journalApiClient;
@@ -37,12 +47,18 @@ public class DagboekScherm : MonoBehaviour
     private string currentScene;
     private bool sentJournalEntry = false;
     private string currentAvatar;
+    private string originGameScene;
+    private bool updatingJournalEntry = false;
+    private string updatingID;
+    private int updatingPage;
 
     //TODO: Variabele voor de level clear tag (bij terug button click altijd zetten op false, bij game 'klaar knop' zet op true. Dan bij opsturen LevelCleared())
     public static int clearingLevel = 0;
 
     public async void Start()
     {
+        originGameScene = ApiClientManager.Instance.CurrentTreatment.name == "Zonder Ziekenhuis Opname" ? "GameTrajectZonder" : "GameTrajectMet";
+        popUpBeforeSend.gameObject.SetActive(false);
         sceneManager = gameObject.AddComponent<Scenemanager>();
         journalApiClient = ApiClientManager.Instance.JournalApiClient;
         patientApiClient = ApiClientManager.Instance.PatientApiClient;
@@ -77,8 +93,50 @@ public class DagboekScherm : MonoBehaviour
         }
         entryTitle.text = journalEntries[entryNumber].title;
         entryDescription.text = journalEntries[entryNumber].content;
-        entryFillDate.text = $"Aangemaakt op: {journalEntries[entryNumber].date.Substring(0, 10)}";
+        entryFillDate.text = $"Aangemaakt op: {journalEntries[entryNumber].date.Substring(0, 9)}";
         entryRating.text = $"Beoordeling: {journalEntries[entryNumber].rating}/10";
+    }
+
+    public async Task SendNewJournalEntry()
+    {
+        var newJournalEntry = new JournalEntry
+        {
+            title = inputTitle.text,
+            content = inputDescription.text,
+            rating = Convert.ToInt32(inputRating.text),
+            date = DateTime.Now.ToString(),
+            guardianID = ApiClientManager.Instance.CurrentGuardian.id,
+            patientID = ApiClientManager.Instance.CurrentPatient.id
+        };
+
+        var journalCreateRespone = await journalApiClient.CreateJournalEntryAsync(newJournalEntry);
+        if (journalCreateRespone is WebRequestError journalCreateError)
+        {
+            Debug.LogError($"Failed to create journal entry: {journalCreateError.ErrorMessage}");
+
+            switch (journalCreateError.StatusCode)
+            {
+                case 400:
+                    userErrorMessageNL.text = "Je hebt iets fout ingevuld. Vergeet niet om alle velden in te vullen.";
+                    break;
+                case 500:
+                    userErrorMessageNL.text = "Er ging iets mis bij ons...";
+                    break;
+                default:
+                    userErrorMessageNL.text = "Er is iets fout gegaan.";
+                    break;
+            }
+            userErrorMessageEN.text = journalCreateError.ErrorMessage;
+            return;
+        }
+        else if (journalCreateRespone is WebRequestData<JournalEntry> journalCreateSucces)
+        {
+            journalEntries.Add(journalCreateSucces.Data);
+            journalPage = journalEntries.Count - 1;
+            ShowJournalEntry(journalPage);
+            userErrorMessageNL.text = string.Empty;
+            userErrorMessageEN.text = string.Empty;
+        }
     }
 
     public async void DeleteEntry()
@@ -146,43 +204,16 @@ public class DagboekScherm : MonoBehaviour
         }
     }
 
-    public async Task CreateJournalEntry()
-    { 
-        var journalEntry = new JournalEntry
-        {
-            patientID = currentPatient.id,
-            guardianID = currentPatient.guardianID,
-            date = DateTime.Now.ToString(),
-            title = "titlefield.text", // TODO: replace with actual title field
-            content = "contentfield.text", // TODO: replace with actual content field
-            rating = int.Parse("ratingfield.text") // TODO: replace with actual rating field
-        };
-
-        var journalCreateResponse = await journalApiClient.CreateJournalEntryAsync(journalEntry);
-        if (journalCreateResponse is WebRequestError journalCreateError)
-        {
-            Debug.LogError($"Failed to create journal entry: {journalCreateError.ErrorMessage}");
-            return;
-        }
-        else
-        {
-            sentJournalEntry = true;
-            journalEntries.Add(journalCreateResponse as JournalEntry);
-        }
-
-    }
-
     public void OnBackButtonClick()
     {
         if (!sentJournalEntry)
         {
             clearingLevel = 0;
         }
-        var gameOriginScene = ApiClientManager.Instance.CurrentTreatment.name;
-        gameOriginScene = gameOriginScene == "Zonder Ziekenhuis Opname" ? "GameTrajectZonder" : "GameTrajectMet";
+
 
         animator.Play("RedButton");
-        StartCoroutine(SwitchSceneAfterDelay(gameOriginScene));
+        StartCoroutine(SwitchSceneAfterDelay(originGameScene));
     }
 
     private IEnumerator SwitchSceneAfterDelay(string scene)
@@ -213,5 +244,110 @@ public class DagboekScherm : MonoBehaviour
         }
 
         patientName.text = $"{currentPatient.firstName} {currentPatient.lastName}";
+    }
+
+    public async void OnSentButtonClick()
+    {
+        if(updatingJournalEntry)
+        {
+            await UpdateJournal();
+            ClearInputFields();
+            popUpBeforeSend.gameObject.SetActive(false);
+        }
+        else
+        {
+            await SendNewJournalEntry();
+            ClearInputFields();
+            popUpBeforeSend.gameObject.SetActive(false);
+
+            if (clearingLevel != 0)
+            {
+                SceneManager.LoadScene(originGameScene);
+            }
+        }
+    }
+    public async Task UpdateJournal()
+    {
+        var updatedJournalEntry = new JournalEntry
+        {
+            id = updatingID,
+            title = inputTitle.text,
+            content = inputDescription.text,
+            rating = Convert.ToInt32(inputRating.text),
+            date = DateTime.Now.ToString(),
+            guardianID = ApiClientManager.Instance.CurrentGuardian.id,
+            patientID = ApiClientManager.Instance.CurrentPatient.id
+        };
+
+        var journalUpdateReturn = await journalApiClient.UpdateJournalEntryAsync(updatingID, updatedJournalEntry);
+        if (journalUpdateReturn is WebRequestError journalUpdateError)
+        {
+            Debug.LogWarning("Updating journal failed: " + journalUpdateError.ErrorMessage);
+            switch(journalUpdateError.StatusCode)
+            {
+                case 404:
+                    userErrorMessageNL.text = "Geen dagboek verhaal gevonden om aan te passen.";
+                    break;
+                case 400:
+                    userErrorMessageNL.text = "Je hebt iets fout ingevuld. Vergeet niet om alle velden in te vullen.";
+                    break;
+                case 403:
+                    userErrorMessageNL.text = "Je mag niet een ander iemand zijn dagboek aanpassen!";
+                    break;
+                case 500:
+                    userErrorMessageNL.text = "Er ging iets mis bij ons...";
+                    break;
+                default:
+                    userErrorMessageNL.text = "Er is iets fout gegaan.";
+                    break;
+            }
+            userErrorMessageEN.text = journalUpdateError.ErrorMessage;
+            return;
+        }
+        else if (journalUpdateReturn is WebRequestData<JournalEntry> journalUpdateSuccess)
+        {
+            updatingJournalEntry = false;
+            journalEntries.RemoveAt(updatingPage);
+            journalEntries.Add(journalUpdateSuccess.Data);
+            journalPage = journalEntries.Count - 1;
+            ShowJournalEntry(journalPage);
+            userErrorMessageNL.text = string.Empty;
+            userErrorMessageEN.text = string.Empty;
+        }
+    }
+
+    public void StartUpdatingJournal()
+    {
+        if (journalEntries[journalPage] == null)
+        {
+            Debug.LogWarning("Journal entries empty, nothing to update");
+            return;
+        }
+        else
+        {
+            updatingJournalEntry = true;
+            inputTitle.text = journalEntries[journalPage].title;
+            inputDescription.text = journalEntries[journalPage].content;
+            inputRating.text = journalEntries[journalPage].rating.ToString();
+            updatingID = journalEntries[journalPage].id;
+            updatingPage = journalPage;
+        }
+    }
+    public void OpenPopUp()
+    {
+        popUpBeforeSend.gameObject.SetActive(true);
+    }
+    
+    public void ClosePopUp()
+    {
+        popUpBeforeSend.gameObject.SetActive(false);
+    }
+    
+    public void ClearInputFields()
+    {
+        inputTitle.text = string.Empty;
+        inputRating.text = string.Empty;
+        inputDescription.text = string.Empty;
+        updatingJournalEntry = false;
     }
 }

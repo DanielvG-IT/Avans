@@ -79,7 +79,7 @@ public class JournalApiClient : MonoBehaviour
     /// </summary>
     /// <param name="journalEntryId">The ID of the journal entry to retrieve.</param>
     /// <returns>
-    /// An awaitable task that resolves to an <see cref="IWebRequestReponse"/> containing the <see cref="Sticker"/> object.
+    /// An awaitable task that resolves to an <see cref="IWebRequestReponse"/> containing the <see cref="JournalEntry"/> object.
     /// </returns>
     /// <exception cref="HttpRequestException">Thrown if the HTTP request fails.</exception>
     public async Awaitable<IWebRequestReponse> ReadJournalEntryByIdAsync(string journalEntryId)
@@ -87,7 +87,7 @@ public class JournalApiClient : MonoBehaviour
         string route = $"/api/v1/journal/{journalEntryId}";
 
         IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
-        return JsonHelper.ParseResponse<Sticker>(webRequestResponse);
+        return JsonHelper.ParseResponse<JournalEntry>(webRequestResponse);
     }
 
     /// <summary>
@@ -95,7 +95,7 @@ public class JournalApiClient : MonoBehaviour
     /// </summary>
     /// <param name="journalData">The data for the new journal entry.</param>
     /// <returns>
-    /// An awaitable task that resolves to an <see cref="IWebRequestReponse"/> containing the created <see cref="Sticker"/> object.
+    /// An awaitable task that resolves to an <see cref="IWebRequestReponse"/> containing the created <see cref="JournalEntry"/> object.
     /// </returns>
     /// <exception cref="HttpRequestException">Thrown if the HTTP request fails.</exception>
     public async Awaitable<IWebRequestReponse> CreateJournalEntryAsync(JournalEntry journalData)
@@ -104,7 +104,7 @@ public class JournalApiClient : MonoBehaviour
         string data = JsonUtility.ToJson(journalData);
 
         IWebRequestReponse webRequestResponse = await webClient.SendPostRequestAsync(route, data);
-        return JsonHelper.ParseResponse<Sticker>(webRequestResponse);
+        return JsonHelper.ParseResponse<JournalEntry>(webRequestResponse);
     }
 
     /// <summary>
@@ -113,7 +113,7 @@ public class JournalApiClient : MonoBehaviour
     /// <param name="journalEntryId">The ID of the journal entry to update.</param>
     /// <param name="journalData">The updated data for the journal entry.</param>
     /// <returns>
-    /// An awaitable task that resolves to an <see cref="IWebRequestReponse"/> containing the updated <see cref="Sticker"/> object.
+    /// An awaitable task that resolves to an <see cref="IWebRequestReponse"/> containing the updated <see cref="JournalEntry"/> object.
     /// </returns>
     /// <exception cref="HttpRequestException">Thrown if the HTTP request fails.</exception>
     public async Awaitable<IWebRequestReponse> UpdateJournalEntryAsync(string journalEntryId, JournalEntry journalData)
@@ -122,7 +122,7 @@ public class JournalApiClient : MonoBehaviour
         string data = JsonUtility.ToJson(journalData);
 
         IWebRequestReponse webRequestResponse = await webClient.SendPutRequestAsync(route, data);
-        return JsonHelper.ParseResponse<Sticker>(webRequestResponse);
+        return JsonHelper.ParseResponse<JournalEntry>(webRequestResponse);
     }
 
     /// <summary>
