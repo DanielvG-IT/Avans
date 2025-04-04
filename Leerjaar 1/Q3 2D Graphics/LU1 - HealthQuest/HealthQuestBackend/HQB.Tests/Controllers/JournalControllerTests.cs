@@ -35,8 +35,8 @@ namespace HQB.Tests.Controllers
             var patientId = Guid.NewGuid();
             var journalEntries = new List<JournalEntry>
             {
-                new() { ID = Guid.NewGuid(), PatientID = patientId, Date = DateTime.UtcNow, Content = "Sample content", Title = "Sample Title", Rating = 5 },
-                new() { ID = Guid.NewGuid(), PatientID = patientId, Date = DateTime.UtcNow.AddDays(1), Content = "Another content", Title = "Another Title", Rating = 4 }
+                new() { ID = Guid.NewGuid(), PatientID = patientId, Date = DateTime.UtcNow.ToString(), Content = "Sample content", Title = "Sample Title", Rating = 5 },
+                new() { ID = Guid.NewGuid(), PatientID = patientId, Date = DateTime.UtcNow.AddDays(1).ToString(), Content = "Another content", Title = "Another Title", Rating = 4 }
             };
 
             _mockJournalRepository.Setup(repo => repo.GetJournalEntriesByPatientIdAsync(patientId)).ReturnsAsync(journalEntries);
@@ -79,7 +79,7 @@ namespace HQB.Tests.Controllers
             {
                 ID = journalId,
                 GuardianID = guardianId,
-                Date = DateTime.UtcNow,
+                Date = DateTime.UtcNow.ToString(),
                 Rating = 5,
                 Content = "Sample content",
                 Title = "Sample Title"
@@ -142,7 +142,7 @@ namespace HQB.Tests.Controllers
             var journal = new JournalEntry
             {
                 GuardianID = Guid.NewGuid(),
-                Date = DateTime.UtcNow,
+                Date = DateTime.UtcNow.ToString(),
                 Title = "Sample Title",
                 Rating = 5,
                 Content = "Sample content"
@@ -165,7 +165,7 @@ namespace HQB.Tests.Controllers
             var journal = new JournalEntry
             {
                 PatientID = Guid.NewGuid(),
-                Date = DateTime.UtcNow,
+                Date = DateTime.UtcNow.ToString(),
                 Title = "Sample Title",
                 Rating = 5,
                 Content = "Sample content"
@@ -189,7 +189,7 @@ namespace HQB.Tests.Controllers
             {
                 PatientID = Guid.NewGuid(),
                 GuardianID = Guid.NewGuid(),
-                Date = DateTime.UtcNow,
+                Date = DateTime.UtcNow.ToString(),
                 Title = null!, // Missing title
                 Rating = 5,
                 Content = "Sample content"
@@ -213,7 +213,7 @@ namespace HQB.Tests.Controllers
             {
                 PatientID = Guid.NewGuid(),
                 GuardianID = Guid.NewGuid(),
-                Date = DateTime.UtcNow,
+                Date = DateTime.UtcNow.ToString(),
                 Title = "Sample Title",
                 Content = "Sample content",
                 Rating = 11 // Invalid rating
@@ -240,7 +240,7 @@ namespace HQB.Tests.Controllers
             {
                 ID = journalId,
                 GuardianID = guardianId,
-                Date = DateTime.UtcNow,
+                Date = DateTime.UtcNow.ToString(),
                 Title = "Original Title",
                 Content = "Original content",
                 Rating = 10,
@@ -250,7 +250,7 @@ namespace HQB.Tests.Controllers
             {
                 ID = journalId,
                 GuardianID = guardianId,
-                Date = DateTime.UtcNow,
+                Date = DateTime.UtcNow.ToString(),
                 Rating = 5,
                 Content = "Updated content",
                 Title = "Updated Title"
@@ -282,7 +282,7 @@ namespace HQB.Tests.Controllers
             {
                 ID = Guid.NewGuid(), // Different from journalId
                 GuardianID = Guid.NewGuid(),
-                Date = DateTime.UtcNow,
+                Date = DateTime.UtcNow.ToString(),
                 Rating = 5,
                 Title = "Mismatched ID Title",
                 Content = "Mismatched ID content"
@@ -308,7 +308,7 @@ namespace HQB.Tests.Controllers
             {
                 ID = journalId,
                 GuardianID = guardianId,
-                Date = DateTime.UtcNow,
+                Date = DateTime.UtcNow.ToString(),
                 Rating = 5,
                 Title = "Sample Title",
                 Content = "Sample content"

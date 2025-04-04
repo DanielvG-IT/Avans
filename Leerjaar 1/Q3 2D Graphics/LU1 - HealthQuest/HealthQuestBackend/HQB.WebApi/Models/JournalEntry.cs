@@ -20,9 +20,9 @@ public class JournalEntry
     public Guid? GuardianID { get; set; }
 
     /// <summary>
-    /// Gets or sets the date of the journal entry.
+    /// Gets or sets the date of the journal entry as string.
     /// </summary>
-    public required DateTime Date { get; set; }
+    public required string Date { get; set; }
 
     /// <summary>
     /// Gets or sets the title of the journal entry.
