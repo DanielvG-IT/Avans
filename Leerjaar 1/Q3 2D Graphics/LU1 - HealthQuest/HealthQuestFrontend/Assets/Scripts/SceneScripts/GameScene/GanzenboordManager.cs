@@ -14,11 +14,6 @@ public class GanzenboordManager : MonoBehaviour
     private ApiClientManager apiClientManager;
     private List<AppointmentWithNr> appointments;
 
-    //public async void Awake() // May change to start (what is better?)
-    //{
-    //    await Initialize();
-    //}
-
     public async Task Initialize()
     {
         apiClientManager = ApiClientManager.Instance;
@@ -56,42 +51,37 @@ public class GanzenboordManager : MonoBehaviour
             var patientId = ApiClientManager.Instance.CurrentPatient.id;
             var response = await apiClientManager.PatientApiClient.ReadCompletedAppointmentsFromPatientAsync(patientId);
 
-            if (response is WebRequestData<List<Appointment>> dataResponse)
+            if (response is WebRequestData<List<Appointment>> data)
             {
-                completedAppointments = dataResponse.Data.Count;
+                completedAppointments = data.Data.Count;
             }
-            else if (response is WebRequestError errorResponse)
+            else if (response is WebRequestError error)
             {
-                Debug.LogError($"Error: {errorResponse.ErrorMessage}");
+                Debug.LogError($"Error: {error.ErrorMessage}");
             }
-
-            Debug.LogWarning(completedAppointments.ToString());
         }
         catch (Exception ex)
         {
-            Debug.LogError($"Failed to load completed appointments from API: {ex.Message}");
+            Debug.LogError($"Failed to load completed appointments: {ex.Message}");
         }
     }
 
-
     public async Task<bool> MarkLevelCompleted(int index)
     {
+        if (!IsValidIndex(index)) return false;
+
         try
         {
-            if (!IsValidIndex(index))
-            {
-                return false;
-            }
-
-            var addResponse = await apiClientManager.PatientApiClient.AddCompletedAppointmentsToPatientAsync(
+            var appointment = GetAppointment(index);
+            var response = await apiClientManager.PatientApiClient.AddCompletedAppointmentsToPatientAsync(
                 apiClientManager.CurrentPatient.id,
-                GetAppointment(index).id,
+                appointment.id,
                 DateTime.Now
             );
 
-            if (addResponse is WebRequestError errorResponse)
+            if (response is WebRequestError error)
             {
-                Debug.LogError("Error: " + errorResponse.ErrorMessage);
+                Debug.LogError("Error: " + error.ErrorMessage);
                 return false;
             }
 
@@ -99,7 +89,7 @@ public class GanzenboordManager : MonoBehaviour
         }
         catch (Exception ex)
         {
-            Debug.LogError($"Failed to mark level {index} as completed: " + ex.Message);
+            Debug.LogError($"Error marking level {index} as completed: {ex.Message}");
             return false;
         }
     }

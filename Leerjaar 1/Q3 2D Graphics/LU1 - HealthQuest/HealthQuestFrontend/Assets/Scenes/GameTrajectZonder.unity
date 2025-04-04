@@ -6579,8 +6579,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 861765411}
-  - component: {fileID: 861765412}
   - component: {fileID: 861765413}
+  - component: {fileID: 861765412}
   - component: {fileID: 861765414}
   - component: {fileID: 861765415}
   - component: {fileID: 861765416}
@@ -6622,6 +6622,7 @@ MonoBehaviour:
   popupPrefab: {fileID: 2800570743221530583, guid: 0945f88271dd498499711cb1d7529fbc, type: 3}
   goose: {fileID: 1534646655}
   mainCamera: {fileID: 519420031}
+  Ganzenboard: {fileID: 1286397501}
   levelsParent: {fileID: 922608494}
   cameraSpeed: 5
   gooseSpeed: 125
@@ -6639,7 +6640,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27a5b02e1091892449d6ce0374db49f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  appointments: []
 --- !u!114 &861765414
 MonoBehaviour:
   m_ObjectHideFlags: 0
