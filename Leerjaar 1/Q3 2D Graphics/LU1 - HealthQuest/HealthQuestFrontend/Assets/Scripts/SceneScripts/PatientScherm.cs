@@ -18,6 +18,7 @@ public class PatientScherm : MonoBehaviour
     [Header("Profile elementen")]
     public Transform profilesContainer;
     public GameObject profilePrefab;
+    public GameObject createPrefab;
     public Sprite VogelAvatar;
     public Sprite PaardAvatar;
     public Sprite HondAvatar;
@@ -165,7 +166,7 @@ public class PatientScherm : MonoBehaviour
         else if (treatmentResult is WebRequestData<List<Treatment>> treatmentList)
         {
             treatments = treatmentList.Data;
-        } 
+        }
     }
 
     private void PopulateDropdowns()
@@ -208,8 +209,27 @@ public class PatientScherm : MonoBehaviour
             return;
         }
 
+        // Clear existing patient profiles, but keep the "Create Patient" button
+        foreach (Transform child in profilesContainer)
+        {
+            if (child.gameObject != createPrefab)
+            {
+                Destroy(child.gameObject); // Destroy only patient cards
+            }
+        }
+
+        // Ensure the "Create Patient" button exists
+        if (profilesContainer.childCount == 0 || profilesContainer.GetChild(0).gameObject != createPrefab)
+        {
+            GameObject createCard = Instantiate(createPrefab, profilesContainer);
+            Button createBtn = createCard.GetComponent<Button>();
+            createBtn.onClick.AddListener(() => ShowCreationPanel());
+        }
+
+        // Create new patient profiles
         foreach (var patient in patients)
         {
+            // Instantiate the avatar based on the patient's avatar type
             var toInstanciateSprite = patient.avatar switch
             {
                 "Hond" => HondAvatar,
@@ -227,8 +247,8 @@ public class PatientScherm : MonoBehaviour
             Text profileName = profileCard.transform.Find("Text").GetComponent<Text>();
             profileName.text = $"{patient.firstName} {patient.lastName}";
 
-            Button btn = profileCard.GetComponent<Button>();
-            btn.onClick.AddListener(() => SelectPatient(patient));
+            Button SelectBtn = profileCard.GetComponent<Button>();
+            SelectBtn.onClick.AddListener(() => SelectPatient(patient));
         }
     }
 
@@ -268,7 +288,7 @@ public class PatientScherm : MonoBehaviour
             else if (createResult is WebRequestData<Patient> createdPatient)
             {
                 patients.Add(createdPatient.Data);
-                await LoadSequence();
+                ShowPatientsOnUI();
                 ShowSelectionPanel();
             }
         }
