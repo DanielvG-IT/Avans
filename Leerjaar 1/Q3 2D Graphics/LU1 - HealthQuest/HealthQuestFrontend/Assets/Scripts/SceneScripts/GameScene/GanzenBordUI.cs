@@ -219,7 +219,7 @@ public class GanzenBordUI : MonoBehaviour
         if (await boardManager.MarkLevelCompleted(index))
         {
             SetLevelColor(index, completedColor);
-            UnlockSticker(index);
+            await UnlockSticker(index);
             StartCoroutine(MoveGooseToLevel(index + 1));
 
             Debug.Log($"Level {index + 1} completed.");
