@@ -33,6 +33,10 @@ public class DagboekScherm : MonoBehaviour
     public Sprite Vogel;
     public TMP_Text patientName;
 
+    [Header("PopUp")]
+    public TMP_Text userErrorMessageNL;
+    public TMP_Text userErrorMessageEN;
+
     private PatientApiClient patientApiClient;
     private JournalApiClient journalApiClient;
     private Patient currentPatient;
@@ -109,6 +113,20 @@ public class DagboekScherm : MonoBehaviour
         if (journalCreateRespone is WebRequestError journalCreateError)
         {
             Debug.LogError($"Failed to create journal entry: {journalCreateError.ErrorMessage}");
+
+            switch (journalCreateError.StatusCode)
+            {
+                case 400:
+                    userErrorMessageNL.text = "Je hebt iets fout ingevuld. Vergeet niet om alle velden in te vullen.";
+                    break;
+                case 500:
+                    userErrorMessageNL.text = "Er ging iets mis bij ons...";
+                    break;
+                default:
+                    userErrorMessageNL.text = "Er is iets fout gegaan.";
+                    break;
+            }
+            userErrorMessageEN.text = journalCreateError.ErrorMessage;
             return;
         }
         else if (journalCreateRespone is WebRequestData<JournalEntry> journalCreateSucces)
@@ -116,6 +134,8 @@ public class DagboekScherm : MonoBehaviour
             journalEntries.Add(journalCreateSucces.Data);
             journalPage = journalEntries.Count - 1;
             ShowJournalEntry(journalPage);
+            userErrorMessageNL.text = string.Empty;
+            userErrorMessageEN.text = string.Empty;
         }
     }
 
@@ -263,6 +283,25 @@ public class DagboekScherm : MonoBehaviour
         if (journalUpdateReturn is WebRequestError journalUpdateError)
         {
             Debug.LogWarning("Updating journal failed: " + journalUpdateError.ErrorMessage);
+            switch(journalUpdateError.StatusCode)
+            {
+                case 404:
+                    userErrorMessageNL.text = "Geen dagboek verhaal gevonden om aan te passen.";
+                    break;
+                case 400:
+                    userErrorMessageNL.text = "Je hebt iets fout ingevuld. Vergeet niet om alle velden in te vullen.";
+                    break;
+                case 403:
+                    userErrorMessageNL.text = "Je mag niet een ander iemand zijn dagboek aanpassen!";
+                    break;
+                case 500:
+                    userErrorMessageNL.text = "Er ging iets mis bij ons...";
+                    break;
+                default:
+                    userErrorMessageNL.text = "Er is iets fout gegaan.";
+                    break;
+            }
+            userErrorMessageEN.text = journalUpdateError.ErrorMessage;
             return;
         }
         else if (journalUpdateReturn is WebRequestData<JournalEntry> journalUpdateSuccess)
@@ -272,6 +311,8 @@ public class DagboekScherm : MonoBehaviour
             journalEntries.Add(journalUpdateSuccess.Data);
             journalPage = journalEntries.Count - 1;
             ShowJournalEntry(journalPage);
+            userErrorMessageNL.text = string.Empty;
+            userErrorMessageEN.text = string.Empty;
         }
     }
 

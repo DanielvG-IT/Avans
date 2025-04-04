@@ -36,4 +36,9 @@ public class Navigation : MonoBehaviour
     {
         SceneManager.LoadScene("DagboekScherm");
     }
+
+    public void OnBackToTussenSchermButtonClick()
+    {
+        SceneManager.LoadScene("Tussenscherm");
+    }
 }
