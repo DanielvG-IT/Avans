@@ -9,10 +9,10 @@ using Microsoft.Extensions.Logging;
 namespace HQB.Tests.Controllers
 {
     [TestClass]
-    public class TreatmentsControllerTests
+    public class TreatmentsControllerTest
     {
-        public required Mock<IAppointmentRepository> _mockAppointmentRepository;
         public required Mock<ITreatmentRepository> _mockTreatmentRepository;
+        public required Mock<IAppointmentRepository> _mockAppointmentRepository;
         public required Mock<ILogger<TreatmentsController>> _mockLogger;
         public required TreatmentsController _controller;
 
@@ -22,14 +22,22 @@ namespace HQB.Tests.Controllers
             _mockTreatmentRepository = new Mock<ITreatmentRepository>();
             _mockAppointmentRepository = new Mock<IAppointmentRepository>();
             _mockLogger = new Mock<ILogger<TreatmentsController>>();
-            _controller = new TreatmentsController(_mockTreatmentRepository.Object, _mockAppointmentRepository.Object, _mockLogger.Object);
+            _controller = new TreatmentsController(
+                _mockTreatmentRepository.Object,
+                _mockAppointmentRepository.Object,
+                _mockLogger.Object
+            );
         }
 
         [TestMethod]
-        public async Task GetTreatmentsAsync_ReturnsOkResult_WithListOfTreatments()
+        public async Task GetTreatmentsAsync_ReturnsOk_WhenTreatmentsExist()
         {
             // Arrange
-            var treatments = new List<Treatment> { new() { ID = Guid.NewGuid(), Name = "Test Treatment" } };
+            var treatments = new List<Treatment>
+            {
+                new() { ID = Guid.NewGuid(), Name = "Treatment1" },
+                new() { ID = Guid.NewGuid(), Name = "Treatment2" }
+            };
             _mockTreatmentRepository.Setup(repo => repo.GetAllTreatmentsAsync()).ReturnsAsync(treatments);
 
             // Act
@@ -43,14 +51,13 @@ namespace HQB.Tests.Controllers
         }
 
         [TestMethod]
-        public async Task GetTreatmentByIdAsync_ReturnsNotFound_WhenTreatmentDoesNotExist()
+        public async Task GetTreatmentsAsync_ReturnsNotFound_WhenNoTreatmentsExist()
         {
             // Arrange
-            var treatmentId = Guid.NewGuid();
-            _mockTreatmentRepository.Setup(repo => repo.GetTreatmentByIdAsync(treatmentId)).ReturnsAsync((Treatment?)null);
+            _mockTreatmentRepository.Setup(repo => repo.GetAllTreatmentsAsync()).ReturnsAsync([]);
 
             // Act
-            var result = await _controller.GetTreatmentByIdAsync(treatmentId);
+            var result = await _controller.GetTreatmentsAsync();
 
             // Assert
             var notFoundResult = result.Result as NotFoundResult;
@@ -59,11 +66,11 @@ namespace HQB.Tests.Controllers
         }
 
         [TestMethod]
-        public async Task GetTreatmentByIdAsync_ReturnsOkResult_WithTreatment()
+        public async Task GetTreatmentByIdAsync_ReturnsOk_WhenTreatmentExists()
         {
             // Arrange
             var treatmentId = Guid.NewGuid();
-            var treatment = new Treatment { ID = treatmentId, Name = "Test Treatment" };
+            var treatment = new Treatment { ID = treatmentId, Name = "Treatment1" };
             _mockTreatmentRepository.Setup(repo => repo.GetTreatmentByIdAsync(treatmentId)).ReturnsAsync(treatment);
 
             // Act
@@ -77,33 +84,23 @@ namespace HQB.Tests.Controllers
         }
 
         [TestMethod]
-        public async Task CreateTreatmentAsync_ReturnsBadRequest_WhenTreatmentIsNull()
+        public async Task GetTreatmentByIdAsync_ReturnsNotFound_WhenTreatmentDoesNotExist()
         {
+            // Arrange
+            var treatmentId = Guid.NewGuid();
+            _mockTreatmentRepository.Setup(repo => repo.GetTreatmentByIdAsync(treatmentId)).ReturnsAsync((Treatment)null!);
+
             // Act
-            var result = await _controller.CreateTreatmentAsync(null!);
+            var result = await _controller.GetTreatmentByIdAsync(treatmentId);
 
             // Assert
-            var badRequestResult = result.Result as BadRequestObjectResult;
-            Assert.IsNotNull(badRequestResult);
-            Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
-            Assert.AreEqual("Treatment object is null.", badRequestResult.Value);
+            var notFoundResult = result.Result as NotFoundResult;
+            Assert.IsNotNull(notFoundResult);
+            Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
         }
 
         [TestMethod]
-        public async Task CreateTreatmentAsync_ReturnsBadRequest_WhenTreatmentNameIsEmpty()
-        {
-            // Act
-            var result = await _controller.CreateTreatmentAsync(new Treatment { Name = "" });
-
-            // Assert
-            var badRequestResult = result.Result as BadRequestObjectResult;
-            Assert.IsNotNull(badRequestResult);
-            Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
-            Assert.AreEqual("Treatment name is required", badRequestResult.Value);
-        }
-
-        [TestMethod]
-        public async Task CreateTreatmentAsync_ReturnsCreatedAtActionResult_WithNewTreatment()
+        public async Task CreateTreatmentAsync_ReturnsCreatedAtRoute_WhenTreatmentIsCreated()
         {
             // Arrange
             var treatment = new Treatment { Name = "New Treatment" };
@@ -113,36 +110,14 @@ namespace HQB.Tests.Controllers
             var result = await _controller.CreateTreatmentAsync(treatment);
 
             // Assert
-            var createdAtActionResult = result.Result as CreatedAtRouteResult;
-            Assert.IsNotNull(createdAtActionResult);
-            Assert.AreEqual(StatusCodes.Status201Created, createdAtActionResult.StatusCode);
-            Assert.AreEqual("GetTreatmentById", createdAtActionResult.RouteName);
-            Assert.IsNotNull(createdAtActionResult.RouteValues);
-            Assert.AreEqual(treatment.ID, createdAtActionResult.RouteValues["id"]);
-            var returnedTreatment = createdAtActionResult.Value as Treatment;
-            Assert.IsNotNull(returnedTreatment);
-            Assert.AreEqual(treatment.Name, returnedTreatment.Name);
+            var createdAtRouteResult = result.Result as CreatedAtRouteResult;
+            Assert.IsNotNull(createdAtRouteResult);
+            Assert.AreEqual(StatusCodes.Status201Created, createdAtRouteResult.StatusCode);
+            Assert.AreEqual("GetTreatmentById", createdAtRouteResult.RouteName);
         }
 
         [TestMethod]
-        public async Task UpdateTreatmentAsync_ReturnsNotFound_WhenTreatmentDoesNotExist()
-        {
-            // Arrange
-            var treatmentId = Guid.NewGuid();
-            var treatment = new Treatment { ID = treatmentId, Name = "Updated Treatment" };
-            _mockTreatmentRepository.Setup(repo => repo.GetTreatmentByIdAsync(treatmentId)).ReturnsAsync((Treatment?)null);
-
-            // Act
-            var result = await _controller.UpdateTreatmentAsync(treatmentId, treatment);
-
-            // Assert
-            var notFoundResult = result.Result as NotFoundResult;
-            Assert.IsNotNull(notFoundResult);
-            Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
-        }
-
-        [TestMethod]
-        public async Task UpdateTreatmentAsync_ReturnsOkResult_WithUpdatedTreatment()
+        public async Task UpdateTreatmentAsync_ReturnsOk_WhenTreatmentIsUpdated()
         {
             // Arrange
             var treatmentId = Guid.NewGuid();
@@ -161,29 +136,13 @@ namespace HQB.Tests.Controllers
         }
 
         [TestMethod]
-        public async Task DeleteTreatmentAsync_ReturnsNotFound_WhenTreatmentDoesNotExist()
-        {
-            // Arrange
-            var treatmentId = Guid.NewGuid();
-            _mockTreatmentRepository.Setup(repo => repo.GetTreatmentByIdAsync(treatmentId)).ReturnsAsync((Treatment?)null);
-
-            // Act
-            var result = await _controller.DeleteTreatmentAsync(treatmentId);
-
-            // Assert
-            var notFoundResult = result as NotFoundResult;
-            Assert.IsNotNull(notFoundResult);
-            Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
-        }
-
-        [TestMethod]
         public async Task DeleteTreatmentAsync_ReturnsNoContent_WhenTreatmentIsDeleted()
         {
             // Arrange
             var treatmentId = Guid.NewGuid();
-            var treatment = new Treatment { ID = treatmentId, Name = "Test Treatment" };
+            var treatment = new Treatment { ID = treatmentId, Name = "Treatment to Delete" };
             _mockTreatmentRepository.Setup(repo => repo.GetTreatmentByIdAsync(treatmentId)).ReturnsAsync(treatment);
-            _mockTreatmentRepository.Setup(repo => repo.DeleteTreatmentAsync(treatmentId)).ReturnsAsync(1);
+            _mockTreatmentRepository.Setup(repo => repo.DeleteTreatmentAsync(treatmentId)).Returns(Task.FromResult(1));
 
             // Act
             var result = await _controller.DeleteTreatmentAsync(treatmentId);

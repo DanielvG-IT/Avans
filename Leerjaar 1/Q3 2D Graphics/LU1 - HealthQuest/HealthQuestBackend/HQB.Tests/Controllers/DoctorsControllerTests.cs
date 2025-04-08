@@ -33,7 +33,7 @@ namespace HQB.WebApi.Tests.Controllers
     public async Task GetDoctors_ReturnsOkResult_WithListOfDoctors()
     {
       // Arrange
-      var doctors = new List<Doctor> { new() { ID = Guid.NewGuid(), FirstName = "John", LastName = "Smith", Specialization = "Cardiology" } };
+      var doctors = new List<Doctor> { new() { ID = Guid.NewGuid(), UserID = Guid.NewGuid().ToString(), FirstName = "John", LastName = "Smith", Specialization = "Cardiology" } };
       _doctorRepositoryMock.Setup(repo => repo.GetAllDoctorsAsync()).ReturnsAsync(doctors);
 
       // Act
@@ -50,7 +50,7 @@ namespace HQB.WebApi.Tests.Controllers
     public async Task GetDoctors_ReturnsNotFound_WhenNoDoctorsExist()
     {
       // Arrange
-      _doctorRepositoryMock.Setup(repo => repo.GetAllDoctorsAsync()).ReturnsAsync(new List<Doctor>());
+      _doctorRepositoryMock.Setup(repo => repo.GetAllDoctorsAsync()).ReturnsAsync([]);
 
       // Act
       var result = await _controller.GetDoctors();
@@ -67,7 +67,7 @@ namespace HQB.WebApi.Tests.Controllers
     {
       // Arrange
       var doctorId = Guid.NewGuid();
-      var doctor = new Doctor { ID = doctorId, FirstName = "John", LastName = "Smith", Specialization = "Cardiology" };
+      var doctor = new Doctor { ID = doctorId, UserID = Guid.NewGuid().ToString(), FirstName = "John", LastName = "Smith", Specialization = "Cardiology" };
       _doctorRepositoryMock.Setup(repo => repo.GetDoctorByIdAsync(doctorId)).ReturnsAsync(doctor);
 
       // Act
@@ -101,7 +101,7 @@ namespace HQB.WebApi.Tests.Controllers
     public async Task AddDoctor_ReturnsCreatedAtActionResult_WithDoctor()
     {
       // Arrange
-      var doctor = new Doctor { ID = Guid.NewGuid(), FirstName = "John", LastName = "Smith", Specialization = "Cardiology" };
+      var doctor = new Doctor { ID = Guid.NewGuid(), UserID = Guid.NewGuid().ToString(), FirstName = "John", LastName = "Smith", Specialization = "Cardiology" };
       _doctorRepositoryMock.Setup(repo => repo.AddDoctorAsync(doctor)).Returns(Task.FromResult(0));
 
       // Act
@@ -119,7 +119,7 @@ namespace HQB.WebApi.Tests.Controllers
     {
       // Arrange
       var doctorId = Guid.NewGuid();
-      var doctor = new Doctor { ID = doctorId, FirstName = "John", LastName = "Smith", Specialization = "Cardiology" };
+      var doctor = new Doctor { ID = doctorId, UserID = Guid.NewGuid().ToString(), FirstName = "John", LastName = "Smith", Specialization = "Cardiology" };
       _doctorRepositoryMock.Setup(repo => repo.GetDoctorByIdAsync(doctorId)).ReturnsAsync(doctor);
       _doctorRepositoryMock.Setup(repo => repo.UpdateDoctorAsync(doctor)).Returns(Task.FromResult(0));
 
@@ -137,7 +137,7 @@ namespace HQB.WebApi.Tests.Controllers
     {
       // Arrange
       var doctorId = Guid.NewGuid();
-      var doctor = new Doctor { ID = doctorId, FirstName = "John", LastName = "Smith", Specialization = "Cardiology" };
+      var doctor = new Doctor { ID = doctorId, UserID = Guid.NewGuid().ToString(), FirstName = "John", LastName = "Smith", Specialization = "Cardiology" };
       _doctorRepositoryMock.Setup(repo => repo.GetDoctorByIdAsync(doctorId)).ReturnsAsync(doctor);
       _doctorRepositoryMock.Setup(repo => repo.DeleteDoctorAsync(doctorId)).ReturnsAsync(1);
 
