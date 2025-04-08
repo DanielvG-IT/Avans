@@ -34,12 +34,12 @@ namespace HQB.WebApi.Controllers
                 return NotFound();
             }
 
-            var roles = _userManager.GetRolesAsync(user);
-            if (roles == null)
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles == null || !roles.Any())
             {
                 return NotFound();
             }
-
+            
             return Ok(roles);
         }
     }
