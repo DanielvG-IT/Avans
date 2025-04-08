@@ -22,24 +22,7 @@ namespace HQB.WebApi.Controllers
         [HttpGet("roles", Name = "GetUserRoles")]
         public async Task<ActionResult<IList<string>>> GetRolesForUser()
         {
-            var userId = _authenticationService.GetCurrentAuthenticatedUserId();
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
-
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            var roles = await _userManager.GetRolesAsync(user);
-            if (roles == null || !roles.Any())
-            {
-                return NotFound();
-            }
-            
+            var roles = await _authenticationService.GetCurrentAuthenticatedUserRoles();
             return Ok(roles);
         }
     }

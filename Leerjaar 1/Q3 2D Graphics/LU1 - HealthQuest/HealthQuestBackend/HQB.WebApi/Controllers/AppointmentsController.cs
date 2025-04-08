@@ -20,7 +20,7 @@ namespace HQB.WebApi.Controllers
         }
 
         [HttpGet(Name = "GetAppointmentsByTreatmentId")]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentsByTreatmentId([FromQuery] Guid? treatmentId)
+        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentsByTreatmentId([FromQuery] Guid treatmentId)
         {
             var loggedInUserId = _authenticationService.GetCurrentAuthenticatedUserId();
             if (string.IsNullOrWhiteSpace(loggedInUserId))
@@ -31,124 +31,24 @@ namespace HQB.WebApi.Controllers
 
             try
             {
-                if (treatmentId == null || treatmentId == Guid.Empty)
+                if (treatmentId == Guid.Empty)
                 {
-                    _logger.LogInformation("Fetching all appointments as no valid treatment ID was provided");
-                    var allAppointments = await _appointmentRepository.GetAllAppointmentsAsync();
-                    if (allAppointments == null || !allAppointments.Any())
-                    {
-                        _logger.LogWarning("No appointments found in the repository");
-                        return NotFound("No appointments found");
-                    }
-
-                    return Ok(allAppointments);
+                    _logger.LogWarning("Invalid treatment ID provided: {TreatmentId}", treatmentId);
+                    return BadRequest("The provided treatment ID is invalid. Please provide a valid ID.");
                 }
-                else
+
+                _logger.LogInformation("Fetching appointments for treatment ID: {TreatmentId} from the repository", treatmentId);
+                var appointments = await _appointmentRepository.GetAppointmentsByTreatmentIdAsync(treatmentId);
+                if (appointments == null || !appointments.Any())
                 {
-                    _logger.LogInformation("Fetching appointments for treatment ID: {TreatmentId} from the repository", treatmentId);
-
-                    var treatmentAppointment = await _appointmentRepository.GetAppointmentsByTreatmentIdAsync(treatmentId.Value);
-                    if (treatmentAppointment == null || !treatmentAppointment.Any())
-                    {
-                        _logger.LogWarning("No appointments found for the provided treatment ID: {TreatmentId}", treatmentId);
-                        return NotFound($"No appointments found for the treatment ID: {treatmentId}");
-                    }
-
-                    var appointments = new List<AppointmentWithNr>();
-                    foreach (var item in treatmentAppointment)
-                    {
-                        if (item.AppointmentID == Guid.Empty)
-                        {
-                            _logger.LogWarning("Invalid AppointmentID found in Treatment_Appoinment: {AppointmentID}", item.AppointmentID);
-                            continue;
-                        }
-
-                        if (item.Sequence <= 0)
-                        {
-                            _logger.LogWarning("Invalid Sequence number found in Treatment_Appoinment: {Sequence}", item.Sequence);
-                            continue;
-                        }
-
-                        if (item.TreatmentID != treatmentId)
-                        {
-                            _logger.LogWarning("TreatmentID mismatch in Treatment_Appoinment: {TreatmentID}", item.TreatmentID);
-                            continue;
-                        }
-
-                        _logger.LogInformation("Fetching appointment details for AppointmentID: {AppointmentID}", item.AppointmentID);
-
-                        try
-                        {
-                            var appointmentDetails = await _appointmentRepository.GetAppointmentByIdAsync(item.AppointmentID);
-                            if (appointmentDetails != null)
-                            {
-                                if (string.IsNullOrWhiteSpace(appointmentDetails.Name))
-                                {
-                                    _logger.LogWarning("Appointment name is empty for AppointmentID: {AppointmentID}", item.AppointmentID);
-                                    continue;
-                                }
-                                if (string.IsNullOrWhiteSpace(appointmentDetails.Description))
-                                {
-                                    _logger.LogWarning("Appointment description is empty for AppointmentID: {AppointmentID}", item.AppointmentID);
-                                    continue;
-                                }
-                                if (string.IsNullOrWhiteSpace(appointmentDetails.Url))
-                                {
-                                    _logger.LogWarning("Appointment URL is empty for AppointmentID: {AppointmentID}", item.AppointmentID);
-                                    continue;
-                                }
-                                if (appointmentDetails.Image == null || appointmentDetails.Image.Length == 0)
-                                {
-                                    _logger.LogWarning("Appointment image is empty for AppointmentID: {AppointmentID}", item.AppointmentID);
-                                    continue;
-                                }
-                                if (appointmentDetails.DurationInMinutes <= 0)
-                                {
-                                    _logger.LogWarning("Appointment duration is invalid for AppointmentID: {AppointmentID}", item.AppointmentID);
-                                    continue;
-                                }
-                                if (appointmentDetails.ID != item.AppointmentID)
-                                {
-                                    _logger.LogWarning("Appointment ID mismatch for AppointmentID: {AppointmentID}", item.AppointmentID);
-                                    continue;
-                                }
-                            
-                                _logger.LogInformation("Fetched appointment details for AppointmentID: {AppointmentID}", item.AppointmentID);
-                                
-                                var appointment = new AppointmentWithNr
-                                {
-                                    ID = appointmentDetails.ID,
-                                    Name = appointmentDetails.Name,
-                                    Description = appointmentDetails.Description,
-                                    Url = appointmentDetails.Url,
-                                    Image = appointmentDetails.Image,
-                                    DurationInMinutes = appointmentDetails.DurationInMinutes,
-                                    AppointmentNr = item.Sequence
-                                };
-
-                                appointments.Add(appointment);
-                            }
-                            else
-                            {
-                                _logger.LogWarning("Appointment details not found for AppointmentID: {AppointmentID}", item.AppointmentID);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError(ex, "Error fetching appointment details for AppointmentID: {AppointmentID}", item.AppointmentID);
-                        }
-                    }
-
-                    if (appointments.Count == 0)
-                    {
-                        _logger.LogWarning("No valid appointments found for the provided treatment ID: {TreatmentId}", treatmentId);
-                        return NotFound($"No valid appointments found for the treatment ID: {treatmentId}");
-                    }
-
-                    var sortedAppointments = appointments.OrderBy(a => a.AppointmentNr);
-
-                    return Ok(sortedAppointments);
+                    _logger.LogWarning("No appointments found for the provided treatment ID: {TreatmentId}", treatmentId);
+                    return NotFound($"No appointments found for the treatment ID: {treatmentId}");
                 }
+
+                _logger.LogInformation("Successfully fetched appointments for treatment ID: {TreatmentId}", treatmentId);
+
+                var sortedList = appointments.OrderBy(x => x.Sequence).ToList();
+                return Ok(sortedList);
             }
             catch (Exception ex)
             {

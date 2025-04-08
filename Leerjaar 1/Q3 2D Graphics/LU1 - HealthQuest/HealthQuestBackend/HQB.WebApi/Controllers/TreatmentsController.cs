@@ -72,47 +72,6 @@ namespace HQB.WebApi.Controllers
             }
         }
 
-        [HttpGet("{id}/appointments", Name = "GetAppointmentsByTreatmentIdInTreatments")]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentByTreatmentId(Guid id)
-        {
-            if (id == Guid.Empty)
-            {
-                _logger.LogWarning("Invalid treatment ID");
-                return BadRequest("Invalid treatment ID");
-            }
-
-            try
-            {
-                _logger.LogInformation("Fetching appointments for treatment ID: {TreatmentId} from the repository", id);
-
-                var treatmentAppointment = await _appointmentRepository.GetAppointmentsByTreatmentIdAsync(id);
-                if (treatmentAppointment == null || !treatmentAppointment.Any())
-                {
-                    _logger.LogWarning("No appointments found for the provided treatment ID: {TreatmentId}", id);
-                    return NotFound($"No appointments found for the treatment ID: {id}");
-                }
-
-                var appointments = new List<(Appointment Appointment, int SequenceNr)>();
-                foreach (var item in treatmentAppointment)
-                {
-                    var appointmentDetails = await _appointmentRepository.GetAppointmentByIdAsync(item.AppointmentID);
-                    if (appointmentDetails != null)
-                    {
-                        appointments.Add((appointmentDetails, item.Sequence));
-                    }
-                }
-
-                var sortedAppointments = appointments.OrderBy(a => a.SequenceNr).Select(a => a.Appointment).ToList();
-
-                return Ok(sortedAppointments);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while fetching appointments for treatment ID: {TreatmentId}", id);
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
-            }
-        }
-
         [HttpPost(Name = "CreateTreatment")]
         public async Task<ActionResult<Treatment>> CreateTreatmentAsync([FromBody] Treatment treatment)
         {
@@ -220,70 +179,6 @@ namespace HQB.WebApi.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while deleting treatment with ID: {Id}", id);
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
-            }
-        }
-
-        [HttpPost("{id}/appointments/{appointmentId}", Name = "LinkAppointmentToTreatment")]
-        public async Task<IActionResult> LinkAppointmentToTreatmentAsync(Guid id, Guid appointmentId, [FromQuery] int sequence)
-        {
-            if (id == Guid.Empty || appointmentId == Guid.Empty)
-            {
-                _logger.LogWarning("Invalid treatment ID or appointment ID");
-                return BadRequest("Invalid treatment ID or appointment ID");
-            }
-
-            if (sequence <= 0)
-            {
-                _logger.LogWarning("Invalid sequence number");
-                return BadRequest("Sequence number must be greater than zero");
-            }
-
-            try
-            {
-                _logger.LogInformation("Linking appointment with ID: {AppointmentId} to treatment with ID: {TreatmentId} with sequence: {Sequence}", appointmentId, id, sequence);
-
-                var treatment = await _treatmentRepository.GetTreatmentByIdAsync(id);
-                if (treatment == null)
-                {
-                    _logger.LogWarning("Treatment with ID: {TreatmentId} not found", id);
-                    return NotFound($"Treatment with ID: {id} not found");
-                }
-
-                var appointment = await _appointmentRepository.GetAppointmentByIdAsync(appointmentId);
-                if (appointment == null)
-                {
-                    _logger.LogWarning("Appointment with ID: {AppointmentId} not found", appointmentId);
-                    return NotFound($"Appointment with ID: {appointmentId} not found");
-                }
-
-                var existingAppointments = await _appointmentRepository.GetAppointmentsByTreatmentIdAsync(id);
-                if (existingAppointments.Any(a => a.Sequence == sequence))
-                {
-                    _logger.LogWarning("An appointment with sequence number: {Sequence} already exists for treatment ID: {TreatmentId}", sequence, id);
-                    return Conflict($"An appointment with sequence number: {sequence} already exists for this treatment");
-                }
-
-                var treatmentAppointment = new TreatmentAppointment
-                {
-                    TreatmentID = id,
-                    AppointmentID = appointmentId,
-                    Sequence = sequence
-                };
-
-                var result = await _appointmentRepository.LinkAppointmentToTreatmentAsync(treatmentAppointment);
-                if (result == 0)
-                {
-                    _logger.LogError("Error linking appointment with ID: {AppointmentId} to treatment with ID: {TreatmentId}", appointmentId, id);
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Error linking appointment to treatment");
-                }
-
-                _logger.LogInformation("Successfully linked appointment with ID: {AppointmentId} to treatment with ID: {TreatmentId} with sequence: {Sequence}", appointmentId, id, sequence);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while linking appointment with ID: {AppointmentId} to treatment with ID: {TreatmentId}", appointmentId, id);
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
             }
         }

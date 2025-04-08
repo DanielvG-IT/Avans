@@ -15,11 +15,6 @@ public class JournalEntry
     public Guid? PatientID { get; set; }  // Foreign key to Patient
 
     /// <summary>
-    /// Gets or sets the unique identifier for the guardian associated with the journal entry.
-    /// </summary>
-    public Guid? GuardianID { get; set; }
-
-    /// <summary>
     /// Gets or sets the date of the journal entry as string.
     /// </summary>
     public required string Date { get; set; }

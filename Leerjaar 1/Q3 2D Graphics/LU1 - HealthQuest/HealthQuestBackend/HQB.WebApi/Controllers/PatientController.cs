@@ -15,8 +15,9 @@ namespace HQB.WebApi.Controllers
         private readonly IStickersRepository _stickersRepository;
         private readonly IGuardianRepository _guardianRepository;
         private readonly ITreatmentRepository _treatmentRepository;
+        private readonly IAppointmentRepository _appointmentRepository;
         private readonly IAuthenticationService _authenticationService;
-        private readonly ICompletedAppointmentsRepository _completedAppointmentsRepository;
+        private readonly IPersonalAppointmentsRepository _personalAppointmentsRepository;
 
         public PatientController(
             ILogger<PatientController> logger,
@@ -26,8 +27,9 @@ namespace HQB.WebApi.Controllers
             IStickersRepository stickersRepository,
             IGuardianRepository guardianRepository,
             ITreatmentRepository treatmentRepository,
+            IAppointmentRepository appointmentRepository,
             IAuthenticationService authenticationService,
-            ICompletedAppointmentsRepository completedAppointmentsRepository
+            IPersonalAppointmentsRepository personalAppointmentsRepository
         )
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -37,8 +39,9 @@ namespace HQB.WebApi.Controllers
             _stickersRepository = stickersRepository ?? throw new ArgumentNullException(nameof(stickersRepository));
             _guardianRepository = guardianRepository ?? throw new ArgumentNullException(nameof(guardianRepository));
             _treatmentRepository = treatmentRepository ?? throw new ArgumentNullException(nameof(treatmentRepository));
+            _appointmentRepository = appointmentRepository ?? throw new ArgumentNullException(nameof(appointmentRepository));
             _authenticationService = authenticationService ?? throw new ArgumentNullException(nameof(authenticationService));
-            _completedAppointmentsRepository = completedAppointmentsRepository ?? throw new ArgumentNullException(nameof(completedAppointmentsRepository));
+            _personalAppointmentsRepository = personalAppointmentsRepository ?? throw new ArgumentNullException(nameof(personalAppointmentsRepository));
         }
 
         [HttpGet(Name = "GetPatientsForCurrentUser")]
@@ -54,7 +57,7 @@ namespace HQB.WebApi.Controllers
                 }
 
                 var guardian = await _guardianRepository.GetGuardianByUserIdAsync(loggedInUserId);
-                if (guardian == null)
+                if (guardian is null)
                 {
                     _logger.LogWarning("Guardian not found for the logged-in user with ID {UserId}.", loggedInUserId);
                     return NotFound($"Guardian not found for the logged-in user with ID {loggedInUserId}. Please ensure your account is correctly linked to a guardian.");
@@ -63,7 +66,7 @@ namespace HQB.WebApi.Controllers
                 _logger.LogInformation("Fetching all patients associated with the guardian for user ID {UserId}.", loggedInUserId);
 
                 var patients = await _patientRepository.GetPatientsByGuardianId(guardian.ID);
-                if (patients == null || !patients.Any())
+                if (patients is null || !patients.Any())
                 {
                     _logger.LogWarning("No patients found for the guardian with ID {GuardianId} associated with user ID {UserId}.", guardian.ID, loggedInUserId);
                     return NotFound($"No patients found for the guardian with ID {guardian.ID} associated with your account. Please ensure patients are correctly linked to your guardian.");
@@ -91,11 +94,12 @@ namespace HQB.WebApi.Controllers
 
                 _logger.LogInformation("Getting patient with ID {PatientId}", id);
                 var patient = await _patientRepository.GetPatientByIdAsync(id);
-                if (patient == null)
+                if (patient is null)
                 {
                     _logger.LogWarning("Patient with ID {PatientId} not found", id);
                     return NotFound();
                 }
+
                 return Ok(patient);
             }
             catch (Exception ex)
@@ -110,7 +114,7 @@ namespace HQB.WebApi.Controllers
         {
             try
             {
-                if (patient == null)
+                if (patient is null)
                 {
                     _logger.LogWarning("Patient object is null");
                     return BadRequest("Patient object is null");
@@ -136,7 +140,7 @@ namespace HQB.WebApi.Controllers
                     ? (patient.GuardianID.HasValue ? await _guardianRepository.GetGuardianByIdAsync(patient.GuardianID.Value) : null)
                     : await _guardianRepository.GetGuardianByUserIdAsync(loggedInUserId);
 
-                if (guardian == null)
+                if (guardian is null)
                 {
                     _logger.LogWarning("Guardian with ID {GuardianId} not found", patient.GuardianID);
                     return BadRequest($"Guardian with ID {patient.GuardianID} not found");
@@ -146,7 +150,7 @@ namespace HQB.WebApi.Controllers
                 if (patient.DoctorID != Guid.Empty)
                 {
                     var doctor = patient.DoctorID.HasValue ? await _doctorRepository.GetDoctorByIdAsync(patient.DoctorID.Value) : null;
-                    if (doctor == null)
+                    if (doctor is null)
                     {
                         _logger.LogWarning("Doctor with ID {DoctorId} not found", patient.DoctorID);
                         return BadRequest($"Doctor with ID {patient.DoctorID} not found");
@@ -156,14 +160,14 @@ namespace HQB.WebApi.Controllers
                 if (patient.TreatmentID != Guid.Empty)
                 {
                     var treatment = patient.TreatmentID.HasValue ? await _treatmentRepository.GetTreatmentByIdAsync(patient.TreatmentID.Value) : null;
-                    if (treatment == null)
+                    if (treatment is null)
                     {
                         _logger.LogWarning("Treatment with ID {TreatmentId} not found", patient.TreatmentID);
                         return BadRequest($"Treatment with ID {patient.TreatmentID} not found");
                     }
                 }
 
-                if (patient.Avatar == null)
+                if (patient.Avatar is null)
                 {
                     patient.Avatar ??= "default_avatar.png";
                 }
@@ -202,7 +206,7 @@ namespace HQB.WebApi.Controllers
                     return BadRequest("Invalid patient ID");
                 }
 
-                if (patient == null)
+                if (patient is null)
                 {
                     _logger.LogWarning("Patient object is null");
                     return BadRequest("Patient object is null");
@@ -224,7 +228,7 @@ namespace HQB.WebApi.Controllers
                     }
 
                     var guardian = await _guardianRepository.GetGuardianByUserIdAsync(loggedInUserId);
-                    if (guardian == null)
+                    if (guardian is null)
                     {
                         _logger.LogWarning("Guardian not found for the logged-in user with ID {UserId}.", loggedInUserId);
                         return BadRequest($"Guardian not found for the logged-in user with ID {loggedInUserId}. Please ensure your account is correctly linked to a guardian.");
@@ -235,7 +239,7 @@ namespace HQB.WebApi.Controllers
                 else
                 {
                     var guardian = patient.GuardianID.HasValue ? await _guardianRepository.GetGuardianByIdAsync(patient.GuardianID.Value) : null;
-                    if (guardian == null)
+                    if (guardian is null)
                     {
                         _logger.LogWarning("Guardian with ID {GuardianId} not found", patient.GuardianID);
                         return BadRequest($"Guardian with ID {patient.GuardianID} not found");
@@ -247,7 +251,7 @@ namespace HQB.WebApi.Controllers
                     var doctor = patient.DoctorID.HasValue
                         ? await _doctorRepository.GetDoctorByIdAsync(patient.DoctorID.Value)
                         : null;
-                    if (doctor == null)
+                    if (doctor is null)
                     {
                         _logger.LogWarning("Doctor with ID {DoctorId} not found", patient.DoctorID);
                         return BadRequest($"Doctor with ID {patient.DoctorID} not found");
@@ -259,7 +263,7 @@ namespace HQB.WebApi.Controllers
                     if (patient.TreatmentID.HasValue)
                     {
                         var treatment = await _treatmentRepository.GetTreatmentByIdAsync(patient.TreatmentID.Value);
-                        if (treatment == null)
+                        if (treatment is null)
                         {
                             _logger.LogWarning("Treatment with ID {TreatmentId} not found", patient.TreatmentID);
                             return BadRequest($"Treatment with ID {patient.TreatmentID} not found");
@@ -269,7 +273,7 @@ namespace HQB.WebApi.Controllers
 
                 _logger.LogInformation("Updating patient with ID {PatientId}", id);
                 var existingPatient = await _patientRepository.GetPatientByIdAsync(id);
-                if (existingPatient == null)
+                if (existingPatient is null)
                 {
                     _logger.LogWarning("Patient with ID {PatientId} not found", id);
                     return NotFound();
@@ -304,7 +308,7 @@ namespace HQB.WebApi.Controllers
 
                 _logger.LogInformation("Deleting patient with ID {PatientId}", id);
                 var existingPatient = await _patientRepository.GetPatientByIdAsync(id);
-                if (existingPatient == null)
+                if (existingPatient is null)
                 {
                     _logger.LogWarning("Patient with ID {PatientId} not found", id);
                     return NotFound();
@@ -328,6 +332,13 @@ namespace HQB.WebApi.Controllers
         [HttpGet("{id}/journal-entries", Name = "GetJournalEntries")]
         public async Task<ActionResult<IEnumerable<JournalEntry>>> GetJournalEntries(Guid id)
         {
+            var user = _authenticationService.GetCurrentAuthenticatedUserId();
+            if (string.IsNullOrEmpty(user))
+            {
+                _logger.LogWarning("User ID is required but was not provided.");
+                return Forbid("User ID is required but was not provided. Please ensure you are logged in.");
+            }
+
             try
             {
                 if (id == Guid.Empty)
@@ -336,9 +347,23 @@ namespace HQB.WebApi.Controllers
                     return BadRequest("Invalid patient ID");
                 }
 
+                _logger.LogInformation("Getting patient with ID {PatientId}", id);
+                var patient = await _patientRepository.GetPatientByIdAsync(id);
+                if (patient is null)
+                {
+                    _logger.LogWarning("Patient with ID {PatientId} not found", id);
+                    return NotFound();
+                }
+
+                var roles = await _authenticationService.GetCurrentAuthenticatedUserRoles();
+                if (roles is not null && roles.Contains("Doctor") && patient.DoctorAccessJournal is false)
+                {
+                    return Forbid("Patient has blocked access to journal entries!");
+                }
+
                 _logger.LogInformation("Getting journal entries for patient with ID {PatientId}", id);
                 var journalEntries = await _journalRepository.GetJournalEntriesByPatientIdAsync(id);
-                if (journalEntries == null)
+                if (journalEntries is null)
                 {
                     _logger.LogWarning("Journal entries for patient with ID {PatientId} not found", id);
                     return NotFound();
@@ -352,8 +377,8 @@ namespace HQB.WebApi.Controllers
             }
         }
 
-        [HttpGet("{id}/completed-appointments", Name = "GetCompletedAppointments")]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetCompletedAppointments(Guid id)
+        [HttpGet("{id}/appointments", Name = "GetPersonalAppointments")]
+        public async Task<ActionResult<IEnumerable<Appointment>>> GetPersonalAppointments(Guid id)
         {
             try
             {
@@ -364,14 +389,14 @@ namespace HQB.WebApi.Controllers
                 }
 
                 _logger.LogInformation("Getting completed appointments for patient with ID {PatientId}", id);
-                var completedAppointments = await _completedAppointmentsRepository.GetCompletedAppointmentsByPatientIdAsync(id);
-                if (completedAppointments == null || !completedAppointments.Any())
+                var personalAppointments = await _personalAppointmentsRepository.GetPersonalAppointmentsByPatientId(id);
+                if (personalAppointments is null || !personalAppointments.Any())
                 {
                     _logger.LogWarning("No completed appointments found for patient with ID {PatientId}", id);
                     return NotFound($"No completed appointments found for patient with ID {id}.");
                 }
 
-                return Ok(completedAppointments);
+                return Ok(personalAppointments);
             }
             catch (Exception ex)
             {
@@ -380,36 +405,63 @@ namespace HQB.WebApi.Controllers
             }
         }
 
-        [HttpPost("{id}/completed-appointments", Name = "AddCompletedAppointment")]
-        public async Task<IActionResult> AddCompletedAppointment(Guid id, [FromQuery] Guid appointmentId, [FromQuery] DateTime completedDate)
+        [HttpPost("{id}/appointments", Name = "GeneratePersonalAppointments")]
+        public async Task<IActionResult> GeneratePersonalAppointments(Guid id)
         {
             try
             {
-                if (id == Guid.Empty || appointmentId == Guid.Empty)
+                if (id == Guid.Empty)
                 {
-                    _logger.LogWarning("Invalid patient ID or appointment ID");
-                    return BadRequest("Patient ID and Appointment ID must be valid non-empty GUIDs.");
+                    _logger.LogWarning("Invalid patient ID");
+                    return BadRequest("Invalid patient ID");
                 }
 
-                if (completedDate == default)
+                _logger.LogInformation("Getting patient with ID {PatientId}", id);
+                var patient = await _patientRepository.GetPatientByIdAsync(id);
+                if (patient is null)
                 {
-                    _logger.LogWarning("Completed date is missing");
-                    return BadRequest("Completed date is required.");
+                    _logger.LogWarning("Patient with ID {PatientId} not found", id);
+                    return NotFound();
                 }
 
-                _logger.LogInformation("Adding completed appointment with ID {AppointmentId} for patient with ID {PatientId}", appointmentId, id);
-
-                var appointmentToAdd = new CompletedAppointment
+                _logger.LogInformation("Generating personal appointments for patient with ID {PatientId}", id);
+                var existingAppointments = await _personalAppointmentsRepository.GetPersonalAppointmentsByPatientId(id);
+                if (existingAppointments != null && existingAppointments.Any())
                 {
-                    Id = Guid.NewGuid(),
-                    PatientId = id,
-                    AppointmentId = appointmentId,
-                    CompletedDate = completedDate,
-                };
+                    _logger.LogWarning("Personal appointments already exist for patient with ID {PatientId}", id);
+                    return Conflict($"Personal appointments already exist for patient with ID {id}.");
+                }
 
-                await _completedAppointmentsRepository.AddCompletedAppointmentAsync(appointmentToAdd);
+                if (patient.TreatmentID is null || patient.TreatmentID == Guid.Empty || patient.ID is null || patient.ID == Guid.Empty)
+                {
+                    _logger.LogWarning("Patient with ID {PatientId} is not valid", id);
+                    return BadRequest($"Patient with ID {id} is not valid.");
+                }
 
-                return CreatedAtAction(nameof(GetCompletedAppointments), new { id }, appointmentToAdd);
+                _logger.LogInformation("Generating personal appointments for patient with ID {PatientId}", id);
+                var treatmentAppointments = await _appointmentRepository.GetAppointmentsByTreatmentIdAsync(patient.TreatmentID.Value);
+                if (treatmentAppointments is null || !treatmentAppointments.Any())
+                {
+                    _logger.LogWarning("Appointments do not exist for treatment with ID {TreatmentID}", patient.TreatmentID);
+                    return BadRequest($"Appointments do not exist for treatment with ID {patient.TreatmentID}.");
+                }
+
+                foreach (var appointment in treatmentAppointments)
+                {
+                    var personalAppointment = new PersonalAppointments
+                    {
+                        ID = Guid.NewGuid(),
+                        PatientID = patient.ID.Value,
+                        AppointmentID = appointment.ID,
+                        AppointmentDate = null,
+                        CompletedDate = null,
+                        CompletedQuestion = false,
+                        Sequence = appointment.Sequence
+                    };
+                    await _personalAppointmentsRepository.AddPersonalAppointment(personalAppointment);
+                }
+
+                return CreatedAtAction(nameof(GetPersonalAppointments), new { id });
             }
             catch (Exception ex)
             {
@@ -417,32 +469,77 @@ namespace HQB.WebApi.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
             }
         }
-
-        [HttpDelete("{id}/completed-appointments/{completedId}", Name = "DeleteCompletedAppointment")]
-        public async Task<IActionResult> DeleteCompletedAppointment(Guid id, Guid completedId)
+        [HttpPut("{id}/appointments/{appointmentId}", Name = "UpdatePersonalAppointment")]
+        public async Task<IActionResult> UpdatePersonalAppointment(Guid id, Guid appointmentId, [FromBody] PersonalAppointments personalAppointment)
         {
             try
             {
-                if (id == Guid.Empty || completedId == Guid.Empty)
+                if (id == Guid.Empty || appointmentId == Guid.Empty)
                 {
                     _logger.LogWarning("Invalid patient ID or appointment ID");
-                    return BadRequest("Patient ID and Appointment ID must be valid non-empty GUIDs.");
+                    return BadRequest("Invalid patient ID or appointment ID");
                 }
 
-                _logger.LogInformation("Deleting completed appointment with ID {AppointmentId} for patient with ID {PatientId}", completedId, id);
-                var existingAppointment = await _completedAppointmentsRepository.GetCompletedAppointmentByIdAsync(completedId);
-                if (existingAppointment == null || existingAppointment.PatientId != id)
+                if (personalAppointment is null)
                 {
-                    _logger.LogWarning("Completed appointment with ID {AppointmentId} not found or does not belong to patient with ID {PatientId}", completedId, id);
-                    return NotFound($"Completed appointment with ID {completedId} not found or does not belong to patient with ID {id}.");
+                    _logger.LogWarning("Personal appointment object is null");
+                    return BadRequest("Personal appointment object is null");
                 }
 
-                await _completedAppointmentsRepository.DeleteCompletedAppointmentAsync(completedId);
-                return NoContent();
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogWarning("Invalid model state for personal appointment");
+                    return BadRequest(ModelState);
+                }
+
+                _logger.LogInformation("Updating personal appointment with ID {AppointmentId} for patient with ID {PatientId}", appointmentId, id);
+                var existingAppointment = await _personalAppointmentsRepository.GetPersonalAppointmentById(appointmentId);
+                if (existingAppointment is null)
+                {
+                    _logger.LogWarning("Personal appointment with ID {AppointmentId} not found", appointmentId);
+                    return NotFound();
+                }
+
+                // Ensure the patient ID exists
+                var patient = await _patientRepository.GetPatientByIdAsync(id);
+                if (patient is null)
+                {
+                    _logger.LogWarning("Patient with ID {PatientId} not found", id);
+                    return NotFound();
+                }
+
+                // Ensure the patient ID matches
+                if (patient.ID != existingAppointment.PatientID)
+                {
+                    _logger.LogWarning("Patient ID {PatientId} does not match the personal appointment's patient ID {AppointmentPatientId}", id, existingAppointment.PatientID);
+                    return BadRequest($"Patient ID {id} does not match the personal appointment's patient ID {existingAppointment.PatientID}");
+                }
+
+                // Ensure the appointment ID matches
+                if (existingAppointment.AppointmentID != appointmentId)
+                {
+                    _logger.LogWarning("Appointment ID {AppointmentId} does not match the personal appointment's appointment ID {ExistingAppointmentId}", appointmentId, existingAppointment.AppointmentID);
+                    return BadRequest($"Appointment ID {appointmentId} does not match the personal appointment's appointment ID {existingAppointment.AppointmentID}");
+                }
+
+                // Ensure ID's do not change during update
+                personalAppointment.ID = existingAppointment.ID;
+                personalAppointment.PatientID = existingAppointment.PatientID;
+                personalAppointment.AppointmentID = existingAppointment.AppointmentID;
+
+                var result = await _personalAppointmentsRepository.UpdatePersonalAppointment(personalAppointment);
+                if (result == 0)
+                {
+                    _logger.LogError("Error updating personal appointment");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Error updating personal appointment");
+                }
+
+                _logger.LogInformation("Personal appointment with ID {AppointmentId} updated successfully for patient with ID {PatientId}", appointmentId, id);
+                return Ok(personalAppointment);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while deleting the completed appointment.");
+                _logger.LogError(ex, "An error occurred while updating the personal appointment.");
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
             }
         }
@@ -460,7 +557,7 @@ namespace HQB.WebApi.Controllers
 
                 _logger.LogInformation("Getting stickers for patient with ID {PatientId}", id);
                 var stickers = await _stickersRepository.GetUnlockedStickersByPatientIdAsync(id);
-                if (stickers == null || !stickers.Any())
+                if (stickers is null || !stickers.Any())
                 {
                     _logger.LogWarning("No stickers found for patient with ID {PatientId}", id);
                     return NotFound($"No stickers found for patient with ID {id}.");
@@ -488,14 +585,14 @@ namespace HQB.WebApi.Controllers
                 _logger.LogInformation("Adding sticker with ID {StickerId} to patient with ID {PatientId}", stickerId, id);
 
                 var patient = await _patientRepository.GetPatientByIdAsync(id);
-                if (patient == null)
+                if (patient is null)
                 {
                     _logger.LogWarning("Patient with ID {PatientId} not found", id);
                     return NotFound($"Patient with ID {id} not found.");
                 }
 
                 var sticker = await _stickersRepository.GetStickerByIdAsync(stickerId);
-                if (sticker == null)
+                if (sticker is null)
                 {
                     _logger.LogWarning("Sticker with ID {StickerId} not found", stickerId);
                     return NotFound($"Sticker with ID {stickerId} not found.");
@@ -533,14 +630,14 @@ namespace HQB.WebApi.Controllers
                 _logger.LogInformation("Deleting sticker with ID {StickerId} for patient with ID {PatientId}", stickerId, id);
 
                 var patient = await _patientRepository.GetPatientByIdAsync(id);
-                if (patient == null)
+                if (patient is null)
                 {
                     _logger.LogWarning("Patient with ID {PatientId} not found", id);
                     return NotFound($"Patient with ID {id} not found.");
                 }
 
                 var sticker = await _stickersRepository.GetStickerByIdAsync(stickerId);
-                if (sticker == null)
+                if (sticker is null)
                 {
                     _logger.LogWarning("Sticker with ID {StickerId} not found", stickerId);
                     return NotFound($"Sticker with ID {stickerId} not found.");
@@ -578,7 +675,7 @@ namespace HQB.WebApi.Controllers
                 _logger.LogInformation("Checking if sticker with ID {StickerId} is unlocked for patient with ID {PatientId}", stickerId, id);
 
                 var patient = await _patientRepository.GetPatientByIdAsync(id);
-                if (patient == null)
+                if (patient is null)
                 {
                     _logger.LogWarning("Patient with ID {PatientId} not found", id);
                     return NotFound($"Patient with ID {id} not found.");

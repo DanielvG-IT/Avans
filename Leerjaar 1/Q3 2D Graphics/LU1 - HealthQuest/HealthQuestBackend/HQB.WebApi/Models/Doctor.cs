@@ -10,6 +10,12 @@ public class Doctor
     public Guid ID { get; set; }
 
     /// <summary>
+    /// Gets or sets the user ID associated with the guardian.
+    /// This is a foreign key to the auth_AspNetUsers table.
+    /// </summary>
+    public required string UserID { get; set; }
+
+    /// <summary>
     /// Gets or sets the first name of the doctor.
     /// </summary>
     public required string FirstName { get; set; }

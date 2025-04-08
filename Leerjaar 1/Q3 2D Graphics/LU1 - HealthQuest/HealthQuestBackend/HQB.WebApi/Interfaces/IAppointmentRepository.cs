@@ -24,7 +24,7 @@ public interface IAppointmentRepository
     /// </summary>
     /// <param name="id">The unique identifier of the treatment.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the appointment if found; otherwise, null.</returns>
-    Task<IEnumerable<TreatmentAppointment>> GetAppointmentsByTreatmentIdAsync(Guid treatmentId);
+    Task<IEnumerable<Appointment>> GetAppointmentsByTreatmentIdAsync(Guid treatmentId);
 
     /// <summary>
     /// Adds a new appointment asynchronously.
@@ -32,13 +32,6 @@ public interface IAppointmentRepository
     /// <param name="appointment">The appointment to add.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the number of state entries written to the database.</returns>
     Task<int> AddAppointmentAsync(Appointment appointment);
-
-    /// <summary>
-    /// Links an appointment to a treatment asynchronously.
-    /// </summary>
-    /// <param name="treatmentAppointment">The treatment appointment object containing the details of the link.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains the number of state entries written to the database.</returns>
-    Task<int> LinkAppointmentToTreatmentAsync(TreatmentAppointment treatmentAppointment);
 
     /// <summary>
     /// Updates an existing appointment asynchronously.

@@ -27,13 +27,6 @@ public class JournalRepository : IJournalRepository
         return await connection.QueryFirstOrDefaultAsync<JournalEntry?>(query, new { ID = id });
     }
 
-    public async Task<IEnumerable<JournalEntry>> GetJournalEntriesByGuardianIdAsync(Guid guardianId)
-    {
-        using var connection = new SqlConnection(_connectionString);
-        const string query = "SELECT * FROM JournalEntry WHERE GuardianID = @GuardianID";
-        return await connection.QueryAsync<JournalEntry>(query, new { GuardianID = guardianId });
-    }
-
     public async Task<IEnumerable<JournalEntry>> GetJournalEntriesByPatientIdAsync(Guid patientId)
     {
         using var connection = new SqlConnection(_connectionString);

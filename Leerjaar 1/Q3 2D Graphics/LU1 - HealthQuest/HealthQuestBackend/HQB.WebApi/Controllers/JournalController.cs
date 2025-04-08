@@ -24,62 +24,18 @@ public class JournalController : ControllerBase
     }
 
     [HttpGet(Name = "GetJournals")]
-    public async Task<ActionResult<IEnumerable<JournalEntry>>> GetJournals(Guid? guardianId, Guid? patientId)
+    public async Task<ActionResult<IEnumerable<JournalEntry>>> GetJournals(Guid patientId)
     {
         try
         {
-            if (patientId != null)
-            {
                 _logger.LogInformation("Getting journal entries for PatientID: {PatientId}", patientId);
-                var journals = await _journalRepository.GetJournalEntriesByPatientIdAsync(patientId.Value);
+                var journals = await _journalRepository.GetJournalEntriesByPatientIdAsync(patientId);
                 if (journals == null || !journals.Any())
                 {
                     _logger.LogWarning("No journal entries found for PatientID: {PatientId}", patientId);
                     return NotFound();
                 }
                 return Ok(journals);
-            }
-            else if (guardianId != null)
-            {
-                _logger.LogInformation("Getting journal entries for GuardianID: {GuardianId}", guardianId);
-                var journals = await _journalRepository.GetJournalEntriesByGuardianIdAsync(guardianId.Value);
-                if (journals == null || !journals.Any())
-                {
-                    _logger.LogWarning("No journal entries found for GuardianID: {GuardianId}", guardianId);
-                    return NotFound();
-                }
-                return Ok(journals);
-            }
-            else
-            {
-                var loggedInUserId = _authenticationService.GetCurrentAuthenticatedUserId();
-                if (string.IsNullOrEmpty(loggedInUserId))
-                {
-                    _logger.LogWarning("Unable to determine logged-in user ID");
-                    return BadRequest("Unable to determine logged-in user ID");
-                }
-
-                _logger.LogInformation("Fetching guardian ID for logged-in user: {LoggedInUserId}", loggedInUserId);
-                var guardian = await _guardianRepository.GetGuardianByUserIdAsync(loggedInUserId);
-
-                if (guardian?.ID == null)
-                {
-                    _logger.LogWarning("No guardian ID found for logged-in user: {LoggedInUserId}", loggedInUserId);
-                    return NotFound("Guardian ID not found for logged-in user");
-                }
-
-                guardianId = guardian.ID;
-                _logger.LogInformation("Getting journal entries for GuardianID: {GuardianId}", guardianId);
-                var journals = await _journalRepository.GetJournalEntriesByGuardianIdAsync(guardianId.Value);
-
-                if (journals == null || !journals.Any())
-                {
-                    _logger.LogWarning("No journal entries found for GuardianID: {GuardianId}", guardianId);
-                    return NotFound("No journal entries found.");
-                }
-
-                return Ok(journals);
-            }
         }
         catch (Exception ex)
         {
@@ -121,12 +77,6 @@ public class JournalController : ControllerBase
                 return NotFound();
             }
 
-            if (journal.GuardianID != guardian.ID)
-            {
-                _logger.LogWarning("User does not own the journal entry with ID: {Id}", id);
-                return StatusCode(403, "You do not have permission to view this journal entry.");
-            }
-
             return Ok(journal);
         }
         catch (Exception ex)
@@ -151,12 +101,6 @@ public class JournalController : ControllerBase
             {
                 _logger.LogWarning("PatientID is required");
                 return BadRequest("PatientID is required");
-            }
-
-            if (journal.GuardianID == null)
-            {
-                _logger.LogWarning("GuardianID is required");
-                return BadRequest("GuardianID is required");
             }
 
             if (journal.Date == default)
@@ -270,12 +214,6 @@ public class JournalController : ControllerBase
                 return NotFound("Journal entry not found.");
             }
 
-            if (existingJournal.GuardianID != guardian.ID)
-            {
-                _logger.LogWarning("User does not own the journal entry with ID: {Id}", id);
-                return StatusCode(403, "You do not have permission to modify this journal entry.");
-            }
-
             _logger.LogInformation("Updating journal entry with ID: {Id}", id);
             await _journalRepository.UpdateJournalEntryAsync(journal);
             return Ok(journal);
@@ -317,12 +255,6 @@ public class JournalController : ControllerBase
             {
                 _logger.LogWarning("Journal entry with ID: {Id} not found", id);
                 return NotFound("Journal entry not found.");
-            }
-
-            if (existingJournal.GuardianID != guardian.ID)
-            {
-                _logger.LogWarning("User does not own the journal entry with ID: {Id}", id);
-                return StatusCode(403, "You do not have permission to delete this journal entry.");
             }
 
             _logger.LogInformation("Deleting journal entry with ID: {Id}", id);

@@ -33,4 +33,15 @@ public class Appointment
     /// Gets or sets the duration of the appointment in minutes.
     /// </summary>
     public int DurationInMinutes { get; set; }
+
+    /// <summary>
+    /// Gets or sets the treatment ID associated with the appointment.
+    /// This is a foreign key to the treatment table.
+    /// </summary>
+    public Guid TreatmentID { get; set; }
+
+    /// <summary>
+    /// Gets or sets the sequence number in the treatment.
+    /// </summary>
+    public int Sequence { get; set; }
 }

@@ -16,8 +16,7 @@ if (string.IsNullOrEmpty(sqlConnectionString))
 }
 
 builder.Services.AddIdentityApiEndpoints<IdentityUser>().AddRoles<IdentityRole>().AddDapperStores(options => options.ConnectionString = sqlConnectionString);
-builder.Services.AddTransient<UserManager<IdentityUser>>();
-builder.Services.AddTransient<ICompletedAppointmentsRepository, CompletedAppointmentsRepository>(_ => new CompletedAppointmentsRepository(sqlConnectionString));
+builder.Services.AddTransient<IPersonalAppointmentsRepository, PersonalAppointmentsRepository>(_ => new PersonalAppointmentsRepository(sqlConnectionString));
 builder.Services.AddTransient<IAppointmentRepository, AppointmentRepository>(_ => new AppointmentRepository(sqlConnectionString));
 builder.Services.AddTransient<ITreatmentRepository, TreatmentRepository>(_ => new TreatmentRepository(sqlConnectionString));
 builder.Services.AddTransient<IStickersRepository, StickersRepository>(_ => new StickersRepository(sqlConnectionString));
@@ -27,6 +26,7 @@ builder.Services.AddTransient<IPatientRepository, PatientRepository>(_ => new Pa
 builder.Services.AddTransient<IDoctorRepository, DoctorRepository>(_ => new DoctorRepository(sqlConnectionString));
 builder.Services.AddTransient<IAuthenticationService, AspNetIdentityAuthenticationService>();
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
+builder.Services.AddTransient<UserManager<IdentityUser>>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();

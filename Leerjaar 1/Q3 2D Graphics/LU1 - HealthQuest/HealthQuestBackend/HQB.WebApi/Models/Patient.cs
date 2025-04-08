@@ -7,7 +7,7 @@ public class Patient
     /// <summary>
     /// Gets or sets the unique identifier for the patient.
     /// </summary>
-    public Guid ID { get; set; }
+    public Guid? ID { get; set; }
 
     /// <summary>
     /// Gets or sets the first name of the patient.
@@ -38,4 +38,14 @@ public class Patient
     /// Gets or sets the URL or path to the patient's avatar image.
     /// </summary>
     public required string Avatar { get; set; }
+
+    /// <summary>
+    /// Gets or sets the permission if the doctor can access journal entries.
+    /// </summary>
+    public bool DoctorAccessJournal { get; set; }
+
+    /// <summary>
+    /// Gets or sets the permission if the guardian can access journal entries.
+    /// </summary>
+    public bool GuardianAccessJournal { get; set; }
 }
