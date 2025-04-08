@@ -5450,10 +5450,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e17a35a615776dc4aad0330deb2f5af5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backgroundMusic: {fileID: 8300000, guid: 6bbda75762ce9154dbfb12975e792743, type: 3}
-  soundEffects:
+  initializeBackgroundMusic: {fileID: 8300000, guid: 6bbda75762ce9154dbfb12975e792743, type: 3}
+  initializeSoundEffects:
   - {fileID: 8300000, guid: 254a050bb646d1b4ba0ad553c8ec4baa, type: 3}
-  audioSource: {fileID: 0}
 --- !u!4 &1698766052
 Transform:
   m_ObjectHideFlags: 0
@@ -5482,7 +5481,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.486
   m_Pitch: 1
   Loop: 0
   Mute: 0
