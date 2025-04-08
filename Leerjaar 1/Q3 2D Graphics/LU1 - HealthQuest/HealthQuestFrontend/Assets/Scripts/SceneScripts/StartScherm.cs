@@ -195,7 +195,6 @@ public class StartScreen : MonoBehaviour
             Debug.Log("Login successful."); // TODO: Show the user a success message
 
             AudioManager.audioSource.PlayOneShot(AudioManager.soundEffects[0]);
-            await SceneManager.LoadSceneAsync("PatientScherm");
 
             // Check roles
             var rolesResult = await userApiClient.GetRole();
