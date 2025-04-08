@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 namespace HQB.WebApi.Controllers
 {
 
-    [Route("api/v1/auth")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class RoleController : ControllerBase
     {
