@@ -117,50 +117,49 @@ public class PatientApiClient : MonoBehaviour
     }
 
     /// <summary>
-    /// Retrieves the list of completed appointments for a specific patient.
+    /// Retrieves the list of appointments for a specific patient.
     /// </summary>
     /// <param name="patientId">The unique identifier of the patient.</param>
     /// <returns>
     /// An <see cref="IWebRequestReponse"/> containing the response data parsed as a list of <see cref="Appointment"/>.
     /// </returns>
-    public async Awaitable<IWebRequestReponse> ReadCompletedAppointmentsFromPatientAsync(string patientId)
+    public async Awaitable<IWebRequestReponse> ReadPersonalAppointmentsFromPatientAsync(string patientId)
     {
-        string route = $"/api/v1/patient/{patientId}/completed-appointments";
+        string route = $"/api/v1/patient/{patientId}/appointments";
 
         IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
         return JsonHelper.ParseListResponse<Appointment>(webRequestResponse);
     }
 
     /// <summary>
-    /// Adds a completed appointment to a specific patient.
+    /// Generates the personal appointments for a specific patient.
     /// </summary>
     /// <param name="patientId">The unique identifier of the patient.</param>
-    /// <param name="appointmentId">The unique identifier of the appointment.</param>
-    /// <param name="completedDateTime">The date and time when the appointment was completed.</param>
     /// <returns>
-    /// An <see cref="IWebRequestReponse"/> containing the response data parsed as a <see cref="Sticker"/>.
+    /// An <see cref="IWebRequestReponse"/>.
     /// </returns>
-    public async Awaitable<IWebRequestReponse> AddCompletedAppointmentsToPatientAsync(string patientId, string appointmentId, DateTime completedDateTime)
+    public async Awaitable<IWebRequestReponse> GeneratePersonalAppointmentsForPatientAsync(string patientId)
     {
-        string route = $"/api/v1/patient/{patientId}/completed-appointments?appointmentId={appointmentId}&completedDate={completedDateTime}";
+        string route = $"/api/v1/patient/{patientId}/appointments";
         string data = "";
-
-        IWebRequestReponse webRequestResponse = await webClient.SendPostRequestAsync(route, data);
-        return JsonHelper.ParseResponse<Sticker>(webRequestResponse);
+        return await webClient.SendPostRequestAsync(route, data);
     }
 
     /// <summary>
-    /// Deletes a completed appointment from a specific patient.
+    /// Updateds a personal appointment for a specific patient.
     /// </summary>
     /// <param name="patientId">The unique identifier of the patient.</param>
-    /// <param name="appointmentId">The unique identifier of the appointment to delete.</param>
+    /// <param name="personalAppointment">The new appointment.</param>
     /// <returns>
-    /// An <see cref="IWebRequestReponse"/> containing the response of the delete operation.
+    /// An <see cref="IWebRequestReponse"/> containing the response data parsed as a <see cref="PersonalAppointments"/>.
     /// </returns>
-    public async Awaitable<IWebRequestReponse> DeleteCompletedAppointmentFromPatientAsync(string patientId, string appointmentId)
+    public async Awaitable<IWebRequestReponse> UpdatePersonalAppointmentFromPatientAsync(string patientId, PersonalAppointments personalAppointment )
     {
-        string route = $"/api/v1/patient/{patientId}/completed-appointments/{appointmentId}";
-        return await webClient.SendDeleteRequestAsync(route);
+        string route = $"/api/v1/patient/{patientId}/appointments";
+        string data = JsonUtility.ToJson(personalAppointment);
+
+        IWebRequestReponse webRequestResponse = await webClient.SendPutRequestAsync(route, data);
+        return JsonHelper.ParseResponse<PersonalAppointments>(webRequestResponse);
     }
 
     /// <summary>

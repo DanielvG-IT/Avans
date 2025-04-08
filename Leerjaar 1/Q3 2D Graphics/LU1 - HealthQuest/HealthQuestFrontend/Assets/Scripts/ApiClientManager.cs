@@ -1,4 +1,7 @@
 using UnityEngine;
+using System;
+using System.Timers;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 public class ApiClientManager : MonoBehaviour
@@ -15,6 +18,8 @@ public class ApiClientManager : MonoBehaviour
     public GuardianApiClient GuardianApiClient;
     public TreatmentApiClient TreatmentApiClient;
     public AppointmentApiClient AppointmentApiClient;
+
+    private Timer tokenTimer;
 
     private void Awake()
     {
@@ -40,6 +45,34 @@ public class ApiClientManager : MonoBehaviour
         if (GuardianApiClient == null) { GuardianApiClient = GetComponent<GuardianApiClient>(); }
         if (TreatmentApiClient == null) { TreatmentApiClient = GetComponent<TreatmentApiClient>(); }
         if (AppointmentApiClient == null) { AppointmentApiClient = GetComponent<AppointmentApiClient>(); }
+    }
+
+    private void Start()
+    {
+        tokenTimer = new Timer(1800000); // 30 minutes
+        tokenTimer.Elapsed += OnTokenRefresh;
+        tokenTimer.AutoReset = true;
+        tokenTimer.Enabled = true;
+    }
+
+    private void OnApplicationQuit()
+    {
+        tokenTimer?.Stop();
+        tokenTimer?.Dispose();
+    }
+
+    private async void OnTokenRefresh(object sender, ElapsedEventArgs e)
+    {
+        var refreshToken = new RefreshToken { refreshToken = WebClient.token.refreshToken };
+        var refreshResult = await UserApiClient.RefreshAccessToken(refreshToken);
+        if (refreshResult is WebRequestError refreshError)
+        {
+            Debug.Log($"Failed to refresh the token: {refreshError.ErrorMessage}");
+        }
+        else if (refreshResult is WebRequestData<string> refreshData)
+        {
+            Debug.Log($"Refresh data: {refreshData}");
+        }
     }
 
     // Properties and methodes for storing data like logged in user, etc.

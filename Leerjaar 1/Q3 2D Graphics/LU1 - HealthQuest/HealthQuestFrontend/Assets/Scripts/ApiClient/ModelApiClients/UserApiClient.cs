@@ -36,15 +36,47 @@ public class UserApiClient : MonoBehaviour
     /// </exception>
     public async Awaitable<IWebRequestReponse> Login(User user)
     {
-        string route = $"{"/api/v1/auth/login"}";
+        string route = $"/api/v1/auth/login";
         string data = JsonUtility.ToJson(user);
 
         IWebRequestReponse response = await webClient.SendPostRequestAsync(route, data);
         return ProcessLoginResponse(response);
     }
 
-    // TODO: Add refresh token method here to refresh the token when it expires or is 
+    /// <summary>
+    /// Sends a request to refresh the access token using the provided refresh token.
+    /// </summary>
+    /// <param name="token">The refresh token used to obtain a new access token.</param>
+    /// <returns>
+    /// An awaitable task that resolves to an <see cref="IWebRequestReponse"/> containing the response
+    /// from the server after attempting to refresh the access token.
+    /// </returns>
+    public async Awaitable<IWebRequestReponse> RefreshAccessToken(RefreshToken token)
+    {
+        string route = $"/api/v1/auth/refresh";
+        string data = JsonUtility.ToJson(token);
 
+        IWebRequestReponse response = await webClient.SendPostRequestAsync(route, data);
+        return ProcessLoginResponse(response);
+    }
+
+    /// <summary>
+    /// Sends a GET request to retrieve the roles of the current user.
+    /// </summary>
+    /// <returns>
+    /// An awaitable task that resolves to an <see cref="IWebRequestReponse"/> 
+    /// containing the response from the server.
+    /// </returns>
+    /// <remarks>
+    /// This method uses the web client to send a request to the endpoint 
+    /// <c>/api/v1/auth/roles</c>.
+    /// </remarks>
+    public async Awaitable<IWebRequestReponse> GetRole()
+    {
+        string route = $"/api/v1/auth/roles";
+
+        return await webClient.SendGetRequestAsync(route);
+    }
 
     private IWebRequestReponse ProcessLoginResponse(IWebRequestReponse response)
     {

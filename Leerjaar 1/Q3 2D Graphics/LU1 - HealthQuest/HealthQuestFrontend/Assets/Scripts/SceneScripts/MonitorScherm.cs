@@ -149,7 +149,7 @@ public class MonitorScherm : MonoBehaviour
 
     private async Task LoadProgress()
     {
-        var progressResponse = await patientApiClient.ReadCompletedAppointmentsFromPatientAsync(selectedPatient.id);
+        var progressResponse = await patientApiClient.ReadPersonalAppointmentsFromPatientAsync(selectedPatient.id);
         if (progressResponse is WebRequestError progressError)
         {
             Debug.LogError(progressError.ErrorMessage);

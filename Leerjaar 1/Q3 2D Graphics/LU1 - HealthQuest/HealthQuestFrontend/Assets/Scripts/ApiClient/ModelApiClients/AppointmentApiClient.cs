@@ -15,18 +15,20 @@ public class AppointmentApiClient : MonoBehaviour
     public WebClient webClient;
 
     /// <summary>
-    /// Retrieves a list of all appointments from the API.
+    /// Retrieves a list of appointments associated with a specific treatment ID.
     /// </summary>
+    /// <param name="treatmentId">The unique identifier of the treatment to filter appointments by.</param>
     /// <returns>
-    /// An awaitable task that resolves to an <see cref="IWebRequestReponse"/> containing a list of appointments.
+    /// An awaitable task that resolves to an <see cref="IWebRequestReponse"/> containing a <see cref="List{T}"/> of <see cref="AppointmentWithNr"/>
     /// </returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="treatmentId"/> is null or empty.</exception>
     /// <exception cref="HttpRequestException">Thrown if the HTTP request fails.</exception>
-    public async Awaitable<IWebRequestReponse> ReadAppointmentsAsync()
+    public async Awaitable<IWebRequestReponse> ReadAppointmentsByTreatmentIdAsync(string treatmentId)
     {
-        string route = $"/api/v1/appointments";
+        string route = $"/api/v1/appointments?treatmentId={treatmentId}";
 
         IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
-        return JsonHelper.ParseListResponse<Appointment>(webRequestResponse);
+        return JsonHelper.ParseListResponse<AppointmentWithNr>(webRequestResponse);
     }
 
     /// <summary>
@@ -96,22 +98,5 @@ public class AppointmentApiClient : MonoBehaviour
     {
         string route = $"/api/v1/appointments/{appointmentId}";
         return await webClient.SendDeleteRequestAsync(route);
-    }
-
-    /// <summary>
-    /// Retrieves a list of appointments associated with a specific treatment ID.
-    /// </summary>
-    /// <param name="treatmentId">The unique identifier of the treatment to filter appointments by.</param>
-    /// <returns>
-    /// An awaitable task that resolves to an <see cref="IWebRequestReponse"/> containing a <see cref="List{T}"/> of <see cref="AppointmentWithNr"/>
-    /// </returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="treatmentId"/> is null or empty.</exception>
-    /// <exception cref="HttpRequestException">Thrown if the HTTP request fails.</exception>
-    public async Awaitable<IWebRequestReponse> ReadAppointmentsByTreatmentIdAsync(string treatmentId)
-    {
-        string route = $"/api/v1/appointments?treatmentId={treatmentId}";
-
-        IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
-        return JsonHelper.ParseListResponse<AppointmentWithNr>(webRequestResponse);
     }
 }

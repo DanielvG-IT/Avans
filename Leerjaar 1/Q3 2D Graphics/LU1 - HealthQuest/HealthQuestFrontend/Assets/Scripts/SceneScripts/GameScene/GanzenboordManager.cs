@@ -49,7 +49,7 @@ public class GanzenboordManager : MonoBehaviour
         try
         {
             var patientId = ApiClientManager.Instance.CurrentPatient.id;
-            var response = await apiClientManager.PatientApiClient.ReadCompletedAppointmentsFromPatientAsync(patientId);
+            var response = await apiClientManager.PatientApiClient.ReadPersonalAppointmentsFromPatientAsync(patientId);
 
             if (response is WebRequestData<List<Appointment>> data)
             {

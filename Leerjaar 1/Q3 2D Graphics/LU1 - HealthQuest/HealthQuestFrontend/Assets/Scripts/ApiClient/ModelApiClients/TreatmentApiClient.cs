@@ -95,41 +95,4 @@ public class TreatmentApiClient : MonoBehaviour
         string route = $"/api/v1/treatments/{treatmentId}";
         return await webClient.SendDeleteRequestAsync(route);
     }
-
-    /// <summary>
-    /// Retrieves a list of appointments associated with a specific treatment.
-    /// </summary>
-    /// <param name="treatmentId">The unique identifier of the treatment.</param>
-    /// <returns>
-    /// An awaitable task that resolves to an <see cref="IWebRequestReponse"/> containing a list of appointments.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="treatmentId"/> is null or empty.</exception>
-    /// <exception cref="Exception">Thrown if the request fails or the response cannot be parsed.</exception>
-    public async Awaitable<IWebRequestReponse> ReadAppointmentsByTreatmentIdAsync(string treatmentId)
-    {
-        string route = $"/api/v1/treatments/{treatmentId}/appointments";
-
-        IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
-        return JsonHelper.ParseListResponse<Appointment>(webRequestResponse);
-    }
-
-    /// <summary>
-    /// Adds an appointment to a specific treatment.
-    /// </summary>
-    /// <param name="treatmentId">The unique identifier of the treatment.</param>
-    /// <param name="appointmentId">The unique identifier of the appointment to add.</param>
-    /// <param name="sequence">The sequence number for the appointment.</param>
-    /// <returns>
-    /// An awaitable task that resolves to an <see cref="IWebRequestReponse"/> indicating the result of the operation.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="treatmentId"/> or <paramref name="appointmentId"/> is null or empty.</exception>
-    /// <exception cref="Exception">Thrown if the request fails.</exception>
-    public async Awaitable<IWebRequestReponse> AddAppointmentToTreatmentAsync(string treatmentId, string appointmentId, int sequence)
-    {
-        string route = $"/api/v1/treatments/{treatmentId}/appointments/{appointmentId}?sequence={sequence}";
-        string data = "";
-
-        // Returns 204 No Content on success so no need to parse response
-        return await webClient.SendPostRequestAsync(route, data);
-    }
 }
