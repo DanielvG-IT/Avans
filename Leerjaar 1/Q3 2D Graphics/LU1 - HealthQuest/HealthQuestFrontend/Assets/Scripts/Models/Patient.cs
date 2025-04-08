@@ -40,4 +40,14 @@ public class Patient
     /// Gets or sets the name of the patient's avatar image.
     /// </summary>
     public string avatar;
+
+    /// <summary>
+    /// Gets or sets the permission if the doctor can access journal entries.
+    /// </summary>
+    public bool DoctorAccessJournal;
+
+    /// <summary>
+    /// Gets or sets the permission if the guardian can access journal entries.
+    /// </summary>
+    public bool GuardianAccessJournal;
 }
