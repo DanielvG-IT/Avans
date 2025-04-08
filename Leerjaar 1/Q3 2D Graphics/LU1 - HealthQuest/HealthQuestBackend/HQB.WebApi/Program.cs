@@ -16,7 +16,7 @@ if (string.IsNullOrEmpty(sqlConnectionString))
 }
 
 builder.Services.AddIdentityApiEndpoints<IdentityUser>().AddRoles<IdentityRole>().AddDapperStores(options => options.ConnectionString = sqlConnectionString);
-
+builder.Services.AddTransient<UserManager<IdentityUser>>();
 builder.Services.AddTransient<ICompletedAppointmentsRepository, CompletedAppointmentsRepository>(_ => new CompletedAppointmentsRepository(sqlConnectionString));
 builder.Services.AddTransient<IAppointmentRepository, AppointmentRepository>(_ => new AppointmentRepository(sqlConnectionString));
 builder.Services.AddTransient<ITreatmentRepository, TreatmentRepository>(_ => new TreatmentRepository(sqlConnectionString));
@@ -33,7 +33,7 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-app.MapGroup("/api/v1/account").AllowAnonymous().MapIdentityApi<IdentityUser>();
+app.MapGroup("/api/v1/auth").AllowAnonymous().MapIdentityApi<IdentityUser>();
 app.MapControllers().RequireAuthorization();
 app.UseHttpsRedirection();
 app.UseAuthentication();
