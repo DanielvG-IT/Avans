@@ -19,7 +19,7 @@ namespace HQB.WebApi.Controllers
             _authenticationService = authenticationService;
         }
 
-        [HttpGet("/roles", Name = "GetUserRoles")]
+        [HttpGet("roles", Name = "GetUserRoles")]
         public async Task<ActionResult<IList<string>>> GetRolesForUser()
         {
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();
