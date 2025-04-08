@@ -36,7 +36,7 @@ public class UserApiClient : MonoBehaviour
     /// </exception>
     public async Awaitable<IWebRequestReponse> Login(User user)
     {
-        string route = $"{"/api/v1/account/login"}";
+        string route = $"/api/v1/account/login";
         string data = JsonUtility.ToJson(user);
 
         IWebRequestReponse response = await webClient.SendPostRequestAsync(route, data);
@@ -45,6 +45,12 @@ public class UserApiClient : MonoBehaviour
 
     // TODO: Add refresh token method here to refresh the token when it expires or is 
 
+    public async Awaitable<IWebRequestReponse> GetRole()
+    {
+        string route = $"/api/v1/account/login";
+
+        return await webClient.SendGetRequestAsync(route);
+    }
 
     private IWebRequestReponse ProcessLoginResponse(IWebRequestReponse response)
     {

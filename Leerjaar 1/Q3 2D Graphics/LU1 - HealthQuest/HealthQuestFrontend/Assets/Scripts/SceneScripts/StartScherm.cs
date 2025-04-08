@@ -175,7 +175,7 @@ public class StartScreen : MonoBehaviour
             }
 
             var guardianData = (guardianResult as WebRequestData<Guardian>)?.Data;
-            if (guardianData == null)
+            if (guardianData is null)
             {
                 Debug.LogError("Guardian data is null."); // TODO: Show the user an error message
                 return;
@@ -194,7 +194,30 @@ public class StartScreen : MonoBehaviour
 
             Debug.Log("Login successful."); // TODO: Show the user a success message
 
-            await SceneManager.LoadSceneAsync("PatientScherm");
+            // Check roles
+            var rolesResult = await userApiClient.GetRole();
+            if (rolesResult is WebRequestData<IList<string>> rolesData && rolesData?.Data != null)
+            {
+                if (rolesData.Data.Contains("Doctor"))
+                {
+                    await SceneManager.LoadSceneAsync("ArtsScherm");
+                    return;
+                }
+                else
+                {
+                    await SceneManager.LoadSceneAsync("PatientScherm");
+                }
+            }
+            else if (rolesResult is WebRequestError rolesError)
+            {
+                Debug.Log($"Error retrieving roles: {rolesError.ErrorMessage}");
+                await SceneManager.LoadSceneAsync("PatientScherm");
+            }
+            else
+            {
+                Debug.Log($"Error retrieving roles");
+                await SceneManager.LoadSceneAsync("PatientScherm");
+            }
         }
         catch (Exception ex)
         {
