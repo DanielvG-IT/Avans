@@ -287,6 +287,13 @@ public class PatientScherm : MonoBehaviour
             }
             else if (createResult is WebRequestData<Patient> createdPatient)
             {
+                var generateResult = await patientApiClient.GeneratePersonalAppointmentsForPatientAsync(createdPatient.Data.id);
+                if (generateResult is WebRequestError generateError)
+                {
+                    Debug.Log($"Error generating personal appointments: " + generateError.ErrorMessage);
+                }
+
+
                 patients.Add(createdPatient.Data);
                 ShowPatientsOnUI();
                 ShowSelectionPanel();
