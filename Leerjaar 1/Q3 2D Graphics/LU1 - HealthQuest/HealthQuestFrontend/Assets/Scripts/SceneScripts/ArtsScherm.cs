@@ -14,6 +14,7 @@ public class ArtsScherm : MonoBehaviour
     public TMP_Text patientZorgTraject;
     public TMP_Text afspraakTitel;
     public TMP_Text afspraakBeschrijving;
+    public TMP_Text appointmentNr;
 
     [Header("Side Bar")]
     public GameObject doctorPatientPrefab;
@@ -31,6 +32,7 @@ public class ArtsScherm : MonoBehaviour
     private List<Appointment> patientAppointments = new();
     private Patient selectedPatient;
     private Treatment selectedPatientTreatment;
+    private int appointmentPage = 0;
 
     private async void Start()
     {
@@ -140,9 +142,9 @@ public class ArtsScherm : MonoBehaviour
                     patientAppointments.Add(appointmentData.Data);
                 }
             }
-
-            afspraakTitel.text = patientAppointments[0].name;
-            afspraakBeschrijving.text = patientAppointments[0].description;
+            appointmentNr.text = $"{appointmentPage + 1}/{patientAppointments.Count}";
+            afspraakTitel.text = patientAppointments[appointmentPage].name;
+            afspraakBeschrijving.text = patientAppointments[appointmentPage].description;
             patientZorgTraject.text = selectedPatientTreatment.name;
         }
     }
@@ -158,6 +160,30 @@ public class ArtsScherm : MonoBehaviour
         else if (treatmentResponse is WebRequestData<Treatment> treatment)
         {
             selectedPatientTreatment = treatment.Data;
+        }
+    }
+    
+    public void CycleAppointments(bool goingForward)
+    {
+        if (goingForward)
+        {
+            if (appointmentPage + 1 <= patientAppointments.Count - 1)
+            {
+                appointmentPage++;
+                afspraakTitel.text = patientAppointments[appointmentPage].name;
+                afspraakBeschrijving.text = patientAppointments[appointmentPage].description;
+                appointmentNr.text = $"{appointmentPage + 1}/{patientAppointments.Count}";
+            }
+        }
+        else
+        {
+            if (appointmentPage - 1 >= 0)
+            {
+                appointmentPage--;
+                afspraakTitel.text = patientAppointments[appointmentPage].name;
+                afspraakBeschrijving.text = patientAppointments[appointmentPage].description;
+                appointmentNr.text = $"{appointmentPage + 1}/{patientAppointments.Count}";
+            }
         }
     }
 }
