@@ -201,7 +201,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 10242663}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 547103933}
+        m_TargetAssemblyTypeName: ArtsScherm, Assembly-CSharp
+        m_MethodName: SetAppointmentDate
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &10242663
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -324,15 +336,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
+  m_fontSize: 50
   m_fontSizeBase: 14
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
-  m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 2
+  m_fontSizeMax: 50
+  m_fontStyle: 1
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -782,7 +794,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Cijfer: /10'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dc34f17c53c9e1544a5829009d8b32f9, type: 2}
   m_sharedMaterial: {fileID: -4476703153198621376, guid: dc34f17c53c9e1544a5829009d8b32f9, type: 2}
@@ -1382,7 +1394,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: DD/MM/YYYY
+  m_text: YYYY-MM-DD
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dc34f17c53c9e1544a5829009d8b32f9, type: 2}
   m_sharedMaterial: {fileID: -4476703153198621376, guid: dc34f17c53c9e1544a5829009d8b32f9, type: 2}
@@ -1631,8 +1643,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 827.97156, y: 318.86646}
-  m_SizeDelta: {x: 285.0149, y: 31.0298}
+  m_AnchoredPosition: {x: 819.3877, y: 310.56}
+  m_SizeDelta: {x: 291.2397, y: 35.115}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &501410848
 MonoBehaviour:
@@ -1654,7 +1666,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dc34f17c53c9e1544a5829009d8b32f9, type: 2}
   m_sharedMaterial: {fileID: -4476703153198621376, guid: dc34f17c53c9e1544a5829009d8b32f9, type: 2}
@@ -1681,13 +1693,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 27.75
+  m_fontSize: 30
   m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 5
   m_fontSizeMax: 30
-  m_fontStyle: 2
+  m_fontStyle: 3
   m_HorizontalAlignment: 4
   m_VerticalAlignment: 256
   m_textAlignment: 65535
@@ -1790,7 +1802,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ...
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dc34f17c53c9e1544a5829009d8b32f9, type: 2}
   m_sharedMaterial: {fileID: -4476703153198621376, guid: dc34f17c53c9e1544a5829009d8b32f9, type: 2}
@@ -2072,8 +2084,16 @@ MonoBehaviour:
   afspraakTitel: {fileID: 505507235}
   afspraakBeschrijving: {fileID: 703942470}
   appointmentNr: {fileID: 143713515}
+  dateSetter: {fileID: 1251218664}
   doctorPatientPrefab: {fileID: 5273216542423852199, guid: c4676fe07d571634ba29ddc914bd86c4, type: 3}
   doctorPatientsContainer: {fileID: 100910331}
+  journalPrefab: {fileID: 7767513014490963895, guid: 4cecf163444b8f5468d17776ee5c5b89, type: 3}
+  journalContainer: {fileID: 1425686558}
+  journalTitle: {fileID: 1425617247}
+  journalDescription: {fileID: 1067510799}
+  journalDate: {fileID: 501410848}
+  journalRating: {fileID: 211394009}
+  journalAverageRating: {fileID: 1506333549}
 --- !u!4 &547103934
 Transform:
   m_ObjectHideFlags: 0
@@ -2489,7 +2509,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ...
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dc34f17c53c9e1544a5829009d8b32f9, type: 2}
   m_sharedMaterial: {fileID: -4476703153198621376, guid: dc34f17c53c9e1544a5829009d8b32f9, type: 2}
@@ -3667,7 +3687,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ...
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dc34f17c53c9e1544a5829009d8b32f9, type: 2}
   m_sharedMaterial: {fileID: -4476703153198621376, guid: dc34f17c53c9e1544a5829009d8b32f9, type: 2}
@@ -3975,7 +3995,7 @@ GameObject:
   - component: {fileID: 1251218665}
   - component: {fileID: 1251218664}
   m_Layer: 5
-  m_Name: InputField (TMP)
+  m_Name: InputField_DateSetter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4049,14 +4069,14 @@ MonoBehaviour:
   m_VerticalScrollbarEventHandler: {fileID: 0}
   m_LayoutGroup: {fileID: 0}
   m_ScrollSensitivity: 1
-  m_ContentType: 9
+  m_ContentType: 0
   m_InputType: 0
   m_AsteriskChar: 42
-  m_KeyboardType: 5
+  m_KeyboardType: 0
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
-  m_CharacterValidation: 3
+  m_CharacterValidation: 0
   m_RegexValue: 
   m_GlobalPointSize: 14
   m_CharacterLimit: 0
@@ -4359,7 +4379,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ...
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dc34f17c53c9e1544a5829009d8b32f9, type: 2}
   m_sharedMaterial: {fileID: -4476703153198621376, guid: dc34f17c53c9e1544a5829009d8b32f9, type: 2}
@@ -4572,7 +4592,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Gemiddelde Cijfer: /10'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dc34f17c53c9e1544a5829009d8b32f9, type: 2}
   m_sharedMaterial: {fileID: -4476703153198621376, guid: dc34f17c53c9e1544a5829009d8b32f9, type: 2}
