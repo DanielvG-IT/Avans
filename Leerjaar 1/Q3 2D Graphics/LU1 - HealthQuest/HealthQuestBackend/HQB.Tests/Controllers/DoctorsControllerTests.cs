@@ -18,15 +18,17 @@ namespace HQB.WebApi.Tests.Controllers
     public required Mock<ILogger<DoctorsController>> _loggerMock;
     public required Mock<IDoctorRepository> _doctorRepositoryMock;
     public required Mock<IPatientRepository> _patientRepositoryMock;
+    public required Mock<IAuthenticationService> _authenticationServiceMock;
     public required DoctorsController _controller;
 
     [TestInitialize]
     public void Setup()
     {
       _loggerMock = new Mock<ILogger<DoctorsController>>();
-      _doctorRepositoryMock = new Mock<IDoctorRepository>();
+            _authenticationServiceMock = new Mock<IAuthenticationService>();
+            _doctorRepositoryMock = new Mock<IDoctorRepository>();
       _patientRepositoryMock = new Mock<IPatientRepository>();
-      _controller = new DoctorsController(_loggerMock.Object, _doctorRepositoryMock.Object, _patientRepositoryMock.Object);
+      _controller = new DoctorsController(_loggerMock.Object, _doctorRepositoryMock.Object, _patientRepositoryMock.Object, _authenticationServiceMock.Object);
     }
 
     [TestMethod]
