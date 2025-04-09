@@ -31,6 +31,7 @@ public class StartScreen : MonoBehaviour
 
     private void Start()
     {
+        AudioManager.Instance.StartMusic();
         InitializePanels();
         userApiClient = ApiClientManager.Instance.UserApiClient;
         guardianApiClient = ApiClientManager.Instance.GuardianApiClient;
@@ -174,6 +175,7 @@ public class StartScreen : MonoBehaviour
             {
                 if (rolesData.Data.Contains("[\"Doctor\"]"))
                 {
+                    AudioManager.Instance.StopMusic();
                     await SceneManager.LoadSceneAsync("ArtsScherm");
                     return;
                 }
@@ -205,7 +207,7 @@ public class StartScreen : MonoBehaviour
             }
 
             Debug.Log("Login successful."); // TODO: Show the user a success message
-            AudioManager.audioSource.PlayOneShot(AudioManager.soundEffects[0]);
+            AudioManager.Instance.audioSource.PlayOneShot(AudioManager.Instance.soundEffects[0]);
             await SceneManager.LoadSceneAsync("PatientScherm");
         }
         catch (Exception ex)

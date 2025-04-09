@@ -9,29 +9,34 @@ public class PersonalAppointments
     /// <summary>
     /// Gets or sets the unique identifier for the completed appointment.
     /// </summary>
-    public string Id;
+    public string id;
 
     /// <summary>
     /// Gets or sets the unique identifier of the patient associated with the completed appointment.
     /// </summary>
-    public string PatientId;
+    public string patientID;
 
     /// <summary>
     /// Gets or sets the unique identifier of the appointment that was completed.
     /// </summary>
-    public string AppointmentId;
+    public string appointmentID;
+
+    /// <summary>
+    /// Gets or sets the date and time when the appointment is scheduled.
+    /// </summary>
+    public string appointmentDate;
 
     /// <summary>
     /// Gets or sets the date and time when the appointment was completed.
     /// </summary>
-    public string CompletedDate;
+    public string completedDate;
 
     /// <summary>
     /// Gets or sets if the question for the appointment is completed.
     /// </summary>
-    public bool CompletedQuestion;
+    public bool completedQuestion;
     /// <summary>
     /// Gets or sets the sequence of the appointment.
     /// </summary>
-    public int Sequence;
+    public int sequence;
 }

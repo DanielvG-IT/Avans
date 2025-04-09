@@ -10,13 +10,24 @@ public class AudioManager : MonoBehaviour
     [Header("Sound Effects")]
     public List<AudioClip> initializeSoundEffects;
     
-    public static AudioSource audioSource;
-    public static AudioClip backgroundMusic;
-    public static List<AudioClip> soundEffects = new();
+    public AudioSource audioSource;
+    public AudioClip backgroundMusic;
+    public List<AudioClip> soundEffects = new();
+    public static AudioManager Instance;
 
     private void Awake()
     {
-        DontDestroyOnLoad(gameObject);
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         audioSource = GetComponent<AudioSource>();
 
         backgroundMusic = initializeBackgroundMusic;
@@ -29,7 +40,15 @@ public class AudioManager : MonoBehaviour
     private void Start()
     {
         audioSource.clip = backgroundMusic;
+    }
+
+    public void StartMusic()
+    {
         audioSource.Play();
     }
 
+    public void StopMusic()
+    {
+        audioSource.Stop();
+    }
 }

@@ -121,14 +121,14 @@ public class PatientApiClient : MonoBehaviour
     /// </summary>
     /// <param name="patientId">The unique identifier of the patient.</param>
     /// <returns>
-    /// An <see cref="IWebRequestReponse"/> containing the response data parsed as a list of <see cref="Appointment"/>.
+    /// An <see cref="IWebRequestReponse"/> containing the response data parsed as a list of <see cref="PersonalAppointments"/>.
     /// </returns>
     public async Awaitable<IWebRequestReponse> ReadPersonalAppointmentsFromPatientAsync(string patientId)
     {
         string route = $"/api/v1/patient/{patientId}/appointments";
 
         IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
-        return JsonHelper.ParseListResponse<Appointment>(webRequestResponse);
+        return JsonHelper.ParseListResponse<PersonalAppointments>(webRequestResponse);
     }
 
     /// <summary>
