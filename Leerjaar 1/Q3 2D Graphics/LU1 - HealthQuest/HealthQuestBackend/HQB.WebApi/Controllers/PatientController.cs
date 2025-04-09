@@ -396,7 +396,7 @@ namespace HQB.WebApi.Controllers
                     return NotFound($"No completed appointments found for patient with ID {id}.");
                 }
 
-                return Ok(personalAppointments);
+                return Ok(personalAppointments.OrderBy(x => x.Sequence).ToList());
             }
             catch (Exception ex)
             {
@@ -461,7 +461,8 @@ namespace HQB.WebApi.Controllers
                     await _personalAppointmentsRepository.AddPersonalAppointment(personalAppointment);
                 }
 
-                return CreatedAtAction(nameof(GetPersonalAppointments), new { id });
+                _logger.LogInformation("Personal appointments generated successfully for patient with ID {PatientId}", id);
+                return NoContent();
             }
             catch (Exception ex)
             {
