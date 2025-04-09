@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class GanzenboordManager : MonoBehaviour
 {
-    public List<PersonalAppointments> personalAppointments;
-    public List<Appointment> appointments;
+    public List<PersonalAppointments> personalAppointments = new();
+    public List<Appointment> appointments = new();
 
     // ApiClientManagers
     private StickerApiClient stickerApiClient;
@@ -20,37 +20,15 @@ public class GanzenboordManager : MonoBehaviour
         patientApiClient = ApiClientManager.Instance.PatientApiClient;
         appointmentApiClient = ApiClientManager.Instance.AppointmentApiClient;
 
-        await LoadAppointments();
-        await LoadPersonalAppointments();
-    }
-
-    private async Task LoadAppointments()
-    {
-        try
-        {
-            var treatmentId = ApiClientManager.Instance.CurrentTreatment.id;
-            var response = await appointmentApiClient.ReadAppointmentsByTreatmentIdAsync(treatmentId);
-
-            if (response is WebRequestData<List<Appointment>> dataResponse)
-            {
-                appointments = dataResponse.Data;
-            }
-            else if (response is WebRequestError errorResponse)
-            {
-                Debug.LogError($"Error: {errorResponse.ErrorMessage}");
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"Failed to load appointments from API: {ex.Message}");
-        }
+        await LoadAllAppointments();
     }
 
     public async Task LoadAllAppointments()
     {
+        var patientId = ApiClientManager.Instance.CurrentPatient.id;
         try
         {
-            var patientId = ApiClientManager.Instance.CurrentPatient.id;
+
             var personalAppointmentsResults = await patientApiClient.ReadPersonalAppointmentsFromPatientAsync(patientId);
             if (personalAppointmentsResults is WebRequestError error)
             {
@@ -81,7 +59,7 @@ public class GanzenboordManager : MonoBehaviour
         }
         catch (Exception ex)
         {
-            Debug.LogError($"Failed to load completed appointments: {ex.Message}");
+            Debug.LogError($"Failed to load appointments: {ex.Message}");
         }
     }
 
@@ -91,21 +69,24 @@ public class GanzenboordManager : MonoBehaviour
 
         try
         {
-            //var appointment = GetAppointment(index);
-            //var response = await apiClientManager.PatientApiClient.AddCompletedAppointmentsToPatientAsync(
-            //    apiClientManager.CurrentPatient.id,
-            //    appointment.id,
-            //    DateTime.Now
-            //);
+            var personalAppointment = GetPersonalAppointment(index);
+            personalAppointment.completedDate = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
 
-            //if (response is WebRequestError error)
-            //{
-            //    Debug.LogError("Error: " + error.ErrorMessage);
-            //    return false;
-            //}
+            // Update the personal appointment
+            var response = await patientApiClient.UpdatePersonalAppointmentFromPatientAsync(
+                ApiClientManager.Instance.CurrentPatient.id,
+                personalAppointment.id,
+                personalAppointment
+            );
 
-            //return true;
-            return false; // TODO: Fix this methode
+            // Handle any errors that occurred during the request
+            if (response is WebRequestError error)
+            {
+                Debug.LogError($"Error updating appointment: {error.ErrorMessage}");
+                return false;
+            }
+
+            return true;
         }
         catch (Exception ex)
         {
@@ -157,9 +138,37 @@ public class GanzenboordManager : MonoBehaviour
         }
     }
 
-    public bool IsLevelUnlocked(int index) => IsValidIndex(index) && index <= CompletedLevels;
-    public bool IsLevelCompleted(int index) => IsValidIndex(index) && index < CompletedLevels;
-    public Appointment GetAppointment(int index) => IsValidIndex(index) ? appointments[index] : null;
+    public bool IsLevelUnlocked(int index)
+    {
+        if (!IsValidIndex(index))
+            return false;
 
-    private bool IsValidIndex(int index) => index >= 0 && index < TotalLevels;
+        // Level 0 is always unlocked
+        if (index == 0)
+            return true;
+
+        // Previous level must be completed
+        return !string.IsNullOrEmpty(personalAppointments[index - 1].completedDate);
+    }
+
+    public bool IsLevelCompleted(int index)
+    {
+        return IsValidIndex(index) && !string.IsNullOrEmpty(personalAppointments[index].completedDate);
+    }
+
+    public Appointment GetAppointment(int index)
+    {
+        return IsValidIndex(index) ? appointments[index] : null;
+    }
+
+    public PersonalAppointments GetPersonalAppointment(int index)
+    {
+        return IsValidIndex(index) ? personalAppointments[index] : null;
+    }
+
+    private bool IsValidIndex(int index)
+    {
+        return index >= 0 && index < personalAppointments.Count;
+    }
+
 }

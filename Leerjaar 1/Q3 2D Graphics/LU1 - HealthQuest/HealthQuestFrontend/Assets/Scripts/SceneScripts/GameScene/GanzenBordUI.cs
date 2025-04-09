@@ -27,11 +27,12 @@ public class GanzenBordUI : MonoBehaviour
     //private readonly float cameraZ = -10f;
 
     private GameObject currentPopup;
-    private List<GameObject> levelButtons = new();
-    private List<Transform> levelRoots = new();
+    private readonly List<GameObject> levelButtons = new();
+    private readonly List<Transform> levelRoots = new();
     private Vector3 cameraTarget;
     private int currentLevel = 0;
     private Vector3 gooseOriginalScale;
+    private List<PersonalAppointments> personalAppointments = new();
 
     private async void Start()
     {
@@ -50,32 +51,40 @@ public class GanzenBordUI : MonoBehaviour
     private void InitializeLevels()
     {
         Debug.Log("Initializing...");
-        Debug.Log($"Total levels: {boardManager.appointments.Count}");
-        //TODO: Debug.Log($"Completed levels: {boardManager.personalAppointments.Count}");
+
+        personalAppointments = boardManager.personalAppointments;
+        Debug.Log($"Total appointments: {boardManager.appointments.Count}");
 
         levelButtons.Clear();
         levelRoots.Clear();
 
-        foreach (Transform level in levelsParent)
+        for (int i = 0; i < levelsParent.childCount && i < boardManager.appointments.Count; i++)
         {
+            Transform level = levelsParent.GetChild(i);
             string buttonName = "Button" + level.name;
             Transform buttonTransform = level.Find(buttonName);
-            if (buttonTransform != null)
+            if (buttonTransform == null)
             {
-                GameObject buttonObj = buttonTransform.gameObject;
-                levelButtons.Add(buttonObj);
-                levelRoots.Add(level);
+                Debug.LogWarning($"No button found in level {level.name}");
+                continue;
+            }
 
-                int index = levelButtons.Count - 1;
-                if (buttonObj.TryGetComponent<Button>(out var btn))
-                {
-                    btn.onClick.AddListener(() => OnLevelClicked(index));
-                }
+            GameObject buttonObj = buttonTransform.gameObject;
+            levelButtons.Add(buttonObj);
+            levelRoots.Add(level);
 
-                if (boardManager.IsLevelCompleted(index))
-                {
-                    SetLevelColor(index, completedColor);
-                }
+            int index = i;
+
+            if (buttonObj.TryGetComponent<Button>(out var btn))
+            {
+                btn.onClick.RemoveAllListeners();
+                btn.onClick.AddListener(() => OnLevelClicked(index));
+            }
+
+            // Set level color based on completion status
+            if (index < personalAppointments.Count && !string.IsNullOrEmpty(personalAppointments[index].completedDate))
+            {
+                SetLevelColor(index, completedColor); // Level is completed
             }
         }
     }
@@ -88,27 +97,39 @@ public class GanzenBordUI : MonoBehaviour
             return;
         }
 
-        if (boardManager.CompletedLevels > 0)
-        {
-            int lastIndex = DagboekScherm.clearingLevel < 0 ? boardManager.CompletedLevels - 1 : boardManager.CompletedLevels;
-            goose.position = levelButtons[lastIndex].transform.position;
-            currentLevel = lastIndex;
+        int lastCompletedIndex = -1;
 
-            cameraTarget = new Vector3(
-                levelButtons[lastIndex].transform.position.x,
-                mainCamera.transform.position.y,
-                mainCamera.transform.position.z
-            );
-        }
-        else
+        // Loop through personal appointments to find last completed one
+        for (int i = 0; i < boardManager.personalAppointments.Count; i++)
         {
-            goose.position = levelButtons[0].transform.position;
-            cameraTarget = mainCamera.transform.position;
+            var personalAppointment = boardManager.personalAppointments[i];
+            if (!string.IsNullOrEmpty(personalAppointment.completedDate))
+            {
+                lastCompletedIndex = i; // Update to the last completed index
+            }
         }
+
+        // If clearingLevel is set (returning from Dagboek), override the position
+        if (DagboekScherm.clearingLevel > 0)
+        {
+            lastCompletedIndex = DagboekScherm.clearingLevel - 1;
+        }
+
+        // Set goose position based on last completed level, or start at beginning
+        int targetIndex = Mathf.Clamp(lastCompletedIndex + 1, 0, levelButtons.Count - 1);
+        goose.position = levelButtons[targetIndex].transform.position;
+        currentLevel = targetIndex;
+
+        cameraTarget = new Vector3(
+            levelButtons[targetIndex].transform.position.x,
+            mainCamera.transform.position.y,
+            mainCamera.transform.position.z
+        );
 
         gooseOriginalScale = goose.localScale;
         mainCamera.transform.position = cameraTarget;
     }
+
 
     private void Update()
     {
@@ -180,29 +201,37 @@ public class GanzenBordUI : MonoBehaviour
 
     private void ShowPopup(int index)
     {
-        // Destroy previous popup if it exists
         if (currentPopup)
-        {
             Destroy(currentPopup);
-        }
 
-        // Instantiate new popup
         currentPopup = Instantiate(popupPrefab, UserHUD.transform);
         currentPopup.transform.SetAsLastSibling();
 
-        // Get appointment details
         Appointment appointment = boardManager.GetAppointment(index);
+        PersonalAppointments personal = index < personalAppointments.Count ? personalAppointments[index] : null;
+
         if (appointment == null)
         {
             Debug.LogError($"No appointment found for index {index}");
             return;
         }
 
-        // Set up the popup
+        string description = appointment.description;
+
+        if (personal != null)
+        {
+            description += $"\n\n• Datum: {(string.IsNullOrEmpty(personal.appointmentDate) ? "Vraag aan je arts." : personal.appointmentDate)}";
+            description += $"\n• Voltooid: {(string.IsNullOrEmpty(personal.completedDate) ? "Nee" : "Ja")}";
+        }
+
         if (currentPopup.TryGetComponent<PopUpUI>(out var popup))
         {
-            popup.Setup(appointment.name, appointment.description,
-                () => RedirectToDagboek(index), () => Destroy(currentPopup));
+            popup.Setup(
+                appointment.name,
+                description,
+                () => RedirectToDagboek(index),
+                () => Destroy(currentPopup)
+            );
         }
     }
 
@@ -230,10 +259,11 @@ public class GanzenBordUI : MonoBehaviour
         if (await boardManager.MarkLevelCompleted(index))
         {
             SetLevelColor(index, completedColor);
-            await UnlockSticker(index);
-            await boardManager.LoadCompletedAppointments();
-            StartCoroutine(MoveGooseToLevel(index + 1));
 
+            await UnlockSticker(index);
+            await boardManager.LoadAllAppointments();
+
+            StartCoroutine(MoveGooseToLevel(index + 1));
             Debug.Log($"Level {index + 1} completed.");
         }
         else
