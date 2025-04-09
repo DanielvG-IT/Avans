@@ -44,10 +44,10 @@ public class Patient
     /// <summary>
     /// Gets or sets the permission if the doctor can access journal entries.
     /// </summary>
-    public bool DoctorAccessJournal;
+    public bool doctorAccessJournal;
 
     /// <summary>
     /// Gets or sets the permission if the guardian can access journal entries.
     /// </summary>
-    public bool GuardianAccessJournal;
+    public bool guardianAccessJournal;
 }

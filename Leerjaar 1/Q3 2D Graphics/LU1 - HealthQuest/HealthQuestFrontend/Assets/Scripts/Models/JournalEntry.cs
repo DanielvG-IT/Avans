@@ -14,28 +14,22 @@ public class JournalEntry
     /// <summary>
     /// Gets or sets the unique identifier for the patient associated with the journal entry.
     /// </summary>
-    #nullable enable
-    public string? patientID;  // Foreign key to Patient
-
-    /// <summary>
-    /// Gets or sets the unique identifier for the guardian associated with the journal entry.
-    /// </summary>
-    public string? guardianID;
+    public string patientID;  // Foreign key to Patient
 
     /// <summary>
     /// Gets or sets the date of the journal entry.
     /// </summary>
-    public string? date;
+    public string date = DateTime.Now.ToString();
 
     /// <summary>
     /// Gets or sets the title of the journal entry.
     /// </summary>
-    public string? title;
+    public string title;
 
     /// <summary>
     /// Gets or sets the content of the journal entry.
     /// </summary>
-    public string? content;
+    public string content;
 
     /// <summary>
     /// Gets or sets the rating of the journal entry.
