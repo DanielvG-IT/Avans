@@ -6,28 +6,30 @@ using UnityEngine;
 
 public class GanzenboordManager : MonoBehaviour
 {
-    public int CompletedLevels => completedAppointments;
-    public int TotalLevels => appointments.Count;
-    public List<Appointment> Appointments => appointments;
+    public List<PersonalAppointments> personalAppointments;
+    public List<Appointment> appointments;
 
-    private int completedAppointments;
-    private ApiClientManager apiClientManager;
-    private List<Appointment> appointments;
+    // ApiClientManagers
+    private StickerApiClient stickerApiClient;
+    private PatientApiClient patientApiClient;
+    private AppointmentApiClient appointmentApiClient;
 
     public async Task Initialize()
     {
-        apiClientManager = ApiClientManager.Instance;
+        stickerApiClient = ApiClientManager.Instance.StickerApiClient;
+        patientApiClient = ApiClientManager.Instance.PatientApiClient;
+        appointmentApiClient = ApiClientManager.Instance.AppointmentApiClient;
 
         await LoadAppointments();
-        await LoadCompletedAppointments();
+        await LoadPersonalAppointments();
     }
 
     private async Task LoadAppointments()
     {
         try
         {
-            var treatmentId = apiClientManager.CurrentTreatment.id;
-            var response = await apiClientManager.AppointmentApiClient.ReadAppointmentsByTreatmentIdAsync(treatmentId);
+            var treatmentId = ApiClientManager.Instance.CurrentTreatment.id;
+            var response = await appointmentApiClient.ReadAppointmentsByTreatmentIdAsync(treatmentId);
 
             if (response is WebRequestData<List<Appointment>> dataResponse)
             {
@@ -44,20 +46,37 @@ public class GanzenboordManager : MonoBehaviour
         }
     }
 
-    public async Task LoadCompletedAppointments()
+    public async Task LoadAllAppointments()
     {
         try
         {
             var patientId = ApiClientManager.Instance.CurrentPatient.id;
-            var response = await apiClientManager.PatientApiClient.ReadPersonalAppointmentsFromPatientAsync(patientId);
-
-            if (response is WebRequestData<List<Appointment>> data)
+            var personalAppointmentsResults = await patientApiClient.ReadPersonalAppointmentsFromPatientAsync(patientId);
+            if (personalAppointmentsResults is WebRequestError error)
             {
-                completedAppointments = data.Data.Count;
+                Debug.LogWarning("Error loading patient appointments: " + error);
+                return;
             }
-            else if (response is WebRequestError error)
+            else if (personalAppointmentsResults is WebRequestData<List<PersonalAppointments>> data)
             {
-                Debug.LogError($"Error: {error.ErrorMessage}");
+                personalAppointments.Clear();
+                appointments.Clear();
+
+                personalAppointments = data.Data;
+
+                foreach (var appointment in data.Data)
+                {
+                    var result = await appointmentApiClient.ReadAppointmentByIdAsync(appointment.appointmentID);
+                    if (result is WebRequestError errorke)
+                    {
+                        Debug.LogError("Errorke is niet goed gegaan: " + errorke.ErrorMessage);
+                        return;
+                    }
+                    else if (result is WebRequestData<Appointment> appointmentData)
+                    {
+                        appointments.Add(appointmentData.Data);
+                    }
+                }
             }
         }
         catch (Exception ex)
@@ -99,7 +118,7 @@ public class GanzenboordManager : MonoBehaviour
     {
         try
         {
-            var stickerResponse = await apiClientManager.StickerApiClient.ReadStickerByNameAsync(stickerName);
+            var stickerResponse = await stickerApiClient.ReadStickerByNameAsync(stickerName);
             if (stickerResponse is WebRequestError stickerError)
             {
                 Debug.LogError($"Error: {stickerError.ErrorMessage}");
@@ -112,8 +131,9 @@ public class GanzenboordManager : MonoBehaviour
                 return false;
             }
 
-            var addResponse = await apiClientManager.PatientApiClient.AddUnlockedStickerToPatientAsync(
-                apiClientManager.CurrentPatient.id, stickerSuccess.Data);
+            var addResponse = await patientApiClient.AddUnlockedStickerToPatientAsync(
+                ApiClientManager.Instance.CurrentPatient.id, stickerSuccess.Data
+            );
 
             if (addResponse is WebRequestError addError)
             {

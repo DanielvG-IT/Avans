@@ -50,11 +50,11 @@ public class GanzenBordUI : MonoBehaviour
     private void InitializeLevels()
     {
         Debug.Log("Initializing...");
-        Debug.Log($"Total levels: {boardManager.TotalLevels}");
-        Debug.Log($"Completed levels: {boardManager.CompletedLevels}");
+        Debug.Log($"Total levels: {boardManager.appointments.Count}");
+        //TODO: Debug.Log($"Completed levels: {boardManager.personalAppointments.Count}");
 
-        //levelButtons.Clear();
-        //levelRoots.Clear();
+        levelButtons.Clear();
+        levelRoots.Clear();
 
         foreach (Transform level in levelsParent)
         {
