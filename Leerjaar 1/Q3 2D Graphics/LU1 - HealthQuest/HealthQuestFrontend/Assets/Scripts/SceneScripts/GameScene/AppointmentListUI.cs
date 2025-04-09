@@ -16,42 +16,32 @@ public class AppointmentListUI : MonoBehaviour
     {
         appointmentApiClient = ApiClientManager.Instance.AppointmentApiClient;
         treatment = ApiClientManager.Instance.CurrentTreatment;
+
         var response = await appointmentApiClient.ReadAppointmentsByTreatmentIdAsync(treatment.id);
-        if (response == null)
+
+        if (response is WebRequestError error)
         {
-            Debug.LogError("Failed to load appointments from API.");
+            Debug.LogError($"Failed to load appointments from API: {error.ErrorMessage}");
             return;
         }
 
-        switch (response)
+        if (response is WebRequestData<List<Appointment>> data && data.Data is not null && data.Data.Count > 0)
         {
-            case WebRequestData<List<Appointment>> dataResponse:
+            foreach (var appointment in data.Data)
+            {
+                var appointmentGO = Instantiate(appointmentPrefab, contentParent);
+                var tmpText = appointmentGO.GetComponentInChildren<TextMeshProUGUI>();
+
+                if (tmpText != null)
                 {
-                    if (dataResponse.Data == null || dataResponse.Data.Count == 0)
-                    {
-                        Debug.Log("No appointments found for this treatment.");
-                        return;
-                    }
-
-                    foreach (var appointment in dataResponse.Data)
-                    {
-                        GameObject appointmentGO = Instantiate(appointmentPrefab, contentParent);
-                        TextMeshProUGUI tmpText = appointmentGO.GetComponentInChildren<TextMeshProUGUI>();
-
-                        if (tmpText != null)
-                        {
-                            tmpText.text = $"{counter}: {appointment.name}";
-                            counter++;
-                        }
-                    }
-                    break;
+                    tmpText.text = $"{counter}: {appointment.name}";
+                    counter++;
                 }
-
-            case WebRequestError errorResponse:
-                {
-                    Debug.Log("Error: " + errorResponse.ErrorMessage);
-                    break;
-                }
+            }
+        }
+        else
+        {
+            Debug.Log("No appointments found for this treatment.");
         }
     }
 }
