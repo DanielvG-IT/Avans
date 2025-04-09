@@ -85,8 +85,25 @@ public class GanzenboordManager : MonoBehaviour
                 Debug.LogError($"Error updating appointment: {error.ErrorMessage}");
                 return false;
             }
+            else if (response is WebRequestData<PersonalAppointments> updatedAppointment)
+            {
+                if (updatedAppointment.StatusCode >= 400 && updatedAppointment.StatusCode < 500)
+                {
+                    Debug.LogError($"Error: Received {updatedAppointment.StatusCode} status code while updating appointment.");
+                    return false;
+                }
+                else if (updatedAppointment.StatusCode >= 200 && updatedAppointment.StatusCode < 300)
+                {
+                    Debug.Log($"Level {index} marked as completed.");
+                }
+                else
+                {
+                    Debug.LogError($"Unexpected status code: {updatedAppointment.StatusCode}");
+                    return false;
+                }
+            }
 
-            return true;
+            return false; // Default return value if no conditions are met
         }
         catch (Exception ex)
         {
