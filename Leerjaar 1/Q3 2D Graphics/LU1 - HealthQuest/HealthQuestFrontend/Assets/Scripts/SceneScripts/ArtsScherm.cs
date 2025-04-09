@@ -5,6 +5,9 @@ using TMPro;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Unity.VisualScripting;
+using System.Globalization;
+using System;
+using UnityEditor.Rendering;
 
 public class ArtsScherm : MonoBehaviour
 {
@@ -15,16 +18,27 @@ public class ArtsScherm : MonoBehaviour
     public TMP_Text afspraakTitel;
     public TMP_Text afspraakBeschrijving;
     public TMP_Text appointmentNr;
+    public TMP_InputField dateSetter;
 
     [Header("Side Bar")]
     public GameObject doctorPatientPrefab;
     public Transform doctorPatientsContainer;
+
+    [Header("Bottom Field")]
+    public GameObject journalPrefab;
+    public Transform journalContainer;
+    public TMP_Text journalTitle;
+    public TMP_Text journalDescription;
+    public TMP_Text journalDate;
+    public TMP_Text journalRating;
+    public TMP_Text journalAverageRating;
 
     //Api clients
     private DoctorApiClient doctorApiClient;
     private PatientApiClient patientApiClient;
     private TreatmentApiClient treatmentApiClient;
     private AppointmentApiClient appointmentApiClient;
+    private JournalApiClient journalApiClient;
 
     private Doctor currentDoctor;
     private List<Patient> doctorPatients = new();
@@ -33,6 +47,7 @@ public class ArtsScherm : MonoBehaviour
     private Patient selectedPatient;
     private Treatment selectedPatientTreatment;
     private int appointmentPage = 0;
+    private double averageRating = 0;
 
     private async void Start()
     {
@@ -40,6 +55,7 @@ public class ArtsScherm : MonoBehaviour
         patientApiClient = ApiClientManager.Instance.PatientApiClient;
         treatmentApiClient = ApiClientManager.Instance.TreatmentApiClient;
         appointmentApiClient = ApiClientManager.Instance.AppointmentApiClient;
+        journalApiClient = ApiClientManager.Instance.JournalApiClient;
 
         await LoadCurrentDoctor();
         await LoadDoctorPatientsInWindow();
@@ -104,14 +120,44 @@ public class ArtsScherm : MonoBehaviour
 
     public async void OnSelectedPatient(Patient patient)
     {
-        afspraakTitel.text = string.Empty;
-        afspraakBeschrijving.text = string.Empty;
-        patientZorgTraject.text = string.Empty;
-
         selectedPatient = patient;
+
+        ClearInfoTextFields();
         await LoadTreatment();
         await LoadPatientAppointments();
+        await LoadPatientJournalEntries();
         patientName.text = $"{patient.firstName} {patient.lastName}";
+    }
+
+    public void OnSelectedJournalEntry(JournalEntry journalEntry)
+    {
+        journalTitle.text = journalEntry.title;
+        journalDescription.text = journalEntry.content;
+        journalDate.text = journalEntry.date;
+        journalRating.text = "Cijfer: " + journalEntry.rating.ToString();
+        journalAverageRating.text = "Gemiddeld cijfer: " + averageRating.ToString();
+    }
+
+    public void ClearInfoTextFields()
+    {
+        journalTitle.text = string.Empty;
+        journalDescription.text = string.Empty;
+        journalDate.text = string.Empty;
+        journalRating.text = string.Empty;
+        journalAverageRating.text = string.Empty;
+
+        afspraakTitel.text = string.Empty;
+        afspraakBeschrijving.text = string.Empty;
+        appointmentNr.text = string.Empty;
+        patientZorgTraject.text = string.Empty;
+
+        appointmentPage = 0;
+        patientAppointments.Clear();
+
+        foreach (Transform child in journalContainer)
+        {
+            Destroy(child.gameObject);
+        }
     }
 
     private async Task LoadPatientAppointments()
@@ -162,9 +208,13 @@ public class ArtsScherm : MonoBehaviour
             selectedPatientTreatment = treatment.Data;
         }
     }
-    
+
     public void CycleAppointments(bool goingForward)
     {
+        if (patientAppointments.Count == 0)
+        {
+            return;
+        }
         if (goingForward)
         {
             if (appointmentPage + 1 <= patientAppointments.Count - 1)
@@ -184,6 +234,71 @@ public class ArtsScherm : MonoBehaviour
                 afspraakBeschrijving.text = patientAppointments[appointmentPage].description;
                 appointmentNr.text = $"{appointmentPage + 1}/{patientAppointments.Count}";
             }
+        }
+    }
+
+    private async Task LoadPatientJournalEntries()
+    {
+        var result = await journalApiClient.ReadJournalEntriesAsync(selectedPatient.id);
+        if (result is WebRequestError error)
+        {
+            Debug.LogError("Failed to load journal entries: " + error.ErrorMessage);
+            return;
+        }
+        else if (result is WebRequestData<List<JournalEntry>> journalEntries)
+        {
+            averageRating = 0;
+
+            foreach (Transform child in journalContainer)
+            {
+                Destroy(child.gameObject);
+            }
+
+            foreach (var entry in journalEntries.Data)
+            {
+                averageRating += entry.rating;
+                GameObject journalCard = Instantiate(journalPrefab, journalContainer);
+                TMP_Text journalCardText = journalCard.GetComponentInChildren<TMP_Text>();
+
+                if (journalCardText != null)
+                {
+                    journalCardText.text = entry.title;
+                    Button btnComponent = journalCard.GetComponent<Button>();
+                    if (btnComponent is not null)
+                    {
+                        btnComponent.onClick.AddListener(() => OnSelectedJournalEntry(entry));
+                    }
+                }
+            }
+            averageRating /= journalEntries.Data.Count;
+            averageRating = System.Math.Round(averageRating, 1);
+        }
+    }
+
+    public async void SetAppointmentDate()
+    {
+        string filledInDate = dateSetter.text;
+        string format = "yyyy-MM-dd";
+
+        CultureInfo provider = CultureInfo.InvariantCulture;
+
+        if (DateTime.TryParseExact(filledInDate, format, provider, DateTimeStyles.None, out DateTime result))
+        {
+            patientPersonalAppointments[appointmentPage].appointmentDate = result.ToString();
+            var resultUpdatedAppointment = await patientApiClient.UpdatePersonalAppointmentFromPatientAsync(selectedPatient.id, patientPersonalAppointments[appointmentPage].id, patientPersonalAppointments[appointmentPage]);
+
+            if(resultUpdatedAppointment is WebRequestError error)
+            {
+                Debug.LogWarning("Error updating appointment date: " + error.ErrorMessage);
+            }
+            else if (resultUpdatedAppointment is WebRequestData<PersonalAppointments> updatedAppointment)
+            {
+                Debug.Log("Appointment date updated successfully.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Invalid date format.");
         }
     }
 }

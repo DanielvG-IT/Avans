@@ -153,9 +153,9 @@ public class PatientApiClient : MonoBehaviour
     /// <returns>
     /// An <see cref="IWebRequestReponse"/> containing the response data parsed as a <see cref="PersonalAppointments"/>.
     /// </returns>
-    public async Awaitable<IWebRequestReponse> UpdatePersonalAppointmentFromPatientAsync(string patientId, PersonalAppointments personalAppointment )
+    public async Awaitable<IWebRequestReponse> UpdatePersonalAppointmentFromPatientAsync(string patientId, string appointmentId, PersonalAppointments personalAppointment)
     {
-        string route = $"/api/v1/patient/{patientId}/appointments";
+        string route = $"/api/v1/patient/{patientId}/appointments/{appointmentId}";
         string data = JsonUtility.ToJson(personalAppointment);
 
         IWebRequestReponse webRequestResponse = await webClient.SendPutRequestAsync(route, data);
