@@ -28,6 +28,13 @@ namespace HQB.WebApi.Repositories
             return await connection.QueryFirstOrDefaultAsync<Doctor>(sql, new { Id = id });
         }
 
+        public async Task<Doctor?> GetDoctorByUserIDAsync(Guid userId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            const string sql = "SELECT * FROM Doctor WHERE UserID = @UserID";
+            return await connection.QueryFirstOrDefaultAsync<Doctor>(sql, new { UserID = userId });
+        }
+
         public async Task<int> AddDoctorAsync(Doctor doctor)
         {
             using var connection = new SqlConnection(_connectionString);

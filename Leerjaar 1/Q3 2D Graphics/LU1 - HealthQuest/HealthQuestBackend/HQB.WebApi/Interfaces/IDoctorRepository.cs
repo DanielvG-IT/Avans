@@ -20,6 +20,13 @@ public interface IDoctorRepository
     Task<Doctor?> GetDoctorByIdAsync(Guid id);
 
     /// <summary>
+    /// Retrieves a doctor by their UserID asynchronously.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user linked to a doctor.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the doctor entity if found; otherwise, null.</returns>
+    Task<Doctor?> GetDoctorByUserIDAsync(Guid userId);
+
+    /// <summary>
     /// Adds a new doctor asynchronously.
     /// </summary>
     /// <param name="doctor">The doctor entity to add.</param>

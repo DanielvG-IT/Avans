@@ -11,12 +11,14 @@ namespace HQB.WebApi.Controllers
         private readonly ILogger<DoctorsController> _logger;
         private readonly IDoctorRepository _doctorRepository;
         private readonly IPatientRepository _patientRepository;
+        private readonly IAuthenticationService _authenticationService;
 
-        public DoctorsController(ILogger<DoctorsController> logger, IDoctorRepository doctorRepository, IPatientRepository patientRepository)
+        public DoctorsController(ILogger<DoctorsController> logger, IDoctorRepository doctorRepository, IPatientRepository patientRepository, IAuthenticationService authenticationService)
         {
             _logger = logger;
             _doctorRepository = doctorRepository;
             _patientRepository = patientRepository;
+            _authenticationService = authenticationService;
         }
 
         [HttpGet(Name = "GetAllDoctors")]
@@ -73,6 +75,41 @@ namespace HQB.WebApi.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occurred while fetching doctor with ID {id}.");
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
+        }
+
+        [HttpGet("whoami", Name = "GetDoctorByUserID")]
+        public async Task<ActionResult<Doctor>> GetDoctorByUserID()
+        {
+            var userId = _authenticationService.GetCurrentAuthenticatedUserId();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+            if (!Guid.TryParse(userId, out var parsedUserId))
+            {
+                return BadRequest("Invalid user ID format.");
+            }
+            if (parsedUserId == Guid.Empty)
+            {
+                return BadRequest("User ID cannot be empty.");
+            }
+
+            try
+            {
+                var userRoles = await _authenticationService.GetCurrentAuthenticatedUserRoles();
+                if (!userRoles.Contains("Doctor"))
+                {
+                    return Forbid("You are not the doctor!");
+                }
+
+                var doctor = await _doctorRepository.GetDoctorByUserIDAsync(Guid.Parse(userId));
+                return Ok(doctor);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while fetching doctor with ID {userId}.");
                 return StatusCode(500, "An error occurred while processing your request.");
             }
         }
