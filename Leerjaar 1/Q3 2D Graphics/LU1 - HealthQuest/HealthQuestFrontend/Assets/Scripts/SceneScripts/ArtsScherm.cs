@@ -285,7 +285,7 @@ public class ArtsScherm : MonoBehaviour
         if (DateTime.TryParseExact(filledInDate, format, provider, DateTimeStyles.None, out DateTime result))
         {
             patientPersonalAppointments[appointmentPage].appointmentDate = result.ToString();
-            var resultUpdatedAppointment = await patientApiClient.UpdatePersonalAppointmentFromPatientAsync(selectedPatient.id, patientPersonalAppointments[appointmentPage].id patientPersonalAppointments[appointmentPage]);
+            var resultUpdatedAppointment = await patientApiClient.UpdatePersonalAppointmentFromPatientAsync(selectedPatient.id, patientPersonalAppointments[appointmentPage].id, patientPersonalAppointments[appointmentPage]);
 
             if(resultUpdatedAppointment is WebRequestError error)
             {
