@@ -8,11 +8,11 @@ public class GanzenboordManager : MonoBehaviour
 {
     public int CompletedLevels => completedAppointments;
     public int TotalLevels => appointments.Count;
-    public List<AppointmentWithNr> Appointments => appointments;
+    public List<Appointment> Appointments => appointments;
 
     private int completedAppointments;
     private ApiClientManager apiClientManager;
-    private List<AppointmentWithNr> appointments;
+    private List<Appointment> appointments;
 
     public async Task Initialize()
     {
@@ -29,7 +29,7 @@ public class GanzenboordManager : MonoBehaviour
             var treatmentId = apiClientManager.CurrentTreatment.id;
             var response = await apiClientManager.AppointmentApiClient.ReadAppointmentsByTreatmentIdAsync(treatmentId);
 
-            if (response is WebRequestData<List<AppointmentWithNr>> dataResponse)
+            if (response is WebRequestData<List<Appointment>> dataResponse)
             {
                 appointments = dataResponse.Data;
             }
@@ -72,20 +72,21 @@ public class GanzenboordManager : MonoBehaviour
 
         try
         {
-            var appointment = GetAppointment(index);
-            var response = await apiClientManager.PatientApiClient.AddCompletedAppointmentsToPatientAsync(
-                apiClientManager.CurrentPatient.id,
-                appointment.id,
-                DateTime.Now
-            );
+            //var appointment = GetAppointment(index);
+            //var response = await apiClientManager.PatientApiClient.AddCompletedAppointmentsToPatientAsync(
+            //    apiClientManager.CurrentPatient.id,
+            //    appointment.id,
+            //    DateTime.Now
+            //);
 
-            if (response is WebRequestError error)
-            {
-                Debug.LogError("Error: " + error.ErrorMessage);
-                return false;
-            }
+            //if (response is WebRequestError error)
+            //{
+            //    Debug.LogError("Error: " + error.ErrorMessage);
+            //    return false;
+            //}
 
-            return true;
+            //return true;
+            return false; // TODO: Fix this methode
         }
         catch (Exception ex)
         {

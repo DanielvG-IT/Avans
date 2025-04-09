@@ -104,7 +104,7 @@ public class MonitorScherm : MonoBehaviour
                 Debug.LogError(appointmentError.ErrorMessage);
                 return;
             }
-            else if (appointmentResult is WebRequestData<List<AppointmentWithNr>> appointmentData)
+            else if (appointmentResult is WebRequestData<List<Appointment>> appointmentData)
             {
                 foreach (Transform child in appointmentView)
                 {

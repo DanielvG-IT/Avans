@@ -107,7 +107,6 @@ public class DagboekScherm : MonoBehaviour
             content = inputDescription.text,
             rating = Convert.ToInt32(inputRating.text),
             date = DateTime.Now.ToString(),
-            guardianID = ApiClientManager.Instance.CurrentGuardian.id,
             patientID = ApiClientManager.Instance.CurrentPatient.id
         };
 
@@ -277,7 +276,6 @@ public class DagboekScherm : MonoBehaviour
             content = inputDescription.text,
             rating = Convert.ToInt32(inputRating.text),
             date = DateTime.Now.ToString(),
-            guardianID = ApiClientManager.Instance.CurrentGuardian.id,
             patientID = ApiClientManager.Instance.CurrentPatient.id
         };
 
@@ -285,24 +283,14 @@ public class DagboekScherm : MonoBehaviour
         if (journalUpdateReturn is WebRequestError journalUpdateError)
         {
             Debug.LogWarning("Updating journal failed: " + journalUpdateError.ErrorMessage);
-            switch(journalUpdateError.StatusCode)
+            userErrorMessageNL.text = journalUpdateError.StatusCode switch
             {
-                case 404:
-                    userErrorMessageNL.text = "Geen dagboek verhaal gevonden om aan te passen.";
-                    break;
-                case 400:
-                    userErrorMessageNL.text = "Je hebt iets fout ingevuld. Vergeet niet om alle velden in te vullen.";
-                    break;
-                case 403:
-                    userErrorMessageNL.text = "Je mag niet een ander iemand zijn dagboek aanpassen!";
-                    break;
-                case 500:
-                    userErrorMessageNL.text = "Er ging iets mis bij ons...";
-                    break;
-                default:
-                    userErrorMessageNL.text = "Er is iets fout gegaan.";
-                    break;
-            }
+                404 => "Geen dagboek verhaal gevonden om aan te passen.",
+                400 => "Je hebt iets fout ingevuld. Vergeet niet om alle velden in te vullen.",
+                403 => "Je mag niet een ander iemand zijn dagboek aanpassen!",
+                500 => "Er ging iets mis bij ons...",
+                _ => "Er is iets fout gegaan.",
+            };
             userErrorMessageEN.text = journalUpdateError.ErrorMessage;
             return;
         }

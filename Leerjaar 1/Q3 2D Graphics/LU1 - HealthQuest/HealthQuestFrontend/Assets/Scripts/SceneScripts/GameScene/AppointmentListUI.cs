@@ -25,7 +25,7 @@ public class AppointmentListUI : MonoBehaviour
 
         switch (response)
         {
-            case WebRequestData<List<AppointmentWithNr>> dataResponse:
+            case WebRequestData<List<Appointment>> dataResponse:
                 {
                     if (dataResponse.Data == null || dataResponse.Data.Count == 0)
                     {
