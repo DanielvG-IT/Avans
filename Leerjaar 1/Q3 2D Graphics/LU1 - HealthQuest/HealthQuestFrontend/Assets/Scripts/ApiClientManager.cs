@@ -1,8 +1,5 @@
 using UnityEngine;
-using System;
 using System.Timers;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 
 public class ApiClientManager : MonoBehaviour
 {
