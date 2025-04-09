@@ -27,6 +27,9 @@ EditorBuildSettings:
     path: Assets/Scenes/DagboekScherm.unity
     guid: 5dd2b43ab87c4e643b1f1dcdd6b4de3b
   - enabled: 1
+    path: Assets/Scenes/ArtsScherm.unity
+    guid: 044f669f1ac191a4a8390806d34dc400
+  - enabled: 1
     path: Assets/Scenes/StickerBoek_TrajectZonder.unity
     guid: 64a7f8b5c5faf7e41b8b9aad96a320c9
   - enabled: 1
