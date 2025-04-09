@@ -79,7 +79,7 @@ namespace HQB.WebApi.Controllers
             }
         }
 
-        [HttpGet("me/current/doctor", Name = "GetCurrentDoctor")]
+        [HttpGet("me", Name = "GetCurrentDoctor")]
         public async Task<ActionResult<Doctor>> GetCurrentDoctor()
         {
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();
@@ -105,6 +105,11 @@ namespace HQB.WebApi.Controllers
                 }
 
                 var doctor = await _doctorRepository.GetDoctorByUserIDAsync(Guid.Parse(userId));
+                if (doctor is null)
+                {
+                    return BadRequest("Doctor is null.");
+                }
+                
                 return Ok(doctor);
             }
             catch (Exception ex)
