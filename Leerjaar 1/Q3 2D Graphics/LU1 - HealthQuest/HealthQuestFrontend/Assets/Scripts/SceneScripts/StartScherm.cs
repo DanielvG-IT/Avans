@@ -31,6 +31,7 @@ public class StartScreen : MonoBehaviour
 
     private void Start()
     {
+        AudioManager.Instance.StartMusic();
         InitializePanels();
         userApiClient = ApiClientManager.Instance.UserApiClient;
         guardianApiClient = ApiClientManager.Instance.GuardianApiClient;
@@ -167,6 +168,19 @@ public class StartScreen : MonoBehaviour
                 return;
             }
 
+            // Check roles
+            var rolesResult = await userApiClient.GetRole();
+            var rolesData = rolesResult as WebRequestData<string>;
+            if (rolesData != null && rolesData.Data != null)
+            {
+                if (rolesData.Data.Contains("[\"Doctor\"]"))
+                {
+                    AudioManager.Instance.StopMusic();
+                    await SceneManager.LoadSceneAsync("ArtsScherm");
+                    return;
+                }
+            }
+
             var guardianResult = await guardianApiClient.ReadGuardianAsync();
             if (guardianResult is WebRequestError guardianError)
             {
@@ -193,33 +207,8 @@ public class StartScreen : MonoBehaviour
             }
 
             Debug.Log("Login successful."); // TODO: Show the user a success message
-
-            AudioManager.audioSource.PlayOneShot(AudioManager.soundEffects[0]);
-
-            // Check roles
-            var rolesResult = await userApiClient.GetRole();
-            if (rolesResult is WebRequestData<IList<string>> rolesData && rolesData?.Data != null)
-            {
-                if (rolesData.Data.Contains("Doctor"))
-                {
-                    await SceneManager.LoadSceneAsync("ArtsScherm");
-                    return;
-                }
-                else
-                {
-                    await SceneManager.LoadSceneAsync("PatientScherm");
-                }
-            }
-            else if (rolesResult is WebRequestError rolesError)
-            {
-                Debug.Log($"Error retrieving roles: {rolesError.ErrorMessage}");
-                await SceneManager.LoadSceneAsync("PatientScherm");
-            }
-            else
-            {
-                Debug.Log($"Error retrieving roles");
-                await SceneManager.LoadSceneAsync("PatientScherm");
-            }
+            AudioManager.Instance.audioSource.PlayOneShot(AudioManager.Instance.soundEffects[0]);
+            await SceneManager.LoadSceneAsync("PatientScherm");
         }
         catch (Exception ex)
         {

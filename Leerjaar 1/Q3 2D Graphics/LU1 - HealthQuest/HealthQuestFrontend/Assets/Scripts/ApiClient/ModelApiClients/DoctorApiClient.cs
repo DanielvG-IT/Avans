@@ -123,4 +123,19 @@ public class DoctorApiClient : MonoBehaviour
         IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
         return JsonHelper.ParseListResponse<Patient>(webRequestResponse);
     }
+
+    /// <summary>
+    /// Retrieves a list of all doctors from the API.
+    /// </summary>
+    /// <returns>
+    /// An awaitable task that resolves to an <see cref="IWebRequestReponse"/> containing a <see cref="Doctor"/> object.
+    /// </returns>
+    /// <exception cref="WebRequestException">Thrown if the GET request fails.</exception>
+    public async Awaitable<IWebRequestReponse> ReadDoctorByUserID()
+    {
+        string route = $"/api/v1/doctors/me";
+
+        IWebRequestReponse webRequestResponse = await webClient.SendGetRequestAsync(route);
+        return JsonHelper.ParseResponse<Doctor>(webRequestResponse);
+    }
 }
