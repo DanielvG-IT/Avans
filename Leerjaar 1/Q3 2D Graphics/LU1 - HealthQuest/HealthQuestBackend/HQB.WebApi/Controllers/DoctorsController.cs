@@ -79,8 +79,8 @@ namespace HQB.WebApi.Controllers
             }
         }
 
-        [HttpGet("whoami", Name = "GetDoctorByUserID")]
-        public async Task<ActionResult<Doctor>> GetDoctorByUserID()
+        [HttpGet("current", Name = "GetCurrentDoctor")]
+        public async Task<ActionResult<Doctor>> GetCurrentDoctor()
         {
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();
             if (string.IsNullOrEmpty(userId))
