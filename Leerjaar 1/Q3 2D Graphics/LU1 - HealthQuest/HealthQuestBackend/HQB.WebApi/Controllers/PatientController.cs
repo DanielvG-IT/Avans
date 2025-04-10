@@ -470,12 +470,12 @@ namespace HQB.WebApi.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
             }
         }
-        [HttpPut("{id}/appointments/{appointmentId}", Name = "UpdatePersonalAppointment")]
-        public async Task<IActionResult> UpdatePersonalAppointment(Guid id, Guid appointmentId, [FromBody] PersonalAppointments personalAppointment)
+        [HttpPut("{id}/appointments/{personalAppointmentId}", Name = "UpdatePersonalAppointment")]
+        public async Task<IActionResult> UpdatePersonalAppointment(Guid id, Guid personalAppointmentId, [FromBody] PersonalAppointments personalAppointment)
         {
             try
             {
-                if (id == Guid.Empty || appointmentId == Guid.Empty)
+                if (id == Guid.Empty || personalAppointmentId == Guid.Empty)
                 {
                     _logger.LogWarning("Invalid patient ID or appointment ID");
                     return BadRequest("Invalid patient ID or appointment ID");
@@ -493,11 +493,11 @@ namespace HQB.WebApi.Controllers
                     return BadRequest(ModelState);
                 }
 
-                _logger.LogInformation("Updating personal appointment with ID {AppointmentId} for patient with ID {PatientId}", appointmentId, id);
-                var existingAppointment = await _personalAppointmentsRepository.GetPersonalAppointmentById(appointmentId);
+                _logger.LogInformation("Updating personal appointment with ID {AppointmentId} for patient with ID {PatientId}", personalAppointmentId, id);
+                var existingAppointment = await _personalAppointmentsRepository.GetPersonalAppointmentById(personalAppointmentId);
                 if (existingAppointment is null)
                 {
-                    _logger.LogWarning("Personal appointment with ID {AppointmentId} not found", appointmentId);
+                    _logger.LogWarning("Personal appointment with ID {AppointmentId} not found", personalAppointmentId);
                     return NotFound();
                 }
 
@@ -517,10 +517,10 @@ namespace HQB.WebApi.Controllers
                 }
 
                 // Ensure the appointment ID matches
-                if (existingAppointment.AppointmentID != appointmentId)
+                if (existingAppointment.AppointmentID != personalAppointmentId)
                 {
-                    _logger.LogWarning("Appointment ID {AppointmentId} does not match the personal appointment's appointment ID {ExistingAppointmentId}", appointmentId, existingAppointment.AppointmentID);
-                    return BadRequest($"Appointment ID {appointmentId} does not match the personal appointment's appointment ID {existingAppointment.AppointmentID}");
+                    _logger.LogWarning("Appointment ID {AppointmentId} does not match the personal appointment's appointment ID {ExistingAppointmentId}", personalAppointmentId, existingAppointment.AppointmentID);
+                    return BadRequest($"Appointment ID {personalAppointmentId} does not match the personal appointment's appointment ID {existingAppointment.AppointmentID}");
                 }
 
                 // Ensure ID's do not change during update
@@ -535,12 +535,71 @@ namespace HQB.WebApi.Controllers
                     return StatusCode(StatusCodes.Status500InternalServerError, "Error updating personal appointment");
                 }
 
-                _logger.LogInformation("Personal appointment with ID {AppointmentId} updated successfully for patient with ID {PatientId}", appointmentId, id);
+                _logger.LogInformation("Personal appointment with ID {AppointmentId} updated successfully for patient with ID {PatientId}", personalAppointmentId, id);
                 return Ok(personalAppointment);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while updating the personal appointment.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
+            }
+        }
+
+        [HttpPut("{id}/appointments/{personalAppointmentId}/complete", Name = "CompletePersonalAppointment")]
+        public async Task<IActionResult> CompletePersonalAppointment(Guid id, Guid personalAppointmentId)
+        {
+            try
+            {
+                if (id == Guid.Empty || personalAppointmentId == Guid.Empty)
+                {
+                    _logger.LogWarning("Invalid patient ID or appointment ID");
+                    return BadRequest("Invalid patient ID or appointment ID");
+                }
+
+                _logger.LogInformation("Getting patient with ID {PatientId}", id);
+                var patient = await _patientRepository.GetPatientByIdAsync(id);
+                if (patient == null)
+                {
+                    _logger.LogWarning("Patient with ID {PatientId} not found", id);
+                    return NotFound();
+                }
+
+                _logger.LogInformation("Getting personal appointment with ID {AppointmentId}", personalAppointmentId);
+                var existingPersonalAppointment = await _personalAppointmentsRepository.GetPersonalAppointmentById(personalAppointmentId);
+                if (existingPersonalAppointment == null)
+                {
+                    _logger.LogWarning("Personal appointment with ID {AppointmentId} not found", personalAppointmentId);
+                    return NotFound();
+                }
+
+                // Ensure the patient ID exists
+                if (patient.ID == Guid.Empty)
+                {
+                    _logger.LogWarning("Patient with ID {PatientId} not found", id);
+                    return NotFound();
+                }
+
+                // Ensure the patient ID matches
+                if (patient.ID != existingPersonalAppointment.PatientID)
+                {
+                    _logger.LogWarning("Patient ID {PatientId} does not match the personal appointment's patient ID {AppointmentPatientId}", id, existingPersonalAppointment.PatientID);
+                    return BadRequest($"Patient ID {id} does not match the personal appointment's patient ID {existingPersonalAppointment.PatientID}");
+                }
+
+                _logger.LogInformation("Completing personal appointment with ID {AppointmentId} for patient with ID {PatientId}", personalAppointmentId, id);
+
+                var result = await _personalAppointmentsRepository.MarkAppointmentAsCompleted(personalAppointmentId);
+                if (result == 0)
+                {
+                    _logger.LogError("Error completing personal appointment");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Error completing personal appointment");
+                }
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while completing the personal appointment.");
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
             }
         }
