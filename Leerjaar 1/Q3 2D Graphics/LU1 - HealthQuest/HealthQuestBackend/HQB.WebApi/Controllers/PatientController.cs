@@ -516,8 +516,8 @@ namespace HQB.WebApi.Controllers
                     return BadRequest($"Patient ID {id} does not match the personal appointment's patient ID {existingAppointment.PatientID}");
                 }
 
-                // Ensure the appointment ID matches
-                if (existingAppointment.AppointmentID != personalAppointmentId)
+                // Ensure the personal appointment ID matches
+                if (existingAppointment.id != personalAppointmentId)
                 {
                     _logger.LogWarning("Appointment ID {AppointmentId} does not match the personal appointment's appointment ID {ExistingAppointmentId}", personalAppointmentId, existingAppointment.AppointmentID);
                     return BadRequest($"Appointment ID {personalAppointmentId} does not match the personal appointment's appointment ID {existingAppointment.AppointmentID}");
@@ -527,6 +527,7 @@ namespace HQB.WebApi.Controllers
                 personalAppointment.ID = existingAppointment.ID;
                 personalAppointment.PatientID = existingAppointment.PatientID;
                 personalAppointment.AppointmentID = existingAppointment.AppointmentID;
+                personalAppointment.Sequence = existingAppointment.Sequence;
 
                 var result = await _personalAppointmentsRepository.UpdatePersonalAppointment(personalAppointment);
                 if (result == 0)
