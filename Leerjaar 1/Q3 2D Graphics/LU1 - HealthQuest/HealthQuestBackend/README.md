@@ -1,59 +1,56 @@
-# HealthQuestBackend
+# HealthQuest Backend
 
-## Overview
-HealthQuestBackend powers the HealthQuest application, offering APIs and services to manage health-related data and operations.
+Welcome to the **HealthQuest Backend** repository! This project serves as the backend for the HealthQuest application, built using .NET Web API to provide robust and scalable services.
 
-## Project Structure
-```plaintext
-.gitignore
-HealthQuestBackend.sln
-LICENSE
-README.md
-.github/
-    workflows/
-        pipeline.yml
-Docs/
-    Design/
-    Tests/
-HQB.Tests/
-    HQB.Tests.csproj
-    Controllers/
-    TestResults/
-HQB.WebApi/
-    appsettings.Development.json
-    appsettings.json
-    HQB.WebApi.csproj
-    Program.cs
-    Controllers/
-    Interfaces/
-    Models/
-    Properties/
-    Repositories/
-    Services/
+## Features
+
+- RESTful API for managing health-related data.
+- Secure authentication and authorization.
+- Scalable and modular architecture.
+
+## Prerequisites
+
+- **.NET SDK** (v6.0 or higher)
+- **SQL Server** (or any other configured database)
+
+## Installation
+
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/L1Q3-HealthQuest/HealthQuestBackend.git
+    cd HealthQuestBackend
+    ```
+
+2. Restore dependencies:
+    ```bash
+    dotnet restore
+    ```
+
+3. Run the application:
+    ```bash
+    dotnet run
+    ```
+
+## Scripts
+
+- `dotnet run`: Run the application in development mode.
+- `dotnet build`: Build the project.
+- `dotnet test`: Run tests.
+
+## Folder Structure
+
 ```
-
-## Getting Started
-Follow these steps to set up the HealthQuestBackend:
-
-1. **Clone the repository:**
-   ```sh
-   git clone https://github.com/L1Q3-HealthQuest/HealthQuestBackend.git
-   ```
-2. **Navigate to the project directory:**
-   ```sh
-   cd HealthQuestBackend
-   ```
-3. **Build the solution:**
-   ```sh
-   dotnet build
-   ```
-4. **Run the application:**
-   ```sh
-   dotnet run --project HQB.WebApi/HQB.WebApi.csproj
-   ```
+HealthQuestBackend/
+├── Docs/
+├── HQB.WebApi/
+├── HQB.Tests/
+├── HealthQuestBackend.sln
+└── README.md
+```
 
 ## Support
 If you encounter any issues, please open an issue on GitHub.
 
 ## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+This project is licensed under the [MIT License](LICENSE).
