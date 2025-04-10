@@ -18,8 +18,8 @@ public class GanzenBordUI : MonoBehaviour
     public GameObject UserHUD;
 
     [Header("Settings")]
-    public float cameraSpeed = 5f;
-    public float gooseSpeed = 125f;
+    public float cameraSpeed = 10f;
+    public float gooseSpeed = 250f;
     public Color completedColor = Color.green;
     public bool debugMode = false;
 
@@ -39,12 +39,15 @@ public class GanzenBordUI : MonoBehaviour
         await boardManager.Initialize();
 
         InitializeLevels();
-        InitializeGoose();
 
         if (DagboekScherm.clearingLevel != 0)
         {
             CompleteLevel(DagboekScherm.clearingLevel - 1); // Compensate for counting from 1
             DagboekScherm.clearingLevel = 0;
+        }
+        else
+        {
+            InitializeGoose();
         }
     }
 
@@ -119,14 +122,14 @@ public class GanzenBordUI : MonoBehaviour
         int targetIndex = Mathf.Clamp(lastCompletedIndex + 1, 0, levelButtons.Count - 1);
         goose.position = levelButtons[targetIndex].transform.position;
         currentLevel = targetIndex;
-
-        cameraTarget = new Vector3(
-            levelButtons[targetIndex].transform.position.x,
-            mainCamera.transform.position.y,
-            mainCamera.transform.position.z
-        );
-
         gooseOriginalScale = goose.localScale;
+
+        UpdateCamera(targetIndex);
+    }
+
+    private void UpdateCamera(int targetIndex)
+    {
+        cameraTarget = new Vector3(levelButtons[targetIndex].transform.position.x, mainCamera.transform.position.y, mainCamera.transform.position.z);
         mainCamera.transform.position = cameraTarget;
     }
 
@@ -177,9 +180,9 @@ public class GanzenBordUI : MonoBehaviour
         {
             Vector3 targetPos = levelButtons[i].transform.position;
 
-            while (Vector3.Distance(goose.position, targetPos) > 0.2f)
+            while (Vector3.Distance(goose.position, targetPos) > 0.01f)
             {
-                // Update goose scale based on movement direction
+                // This is to flip the goose when moving left or right
                 goose.localScale = new Vector3(
                     Mathf.Sign(targetPos.x - goose.position.x) * Mathf.Abs(gooseOriginalScale.x),
                     gooseOriginalScale.y,
@@ -188,9 +191,13 @@ public class GanzenBordUI : MonoBehaviour
 
                 // Move goose towards target position
                 goose.position = Vector3.MoveTowards(goose.position, targetPos, Time.deltaTime * gooseSpeed);
+
+                // Smoothly move the camera towards the goose
+                Vector3 cameraSmoothTarget = new Vector3(goose.position.x, mainCamera.transform.position.y, mainCamera.transform.position.z);
+                mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, cameraSmoothTarget, Time.deltaTime * cameraSpeed);
+
                 yield return null;
             }
-
             yield return new WaitForSeconds(0.2f);
         }
 
@@ -207,8 +214,8 @@ public class GanzenBordUI : MonoBehaviour
         currentPopup = Instantiate(popupPrefab, UserHUD.transform);
         currentPopup.transform.SetAsLastSibling();
 
-        Appointment appointment = boardManager.GetAppointment(index);
-        PersonalAppointments personal = index < personalAppointments.Count ? personalAppointments[index] : null;
+        var appointment = boardManager.GetAppointment(index);
+        var personal = index < personalAppointments.Count ? personalAppointments[index] : null;
 
         if (appointment == null)
         {
@@ -220,8 +227,8 @@ public class GanzenBordUI : MonoBehaviour
 
         if (personal != null)
         {
-            description += $"\n\n• Datum: {(string.IsNullOrEmpty(personal.appointmentDate) ? "Vraag aan je arts." : personal.appointmentDate)}";
-            description += $"\n• Voltooid: {(string.IsNullOrEmpty(personal.completedDate) ? "Nee" : "Ja")}";
+            description += $"\n\n{(string.IsNullOrEmpty(personal.appointmentDate) ? "○ Datum: Vraag aan je arts." : $"■ Datum: {personal.appointmentDate}")}";
+            description += $"\n{(string.IsNullOrEmpty(personal.completedDate) ? "○ Voltooid: Nee" : "■ Voltooid: Ja")}";
         }
 
         if (currentPopup.TryGetComponent<PopUpUI>(out var popup))
@@ -256,19 +263,39 @@ public class GanzenBordUI : MonoBehaviour
 
     private async void CompleteLevel(int index)
     {
-        if (await boardManager.MarkLevelCompleted(index))
+        var success = await boardManager.MarkLevelCompleted(index);
+        if (success)
         {
             SetLevelColor(index, completedColor);
 
             await UnlockSticker(index);
             await boardManager.LoadAllAppointments();
 
+            InitializeGoose();
+            UpdateCamera(index);
             StartCoroutine(MoveGooseToLevel(index + 1));
             Debug.Log($"Level {index + 1} completed.");
         }
         else
         {
             Debug.LogError("Failed to complete level.");
+
+            int lastCompletedIndex = -1;
+            for (int i = 0; i < boardManager.personalAppointments.Count; i++)
+            {
+                if (!string.IsNullOrEmpty(boardManager.personalAppointments[i].completedDate))
+                {
+                    lastCompletedIndex = i;
+                }
+            }
+
+            if (lastCompletedIndex < 0)
+            {
+                lastCompletedIndex = 0; // No levels completed yet
+            }
+
+            UpdateCamera(lastCompletedIndex);
+            StartCoroutine(MoveGooseToLevel(lastCompletedIndex - 1));
         }
     }
 

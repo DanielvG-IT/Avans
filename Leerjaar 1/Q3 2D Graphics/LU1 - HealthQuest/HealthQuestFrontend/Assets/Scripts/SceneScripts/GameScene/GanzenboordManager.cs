@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -40,7 +41,8 @@ public class GanzenboordManager : MonoBehaviour
                 personalAppointments.Clear();
                 appointments.Clear();
 
-                personalAppointments = data.Data;
+                // Sort personal appointments by sequence
+                personalAppointments = data.Data.OrderBy(a => a.sequence).ToList();
 
                 foreach (var appointment in data.Data)
                 {
@@ -55,6 +57,9 @@ public class GanzenboordManager : MonoBehaviour
                         appointments.Add(appointmentData.Data);
                     }
                 }
+
+                // Sort appointments by sequence
+                appointments.Sort((a, b) => a.sequence.CompareTo(b.sequence));
             }
         }
         catch (Exception ex)
@@ -65,45 +70,27 @@ public class GanzenboordManager : MonoBehaviour
 
     public async Task<bool> MarkLevelCompleted(int index)
     {
-        if (!IsValidIndex(index)) return false;
+        if (!IsValidIndex(index))
+        {
+            return false;
+        }
 
         try
         {
             var personalAppointment = GetPersonalAppointment(index);
             personalAppointment.completedDate = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
 
-            // Update the personal appointment
-            var response = await patientApiClient.UpdatePersonalAppointmentFromPatientAsync(
-                ApiClientManager.Instance.CurrentPatient.id,
-                personalAppointment.id,
-                personalAppointment
-            );
+            Debug.Log($"Marking level {index} as completed.");
 
-            // Handle any errors that occurred during the request
+            // Update the personal appointment
+            var response = await patientApiClient.CompletePersonalAppointmentFromPatientAsync(ApiClientManager.Instance.CurrentPatient.id, personalAppointment.id);
             if (response is WebRequestError error)
             {
                 Debug.LogError($"Error updating appointment: {error.ErrorMessage}");
                 return false;
             }
-            else if (response is WebRequestData<PersonalAppointments> updatedAppointment)
-            {
-                if (updatedAppointment.StatusCode >= 400 && updatedAppointment.StatusCode < 500)
-                {
-                    Debug.LogError($"Error: Received {updatedAppointment.StatusCode} status code while updating appointment.");
-                    return false;
-                }
-                else if (updatedAppointment.StatusCode >= 200 && updatedAppointment.StatusCode < 300)
-                {
-                    Debug.Log($"Level {index} marked as completed.");
-                }
-                else
-                {
-                    Debug.LogError($"Unexpected status code: {updatedAppointment.StatusCode}");
-                    return false;
-                }
-            }
-
-            return false; // Default return value if no conditions are met
+            
+            return true;
         }
         catch (Exception ex)
         {
