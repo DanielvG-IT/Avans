@@ -517,7 +517,7 @@ namespace HQB.WebApi.Controllers
                 }
 
                 // Ensure the personal appointment ID matches
-                if (existingAppointment.id != personalAppointmentId)
+                if (existingAppointment.ID != personalAppointmentId)
                 {
                     _logger.LogWarning("Appointment ID {AppointmentId} does not match the personal appointment's appointment ID {ExistingAppointmentId}", personalAppointmentId, existingAppointment.AppointmentID);
                     return BadRequest($"Appointment ID {personalAppointmentId} does not match the personal appointment's appointment ID {existingAppointment.AppointmentID}");
