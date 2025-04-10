@@ -260,8 +260,7 @@ public class ArtsScherm : MonoBehaviour
                 afspraakBeschrijving.text = patientAppointments[appointmentPage].description;
                 appointmentNr.text = $"{appointmentPage + 1}/{patientAppointments.Count}";
                 if (patientPersonalAppointments[appointmentPage].appointmentDate is not null)
-                    dateSetter.text = patientPersonalAppointments[appointmentPage].appointmentDate;
-            }
+                    dateSetter.text = patientPersonalAppointments[appointmentPage].appointmentDate;            }
         }
     }
 
