@@ -24,6 +24,7 @@ public class MonitorScherm : MonoBehaviour
     public TMP_Text journalDescription;
     public TMP_Text journalRating;
     public TMP_Text journalEntryDate;
+    public GameObject journalCanvas;
 
     [Header("LeftBar")]
     public Transform journalView;
@@ -32,6 +33,10 @@ public class MonitorScherm : MonoBehaviour
 
     [Header ("TopBar")]
     public TMP_Dropdown childSelector;
+
+    [Header("LockedOut")]
+    public GameObject lockedOutPanel;
+    public TMP_Text lockedOutPatient;
 
     private PatientApiClient patientApiClient;
     private TreatmentApiClient treatmentApiClient;
@@ -85,6 +90,7 @@ public class MonitorScherm : MonoBehaviour
         {
             patients = kinderenVanVoogd.Data;
             selectedPatient = patients.FirstOrDefault();
+            ImplementPatientPrivacySettings(selectedPatient.guardianAccessJournal);
             PopulateDropdown();
         }
     }
@@ -264,6 +270,7 @@ public class MonitorScherm : MonoBehaviour
         selectedPatient = patients[index];
         Debug.Log($"Selected patient: {selectedPatient.firstName} {selectedPatient.lastName}");
 
+        ImplementPatientPrivacySettings(selectedPatient.guardianAccessJournal);
         LoadSequence();
     }
 
@@ -294,5 +301,21 @@ public class MonitorScherm : MonoBehaviour
         journalRating.text = "";
         journalDescription.text = "";
         journalEntryDate.text = "";
+    }
+
+    private void ImplementPatientPrivacySettings(bool guardianHasAccess)
+    {
+        if (!guardianHasAccess)
+        {
+            journalCanvas.gameObject.SetActive(false);
+            lockedOutPanel.SetActive(true);
+            lockedOutPatient.text = $"{selectedPatient.firstName} {selectedPatient.lastName}";
+        }
+        else
+        {
+            journalCanvas.gameObject.SetActive(true);
+            lockedOutPanel.SetActive(false);
+            lockedOutPatient.text = string.Empty;
+        }
     }
 }
