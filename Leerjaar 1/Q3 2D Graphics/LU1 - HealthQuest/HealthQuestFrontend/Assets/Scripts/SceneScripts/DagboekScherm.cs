@@ -36,6 +36,10 @@ public class DagboekScherm : MonoBehaviour
     [Header("PopUp")]
     public TMP_Text userErrorMessageNL;
     public TMP_Text userErrorMessageEN;
+    public Toggle doktorenToegang;
+    public Text doktorenToegangText;
+    public Toggle oudersToegang;
+    public Text oudersToegangText;
 
     private PatientApiClient patientApiClient;
     private JournalApiClient journalApiClient;
@@ -69,6 +73,7 @@ public class DagboekScherm : MonoBehaviour
         await LoadJournalEntries();
         SetAvatar();
         ShowJournalEntry(journalPage);
+        LoadToggles();
     }
 
     private async Task LoadJournalEntries()
@@ -339,5 +344,88 @@ public class DagboekScherm : MonoBehaviour
         inputRating.text = string.Empty;
         inputDescription.text = string.Empty;
         updatingJournalEntry = false;
+    }
+
+    public void LoadToggles()
+    {
+        if (currentPatient.doctorAccessJournal)
+        {
+            doktorenToegang.isOn = true;
+            doktorenToegangText.text = "Wel toegang";
+            doktorenToegangText.color = new Color(122f / 255f, 1f, 0f);
+        }
+        else
+        {
+            doktorenToegang.isOn = false;
+            doktorenToegangText.text = "Geen toegang";
+            doktorenToegangText.color = new Color(1f, 0f, 13f / 255f);
+        }
+
+        if (currentPatient.guardianAccessJournal)
+        {
+            oudersToegang.isOn = true;
+            oudersToegangText.text = "Wel toegang";
+            oudersToegangText.color = new Color(122f / 255f, 1f, 0f);
+        }
+        else
+        {
+            oudersToegang.isOn = false;
+            oudersToegangText.text = "Geen toegang";
+            oudersToegangText.color = new Color(1f, 0f, 13f / 255f);
+        }
+    }
+
+    public async void OnToggleChanged(bool oudersChanged)
+    {
+        if(oudersChanged)
+        {
+            currentPatient.guardianAccessJournal = oudersToegang.isOn;
+            var resultGuardian = await patientApiClient.UpdatePatient(currentPatient.id, currentPatient);
+            if(resultGuardian is WebRequestError error)
+            {
+                Debug.LogWarning("Error toggling guardian journal access: " + error.ErrorMessage);
+                return;
+            }
+            else if (resultGuardian is WebRequestData<Patient> patient)
+            {
+                Debug.Log("Updated current patient:" + patient.Data);
+            }
+
+            if (currentPatient.guardianAccessJournal)
+            {
+                oudersToegangText.text = "Wel toegang";
+                oudersToegangText.color = new Color(122f / 255f, 1f, 0f);
+            }
+            else
+            {
+                oudersToegangText.text = "Geen toegang";
+                oudersToegangText.color = new Color(1f, 0f, 13f / 255f);
+            }
+        }
+        else
+        {
+            currentPatient.doctorAccessJournal = doktorenToegang.isOn;
+            var resultDoctor = await patientApiClient.UpdatePatient(currentPatient.id, currentPatient);
+            if (resultDoctor is WebRequestError error)
+            {
+                Debug.LogWarning("Error toggling doctor journal access: " + error.ErrorMessage);
+                return;
+            }
+            else if (resultDoctor is WebRequestData<Patient> patient)
+            {
+                Debug.Log("Updated current patient:" + patient);
+            }
+
+            if (currentPatient.doctorAccessJournal)
+            {
+                doktorenToegangText.text = "Wel toegang";
+                doktorenToegangText.color = new Color(122f / 255f, 1f, 0f);
+            }
+            else
+            {
+                doktorenToegangText.text = "Geen toegang";
+                doktorenToegangText.color = new Color(1f, 0f, 13f / 255f);
+            }
+        }
     }
 }
