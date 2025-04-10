@@ -475,7 +475,6 @@ namespace HQB.WebApi.Controllers
         {
             try
             {
-                // TODO: Fix mapping string date to DateTime (cuz Unity is shit)
                 if (id == Guid.Empty || appointmentId == Guid.Empty)
                 {
                     _logger.LogWarning("Invalid patient ID or appointment ID");

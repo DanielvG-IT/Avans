@@ -22,12 +22,12 @@ public class PersonalAppointments
     /// <summary>
     /// Gets or sets the date and time when the appointment is scheduled.
     /// </summary>
-    public DateTime? AppointmentDate { get; set; }
+    public string? AppointmentDate { get; set; }
 
     /// <summary>
     /// Gets or sets the date and time when the appointment was completed.
     /// </summary>
-    public DateTime? CompletedDate { get; set; }
+    public string? CompletedDate { get; set; }
 
     /// <summary>
     /// Gets or sets if the question for the appointment is completed.
