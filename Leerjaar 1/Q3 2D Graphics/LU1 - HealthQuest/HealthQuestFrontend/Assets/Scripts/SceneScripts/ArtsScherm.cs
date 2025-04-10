@@ -25,6 +25,7 @@ public class ArtsScherm : MonoBehaviour
     public Transform doctorPatientsContainer;
 
     [Header("Bottom Field")]
+    public GameObject BottomPanel; 
     public GameObject journalPrefab;
     public Transform journalContainer;
     public TMP_Text journalTitle;
@@ -32,6 +33,10 @@ public class ArtsScherm : MonoBehaviour
     public TMP_Text journalDate;
     public TMP_Text journalRating;
     public TMP_Text journalAverageRating;
+
+    [Header("LockedOut")]
+    public GameObject lockedOutPanel;
+    public TMP_Text lockedOutPatient;
 
     //Api clients
     private DoctorApiClient doctorApiClient;
@@ -118,10 +123,27 @@ public class ArtsScherm : MonoBehaviour
         }
     }
 
+    private void ImplementPatientPrivacySettings(bool doctorHasAccess)
+    {
+        if (!doctorHasAccess)
+        {
+            BottomPanel.gameObject.SetActive(false);
+            lockedOutPanel.SetActive(true);
+            lockedOutPatient.text = $"{selectedPatient.firstName} {selectedPatient.lastName}";
+        }
+        else
+        {
+            BottomPanel.gameObject.SetActive(true);
+            lockedOutPanel.SetActive(false);
+            lockedOutPatient.text = string.Empty;
+        }
+    }
+
     public async void OnSelectedPatient(Patient patient)
     {
         selectedPatient = patient;
 
+        ImplementPatientPrivacySettings(selectedPatient.doctorAccessJournal);
         ClearInfoTextFields();
         await LoadTreatment();
         await LoadPatientAppointments();
@@ -192,6 +214,8 @@ public class ArtsScherm : MonoBehaviour
             afspraakTitel.text = patientAppointments[appointmentPage].name;
             afspraakBeschrijving.text = patientAppointments[appointmentPage].description;
             patientZorgTraject.text = selectedPatientTreatment.name;
+            if(patientPersonalAppointments[appointmentPage].appointmentDate is not null)
+                dateSetter.text = patientPersonalAppointments[appointmentPage].appointmentDate;
         }
     }
 
@@ -223,6 +247,8 @@ public class ArtsScherm : MonoBehaviour
                 afspraakTitel.text = patientAppointments[appointmentPage].name;
                 afspraakBeschrijving.text = patientAppointments[appointmentPage].description;
                 appointmentNr.text = $"{appointmentPage + 1}/{patientAppointments.Count}";
+                if (patientPersonalAppointments[appointmentPage].appointmentDate is not null)
+                    dateSetter.text = patientPersonalAppointments[appointmentPage].appointmentDate;
             }
         }
         else
@@ -233,6 +259,8 @@ public class ArtsScherm : MonoBehaviour
                 afspraakTitel.text = patientAppointments[appointmentPage].name;
                 afspraakBeschrijving.text = patientAppointments[appointmentPage].description;
                 appointmentNr.text = $"{appointmentPage + 1}/{patientAppointments.Count}";
+                if (patientPersonalAppointments[appointmentPage].appointmentDate is not null)
+                    dateSetter.text = patientPersonalAppointments[appointmentPage].appointmentDate;
             }
         }
     }
