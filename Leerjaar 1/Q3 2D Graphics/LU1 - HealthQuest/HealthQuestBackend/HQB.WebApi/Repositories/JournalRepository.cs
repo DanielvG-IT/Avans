@@ -38,8 +38,8 @@ public class JournalRepository : IJournalRepository
     {
         using var connection = new SqlConnection(_connectionString);
         const string query = @"
-                    INSERT INTO JournalEntry (ID, PatientID, GuardianID, Date, Title, Content, Rating)
-                    VALUES (@ID, @PatientID, @GuardianID, @Date, @Title, @Content, @Rating)";
+                    INSERT INTO JournalEntry (ID, PatientID, Date, Title, Content, Rating)
+                    VALUES (@ID, @PatientID, @Date, @Title, @Content, @Rating)";
         await connection.ExecuteAsync(query, journalEntry);
     }
 
@@ -48,7 +48,7 @@ public class JournalRepository : IJournalRepository
         using var connection = new SqlConnection(_connectionString);
         const string query = @"
                     UPDATE JournalEntry
-                    SET PatientID = @PatientID, GuardianID = @GuardianID, Date = @Date, 
+                    SET PatientID = @PatientID, Date = @Date, 
                         Title = @Title, Content = @Content , Rating = @Rating
                     WHERE ID = @ID";
         await connection.ExecuteAsync(query, journalEntry);
