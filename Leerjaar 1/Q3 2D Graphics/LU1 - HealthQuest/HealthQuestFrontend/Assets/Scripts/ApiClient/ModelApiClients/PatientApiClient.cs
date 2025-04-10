@@ -163,6 +163,22 @@ public class PatientApiClient : MonoBehaviour
     }
 
     /// <summary>
+    /// Updateds a personal appointment for a specific patient.
+    /// </summary>
+    /// <param name="patientId">The unique identifier of the patient.</param>
+    /// <param name="personalAppointment">The new appointment.</param>
+    /// <returns>
+    /// An <see cref="IWebRequestReponse"/> containing the response data parsed as a <see cref="PersonalAppointments"/>.
+    /// </returns>
+    public async Awaitable<IWebRequestReponse> CompletePersonalAppointmentFromPatientAsync(string patientId, string appointmentId)
+    {
+        string route = $"/api/v1/patient/{patientId}/appointments/{appointmentId}/complete";
+        string data = "";
+
+        return await webClient.SendPutRequestAsync(route, data);
+    }
+
+    /// <summary>
     /// Retrieves the list of journal entries for a specific patient.
     /// </summary>
     /// <param name="patientId">The unique identifier of the patient.</param>
