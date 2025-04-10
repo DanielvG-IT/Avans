@@ -1,9 +1,9 @@
 # HealthQuestGame
 
-Welcome to HealthQuestGame! This project is a frontend application for the HealthQuest game, designed to promote healthy living through interactive gameplay.
+Welcome to HealthQuestGame! This project is a frontend application for the HealthQuest game.
 
 ## Introduction
-HealthQuestGame is an engaging and educational game that encourages players to adopt healthier habits. The game includes various challenges and activities that promote physical, mental, and emotional well-being.
+HealthQuestGame is an engaging and educational game that playfully intoduces kids with Type 1 diabetes to the medical procedures and extra challenges that they face.
 
 ## Features
 - Interactive gameplay with health-focused challenges
