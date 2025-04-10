@@ -168,7 +168,7 @@ public class PatientApiClient : MonoBehaviour
     /// <param name="patientId">The unique identifier of the patient.</param>
     /// <param name="personalAppointment">The new appointment.</param>
     /// <returns>
-    /// An <see cref="IWebRequestReponse"/> containing the response data parsed as a <see cref="PersonalAppointments"/>.
+    /// An <see cref="IWebRequestReponse"/> containing the response data.
     /// </returns>
     public async Awaitable<IWebRequestReponse> CompletePersonalAppointmentFromPatientAsync(string patientId, string appointmentId)
     {
