@@ -52,7 +52,7 @@ public class PatientRepository : IPatientRepository
     public async Task<int> UpdatePatientAsync(Patient patient)
     {
         using var connection = new SqlConnection(_connectionString);
-        const string sqlQuery = "UPDATE Patient SET FirstName = @FirstName, LastName = @LastName, GuardianID = @GuardianID, TreatmentID = @TreatmentID, DoctorID = @DoctorID, Avatar = @Avatar WHERE ID = @Id";
+        const string sqlQuery = "UPDATE Patient SET FirstName = @FirstName, LastName = @LastName, TreatmentID = @TreatmentID, DoctorID = @DoctorID, Avatar = @Avatar, GuardianAccessJournal = @GuardianAccessJournal, DoctorAccessJournal = @DoctorAccessJournal WHERE ID = @Id";
         return await connection.ExecuteAsync(sqlQuery, patient);
     }
 

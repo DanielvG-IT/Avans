@@ -286,7 +286,7 @@ namespace HQB.WebApi.Controllers
                     _logger.LogError("Error updating patient");
                     return StatusCode(StatusCodes.Status500InternalServerError, "Error updating patient");
                 }
-                return NoContent();
+                return Ok(patient);
             }
             catch (Exception ex)
             {
