@@ -1,0 +1,467 @@
+fileFormatVersion: 2
+guid: 40ddc850d972b1345a76b096ade3116a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6616255845290580808
+    second: NieuweStickerAnimationSpriteSheet_0
+  - first:
+      213: 7303091917012497993
+    second: NieuweStickerAnimationSpriteSheet_1
+  - first:
+      213: 6516997743507325332
+    second: NieuweStickerAnimationSpriteSheet_2
+  - first:
+      213: 8818037445207560841
+    second: NieuweStickerAnimationSpriteSheet_3
+  - first:
+      213: -6380888909084577013
+    second: NieuweStickerAnimationSpriteSheet_4
+  - first:
+      213: 2070559460327508194
+    second: NieuweStickerAnimationSpriteSheet_5
+  - first:
+      213: 7232372238575512692
+    second: NieuweStickerAnimationSpriteSheet_6
+  - first:
+      213: 2819996999690217299
+    second: NieuweStickerAnimationSpriteSheet_7
+  - first:
+      213: -6077752247380210715
+    second: NieuweStickerAnimationSpriteSheet_8
+  - first:
+      213: 1186284170094192172
+    second: NieuweStickerAnimationSpriteSheet_9
+  - first:
+      213: -3356896600236546895
+    second: NieuweStickerAnimationSpriteSheet_10
+  - first:
+      213: -2464674346179069062
+    second: NieuweStickerAnimationSpriteSheet_11
+  - first:
+      213: 7785073482712256910
+    second: NieuweStickerAnimationSpriteSheet_12
+  - first:
+      213: 2576917434677395852
+    second: NieuweStickerAnimationSpriteSheet_13
+  - first:
+      213: -304150726543511030
+    second: NieuweStickerAnimationSpriteSheet_14
+  - first:
+      213: 3847880163800160469
+    second: NieuweStickerAnimationSpriteSheet_15
+  - first:
+      213: 3318590886798329830
+    second: NieuweStickerAnimationSpriteSheet_16
+  - first:
+      213: -8287684981647010122
+    second: NieuweStickerAnimationSpriteSheet_17
+  - first:
+      213: -7500944950674360952
+    second: NieuweStickerAnimationSpriteSheet_18
+  - first:
+      213: 380635733827889749
+    second: NieuweStickerAnimationSpriteSheet_19
+  - first:
+      213: 6351721886970640445
+    second: NieuweStickerAnimationSpriteSheet_20
+  - first:
+      213: 2268496362541099917
+    second: NieuweStickerAnimationSpriteSheet_21
+  - first:
+      213: -848847212815792813
+    second: NieuweStickerAnimationSpriteSheet_22
+  - first:
+      213: 1135329791043761738
+    second: NieuweStickerAnimationSpriteSheet_23
+  - first:
+      213: -751347179691661916
+    second: NieuweStickerAnimationSpriteSheet_24
+  - first:
+      213: 6237382738079972415
+    second: NieuweStickerAnimationSpriteSheet_25
+  - first:
+      213: -8109636253659187070
+    second: NieuweStickerAnimationSpriteSheet_26
+  - first:
+      213: 1800408975516868069
+    second: NieuweStickerAnimationSpriteSheet_27
+  - first:
+      213: 6469247551143088864
+    second: NieuweStickerAnimationSpriteSheet_28
+  - first:
+      213: 3769484960138679962
+    second: NieuweStickerAnimationSpriteSheet_29
+  - first:
+      213: -7655383051613255388
+    second: NieuweStickerAnimationSpriteSheet_30
+  - first:
+      213: -6057691817338955327
+    second: NieuweStickerAnimationSpriteSheet_31
+  - first:
+      213: -1801419688900502822
+    second: NieuweStickerAnimationSpriteSheet_32
+  - first:
+      213: -4240426156296451410
+    second: NieuweStickerAnimationSpriteSheet_33
+  - first:
+      213: -7072400957494266957
+    second: NieuweStickerAnimationSpriteSheet_34
+  - first:
+      213: 1124369539286517296
+    second: NieuweStickerAnimationSpriteSheet_35
+  - first:
+      213: -8876019270190908422
+    second: NieuweStickerAnimationSpriteSheet_36
+  - first:
+      213: 2001558786149440323
+    second: NieuweStickerAnimationSpriteSheet_37
+  - first:
+      213: 3840202695505093907
+    second: NieuweStickerAnimationSpriteSheet_38
+  - first:
+      213: -6960757252300735555
+    second: NieuweStickerAnimationSpriteSheet_39
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: NieuweStickerAnimationSpriteSheet_0
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 139
+        width: 120
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: adc4ade41f7c7f64a8a21c186c238be9
+      internalID: -991142033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NieuweStickerAnimationSpriteSheet_1
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 139
+        width: 120
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 501ae474a512ed1468faf2261891cd41
+      internalID: -1181925628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NieuweStickerAnimationSpriteSheet_2
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 139
+        width: 120
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d626604fe44614446bd86982fe6342e6
+      internalID: 287307430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NieuweStickerAnimationSpriteSheet_3
+      rect:
+        serializedVersion: 2
+        x: 380
+        y: 139
+        width: 120
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97e02fe92a8d9ae488484cf6cb4c16cc
+      internalID: -1451091189
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NieuweStickerAnimationSpriteSheet_4
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 139
+        width: 120
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 199feb1e6e9c06940b533dbd69e37754
+      internalID: 947119509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NieuweStickerAnimationSpriteSheet_5
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 19
+        width: 120
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f707b2c991449bb4e833139ccf9d6967
+      internalID: -1997986432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NieuweStickerAnimationSpriteSheet_6
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 19
+        width: 120
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a5ba10acf7001d4188e66f359e401e2
+      internalID: 1336360412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NieuweStickerAnimationSpriteSheet_7
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 19
+        width: 120
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a794cb6148ac2e840a56a328bfba5f2b
+      internalID: -988902403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NieuweStickerAnimationSpriteSheet_8
+      rect:
+        serializedVersion: 2
+        x: 380
+        y: 19
+        width: 120
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 74d2d07768d24a94cbdbd03c50fe0862
+      internalID: 988948100
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NieuweStickerAnimationSpriteSheet_9
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 19
+        width: 120
+        height: 120
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2bdadfff543563469f47aa02cf89402
+      internalID: 698407082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 4382b44beb3dab640bf3652339120775
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      NieuweStickerAnimationSpriteSheet_0: -991142033
+      NieuweStickerAnimationSpriteSheet_1: -1181925628
+      NieuweStickerAnimationSpriteSheet_2: 287307430
+      NieuweStickerAnimationSpriteSheet_3: -1451091189
+      NieuweStickerAnimationSpriteSheet_4: 947119509
+      NieuweStickerAnimationSpriteSheet_5: -1997986432
+      NieuweStickerAnimationSpriteSheet_6: 1336360412
+      NieuweStickerAnimationSpriteSheet_7: -988902403
+      NieuweStickerAnimationSpriteSheet_8: 988948100
+      NieuweStickerAnimationSpriteSheet_9: 698407082
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

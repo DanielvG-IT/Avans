@@ -1,0 +1,41 @@
+name: HQF CI/CD Pipeline
+
+on:
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    test_unity_android:
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v2
+          - name: Set up Unity
+            uses: RageAgainstThePixel/unity-setup@v1.0.13
+            with:
+              unity-version: auto
+          - name: Test Unity project
+            run: |
+              xvfb-run --auto-servernum --server-args='-screen 0 2560x1440x24' \
+              /opt/unity/Editor/Unity \
+              -projectPath . \
+              -runTests \
+              -testPlatform PlayMode
+
+    test_unity_ios:
+        runs-on: macos-latest
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v2
+          - name: Set up Unity
+            id: unity-setup
+            uses: RageAgainstThePixel/unity-setup@v1.0.13
+            with:
+              unity-version: auto
+          - name: Test Unity project
+            run: |
+              /Applications/Unity/Hub/Editor/${{ steps.unity-setup.outputs['unity-setup'].outputs.unity-version }}/Unity.app/Contents/MacOS/Unity \
+              -projectPath . \
+              -runTests \
+              -testPlatform PlayMode
