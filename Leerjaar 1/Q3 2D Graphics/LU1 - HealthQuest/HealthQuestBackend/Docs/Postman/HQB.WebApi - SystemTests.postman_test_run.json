@@ -1,41 +1,65 @@
 {
-	"id": "70bcb778-3849-4819-bed2-d07922747173",
+	"id": "422ed923-4c78-474d-8ff9-285a787574a0",
 	"name": "HQB.WebApi - SystemTests",
-	"timestamp": "2025-04-04T21:43:19.746Z",
+	"timestamp": "2025-04-13T14:14:12.798Z",
 	"collection_id": "41979928-213d4e23-ada6-4a96-8836-8dc671cda643",
 	"folder_id": 0,
 	"environment_id": "41979928-cfb2e1f6-660b-47d7-b3e9-d181f2aa1722",
-	"totalPass": 12,
+	"totalPass": 69,
 	"delay": 0,
 	"persist": true,
 	"status": "finished",
-	"startedAt": "2025-04-04T21:43:18.137Z",
+	"startedAt": "2025-04-13T14:14:09.490Z",
 	"totalFail": 0,
 	"results": [
 		{
 			"id": "97db55e7-0d6b-4508-9019-4bc31f471b89",
 			"name": "Login User",
-			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/account/login",
-			"time": 211,
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/auth/login",
+			"time": 193,
 			"responseCode": {
 				"code": 200,
 				"name": "OK"
 			},
 			"tests": {
-				"Login - Success": true
+				"Response status code is 200": true,
+				"Content-Type header is application/json": true,
+				"Response has the required fields": true,
+				"AccessToken is a non-empty string": true,
+				"Verify that expiresIn value is a positive integer": true
 			},
 			"testPassFailCounts": {
-				"Login - Success": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type header is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields": {
+					"pass": 1,
+					"fail": 0
+				},
+				"AccessToken is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Verify that expiresIn value is a positive integer": {
 					"pass": 1,
 					"fail": 0
 				}
 			},
 			"times": [
-				211
+				193
 			],
 			"allTests": [
 				{
-					"Login - Success": true
+					"Response status code is 200": true,
+					"Content-Type header is application/json": true,
+					"Response has the required fields": true,
+					"AccessToken is a non-empty string": true,
+					"Verify that expiresIn value is a positive integer": true
 				}
 			]
 		},
@@ -43,26 +67,50 @@
 			"id": "a44c9845-ae4d-4471-9b46-e1b9f9ca6d3e",
 			"name": "Get Guardian For Current User",
 			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/guardian",
-			"time": 35,
+			"time": 29,
 			"responseCode": {
 				"code": 200,
 				"name": "OK"
 			},
 			"tests": {
-				"Get Guardian - Success": true
+				"Response status code is 200": true,
+				"Response has the required fields": true,
+				"ID is a non-empty string": true,
+				"First name and last name are non-empty strings": true,
+				"User ID is a non-empty string": true
 			},
 			"testPassFailCounts": {
-				"Get Guardian - Success": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields": {
+					"pass": 1,
+					"fail": 0
+				},
+				"ID is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"First name and last name are non-empty strings": {
+					"pass": 1,
+					"fail": 0
+				},
+				"User ID is a non-empty string": {
 					"pass": 1,
 					"fail": 0
 				}
 			},
 			"times": [
-				35
+				29
 			],
 			"allTests": [
 				{
-					"Get Guardian - Success": true
+					"Response status code is 200": true,
+					"Response has the required fields": true,
+					"ID is a non-empty string": true,
+					"First name and last name are non-empty strings": true,
+					"User ID is a non-empty string": true
 				}
 			]
 		},
@@ -70,26 +118,44 @@
 			"id": "800eaa88-b5b5-40e9-97fe-97488ea67bb3",
 			"name": "Get All Doctors",
 			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/doctors",
-			"time": 29,
+			"time": 28,
 			"responseCode": {
 				"code": 200,
 				"name": "OK"
 			},
 			"tests": {
-				"Get Doctors - Status code is 200": true
+				"Response status code is 200": true,
+				"Response has the required fields": true,
+				"First name and last name should be non-empty strings": true,
+				"Specialization is a non-empty string": true
 			},
 			"testPassFailCounts": {
-				"Get Doctors - Status code is 200": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields": {
+					"pass": 1,
+					"fail": 0
+				},
+				"First name and last name should be non-empty strings": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Specialization is a non-empty string": {
 					"pass": 1,
 					"fail": 0
 				}
 			},
 			"times": [
-				29
+				28
 			],
 			"allTests": [
 				{
-					"Get Doctors - Status code is 200": true
+					"Response status code is 200": true,
+					"Response has the required fields": true,
+					"First name and last name should be non-empty strings": true,
+					"Specialization is a non-empty string": true
 				}
 			]
 		},
@@ -97,16 +163,248 @@
 			"id": "c81594cc-20d2-4329-b317-c0a69b2ca3a0",
 			"name": "Get All Treatments",
 			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/treatments",
+			"time": 31,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Response has the required fields - id and name": true,
+				"Id is a non-empty string": true,
+				"Name is a non-empty string": true,
+				"Content-Type header is application/json": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields - id and name": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Id is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Name is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type header is application/json": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				31
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Response has the required fields - id and name": true,
+					"Id is a non-empty string": true,
+					"Name is a non-empty string": true,
+					"Content-Type header is application/json": true
+				}
+			]
+		},
+		{
+			"id": "2e34ed9c-7d33-4b16-b31b-96a6389c8505",
+			"name": "Add Patient",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/patient",
+			"time": 86,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Response status code is 201": true,
+				"Response has the required fields": true,
+				"ID is a non-empty string": true,
+				"Avatar is one of the specified values": true,
+				"Doctor and Guardian access journals are boolean values": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields": {
+					"pass": 1,
+					"fail": 0
+				},
+				"ID is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Avatar is one of the specified values": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Doctor and Guardian access journals are boolean values": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				86
+			],
+			"allTests": [
+				{
+					"Response status code is 201": true,
+					"Response has the required fields": true,
+					"ID is a non-empty string": true,
+					"Avatar is one of the specified values": true,
+					"Doctor and Guardian access journals are boolean values": true
+				}
+			]
+		},
+		{
+			"id": "f1a475a9-6dc7-4af5-842f-01150cdd966c",
+			"name": "Get Patient By Id",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/patient/846a5e40-6aa0-4fdd-a014-c488a0e02267",
+			"time": 27,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Content-Type header is application/json": true,
+				"Response has the required fields": true,
+				"ID is a non-empty string": true,
+				"Doctor and guardian access journals are boolean values": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type header is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields": {
+					"pass": 1,
+					"fail": 0
+				},
+				"ID is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Doctor and guardian access journals are boolean values": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				27
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Content-Type header is application/json": true,
+					"Response has the required fields": true,
+					"ID is a non-empty string": true,
+					"Doctor and guardian access journals are boolean values": true
+				}
+			]
+		},
+		{
+			"id": "8085dfee-534e-45e8-ae19-2d3c2ea3b92c",
+			"name": "Generate Personal Appointments",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/patient/846a5e40-6aa0-4fdd-a014-c488a0e02267/appointments",
+			"time": 275,
+			"responseCode": {
+				"code": 204,
+				"name": "No Content"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				275
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "9ef9d94a-e4ff-4295-a56f-3eee870e5b30",
+			"name": "Get Appointments By Treatment Id",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/appointments?treatmentId=7bc92028-da56-4142-bd46-34a0d75b7d3e",
+			"time": 398,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Response has the required fields": true,
+				"ID is a non-empty string": true,
+				"DurationInMinutes is a non-negative integer": true,
+				"Verify that treatmentID is equal to the query parameter value": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields": {
+					"pass": 1,
+					"fail": 0
+				},
+				"ID is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"DurationInMinutes is a non-negative integer": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Verify that treatmentID is equal to the query parameter value": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				398
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Response has the required fields": true,
+					"ID is a non-empty string": true,
+					"DurationInMinutes is a non-negative integer": true,
+					"Verify that treatmentID is equal to the query parameter value": true
+				}
+			]
+		},
+		{
+			"id": "c23ada71-af8b-43b0-8619-37bad01cfbd2",
+			"name": "Get Personal Appointments",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/patient/846a5e40-6aa0-4fdd-a014-c488a0e02267/appointments",
 			"time": 29,
 			"responseCode": {
 				"code": 200,
 				"name": "OK"
 			},
 			"tests": {
-				"Get Treatments - Status code is 200": true
+				"Response status code is 200": true,
+				"Content-Type is application/json": true,
+				"Response has the required fields": true
 			},
 			"testPassFailCounts": {
-				"Get Treatments - Status code is 200": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields": {
 					"pass": 1,
 					"fail": 0
 				}
@@ -116,69 +414,320 @@
 			],
 			"allTests": [
 				{
-					"Get Treatments - Status code is 200": true
+					"Response status code is 200": true,
+					"Content-Type is application/json": true,
+					"Response has the required fields": true
 				}
 			]
 		},
 		{
-			"id": "2e34ed9c-7d33-4b16-b31b-96a6389c8505",
-			"name": "Add Patient",
-			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/patient",
-			"time": 148,
+			"id": "7421543f-ec2b-46a5-b6c3-4842859db3dd",
+			"name": "Complete Personal Appointment",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/patient/846a5e40-6aa0-4fdd-a014-c488a0e02267/appointments/8b5f8e07-ca11-4fe3-9754-349de3f48581/complete",
+			"time": 66,
 			"responseCode": {
-				"code": 201,
-				"name": "Created"
+				"code": 204,
+				"name": "No Content"
 			},
 			"tests": {
-				"Create Patient - Status code is 201": true
+				"Response status code is 204": true
 			},
 			"testPassFailCounts": {
-				"Create Patient - Status code is 201": {
+				"Response status code is 204": {
 					"pass": 1,
 					"fail": 0
 				}
 			},
 			"times": [
-				148
+				66
 			],
 			"allTests": [
 				{
-					"Create Patient - Status code is 201": true
+					"Response status code is 204": true
 				}
 			]
 		},
 		{
-			"id": "f1a475a9-6dc7-4af5-842f-01150cdd966c",
-			"name": "Get Patient By Id",
-			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/patient/a8371262-f83c-403d-b096-9af8a5a87225",
-			"time": 47,
+			"id": "078d82ed-98ad-4732-8e21-4913251e7661",
+			"name": "Get All Stickers",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/stickers",
+			"time": 28,
 			"responseCode": {
 				"code": 200,
 				"name": "OK"
 			},
 			"tests": {
-				"Get Created Patient - Status code is 200": true
+				"Response status code is 200": true,
+				"Response has the required fields - id, name, and unlockedDate": true,
+				"Response is in JSON format": true,
+				"Id and name must be non-empty strings": true
 			},
 			"testPassFailCounts": {
-				"Get Created Patient - Status code is 200": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields - id, name, and unlockedDate": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is in JSON format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Id and name must be non-empty strings": {
 					"pass": 1,
 					"fail": 0
 				}
 			},
 			"times": [
-				47
+				28
 			],
 			"allTests": [
 				{
-					"Get Created Patient - Status code is 200": true
+					"Response status code is 200": true,
+					"Response has the required fields - id, name, and unlockedDate": true,
+					"Response is in JSON format": true,
+					"Id and name must be non-empty strings": true
 				}
 			]
 		},
 		{
-			"id": "8e54db98-cc21-4986-acb1-c61c8624a7fe",
-			"name": "Get Appointments By Treatment Id",
-			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/appointments?treatmentId=7bc92028-da56-4142-bd46-34a0d75b7d3e",
-			"time": 202,
+			"id": "4663e3be-16bf-4ef7-909e-1f00d6e0fed4",
+			"name": "Add Sticker To Patient",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/patient/846a5e40-6aa0-4fdd-a014-c488a0e02267/stickers?stickerId=b6c6755a-212f-4141-96bc-20b7351acbe0",
+			"time": 79,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Response status code is 201": true,
+				"Response has the required fields - id, name, and unlockedDate": true,
+				"Id is a non-empty string": true,
+				"UnlockedDate is either null or in a valid date format": true,
+				"Content-Type header is application/json": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields - id, name, and unlockedDate": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Id is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"UnlockedDate is either null or in a valid date format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type header is application/json": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				79
+			],
+			"allTests": [
+				{
+					"Response status code is 201": true,
+					"Response has the required fields - id, name, and unlockedDate": true,
+					"Id is a non-empty string": true,
+					"UnlockedDate is either null or in a valid date format": true,
+					"Content-Type header is application/json": true
+				}
+			]
+		},
+		{
+			"id": "fbc5e636-e789-4969-9f78-56ab80c0d9c2",
+			"name": "Get Stickers",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/patient/846a5e40-6aa0-4fdd-a014-c488a0e02267/stickers",
+			"time": 26,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Response has the required fields - id, name, and unlockedDate": true,
+				"Id is a non-empty string": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields - id, name, and unlockedDate": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Id is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				26
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Response has the required fields - id, name, and unlockedDate": true,
+					"Id is a non-empty string": true
+				}
+			]
+		},
+		{
+			"id": "146d5266-6a7a-4e68-9371-21dc4cc297a2",
+			"name": "Post Journal",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/journal",
+			"time": 32,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Response status code is 201": true,
+				"Response has the required fields": true,
+				"PatientID is a non-empty string": true,
+				"Rating is a non-negative integer": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields": {
+					"pass": 1,
+					"fail": 0
+				},
+				"PatientID is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Rating is a non-negative integer": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				32
+			],
+			"allTests": [
+				{
+					"Response status code is 201": true,
+					"Response has the required fields": true,
+					"PatientID is a non-empty string": true,
+					"Rating is a non-negative integer": true
+				}
+			]
+		},
+		{
+			"id": "b057b4ba-c409-4195-a265-cc07daa750d0",
+			"name": "Get Journal Entries",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/patient/846a5e40-6aa0-4fdd-a014-c488a0e02267/journal-entries",
+			"time": 77,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Content-Type is application/json": true,
+				"Response has the required fields": true,
+				"Rating is a non-negative integer": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type is application/json": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Rating is a non-negative integer": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				77
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Content-Type is application/json": true,
+					"Response has the required fields": true,
+					"Rating is a non-negative integer": true
+				}
+			]
+		},
+		{
+			"id": "5fd25574-f418-4948-a0ff-55befcc2ce1a",
+			"name": "Update Patient to deny premission",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/patient/846a5e40-6aa0-4fdd-a014-c488a0e02267",
+			"time": 103,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response status code is 200": true,
+				"Response has the required fields": true,
+				"ID is a non-empty string": true,
+				"Avatar is one of the specified values": true,
+				"Doctor and guardian access journals are boolean values": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has the required fields": {
+					"pass": 1,
+					"fail": 0
+				},
+				"ID is a non-empty string": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Avatar is one of the specified values": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Doctor and guardian access journals are boolean values": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				103
+			],
+			"allTests": [
+				{
+					"Response status code is 200": true,
+					"Response has the required fields": true,
+					"ID is a non-empty string": true,
+					"Avatar is one of the specified values": true,
+					"Doctor and guardian access journals are boolean values": true
+				}
+			]
+		},
+		{
+			"id": "71d28cee-e2ac-4de5-96a4-e11b4b2196e5",
+			"name": "Get Journal Entries with Premission",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/patient/846a5e40-6aa0-4fdd-a014-c488a0e02267/journal-entries",
+			"time": 79,
 			"responseCode": {
 				"code": 200,
 				"name": "OK"
@@ -186,9 +735,8 @@
 			"tests": {
 				"Response status code is 200": true,
 				"Content type is application/json": true,
-				"Response is an array with at least one element": true,
-				"Validate appointmentNr is a non-negative integer": true,
-				"Id, name, description, url, and image are non-empty strings": true
+				"Response has the required fields": true,
+				"Rating is a non-negative integer": true
 			},
 			"testPassFailCounts": {
 				"Response status code is 200": {
@@ -199,62 +747,84 @@
 					"pass": 1,
 					"fail": 0
 				},
-				"Response is an array with at least one element": {
+				"Response has the required fields": {
 					"pass": 1,
 					"fail": 0
 				},
-				"Validate appointmentNr is a non-negative integer": {
-					"pass": 1,
-					"fail": 0
-				},
-				"Id, name, description, url, and image are non-empty strings": {
+				"Rating is a non-negative integer": {
 					"pass": 1,
 					"fail": 0
 				}
 			},
 			"times": [
-				202
+				79
 			],
 			"allTests": [
 				{
 					"Response status code is 200": true,
 					"Content type is application/json": true,
-					"Response is an array with at least one element": true,
-					"Validate appointmentNr is a non-negative integer": true,
-					"Id, name, description, url, and image are non-empty strings": true
+					"Response has the required fields": true,
+					"Rating is a non-negative integer": true
 				}
 			]
 		},
 		{
-			"id": "899b6f95-91ca-4004-a22e-519f2ca459b8",
-			"name": "Delete Patient",
-			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/patient/a8371262-f83c-403d-b096-9af8a5a87225",
-			"time": 47,
+			"id": "3ac0c884-6208-46de-ad17-97a96716538a",
+			"name": "Delete JournalEntry",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/journal/4879e71c-311b-4f8c-855d-6da33c4b16c0",
+			"time": 66,
 			"responseCode": {
 				"code": 204,
 				"name": "No Content"
 			},
 			"tests": {
-				"Delete Patient - Status code is 204": true
+				"Response status code is 204": true
 			},
 			"testPassFailCounts": {
-				"Delete Patient - Status code is 204": {
+				"Response status code is 204": {
 					"pass": 1,
 					"fail": 0
 				}
 			},
 			"times": [
-				47
+				66
 			],
 			"allTests": [
 				{
-					"Delete Patient - Status code is 204": true
+					"Response status code is 204": true
+				}
+			]
+		},
+		{
+			"id": "0ff8f4f4-c2e7-42fc-87ae-acc66e103e84",
+			"name": "Delete Patient",
+			"url": "https://healthquestwebapi.azurewebsites.net/api/v1/patient/846a5e40-6aa0-4fdd-a014-c488a0e02267",
+			"time": 48,
+			"responseCode": {
+				"code": 204,
+				"name": "No Content"
+			},
+			"tests": {
+				"Response status code is 204": true
+			},
+			"testPassFailCounts": {
+				"Response status code is 204": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				48
+			],
+			"allTests": [
+				{
+					"Response status code is 204": true
 				}
 			]
 		}
 	],
 	"count": 1,
-	"totalTime": 748,
+	"totalTime": 1700,
 	"collection": {
 		"requests": [
 			{
@@ -282,11 +852,55 @@
 				"method": "GET"
 			},
 			{
-				"id": "8e54db98-cc21-4986-acb1-c61c8624a7fe",
+				"id": "8085dfee-534e-45e8-ae19-2d3c2ea3b92c",
+				"method": "POST"
+			},
+			{
+				"id": "9ef9d94a-e4ff-4295-a56f-3eee870e5b30",
 				"method": "GET"
 			},
 			{
-				"id": "899b6f95-91ca-4004-a22e-519f2ca459b8",
+				"id": "c23ada71-af8b-43b0-8619-37bad01cfbd2",
+				"method": "GET"
+			},
+			{
+				"id": "7421543f-ec2b-46a5-b6c3-4842859db3dd",
+				"method": "PUT"
+			},
+			{
+				"id": "078d82ed-98ad-4732-8e21-4913251e7661",
+				"method": "GET"
+			},
+			{
+				"id": "4663e3be-16bf-4ef7-909e-1f00d6e0fed4",
+				"method": "POST"
+			},
+			{
+				"id": "fbc5e636-e789-4969-9f78-56ab80c0d9c2",
+				"method": "GET"
+			},
+			{
+				"id": "146d5266-6a7a-4e68-9371-21dc4cc297a2",
+				"method": "POST"
+			},
+			{
+				"id": "b057b4ba-c409-4195-a265-cc07daa750d0",
+				"method": "GET"
+			},
+			{
+				"id": "5fd25574-f418-4948-a0ff-55befcc2ce1a",
+				"method": "PUT"
+			},
+			{
+				"id": "71d28cee-e2ac-4de5-96a4-e11b4b2196e5",
+				"method": "GET"
+			},
+			{
+				"id": "3ac0c884-6208-46de-ad17-97a96716538a",
+				"method": "DELETE"
+			},
+			{
+				"id": "0ff8f4f4-c2e7-42fc-87ae-acc66e103e84",
 				"method": "DELETE"
 			}
 		]

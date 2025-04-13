@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "0cb86d2a-065b-4d53-b996-20cfddac5df0",
-		"name": "HQB.WebApi - Release",
+		"_postman_id": "94b296f6-47fc-478e-807c-40ee9f6b164d",
+		"name": "HQB.WebApi - v1",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "41979928",
-		"_collection_link": "https://healthquestgrinders.postman.co/workspace/HealthQuestGrinders-Workspace~1a4f09df-9e55-47df-bedb-25ac3388ad4f/collection/41979928-0cb86d2a-065b-4d53-b996-20cfddac5df0?action=share&source=collection_link&creator=41979928"
+		"_collection_link": "https://healthquestgrinders.postman.co/workspace/1a4f09df-9e55-47df-bedb-25ac3388ad4f/collection/41979928-94b296f6-47fc-478e-807c-40ee9f6b164d?action=share&source=collection_link&creator=41979928"
 	},
 	"item": [
 		{
@@ -14,13 +14,13 @@
 					"name": "v1",
 					"item": [
 						{
-							"name": "account",
+							"name": "auth",
 							"item": [
 								{
 									"name": "register",
 									"item": [
 										{
-											"name": "/api/v1/account/register",
+											"name": "/api/v1/auth/register",
 											"request": {
 												"method": "POST",
 												"header": [
@@ -44,14 +44,14 @@
 													}
 												},
 												"url": {
-													"raw": "{{baseUrl}}/api/v1/account/register",
+													"raw": "{{baseUrl}}/api/v1/auth/register",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
 														"api",
 														"v1",
-														"account",
+														"auth",
 														"register"
 													]
 												}
@@ -78,14 +78,14 @@
 															}
 														},
 														"url": {
-															"raw": "{{baseUrl}}/api/v1/account/register",
+															"raw": "{{baseUrl}}/api/v1/auth/register",
 															"host": [
 																"{{baseUrl}}"
 															],
 															"path": [
 																"api",
 																"v1",
-																"account",
+																"auth",
 																"register"
 															]
 														}
@@ -122,14 +122,14 @@
 															}
 														},
 														"url": {
-															"raw": "{{baseUrl}}/api/v1/account/register",
+															"raw": "{{baseUrl}}/api/v1/auth/register",
 															"host": [
 																"{{baseUrl}}"
 															],
 															"path": [
 																"api",
 																"v1",
-																"account",
+																"auth",
 																"register"
 															]
 														}
@@ -144,7 +144,7 @@
 														}
 													],
 													"cookie": [],
-													"body": "{\n  \"type\": \"<string>\",\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\",\n  \"instance\": \"<string>\",\n  \"errors\": {\n    \"dolor_222\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  }\n}"
+													"body": "{\n  \"type\": \"<string>\",\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\",\n  \"instance\": \"<string>\",\n  \"errors\": {\n    \"ut__f\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  }\n}"
 												}
 											]
 										}
@@ -154,7 +154,7 @@
 									"name": "login",
 									"item": [
 										{
-											"name": "/api/v1/account/login",
+											"name": "/api/v1/auth/login",
 											"request": {
 												"method": "POST",
 												"header": [
@@ -178,14 +178,14 @@
 													}
 												},
 												"url": {
-													"raw": "{{baseUrl}}/api/v1/account/login?useCookies=<boolean>&useSessionCookies=<boolean>",
+													"raw": "{{baseUrl}}/api/v1/auth/login?useCookies=<boolean>&useSessionCookies=<boolean>",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
 														"api",
 														"v1",
-														"account",
+														"auth",
 														"login"
 													],
 													"query": [
@@ -226,14 +226,14 @@
 															}
 														},
 														"url": {
-															"raw": "{{baseUrl}}/api/v1/account/login?useCookies=<boolean>&useSessionCookies=<boolean>",
+															"raw": "{{baseUrl}}/api/v1/auth/login?useCookies=<boolean>&useSessionCookies=<boolean>",
 															"host": [
 																"{{baseUrl}}"
 															],
 															"path": [
 																"api",
 																"v1",
-																"account",
+																"auth",
 																"login"
 															],
 															"query": [
@@ -268,7 +268,7 @@
 									"name": "refresh",
 									"item": [
 										{
-											"name": "/api/v1/account/refresh",
+											"name": "/api/v1/auth/refresh",
 											"request": {
 												"method": "POST",
 												"header": [
@@ -292,14 +292,14 @@
 													}
 												},
 												"url": {
-													"raw": "{{baseUrl}}/api/v1/account/refresh",
+													"raw": "{{baseUrl}}/api/v1/auth/refresh",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
 														"api",
 														"v1",
-														"account",
+														"auth",
 														"refresh"
 													]
 												}
@@ -330,14 +330,14 @@
 															}
 														},
 														"url": {
-															"raw": "{{baseUrl}}/api/v1/account/refresh",
+															"raw": "{{baseUrl}}/api/v1/auth/refresh",
 															"host": [
 																"{{baseUrl}}"
 															],
 															"path": [
 																"api",
 																"v1",
-																"account",
+																"auth",
 																"refresh"
 															]
 														}
@@ -362,19 +362,19 @@
 									"name": "confirmEmail",
 									"item": [
 										{
-											"name": "Map Identity Api-/api/v1/account/confirm Email",
+											"name": "Map Identity Api-/api/v1/auth/confirm Email",
 											"request": {
 												"method": "GET",
 												"header": [],
 												"url": {
-													"raw": "{{baseUrl}}/api/v1/account/confirmEmail?userId=<string>&code=<string>&changedEmail=<string>",
+													"raw": "{{baseUrl}}/api/v1/auth/confirmEmail?userId=<string>&code=<string>&changedEmail=<string>",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
 														"api",
 														"v1",
-														"account",
+														"auth",
 														"confirmEmail"
 													],
 													"query": [
@@ -402,14 +402,14 @@
 														"method": "GET",
 														"header": [],
 														"url": {
-															"raw": "{{baseUrl}}/api/v1/account/confirmEmail?userId=<string>&code=<string>&changedEmail=<string>",
+															"raw": "{{baseUrl}}/api/v1/auth/confirmEmail?userId=<string>&code=<string>&changedEmail=<string>",
 															"host": [
 																"{{baseUrl}}"
 															],
 															"path": [
 																"api",
 																"v1",
-																"account",
+																"auth",
 																"confirmEmail"
 															],
 															"query": [
@@ -445,7 +445,7 @@
 									"name": "resendConfirmationEmail",
 									"item": [
 										{
-											"name": "/api/v1/account/resendConfirmationEmail",
+											"name": "/api/v1/auth/resendConfirmationEmail",
 											"request": {
 												"method": "POST",
 												"header": [
@@ -465,14 +465,14 @@
 													}
 												},
 												"url": {
-													"raw": "{{baseUrl}}/api/v1/account/resendConfirmationEmail",
+													"raw": "{{baseUrl}}/api/v1/auth/resendConfirmationEmail",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
 														"api",
 														"v1",
-														"account",
+														"auth",
 														"resendConfirmationEmail"
 													]
 												}
@@ -499,14 +499,14 @@
 															}
 														},
 														"url": {
-															"raw": "{{baseUrl}}/api/v1/account/resendConfirmationEmail",
+															"raw": "{{baseUrl}}/api/v1/auth/resendConfirmationEmail",
 															"host": [
 																"{{baseUrl}}"
 															],
 															"path": [
 																"api",
 																"v1",
-																"account",
+																"auth",
 																"resendConfirmationEmail"
 															]
 														}
@@ -526,7 +526,7 @@
 									"name": "forgotPassword",
 									"item": [
 										{
-											"name": "/api/v1/account/forgotPassword",
+											"name": "/api/v1/auth/forgotPassword",
 											"request": {
 												"method": "POST",
 												"header": [
@@ -550,14 +550,14 @@
 													}
 												},
 												"url": {
-													"raw": "{{baseUrl}}/api/v1/account/forgotPassword",
+													"raw": "{{baseUrl}}/api/v1/auth/forgotPassword",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
 														"api",
 														"v1",
-														"account",
+														"auth",
 														"forgotPassword"
 													]
 												}
@@ -584,14 +584,14 @@
 															}
 														},
 														"url": {
-															"raw": "{{baseUrl}}/api/v1/account/forgotPassword",
+															"raw": "{{baseUrl}}/api/v1/auth/forgotPassword",
 															"host": [
 																"{{baseUrl}}"
 															],
 															"path": [
 																"api",
 																"v1",
-																"account",
+																"auth",
 																"forgotPassword"
 															]
 														}
@@ -628,14 +628,14 @@
 															}
 														},
 														"url": {
-															"raw": "{{baseUrl}}/api/v1/account/forgotPassword",
+															"raw": "{{baseUrl}}/api/v1/auth/forgotPassword",
 															"host": [
 																"{{baseUrl}}"
 															],
 															"path": [
 																"api",
 																"v1",
-																"account",
+																"auth",
 																"forgotPassword"
 															]
 														}
@@ -650,7 +650,7 @@
 														}
 													],
 													"cookie": [],
-													"body": "{\n  \"type\": \"<string>\",\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\",\n  \"instance\": \"<string>\",\n  \"errors\": {\n    \"dolor_222\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  }\n}"
+													"body": "{\n  \"type\": \"<string>\",\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\",\n  \"instance\": \"<string>\",\n  \"errors\": {\n    \"ut__f\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  }\n}"
 												}
 											]
 										}
@@ -660,7 +660,7 @@
 									"name": "resetPassword",
 									"item": [
 										{
-											"name": "/api/v1/account/resetPassword",
+											"name": "/api/v1/auth/resetPassword",
 											"request": {
 												"method": "POST",
 												"header": [
@@ -684,14 +684,14 @@
 													}
 												},
 												"url": {
-													"raw": "{{baseUrl}}/api/v1/account/resetPassword",
+													"raw": "{{baseUrl}}/api/v1/auth/resetPassword",
 													"host": [
 														"{{baseUrl}}"
 													],
 													"path": [
 														"api",
 														"v1",
-														"account",
+														"auth",
 														"resetPassword"
 													]
 												}
@@ -718,14 +718,14 @@
 															}
 														},
 														"url": {
-															"raw": "{{baseUrl}}/api/v1/account/resetPassword",
+															"raw": "{{baseUrl}}/api/v1/auth/resetPassword",
 															"host": [
 																"{{baseUrl}}"
 															],
 															"path": [
 																"api",
 																"v1",
-																"account",
+																"auth",
 																"resetPassword"
 															]
 														}
@@ -762,14 +762,14 @@
 															}
 														},
 														"url": {
-															"raw": "{{baseUrl}}/api/v1/account/resetPassword",
+															"raw": "{{baseUrl}}/api/v1/auth/resetPassword",
 															"host": [
 																"{{baseUrl}}"
 															],
 															"path": [
 																"api",
 																"v1",
-																"account",
+																"auth",
 																"resetPassword"
 															]
 														}
@@ -784,7 +784,7 @@
 														}
 													],
 													"cookie": [],
-													"body": "{\n  \"type\": \"<string>\",\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\",\n  \"instance\": \"<string>\",\n  \"errors\": {\n    \"dolor_222\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  }\n}"
+													"body": "{\n  \"type\": \"<string>\",\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\",\n  \"instance\": \"<string>\",\n  \"errors\": {\n    \"ut__f\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  }\n}"
 												}
 											]
 										}
@@ -797,7 +797,7 @@
 											"name": "2fa",
 											"item": [
 												{
-													"name": "/api/v1/account/manage/2fa",
+													"name": "/api/v1/auth/manage/2fa",
 													"request": {
 														"method": "POST",
 														"header": [
@@ -821,14 +821,14 @@
 															}
 														},
 														"url": {
-															"raw": "{{baseUrl}}/api/v1/account/manage/2fa",
+															"raw": "{{baseUrl}}/api/v1/auth/manage/2fa",
 															"host": [
 																"{{baseUrl}}"
 															],
 															"path": [
 																"api",
 																"v1",
-																"account",
+																"auth",
 																"manage",
 																"2fa"
 															]
@@ -860,14 +860,14 @@
 																	}
 																},
 																"url": {
-																	"raw": "{{baseUrl}}/api/v1/account/manage/2fa",
+																	"raw": "{{baseUrl}}/api/v1/auth/manage/2fa",
 																	"host": [
 																		"{{baseUrl}}"
 																	],
 																	"path": [
 																		"api",
 																		"v1",
-																		"account",
+																		"auth",
 																		"manage",
 																		"2fa"
 																	]
@@ -910,14 +910,14 @@
 																	}
 																},
 																"url": {
-																	"raw": "{{baseUrl}}/api/v1/account/manage/2fa",
+																	"raw": "{{baseUrl}}/api/v1/auth/manage/2fa",
 																	"host": [
 																		"{{baseUrl}}"
 																	],
 																	"path": [
 																		"api",
 																		"v1",
-																		"account",
+																		"auth",
 																		"manage",
 																		"2fa"
 																	]
@@ -933,7 +933,7 @@
 																}
 															],
 															"cookie": [],
-															"body": "{\n  \"type\": \"<string>\",\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\",\n  \"instance\": \"<string>\",\n  \"errors\": {\n    \"dolor_222\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  }\n}"
+															"body": "{\n  \"type\": \"<string>\",\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\",\n  \"instance\": \"<string>\",\n  \"errors\": {\n    \"ut__f\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  }\n}"
 														},
 														{
 															"name": "Not Found",
@@ -956,14 +956,14 @@
 																	}
 																},
 																"url": {
-																	"raw": "{{baseUrl}}/api/v1/account/manage/2fa",
+																	"raw": "{{baseUrl}}/api/v1/auth/manage/2fa",
 																	"host": [
 																		"{{baseUrl}}"
 																	],
 																	"path": [
 																		"api",
 																		"v1",
-																		"account",
+																		"auth",
 																		"manage",
 																		"2fa"
 																	]
@@ -984,7 +984,7 @@
 											"name": "info",
 											"item": [
 												{
-													"name": "/api/v1/account/manage/info",
+													"name": "/api/v1/auth/manage/info",
 													"request": {
 														"method": "GET",
 														"header": [
@@ -994,14 +994,14 @@
 															}
 														],
 														"url": {
-															"raw": "{{baseUrl}}/api/v1/account/manage/info",
+															"raw": "{{baseUrl}}/api/v1/auth/manage/info",
 															"host": [
 																"{{baseUrl}}"
 															],
 															"path": [
 																"api",
 																"v1",
-																"account",
+																"auth",
 																"manage",
 																"info"
 															]
@@ -1019,14 +1019,14 @@
 																	}
 																],
 																"url": {
-																	"raw": "{{baseUrl}}/api/v1/account/manage/info",
+																	"raw": "{{baseUrl}}/api/v1/auth/manage/info",
 																	"host": [
 																		"{{baseUrl}}"
 																	],
 																	"path": [
 																		"api",
 																		"v1",
-																		"account",
+																		"auth",
 																		"manage",
 																		"info"
 																	]
@@ -1055,14 +1055,14 @@
 																	}
 																],
 																"url": {
-																	"raw": "{{baseUrl}}/api/v1/account/manage/info",
+																	"raw": "{{baseUrl}}/api/v1/auth/manage/info",
 																	"host": [
 																		"{{baseUrl}}"
 																	],
 																	"path": [
 																		"api",
 																		"v1",
-																		"account",
+																		"auth",
 																		"manage",
 																		"info"
 																	]
@@ -1078,7 +1078,7 @@
 																}
 															],
 															"cookie": [],
-															"body": "{\n  \"type\": \"<string>\",\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\",\n  \"instance\": \"<string>\",\n  \"errors\": {\n    \"dolor_222\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  }\n}"
+															"body": "{\n  \"type\": \"<string>\",\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\",\n  \"instance\": \"<string>\",\n  \"errors\": {\n    \"ut__f\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  }\n}"
 														},
 														{
 															"name": "Not Found",
@@ -1086,14 +1086,14 @@
 																"method": "GET",
 																"header": [],
 																"url": {
-																	"raw": "{{baseUrl}}/api/v1/account/manage/info",
+																	"raw": "{{baseUrl}}/api/v1/auth/manage/info",
 																	"host": [
 																		"{{baseUrl}}"
 																	],
 																	"path": [
 																		"api",
 																		"v1",
-																		"account",
+																		"auth",
 																		"manage",
 																		"info"
 																	]
@@ -1109,7 +1109,7 @@
 													]
 												},
 												{
-													"name": "/api/v1/account/manage/info",
+													"name": "/api/v1/auth/manage/info",
 													"request": {
 														"method": "POST",
 														"header": [
@@ -1133,14 +1133,14 @@
 															}
 														},
 														"url": {
-															"raw": "{{baseUrl}}/api/v1/account/manage/info",
+															"raw": "{{baseUrl}}/api/v1/auth/manage/info",
 															"host": [
 																"{{baseUrl}}"
 															],
 															"path": [
 																"api",
 																"v1",
-																"account",
+																"auth",
 																"manage",
 																"info"
 															]
@@ -1172,14 +1172,14 @@
 																	}
 																},
 																"url": {
-																	"raw": "{{baseUrl}}/api/v1/account/manage/info",
+																	"raw": "{{baseUrl}}/api/v1/auth/manage/info",
 																	"host": [
 																		"{{baseUrl}}"
 																	],
 																	"path": [
 																		"api",
 																		"v1",
-																		"account",
+																		"auth",
 																		"manage",
 																		"info"
 																	]
@@ -1222,14 +1222,14 @@
 																	}
 																},
 																"url": {
-																	"raw": "{{baseUrl}}/api/v1/account/manage/info",
+																	"raw": "{{baseUrl}}/api/v1/auth/manage/info",
 																	"host": [
 																		"{{baseUrl}}"
 																	],
 																	"path": [
 																		"api",
 																		"v1",
-																		"account",
+																		"auth",
 																		"manage",
 																		"info"
 																	]
@@ -1245,7 +1245,7 @@
 																}
 															],
 															"cookie": [],
-															"body": "{\n  \"type\": \"<string>\",\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\",\n  \"instance\": \"<string>\",\n  \"errors\": {\n    \"dolor_222\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  }\n}"
+															"body": "{\n  \"type\": \"<string>\",\n  \"title\": \"<string>\",\n  \"status\": \"<integer>\",\n  \"detail\": \"<string>\",\n  \"instance\": \"<string>\",\n  \"errors\": {\n    \"ut__f\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  }\n}"
 														},
 														{
 															"name": "Not Found",
@@ -1268,14 +1268,14 @@
 																	}
 																},
 																"url": {
-																	"raw": "{{baseUrl}}/api/v1/account/manage/info",
+																	"raw": "{{baseUrl}}/api/v1/auth/manage/info",
 																	"host": [
 																		"{{baseUrl}}"
 																	],
 																	"path": [
 																		"api",
 																		"v1",
-																		"account",
+																		"auth",
 																		"manage",
 																		"info"
 																	]
@@ -1289,6 +1289,72 @@
 															"body": ""
 														}
 													]
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "roles",
+									"item": [
+										{
+											"name": "Get User Roles",
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "text/plain"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/auth/roles",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"auth",
+														"roles"
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "OK",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "text/plain"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/auth/roles",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"auth",
+																"roles"
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "[\n  \"<string>\",\n  \"<string>\"\n]"
 												}
 											]
 										}
@@ -1371,7 +1437,7 @@
 														}
 													],
 													"cookie": [],
-													"body": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"url\": \"<string>\",\n  \"image\": \"<string>\",\n  \"durationInMinutes\": \"<integer>\"\n}"
+													"body": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"url\": \"<string>\",\n  \"image\": \"<string>\",\n  \"durationInMinutes\": \"<integer>\",\n  \"treatmentID\": \"<uuid>\",\n  \"sequence\": \"<integer>\"\n}"
 												}
 											]
 										},
@@ -1387,7 +1453,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"url\": \"<string>\",\n  \"image\": \"<string>\",\n  \"durationInMinutes\": \"<integer>\"\n}",
+													"raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"url\": \"<string>\",\n  \"image\": \"<string>\",\n  \"durationInMinutes\": \"<integer>\",\n  \"treatmentID\": \"<uuid>\",\n  \"sequence\": \"<integer>\"\n}",
 													"options": {
 														"raw": {
 															"headerFamily": "json",
@@ -1428,7 +1494,7 @@
 														],
 														"body": {
 															"mode": "raw",
-															"raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"url\": \"<string>\",\n  \"image\": \"<string>\",\n  \"durationInMinutes\": \"<integer>\"\n}",
+															"raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"url\": \"<string>\",\n  \"image\": \"<string>\",\n  \"durationInMinutes\": \"<integer>\",\n  \"treatmentID\": \"<uuid>\",\n  \"sequence\": \"<integer>\"\n}",
 															"options": {
 																"raw": {
 																	"headerFamily": "json",
@@ -1590,7 +1656,7 @@
 												}
 											],
 											"cookie": [],
-											"body": "[\n  {\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"url\": \"<string>\",\n    \"image\": \"<string>\",\n    \"durationInMinutes\": \"<integer>\"\n  },\n  {\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"url\": \"<string>\",\n    \"image\": \"<string>\",\n    \"durationInMinutes\": \"<integer>\"\n  }\n]"
+											"body": "[\n  {\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"url\": \"<string>\",\n    \"image\": \"<string>\",\n    \"durationInMinutes\": \"<integer>\",\n    \"treatmentID\": \"<uuid>\",\n    \"sequence\": \"<integer>\"\n  },\n  {\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"url\": \"<string>\",\n    \"image\": \"<string>\",\n    \"durationInMinutes\": \"<integer>\",\n    \"treatmentID\": \"<uuid>\",\n    \"sequence\": \"<integer>\"\n  }\n]"
 										}
 									]
 								},
@@ -1610,7 +1676,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"url\": \"<string>\",\n  \"image\": \"<string>\",\n  \"durationInMinutes\": \"<integer>\"\n}",
+											"raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"url\": \"<string>\",\n  \"image\": \"<string>\",\n  \"durationInMinutes\": \"<integer>\",\n  \"treatmentID\": \"<uuid>\",\n  \"sequence\": \"<integer>\"\n}",
 											"options": {
 												"raw": {
 													"headerFamily": "json",
@@ -1647,7 +1713,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"url\": \"<string>\",\n  \"image\": \"<string>\",\n  \"durationInMinutes\": \"<integer>\"\n}",
+													"raw": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"url\": \"<string>\",\n  \"image\": \"<string>\",\n  \"durationInMinutes\": \"<integer>\",\n  \"treatmentID\": \"<uuid>\",\n  \"sequence\": \"<integer>\"\n}",
 													"options": {
 														"raw": {
 															"headerFamily": "json",
@@ -1677,7 +1743,7 @@
 												}
 											],
 											"cookie": [],
-											"body": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"url\": \"<string>\",\n  \"image\": \"<string>\",\n  \"durationInMinutes\": \"<integer>\"\n}"
+											"body": "{\n  \"name\": \"<string>\",\n  \"description\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"url\": \"<string>\",\n  \"image\": \"<string>\",\n  \"durationInMinutes\": \"<integer>\",\n  \"treatmentID\": \"<uuid>\",\n  \"sequence\": \"<integer>\"\n}"
 										}
 									]
 								}
@@ -1763,7 +1829,7 @@
 																}
 															],
 															"cookie": [],
-															"body": "[\n  {\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\",\n    \"avatar\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"guardianID\": \"<uuid>\",\n    \"treatmentID\": \"<uuid>\",\n    \"doctorID\": \"<uuid>\"\n  },\n  {\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\",\n    \"avatar\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"guardianID\": \"<uuid>\",\n    \"treatmentID\": \"<uuid>\",\n    \"doctorID\": \"<uuid>\"\n  }\n]"
+															"body": "[\n  {\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\",\n    \"avatar\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"guardianID\": \"<uuid>\",\n    \"treatmentID\": \"<uuid>\",\n    \"doctorID\": \"<uuid>\",\n    \"doctorAccessJournal\": \"<boolean>\",\n    \"guardianAccessJournal\": \"<boolean>\"\n  },\n  {\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\",\n    \"avatar\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"guardianID\": \"<uuid>\",\n    \"treatmentID\": \"<uuid>\",\n    \"doctorID\": \"<uuid>\",\n    \"doctorAccessJournal\": \"<boolean>\",\n    \"guardianAccessJournal\": \"<boolean>\"\n  }\n]"
 														}
 													]
 												}
@@ -1838,7 +1904,7 @@
 														}
 													],
 													"cookie": [],
-													"body": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"specialization\": \"<string>\",\n  \"id\": \"<uuid>\"\n}"
+													"body": "{\n  \"userID\": \"<string>\",\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"specialization\": \"<string>\",\n  \"id\": \"<uuid>\"\n}"
 												}
 											]
 										},
@@ -1854,7 +1920,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"specialization\": \"<string>\",\n  \"id\": \"<uuid>\"\n}",
+													"raw": "{\n  \"userID\": \"<string>\",\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"specialization\": \"<string>\",\n  \"id\": \"<uuid>\"\n}",
 													"options": {
 														"raw": {
 															"headerFamily": "json",
@@ -1895,7 +1961,7 @@
 														],
 														"body": {
 															"mode": "raw",
-															"raw": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"specialization\": \"<string>\",\n  \"id\": \"<uuid>\"\n}",
+															"raw": "{\n  \"userID\": \"<string>\",\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"specialization\": \"<string>\",\n  \"id\": \"<uuid>\"\n}",
 															"options": {
 																"raw": {
 																	"headerFamily": "json",
@@ -1991,6 +2057,72 @@
 									]
 								},
 								{
+									"name": "me",
+									"item": [
+										{
+											"name": "Get Current Doctor",
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "text/plain"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/doctors/me",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"doctors",
+														"me"
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "OK",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "text/plain"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/doctors/me",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"doctors",
+																"me"
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"userID\": \"<string>\",\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"specialization\": \"<string>\",\n  \"id\": \"<uuid>\"\n}"
+												}
+											]
+										}
+									]
+								},
+								{
 									"name": "by-patient",
 									"item": [
 										{
@@ -2067,7 +2199,7 @@
 																}
 															],
 															"cookie": [],
-															"body": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"specialization\": \"<string>\",\n  \"id\": \"<uuid>\"\n}"
+															"body": "{\n  \"userID\": \"<string>\",\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"specialization\": \"<string>\",\n  \"id\": \"<uuid>\"\n}"
 														}
 													]
 												}
@@ -2130,7 +2262,7 @@
 												}
 											],
 											"cookie": [],
-											"body": "[\n  {\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\",\n    \"specialization\": \"<string>\",\n    \"id\": \"<uuid>\"\n  },\n  {\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\",\n    \"specialization\": \"<string>\",\n    \"id\": \"<uuid>\"\n  }\n]"
+											"body": "[\n  {\n    \"userID\": \"<string>\",\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\",\n    \"specialization\": \"<string>\",\n    \"id\": \"<uuid>\"\n  },\n  {\n    \"userID\": \"<string>\",\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\",\n    \"specialization\": \"<string>\",\n    \"id\": \"<uuid>\"\n  }\n]"
 										}
 									]
 								},
@@ -2150,7 +2282,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"specialization\": \"<string>\",\n  \"id\": \"<uuid>\"\n}",
+											"raw": "{\n  \"userID\": \"<string>\",\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"specialization\": \"<string>\",\n  \"id\": \"<uuid>\"\n}",
 											"options": {
 												"raw": {
 													"headerFamily": "json",
@@ -2187,7 +2319,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"specialization\": \"<string>\",\n  \"id\": \"<uuid>\"\n}",
+													"raw": "{\n  \"userID\": \"<string>\",\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"specialization\": \"<string>\",\n  \"id\": \"<uuid>\"\n}",
 													"options": {
 														"raw": {
 															"headerFamily": "json",
@@ -2217,7 +2349,7 @@
 												}
 											],
 											"cookie": [],
-											"body": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"specialization\": \"<string>\",\n  \"id\": \"<uuid>\"\n}"
+											"body": "{\n  \"userID\": \"<string>\",\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"specialization\": \"<string>\",\n  \"id\": \"<uuid>\"\n}"
 										}
 									]
 								}
@@ -2303,7 +2435,7 @@
 																}
 															],
 															"cookie": [],
-															"body": "[\n  {\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\",\n    \"avatar\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"guardianID\": \"<uuid>\",\n    \"treatmentID\": \"<uuid>\",\n    \"doctorID\": \"<uuid>\"\n  },\n  {\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\",\n    \"avatar\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"guardianID\": \"<uuid>\",\n    \"treatmentID\": \"<uuid>\",\n    \"doctorID\": \"<uuid>\"\n  }\n]"
+															"body": "[\n  {\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\",\n    \"avatar\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"guardianID\": \"<uuid>\",\n    \"treatmentID\": \"<uuid>\",\n    \"doctorID\": \"<uuid>\",\n    \"doctorAccessJournal\": \"<boolean>\",\n    \"guardianAccessJournal\": \"<boolean>\"\n  },\n  {\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\",\n    \"avatar\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"guardianID\": \"<uuid>\",\n    \"treatmentID\": \"<uuid>\",\n    \"doctorID\": \"<uuid>\",\n    \"doctorAccessJournal\": \"<boolean>\",\n    \"guardianAccessJournal\": \"<boolean>\"\n  }\n]"
 														}
 													]
 												}
@@ -2766,7 +2898,7 @@
 														}
 													],
 													"cookie": [],
-													"body": "{\n  \"date\": \"<string>\",\n  \"title\": \"<string>\",\n  \"content\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"patientID\": \"<uuid>\",\n  \"guardianID\": \"<uuid>\",\n  \"rating\": \"<integer>\"\n}"
+													"body": "{\n  \"date\": \"<string>\",\n  \"title\": \"<string>\",\n  \"content\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"patientID\": \"<uuid>\",\n  \"rating\": \"<integer>\"\n}"
 												}
 											]
 										},
@@ -2782,7 +2914,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"date\": \"<string>\",\n  \"title\": \"<string>\",\n  \"content\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"patientID\": \"<uuid>\",\n  \"guardianID\": \"<uuid>\",\n  \"rating\": \"<integer>\"\n}",
+													"raw": "{\n  \"date\": \"<string>\",\n  \"title\": \"<string>\",\n  \"content\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"patientID\": \"<uuid>\",\n  \"rating\": \"<integer>\"\n}",
 													"options": {
 														"raw": {
 															"headerFamily": "json",
@@ -2823,7 +2955,7 @@
 														],
 														"body": {
 															"mode": "raw",
-															"raw": "{\n  \"date\": \"<string>\",\n  \"title\": \"<string>\",\n  \"content\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"patientID\": \"<uuid>\",\n  \"guardianID\": \"<uuid>\",\n  \"rating\": \"<integer>\"\n}",
+															"raw": "{\n  \"date\": \"<string>\",\n  \"title\": \"<string>\",\n  \"content\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"patientID\": \"<uuid>\",\n  \"rating\": \"<integer>\"\n}",
 															"options": {
 																"raw": {
 																	"headerFamily": "json",
@@ -2861,6 +2993,16 @@
 										{
 											"name": "Delete Journal",
 											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "CfDJ8FKz02TG-BlPmak4vAezZpEc-EoGOXHGX8EgnTOH6KhBPU0d2gR3S2o2WnCial5QGhuveVdHTQSFlSGLe8-PyppT_daa-LnORFUqLmj8nlurC4tUsep3xTR3wq5HmJGFgW1aw8JxU1YJfXBs8l4ibHFhD3RZj-5q5VCC-_ZvZAWBP0KhfzY3p18ITpBW_xZpmROZVzkpnL7lg4GVvFkh3bwp8RlJ9NzLRy4jq24BAdZRtJbsA_T7dIwtuBthMYSLpUjsMy4txFjoA8t1KN4PBDy-I0HEehYvA88a3ixKGM-97U-gEMlTsX643pc9Lw-96U-eFaTK_7g9agv5BBvOrvjiHtojFnSgJosvIY1BOEXlkUER3ia_czfqBxFqiyiyUo0jh9H4qpmybHnnEBiURXCU7BQzwTkSZ3uaFk5F-OHAuNK5etdojXQFeqjoxUGGvMSfuXgtcIJ2VUO4A7dbK3MGWXBXpvFptNOxCogDCcJPflmQX8REtf6U75I3xxf3RAcekSiXkNveg8Bd3-sN6gQLsayk86Lfkr_-ClqtM9IJBbI8K6gX2JLp4GbRR6HyJrfhc-rzE8gMIWQ31vqvKntBBKk6vwOZrbIPAAgS9lwcRcuMhhcWqrsK1FH5-dhR91WT-YGP0sDe4e0koleD0vdB689UISJf-XynildapN9QQ-KYGAYD2mcT3fj7SkUVWA",
+															"type": "string"
+														}
+													]
+												},
 												"method": "DELETE",
 												"header": [],
 												"url": {
@@ -2877,7 +3019,7 @@
 													"variable": [
 														{
 															"key": "id",
-															"value": "<uuid>",
+															"value": "dbce9e2e-8ec7-4b14-8dac-cb03dde425ec",
 															"description": "(Required) "
 														}
 													]
@@ -2929,7 +3071,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/api/v1/journal?guardianId=<uuid>&patientId=<uuid>",
+											"raw": "{{baseUrl}}/api/v1/journal?patientId=<uuid>",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -2939,10 +3081,6 @@
 												"journal"
 											],
 											"query": [
-												{
-													"key": "guardianId",
-													"value": "<uuid>"
-												},
 												{
 													"key": "patientId",
 													"value": "<uuid>"
@@ -2962,7 +3100,7 @@
 													}
 												],
 												"url": {
-													"raw": "{{baseUrl}}/api/v1/journal?guardianId=<uuid>&patientId=<uuid>",
+													"raw": "{{baseUrl}}/api/v1/journal?patientId=<uuid>",
 													"host": [
 														"{{baseUrl}}"
 													],
@@ -2972,10 +3110,6 @@
 														"journal"
 													],
 													"query": [
-														{
-															"key": "guardianId",
-															"value": "<uuid>"
-														},
 														{
 															"key": "patientId",
 															"value": "<uuid>"
@@ -2993,7 +3127,7 @@
 												}
 											],
 											"cookie": [],
-											"body": "[\n  {\n    \"date\": \"<string>\",\n    \"title\": \"<string>\",\n    \"content\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"patientID\": \"<uuid>\",\n    \"guardianID\": \"<uuid>\",\n    \"rating\": \"<integer>\"\n  },\n  {\n    \"date\": \"<string>\",\n    \"title\": \"<string>\",\n    \"content\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"patientID\": \"<uuid>\",\n    \"guardianID\": \"<uuid>\",\n    \"rating\": \"<integer>\"\n  }\n]"
+											"body": "[\n  {\n    \"date\": \"<string>\",\n    \"title\": \"<string>\",\n    \"content\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"patientID\": \"<uuid>\",\n    \"rating\": \"<integer>\"\n  },\n  {\n    \"date\": \"<string>\",\n    \"title\": \"<string>\",\n    \"content\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"patientID\": \"<uuid>\",\n    \"rating\": \"<integer>\"\n  }\n]"
 										}
 									]
 								},
@@ -3013,7 +3147,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"date\": \"<string>\",\n  \"title\": \"<string>\",\n  \"content\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"patientID\": \"<uuid>\",\n  \"guardianID\": \"<uuid>\",\n  \"rating\": \"<integer>\"\n}",
+											"raw": "{\n  \"date\": \"<string>\",\n  \"title\": \"<string>\",\n  \"content\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"patientID\": \"<uuid>\",\n  \"rating\": \"<integer>\"\n}",
 											"options": {
 												"raw": {
 													"headerFamily": "json",
@@ -3050,7 +3184,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"date\": \"<string>\",\n  \"title\": \"<string>\",\n  \"content\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"patientID\": \"<uuid>\",\n  \"guardianID\": \"<uuid>\",\n  \"rating\": \"<integer>\"\n}",
+													"raw": "{\n  \"date\": \"<string>\",\n  \"title\": \"<string>\",\n  \"content\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"patientID\": \"<uuid>\",\n  \"rating\": \"<integer>\"\n}",
 													"options": {
 														"raw": {
 															"headerFamily": "json",
@@ -3080,7 +3214,7 @@
 												}
 											],
 											"cookie": [],
-											"body": "{\n  \"date\": \"<string>\",\n  \"title\": \"<string>\",\n  \"content\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"patientID\": \"<uuid>\",\n  \"guardianID\": \"<uuid>\",\n  \"rating\": \"<integer>\"\n}"
+											"body": "{\n  \"date\": \"<string>\",\n  \"title\": \"<string>\",\n  \"content\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"patientID\": \"<uuid>\",\n  \"rating\": \"<integer>\"\n}"
 										}
 									]
 								}
@@ -3166,25 +3300,117 @@
 																}
 															],
 															"cookie": [],
-															"body": "[\n  {\n    \"date\": \"<string>\",\n    \"title\": \"<string>\",\n    \"content\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"patientID\": \"<uuid>\",\n    \"guardianID\": \"<uuid>\",\n    \"rating\": \"<integer>\"\n  },\n  {\n    \"date\": \"<string>\",\n    \"title\": \"<string>\",\n    \"content\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"patientID\": \"<uuid>\",\n    \"guardianID\": \"<uuid>\",\n    \"rating\": \"<integer>\"\n  }\n]"
+															"body": "[\n  {\n    \"date\": \"<string>\",\n    \"title\": \"<string>\",\n    \"content\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"patientID\": \"<uuid>\",\n    \"rating\": \"<integer>\"\n  },\n  {\n    \"date\": \"<string>\",\n    \"title\": \"<string>\",\n    \"content\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"patientID\": \"<uuid>\",\n    \"rating\": \"<integer>\"\n  }\n]"
 														}
 													]
 												}
 											]
 										},
 										{
-											"name": "completed-appointments",
+											"name": "appointments",
 											"item": [
 												{
-													"name": "{completedId}",
+													"name": "{personalAppointmentId}",
 													"item": [
 														{
-															"name": "Delete Completed Appointment",
+															"name": "complete",
+															"item": [
+																{
+																	"name": "Complete Personal Appointment",
+																	"request": {
+																		"method": "PUT",
+																		"header": [],
+																		"url": {
+																			"raw": "{{baseUrl}}/api/v1/patient/:id/appointments/:personalAppointmentId/complete",
+																			"host": [
+																				"{{baseUrl}}"
+																			],
+																			"path": [
+																				"api",
+																				"v1",
+																				"patient",
+																				":id",
+																				"appointments",
+																				":personalAppointmentId",
+																				"complete"
+																			],
+																			"variable": [
+																				{
+																					"key": "id",
+																					"value": "<uuid>",
+																					"description": "(Required) "
+																				},
+																				{
+																					"key": "personalAppointmentId",
+																					"value": "<uuid>",
+																					"description": "(Required) "
+																				}
+																			]
+																		}
+																	},
+																	"response": [
+																		{
+																			"name": "OK",
+																			"originalRequest": {
+																				"method": "PUT",
+																				"header": [],
+																				"url": {
+																					"raw": "{{baseUrl}}/api/v1/patient/:id/appointments/:personalAppointmentId/complete",
+																					"host": [
+																						"{{baseUrl}}"
+																					],
+																					"path": [
+																						"api",
+																						"v1",
+																						"patient",
+																						":id",
+																						"appointments",
+																						":personalAppointmentId",
+																						"complete"
+																					],
+																					"variable": [
+																						{
+																							"key": "id"
+																						},
+																						{
+																							"key": "personalAppointmentId"
+																						}
+																					]
+																				}
+																			},
+																			"status": "OK",
+																			"code": 200,
+																			"_postman_previewlanguage": "text",
+																			"header": [],
+																			"cookie": [],
+																			"body": ""
+																		}
+																	]
+																}
+															]
+														},
+														{
+															"name": "Update Personal Appointment",
 															"request": {
-																"method": "DELETE",
-																"header": [],
+																"method": "PUT",
+																"header": [
+																	{
+																		"key": "Content-Type",
+																		"value": "application/json"
+																	}
+																],
+																"body": {
+																	"mode": "raw",
+																	"raw": "{\n  \"id\": \"<uuid>\",\n  \"patientID\": \"<uuid>\",\n  \"appointmentID\": \"<uuid>\",\n  \"appointmentDate\": \"<string>\",\n  \"completedDate\": \"<string>\",\n  \"completedQuestion\": \"<boolean>\",\n  \"sequence\": \"<integer>\"\n}",
+																	"options": {
+																		"raw": {
+																			"headerFamily": "json",
+																			"language": "json"
+																		}
+																	}
+																},
 																"url": {
-																	"raw": "{{baseUrl}}/api/v1/patient/:id/completed-appointments/:completedId",
+																	"raw": "{{baseUrl}}/api/v1/patient/:id/appointments/:personalAppointmentId",
 																	"host": [
 																		"{{baseUrl}}"
 																	],
@@ -3193,8 +3419,8 @@
 																		"v1",
 																		"patient",
 																		":id",
-																		"completed-appointments",
-																		":completedId"
+																		"appointments",
+																		":personalAppointmentId"
 																	],
 																	"variable": [
 																		{
@@ -3203,7 +3429,7 @@
 																			"description": "(Required) "
 																		},
 																		{
-																			"key": "completedId",
+																			"key": "personalAppointmentId",
 																			"value": "<uuid>",
 																			"description": "(Required) "
 																		}
@@ -3214,10 +3440,25 @@
 																{
 																	"name": "OK",
 																	"originalRequest": {
-																		"method": "DELETE",
-																		"header": [],
+																		"method": "PUT",
+																		"header": [
+																			{
+																				"key": "Content-Type",
+																				"value": "application/json"
+																			}
+																		],
+																		"body": {
+																			"mode": "raw",
+																			"raw": "{\n  \"id\": \"<uuid>\",\n  \"patientID\": \"<uuid>\",\n  \"appointmentID\": \"<uuid>\",\n  \"appointmentDate\": \"<string>\",\n  \"completedDate\": \"<string>\",\n  \"completedQuestion\": \"<boolean>\",\n  \"sequence\": \"<integer>\"\n}",
+																			"options": {
+																				"raw": {
+																					"headerFamily": "json",
+																					"language": "json"
+																				}
+																			}
+																		},
 																		"url": {
-																			"raw": "{{baseUrl}}/api/v1/patient/:id/completed-appointments/:completedId",
+																			"raw": "{{baseUrl}}/api/v1/patient/:id/appointments/:personalAppointmentId",
 																			"host": [
 																				"{{baseUrl}}"
 																			],
@@ -3226,15 +3467,15 @@
 																				"v1",
 																				"patient",
 																				":id",
-																				"completed-appointments",
-																				":completedId"
+																				"appointments",
+																				":personalAppointmentId"
 																			],
 																			"variable": [
 																				{
 																					"key": "id"
 																				},
 																				{
-																					"key": "completedId"
+																					"key": "personalAppointmentId"
 																				}
 																			]
 																		}
@@ -3251,7 +3492,7 @@
 													]
 												},
 												{
-													"name": "Get Completed Appointments",
+													"name": "Get Personal Appointments",
 													"request": {
 														"method": "GET",
 														"header": [
@@ -3261,7 +3502,7 @@
 															}
 														],
 														"url": {
-															"raw": "{{baseUrl}}/api/v1/patient/:id/completed-appointments",
+															"raw": "{{baseUrl}}/api/v1/patient/:id/appointments",
 															"host": [
 																"{{baseUrl}}"
 															],
@@ -3270,7 +3511,7 @@
 																"v1",
 																"patient",
 																":id",
-																"completed-appointments"
+																"appointments"
 															],
 															"variable": [
 																{
@@ -3293,7 +3534,7 @@
 																	}
 																],
 																"url": {
-																	"raw": "{{baseUrl}}/api/v1/patient/:id/completed-appointments",
+																	"raw": "{{baseUrl}}/api/v1/patient/:id/appointments",
 																	"host": [
 																		"{{baseUrl}}"
 																	],
@@ -3302,7 +3543,7 @@
 																		"v1",
 																		"patient",
 																		":id",
-																		"completed-appointments"
+																		"appointments"
 																	],
 																	"variable": [
 																		{
@@ -3321,17 +3562,17 @@
 																}
 															],
 															"cookie": [],
-															"body": "[\n  {\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"url\": \"<string>\",\n    \"image\": \"<string>\",\n    \"durationInMinutes\": \"<integer>\"\n  },\n  {\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"url\": \"<string>\",\n    \"image\": \"<string>\",\n    \"durationInMinutes\": \"<integer>\"\n  }\n]"
+															"body": "[\n  {\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"url\": \"<string>\",\n    \"image\": \"<string>\",\n    \"durationInMinutes\": \"<integer>\",\n    \"treatmentID\": \"<uuid>\",\n    \"sequence\": \"<integer>\"\n  },\n  {\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"url\": \"<string>\",\n    \"image\": \"<string>\",\n    \"durationInMinutes\": \"<integer>\",\n    \"treatmentID\": \"<uuid>\",\n    \"sequence\": \"<integer>\"\n  }\n]"
 														}
 													]
 												},
 												{
-													"name": "Add Completed Appointment",
+													"name": "Generate Personal Appointments",
 													"request": {
 														"method": "POST",
 														"header": [],
 														"url": {
-															"raw": "{{baseUrl}}/api/v1/patient/:id/completed-appointments?appointmentId=<uuid>&completedDate=<dateTime>",
+															"raw": "{{baseUrl}}/api/v1/patient/:id/appointments",
 															"host": [
 																"{{baseUrl}}"
 															],
@@ -3340,17 +3581,7 @@
 																"v1",
 																"patient",
 																":id",
-																"completed-appointments"
-															],
-															"query": [
-																{
-																	"key": "appointmentId",
-																	"value": "<uuid>"
-																},
-																{
-																	"key": "completedDate",
-																	"value": "<dateTime>"
-																}
+																"appointments"
 															],
 															"variable": [
 																{
@@ -3368,7 +3599,7 @@
 																"method": "POST",
 																"header": [],
 																"url": {
-																	"raw": "{{baseUrl}}/api/v1/patient/:id/completed-appointments?appointmentId=<uuid>&completedDate=<dateTime>",
+																	"raw": "{{baseUrl}}/api/v1/patient/:id/appointments",
 																	"host": [
 																		"{{baseUrl}}"
 																	],
@@ -3377,17 +3608,7 @@
 																		"v1",
 																		"patient",
 																		":id",
-																		"completed-appointments"
-																	],
-																	"query": [
-																		{
-																			"key": "appointmentId",
-																			"value": "<uuid>"
-																		},
-																		{
-																			"key": "completedDate",
-																			"value": "<dateTime>"
-																		}
+																		"appointments"
 																	],
 																	"variable": [
 																		{
@@ -3795,7 +4016,7 @@
 														}
 													],
 													"cookie": [],
-													"body": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"avatar\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"guardianID\": \"<uuid>\",\n  \"treatmentID\": \"<uuid>\",\n  \"doctorID\": \"<uuid>\"\n}"
+													"body": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"avatar\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"guardianID\": \"<uuid>\",\n  \"treatmentID\": \"<uuid>\",\n  \"doctorID\": \"<uuid>\",\n  \"doctorAccessJournal\": \"<boolean>\",\n  \"guardianAccessJournal\": \"<boolean>\"\n}"
 												}
 											]
 										},
@@ -3811,7 +4032,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"avatar\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"guardianID\": \"<uuid>\",\n  \"treatmentID\": \"<uuid>\",\n  \"doctorID\": \"<uuid>\"\n}",
+													"raw": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"avatar\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"guardianID\": \"<uuid>\",\n  \"treatmentID\": \"<uuid>\",\n  \"doctorID\": \"<uuid>\",\n  \"doctorAccessJournal\": \"<boolean>\",\n  \"guardianAccessJournal\": \"<boolean>\"\n}",
 													"options": {
 														"raw": {
 															"headerFamily": "json",
@@ -3852,7 +4073,7 @@
 														],
 														"body": {
 															"mode": "raw",
-															"raw": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"avatar\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"guardianID\": \"<uuid>\",\n  \"treatmentID\": \"<uuid>\",\n  \"doctorID\": \"<uuid>\"\n}",
+															"raw": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"avatar\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"guardianID\": \"<uuid>\",\n  \"treatmentID\": \"<uuid>\",\n  \"doctorID\": \"<uuid>\",\n  \"doctorAccessJournal\": \"<boolean>\",\n  \"guardianAccessJournal\": \"<boolean>\"\n}",
 															"options": {
 																"raw": {
 																	"headerFamily": "json",
@@ -4002,7 +4223,7 @@
 												}
 											],
 											"cookie": [],
-											"body": "[\n  {\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\",\n    \"avatar\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"guardianID\": \"<uuid>\",\n    \"treatmentID\": \"<uuid>\",\n    \"doctorID\": \"<uuid>\"\n  },\n  {\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\",\n    \"avatar\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"guardianID\": \"<uuid>\",\n    \"treatmentID\": \"<uuid>\",\n    \"doctorID\": \"<uuid>\"\n  }\n]"
+											"body": "[\n  {\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\",\n    \"avatar\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"guardianID\": \"<uuid>\",\n    \"treatmentID\": \"<uuid>\",\n    \"doctorID\": \"<uuid>\",\n    \"doctorAccessJournal\": \"<boolean>\",\n    \"guardianAccessJournal\": \"<boolean>\"\n  },\n  {\n    \"firstName\": \"<string>\",\n    \"lastName\": \"<string>\",\n    \"avatar\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"guardianID\": \"<uuid>\",\n    \"treatmentID\": \"<uuid>\",\n    \"doctorID\": \"<uuid>\",\n    \"doctorAccessJournal\": \"<boolean>\",\n    \"guardianAccessJournal\": \"<boolean>\"\n  }\n]"
 										}
 									]
 								},
@@ -4022,7 +4243,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"avatar\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"guardianID\": \"<uuid>\",\n  \"treatmentID\": \"<uuid>\",\n  \"doctorID\": \"<uuid>\"\n}",
+											"raw": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"avatar\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"guardianID\": \"<uuid>\",\n  \"treatmentID\": \"<uuid>\",\n  \"doctorID\": \"<uuid>\",\n  \"doctorAccessJournal\": \"<boolean>\",\n  \"guardianAccessJournal\": \"<boolean>\"\n}",
 											"options": {
 												"raw": {
 													"headerFamily": "json",
@@ -4059,7 +4280,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"avatar\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"guardianID\": \"<uuid>\",\n  \"treatmentID\": \"<uuid>\",\n  \"doctorID\": \"<uuid>\"\n}",
+													"raw": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"avatar\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"guardianID\": \"<uuid>\",\n  \"treatmentID\": \"<uuid>\",\n  \"doctorID\": \"<uuid>\",\n  \"doctorAccessJournal\": \"<boolean>\",\n  \"guardianAccessJournal\": \"<boolean>\"\n}",
 													"options": {
 														"raw": {
 															"headerFamily": "json",
@@ -4089,7 +4310,7 @@
 												}
 											],
 											"cookie": [],
-											"body": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"avatar\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"guardianID\": \"<uuid>\",\n  \"treatmentID\": \"<uuid>\",\n  \"doctorID\": \"<uuid>\"\n}"
+											"body": "{\n  \"firstName\": \"<string>\",\n  \"lastName\": \"<string>\",\n  \"avatar\": \"<string>\",\n  \"id\": \"<uuid>\",\n  \"guardianID\": \"<uuid>\",\n  \"treatmentID\": \"<uuid>\",\n  \"doctorID\": \"<uuid>\",\n  \"doctorAccessJournal\": \"<boolean>\",\n  \"guardianAccessJournal\": \"<boolean>\"\n}"
 										}
 									]
 								}
@@ -4554,173 +4775,6 @@
 								{
 									"name": "{id}",
 									"item": [
-										{
-											"name": "appointments",
-											"item": [
-												{
-													"name": "{appointmentId}",
-													"item": [
-														{
-															"name": "Link Appointment To Treatment",
-															"request": {
-																"method": "POST",
-																"header": [],
-																"url": {
-																	"raw": "{{baseUrl}}/api/v1/treatments/:id/appointments/:appointmentId?sequence=<integer>",
-																	"host": [
-																		"{{baseUrl}}"
-																	],
-																	"path": [
-																		"api",
-																		"v1",
-																		"treatments",
-																		":id",
-																		"appointments",
-																		":appointmentId"
-																	],
-																	"query": [
-																		{
-																			"key": "sequence",
-																			"value": "<integer>"
-																		}
-																	],
-																	"variable": [
-																		{
-																			"key": "id",
-																			"value": "<uuid>",
-																			"description": "(Required) "
-																		},
-																		{
-																			"key": "appointmentId",
-																			"value": "<uuid>",
-																			"description": "(Required) "
-																		}
-																	]
-																}
-															},
-															"response": [
-																{
-																	"name": "OK",
-																	"originalRequest": {
-																		"method": "POST",
-																		"header": [],
-																		"url": {
-																			"raw": "{{baseUrl}}/api/v1/treatments/:id/appointments/:appointmentId?sequence=<integer>",
-																			"host": [
-																				"{{baseUrl}}"
-																			],
-																			"path": [
-																				"api",
-																				"v1",
-																				"treatments",
-																				":id",
-																				"appointments",
-																				":appointmentId"
-																			],
-																			"query": [
-																				{
-																					"key": "sequence",
-																					"value": "<integer>"
-																				}
-																			],
-																			"variable": [
-																				{
-																					"key": "id"
-																				},
-																				{
-																					"key": "appointmentId"
-																				}
-																			]
-																		}
-																	},
-																	"status": "OK",
-																	"code": 200,
-																	"_postman_previewlanguage": "text",
-																	"header": [],
-																	"cookie": [],
-																	"body": ""
-																}
-															]
-														}
-													]
-												},
-												{
-													"name": "Get Appointments By Treatment Id In Treatments",
-													"request": {
-														"method": "GET",
-														"header": [
-															{
-																"key": "Accept",
-																"value": "text/plain"
-															}
-														],
-														"url": {
-															"raw": "{{baseUrl}}/api/v1/treatments/:id/appointments",
-															"host": [
-																"{{baseUrl}}"
-															],
-															"path": [
-																"api",
-																"v1",
-																"treatments",
-																":id",
-																"appointments"
-															],
-															"variable": [
-																{
-																	"key": "id",
-																	"value": "<uuid>",
-																	"description": "(Required) "
-																}
-															]
-														}
-													},
-													"response": [
-														{
-															"name": "OK",
-															"originalRequest": {
-																"method": "GET",
-																"header": [
-																	{
-																		"key": "Accept",
-																		"value": "text/plain"
-																	}
-																],
-																"url": {
-																	"raw": "{{baseUrl}}/api/v1/treatments/:id/appointments",
-																	"host": [
-																		"{{baseUrl}}"
-																	],
-																	"path": [
-																		"api",
-																		"v1",
-																		"treatments",
-																		":id",
-																		"appointments"
-																	],
-																	"variable": [
-																		{
-																			"key": "id"
-																		}
-																	]
-																}
-															},
-															"status": "OK",
-															"code": 200,
-															"_postman_previewlanguage": "json",
-															"header": [
-																{
-																	"key": "Content-Type",
-																	"value": "application/json"
-																}
-															],
-															"cookie": [],
-															"body": "[\n  {\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"url\": \"<string>\",\n    \"image\": \"<string>\",\n    \"durationInMinutes\": \"<integer>\"\n  },\n  {\n    \"name\": \"<string>\",\n    \"description\": \"<string>\",\n    \"id\": \"<uuid>\",\n    \"url\": \"<string>\",\n    \"image\": \"<string>\",\n    \"durationInMinutes\": \"<integer>\"\n  }\n]"
-														}
-													]
-												}
-											]
-										},
 										{
 											"name": "Get Treatment By Id",
 											"request": {
