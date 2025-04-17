@@ -1,0 +1,195 @@
+classDiagram
+
+%%-------------------------------------------------
+%% WebClient and API Clients on the left
+%%-------------------------------------------------
+class WebClient {
+    + baseUrl: string
+    + token: Token
+    + SendGetRequestAsync(route: string)
+    + SendPostRequestAsync(route: string, data: string)
+    + SendPutRequestAsync(route: string, data: string)
+    + SendDeleteRequestAsync(route: string)
+}
+
+class JournalApiClient {
+    + webClient: WebClient
+    + ReadJournalEntriesAsync()
+    + ReadJournalEntryByIdAsync(journalEntryId: string)
+    + CreateJournalEntryAsync(journalData: JournalEntry)
+    + UpdateJournalEntryAsync(journalEntryId: string, journalData: JournalEntry)
+    + DeleteJournalEntryAsync(journalEntryId: string)
+}
+
+class PatientApiClient {
+    + webClient: WebClient
+    + ReadPatientsAsync()
+    + ReadPatientByIdAsync(patientId: string)
+    + CreatePatientAsync(patientData: Patient)
+    + UpdatePatient(patientId: string, patientData: Patient)
+    + DeletePatientAsync(patientId: string)
+    + ReadPersonalAppointmentsFromPatientAsync(patientId: string)
+    + ReadJournalEntriesFromPatientAsync(patientId: string)
+    + GeneratePersonalAppointmentsForPatientAsync(patientId: string)
+}
+
+class AppointmentApiClient {
+    + webClient: WebClient
+    + CreateAppointmentAsync(appointmentData: Appointment)
+    + ReadAppointmentByIdAsync(appointmentId: string)
+    + UpdateAppointmentAsync(appointmentId: string, appointmentData: Appointment)
+    + DeleteAppointmentAsync(appointmentId: string)
+}
+
+class DoctorApiClient {
+    + webClient: WebClient
+    + ReadDoctorsAsync()
+    + ReadDoctorByIdAsync(doctorId: string)
+    + CreateDoctorAsync(doctorData: Doctor)
+    + UpdateDoctorAsync(doctorId: string, doctorData: Doctor)
+    + ReadDoctorFromPatientAsync(patientId: string)
+    + ReadPatientsFromDoctorAsync(doctorId: string)
+    + ReadDoctorByUserID()
+}
+
+class GuardianApiClient {
+    + webClient: WebClient
+    + ReadGuardianAsync()
+    + ReadGuardianById(guardianId: string)
+    + CreateGuardianAsync(guardianData: Guardian)
+    + UpdateGuardianAsync(guardianId: string, guardianData: Guardian)
+}
+
+class TreatmentApiClient {
+    + webClient: WebClient
+    + ReadTreatmentsAsync()
+    + ReadTreatmentByIdAsync(treatmentId: string)
+    + CreateTreatmentAsync(treatmentData: Treatment)
+    + UpdateTreatmentAsync(treatmentId: string, treatmentData: Treatment)
+    + DeleteTreatmentAsync(treatmentId: string)
+}
+
+class UserApiClient {
+    + Login(user: User)
+    + RefreshAccessToken(token: RefreshToken)
+}
+
+WebClient <|-- JournalApiClient : uses
+WebClient <|-- PatientApiClient : uses
+WebClient <|-- AppointmentApiClient : uses
+WebClient <|-- DoctorApiClient : uses
+WebClient <|-- GuardianApiClient : uses
+WebClient <|-- TreatmentApiClient : uses
+WebClient <|-- UserApiClient : uses
+
+%%-------------------------------------------------
+%% ApiClientManager and SceneScripts on the right
+%%-------------------------------------------------
+class ApiClientManager {
+  + currentGuardian: Guardian
+  + currentPatient: Patient
+  + currentTreatment: Treatment
+  + journalApiClient: JournalApiClient
+  + patientApiClient: PatientApiClient
+  + appointmentApiClient: AppointmentApiClient
+  + doctorApiClient: DoctorApiClient
+  + guardianApiClient: GuardianApiClient
+  + treatmentApiClient: TreatmentApiClient
+  + userApiClient: UserApiClient
+  + ClearData()
+}
+
+JournalApiClient --|> ApiClientManager : uses
+PatientApiClient --|> ApiClientManager : uses
+AppointmentApiClient --|> ApiClientManager : uses
+DoctorApiClient --|> ApiClientManager : uses
+GuardianApiClient --|> ApiClientManager : uses
+TreatmentApiClient --|> ApiClientManager : uses
+UserApiClient --|> ApiClientManager : uses
+
+class StartScreen {
+    + BackToStart()
+    + SwitchToLogin()
+    + SwitchToRegister()
+    + LoginAsync()
+    + RegisterAsync()
+}
+
+class PatientScherm {
+    + Start()
+    + ShowPanel(targetPanel: CanvasGroup)
+    + CreatePatient()
+    + SelectPatient(patient: Patient)
+    + Logout()
+}
+
+class TussenScherm {
+    + Start()
+    + Logout()
+    + LoadGameScene(trajectScene: string)
+}
+
+class DagboekScherm {
+    + Start()
+    + SendNewJournalEntry()
+    + UpdateJournal()
+    + DeleteEntry()
+    + ShowJournalEntry(entryIndex: int)
+    + OnToggleChanged(…)
+}
+
+class GanzenBordUI {
+    + Start()
+    + RedirectToDagboek(index: int)
+    + ShowPopup(index: int)
+    + CompleteLevel(index: int)
+    + UnlockSticker(index: int)
+}
+
+class GanzenboordManager {
+    + Initialize()
+    + LoadAllAppointments()
+}
+
+class MonitorScherm {
+    + Start()
+    + LoadPatients()
+    + UpdatePatientUI()
+    + OnAppointmentSelected(…)
+    + OnJournalSelected(…)
+}
+
+class ArtsScherm {
+    + Start()
+    + LoadCurrentDoctor()
+    + LoadDoctorPatientsInWindow()
+    + OnSelectedPatient(patient: Patient)
+    + CycleAppointments(…)
+    + LoadPatientJournalEntries()
+}
+
+class AppointmentListUI {
+    - ShowAppointmentsOnUI(…)
+}
+
+class Navigation {
+    + OnStickerClick()
+    + OnDagboekClick()
+    + OnBackToTussenSchermButtonClick()
+}
+
+class StickerBoeken {
+    + OnBackButtonClick(scene: string)
+}
+
+ApiClientManager <|-- StartScreen
+ApiClientManager <|-- PatientScherm
+ApiClientManager <|-- TussenScherm
+ApiClientManager <|-- DagboekScherm
+ApiClientManager <|-- GanzenBordUI
+ApiClientManager <|-- GanzenboordManager
+ApiClientManager <|-- MonitorScherm
+ApiClientManager <|-- ArtsScherm
+ApiClientManager <|-- AppointmentListUI
+ApiClientManager <|-- Navigation
+ApiClientManager <|-- StickerBoeken
