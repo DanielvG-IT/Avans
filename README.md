@@ -16,12 +16,12 @@ Welcome to the GitHub repository showcasing all my projects developed during my 
 
 ## 🚀 Projects Overview
 
-| 📅 Leerjaar | 📚 Module | 🏷️ Project Name                     | 📈 Status      |
-| ---------- | -------- | ---------------------------------- | ------------- |
+| 📅 Leerjaar | 📚 Module | 🏷️ Project Name                     | 📈 Status |
+| ---------- | -------- | ---------------------------------- | -------------  |
 | Leerjaar 1 | Module 1 | Smart Energy                       | ✅ Completed   |
 | Leerjaar 1 | Module 2 | Robotics Prototyping               | ✅ Completed   |
-| Leerjaar 1 | Module 3 | 2D Graphics & Secure Communication | 🚧 In Progress |
-| Leerjaar 1 | Module 4 | AI & System Integration            | ⏳ ...         |
+| Leerjaar 1 | Module 3 | 2D Graphics & Secure Communication | ✅ Completed   |
+| Leerjaar 1 | Module 4 | AI & System Integration            | 🚧 In Progress |
 | Leerjaar 2 | Module 1 | ...                                | ⏳ ...         |
 
 ## ⚙️ Projects
@@ -47,7 +47,15 @@ The web application provides real-time data on plant health, essential for optim
 
 ### PROJECT 2D GRAPHICS & SECURE COMMUNICATION (L1Q3)
 
-TODO: Add project description here.
+This 2D Unity-based project, developed under the scope of L1Q3, merges immersive visuals to provide an engaging educational experience for children facing medical procedures. By simulating a virtual hospital environment, youngsters can explore various scenarios, learn about common healthcare routines, and practice essential coping strategies. The secure communication layer, built with a .NET Web API, ensures that any sensitive data exchanged between the client application and the remote server is encrypted and protected from unauthorized access. Through this functionality, user progress, achievements, and interactive session details are reliably tracked, allowing caregivers and healthcare professionals to tailor support and resources when necessary. 
+
+In addition to reinforcing hospital familiarity, the project prioritizes user privacy and data integrity by leveraging standardized encryption protocols, such as TLS, for network connections. This approach not only complies with standard data protection frameworks but also helps maintain a trustworthy environment where personal information remains confidential. By combining compelling graphics, playful animations, and user-centric design principles, the application motivates children to learn about healthcare processes in a stress-free manner. 
+
+Ultimately, this interactive system aims to demystify hospital experiences, reduce anxiety, and foster positive associations with medical care, helping children approach their healthcare encounters with confidence and understanding.
+
+### PROJECT ARTIFICIAL INTELLIGENCE & DATA SCIENCE (L1Q4)
+
+TODO: Write a description about L1Q4 LU1
 
 ---
 
