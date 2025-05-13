@@ -1,0 +1,22 @@
+While lussen:
+
+Als je niet weet hoeveel herhalingen het stuk code nodig heeft. Je kan break gebruiken om uit de loop te gaan of de initele conditie (Boolean) te veranderen
+
+while('conditie') {Console.WriteLine("Hallo1")}
+
+
+
+
+For lussen:
+
+Als je weet hoeveel herhalingen er moeten plaatsvinden.
+
+for(int i = 0; i < 2; i++) { }
+
+
+
+Foreach lussen:
+
+Als je een lijst of array af wilt gaan en met de induviduele waardes iets mee wilt uitvoeren.
+
+foreach(int cijfer in numbers) { }
