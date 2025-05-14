@@ -2,10 +2,21 @@
     "tabWidth": 4,
     "useTabs": false,
     "semi": true,
-    "singleQuote": false,
+    "singleQuote": true,
     "bracketSpacing": true,
-    "printWidth": 120,
-    "endOfLine": "crlf",
+    "printWidth": 100,
+    "endOfLine": "lf",
     "arrowParens": "always",
-    "trailingComma": "none"
+    "trailingComma": "es5",
+    "overrides": [
+        {
+            "files": "*.cs",
+            "options": {
+                "tabWidth": 4,
+                "useTabs": true,
+                "semi": true,
+                "singleQuote": false
+            }
+        }
+    ]
 }
