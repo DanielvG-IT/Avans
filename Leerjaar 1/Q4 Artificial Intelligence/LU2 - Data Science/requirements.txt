@@ -1,0 +1,15 @@
+jupyter
+notebook
+pandas
+numpy
+scipy
+matplotlib
+seaborn
+scikit-learn
+graphviz
+dtreeviz
+opencv-python
+ultralytics
+polars
+pyarrow
+opencv-python
