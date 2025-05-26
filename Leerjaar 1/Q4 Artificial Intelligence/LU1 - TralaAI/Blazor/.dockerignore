@@ -1,0 +1,34 @@
+# Ignore build output
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ASP.NET/Blazor publish output
+wwwroot/dist/
+wwwroot/node_modules/
+wwwroot/lib/
+
+# Node modules (if using npm/yarn)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Visual Studio Code settings
+.vscode/
+
+# Docker files
+Dockerfile*
+.dockerignore
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
