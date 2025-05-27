@@ -1,3 +1,4 @@
+using TralaAI.Website.Services;
 using Website.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,6 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddTransient<IExampleService, ExampleService>();
 
 var app = builder.Build();
 
