@@ -1,34 +1,43 @@
-# Ignore build output
+# .dockerignore for .NET projects
+
 bin/
 obj/
-out/
-
-# User-specific files
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
-
-# ASP.NET/Blazor publish output
-wwwroot/dist/
-wwwroot/node_modules/
-wwwroot/lib/
-
-# Node modules (if using npm/yarn)
+.vs/
+.idea/
+*.swp
+*.tmp
+*.log
+*.db
+*.DS_Store
+*.vscode/
+.env
 node_modules/
 npm-debug.log
-yarn-error.log
-
-# Visual Studio Code settings
-.vscode/
-
-# Docker files
-Dockerfile*
-.dockerignore
-
-# Logs
-*.log
-
-# OS generated files
-.DS_Store
-Thumbs.db
+dist/
+coverage/
+TestResults/
+*.ncrunch*
+*.localhistory/
+*.publishsettings
+*.pfx
+*.snk
+*.psess
+*.vsp
+*.vspx
+*.pidb
+_ReSharper*/
+*.resharper
+*.dotCover
+*.dotTrace
+*.dotMemory
+*.orig
+*.rej
+*.bak
+*.backup
+*.cache
+*.config.user
+*.tsbuildinfo

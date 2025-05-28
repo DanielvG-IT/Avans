@@ -1,20 +1,22 @@
-# Build stage
+# Use the official .NET SDK image for building the application
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-WORKDIR /app
+WORKDIR ./app
 
-# Copy and restore
+# Copy csproj and restore as distinct layers
 COPY *.csproj ./
 RUN dotnet restore
 
-# Copy everything and build
+# Copy the remaining source code and build the application
 COPY . ./
-RUN dotnet publish -c Release -o /app/publish
+RUN dotnet publish -c Release -o out
 
-# Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
-WORKDIR /app
-COPY --from=build /app/publish .
+# Use the official .NET runtime image for running the application
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS publish
+WORKDIR ./app
+COPY --from=build ./app/out ./
 
-# Expose port and run
+# Expose port 80
 EXPOSE 80
-ENTRYPOINT ["dotnet", "TralaAI.Website.dll"]
+
+# Set the entrypoint
+ENTRYPOINT ["dotnet", "blazor-ui.dll"]
