@@ -13,7 +13,7 @@ Deze ASP .NET Core Web API verwerkt inkomende requests van de Blazor-frontend, b
 1. Clone de repo  
    ```bash
    git clone https://github.com/TralaAI/core-api.git
-   cd tralaAI-core-api
+   cd core-api
    ```
 2. Pas user secrets aan:
    ```json
