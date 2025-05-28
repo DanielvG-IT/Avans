@@ -13,7 +13,7 @@ Een Blazor WebAssembly-app die de gebruiker interface biedt. Roept via een Razor
 1. Clone de repo  
    ```bash
    git clone https://github.com/<jouw-org>/tralaAI-blazor-ui.git
-   cd tralaAI-blazor-ui
+   cd blazor-ui
    ```
    
 2. Pas user secrets aan (Core API URL):
