@@ -1,16 +1,12 @@
-using System.Text;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using TralaAI.CoreApi.Models.Auth;
 using TralaAI.CoreApi.Interfaces;
 
 namespace TralaAI.CoreApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class AuthController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IJwtService jwtService) : ControllerBase
     {
         private readonly SignInManager<IdentityUser> _signInManager = signInManager;
