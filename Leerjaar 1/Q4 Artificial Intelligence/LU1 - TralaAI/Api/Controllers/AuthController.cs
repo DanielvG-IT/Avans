@@ -24,7 +24,7 @@ namespace TralaAI.CoreApi.Controllers
             if (!result.Succeeded)
                 return Unauthorized();
 
-            var expiresAt = DateTime.UtcNow.AddMinutes(60);
+            var expiresAt = DateTime.Now.AddMinutes(60);
             var token = _jwtService.GenerateJwtToken(user, expiresAt);
 
             return Ok(new
