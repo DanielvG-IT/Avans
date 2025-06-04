@@ -1,6 +1,4 @@
-using System;
-
-namespace TralaAI.Website.Services
+namespace Blazor.Services
 {
   public interface IExampleService
   {
