@@ -1,18 +1,17 @@
-# blazor-ui
+# Blazor
 
 **Beschrijving**  
-Een Blazor WebAssembly-app die de gebruiker interface biedt. Roept via een Razor-service de Core API aan om data op te halen en voorspellingen te tonen.
+Een Blazor Server-app die de gebruiker interface biedt. Roept via een service de API aan om data op te halen en voorspellingen te tonen.
 
 ---
 
 ## Vereisten
-- [.NET 7 SDK](https://dotnet.microsoft.com/download)
-- Node.js (optioneel, voor bundling)
+- [.NET 9 SDK](https://dotnet.microsoft.com/download)
 
 ## Installatie & Configuratie
 1. Clone de repo  
    ```bash
-   git clone https://github.com/<jouw-org>/tralaAI-blazor-ui.git
+   git clone https://github.com/TralaAI/Blazor.git
    cd blazor-ui
    ```
    
