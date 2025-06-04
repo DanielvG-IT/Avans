@@ -3,9 +3,9 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using TralaAI.CoreApi.Interfaces;
+using Api.Interfaces;
 
-namespace TralaAI.CoreApi.Services
+namespace Api.Services
 {
     public class JwtService(IConfiguration configuration) : IJwtService
     {

@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using TralaAI.CoreApi.Models.Auth;
-using TralaAI.CoreApi.Interfaces;
+using Api.Models.Auth;
+using Api.Interfaces;
 
-namespace TralaAI.CoreApi.Controllers
+namespace Api.Controllers
 {
     [ApiController]
     [Route("api/v1/[controller]")]

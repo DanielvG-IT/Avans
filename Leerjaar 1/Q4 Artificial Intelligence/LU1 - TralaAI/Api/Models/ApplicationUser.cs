@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace TralaAI.CoreApi.Models
+namespace Api.Models
 {
     public class ApplicationUser : IdentityUser { }
 }

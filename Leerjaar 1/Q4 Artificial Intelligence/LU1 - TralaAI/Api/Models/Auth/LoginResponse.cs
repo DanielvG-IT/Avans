@@ -1,4 +1,4 @@
-namespace TralaAI.CoreApi.Models.Auth
+namespace Api.Models.Auth
 {
   public class LoginResponse
   {

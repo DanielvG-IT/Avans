@@ -2,9 +2,9 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using TralaAI.CoreApi.Data;
-using TralaAI.CoreApi.Services;
-using TralaAI.CoreApi.Interfaces;
+using Api.Data;
+using Api.Services;
+using Api.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

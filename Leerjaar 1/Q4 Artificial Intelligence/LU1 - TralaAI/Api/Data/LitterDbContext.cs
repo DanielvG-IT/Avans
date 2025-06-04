@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using TralaAI.CoreApi.Models;
+using Api.Models;
 
-namespace TralaAI.CoreApi.Data
+namespace Api.Data
 {
   public class LitterDbContext(DbContextOptions<LitterDbContext> options) : IdentityDbContext<ApplicationUser>(options)
   {
