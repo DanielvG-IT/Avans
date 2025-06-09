@@ -13,6 +13,7 @@ if (string.IsNullOrWhiteSpace(holidayApiKey))
 
 // 🛠️ Add services to the container.
 builder.Services.AddOpenApi();
+builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<LitterDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<ILitterRepository, LitterRepository>();
