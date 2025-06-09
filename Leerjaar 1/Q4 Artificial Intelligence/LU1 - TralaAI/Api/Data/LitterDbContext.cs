@@ -1,16 +1,11 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using TralaAI.CoreApi.Models;
+using Microsoft.EntityFrameworkCore;
+using Api.Models;
 
-namespace TralaAI.CoreApi.Data
+namespace Api.Data
 {
-  public class LitterDbContext : IdentityDbContext
+  public class LitterDbContext(DbContextOptions<LitterDbContext> options) : IdentityDbContext(options)
   {
-    public LitterDbContext(DbContextOptions<LitterDbContext> options)
-        : base(options)
-    {
-    }
-
     public DbSet<Litter> Litters { get; set; }
   }
 }

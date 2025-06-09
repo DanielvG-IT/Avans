@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using TralaAI.CoreApi.Data;
-using TralaAI.CoreApi.Interfaces;
-using TralaAI.CoreApi.Models;
+using Api.Interfaces;
+using Api.Models;
+using Api.Data;
 
-namespace TralaAI.CoreApi.Repositories
+namespace Api.Repository
 {
     public class LitterRepository : ILitterRepository
     {

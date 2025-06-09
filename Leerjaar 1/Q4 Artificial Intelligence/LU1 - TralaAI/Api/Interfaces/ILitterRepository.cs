@@ -1,5 +1,6 @@
-using TralaAI.CoreApi.Models;
-namespace TralaAI.CoreApi.Interfaces
+using Api.Models;
+
+namespace Api.Interfaces
 {
     public interface ILitterRepository
     {

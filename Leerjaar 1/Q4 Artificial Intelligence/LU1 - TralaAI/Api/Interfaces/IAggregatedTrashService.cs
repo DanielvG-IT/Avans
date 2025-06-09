@@ -1,7 +1,6 @@
+using Api.Models;
 
-using TralaAI.CoreApi.Models;
-
-namespace TralaAI.CoreApi.Interfaces
+namespace Api.Interfaces
 {
     public interface IAggregatedTrashService
     {

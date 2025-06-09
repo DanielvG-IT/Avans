@@ -1,21 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
-using TralaAI.CoreApi.Interfaces;
-using TralaAI.CoreApi.Data;
+using Api.Data;
 
-namespace TralaAI.CoreApi.Controllers
+namespace Api.Controllers
 {
     [ApiController]
     [Route("api/v1/[controller]")]
 
-    public class MonitoringController : ControllerBase
+    public class MonitoringController(LitterDbContext context) : ControllerBase
     {
-        private readonly LitterDbContext _context;
-
-        public MonitoringController(LitterDbContext context)
-        {
-            _context = context;
-        }
+        private readonly LitterDbContext _context = context;
     }
-
 }

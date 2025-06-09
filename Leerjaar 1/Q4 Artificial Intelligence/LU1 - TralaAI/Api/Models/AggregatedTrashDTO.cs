@@ -1,7 +1,4 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-
-namespace TralaAI.CoreApi.Models
+namespace Api.Models
 {
 
     public class AggregatedTrashDto

@@ -1,24 +1,18 @@
-using Microsoft.EntityFrameworkCore;
-using TralaAI.CoreApi.Data;
-using TralaAI.CoreApi.Interfaces;
-using TralaAI.CoreApi.Models;
-namespace TralaAI.CoreApi.Services
-{
-    public class AggregatedTrashService : IAggregatedTrashService
-    {
-        private readonly HttpClient _http;
+using Api.Interfaces;
+using Api.Models;
 
-        public AggregatedTrashService(HttpClient http)
-        {
-            _http = http;
-        }
+namespace Api.Services
+{
+    public class AggregatedTrashService(HttpClient http) : IAggregatedTrashService
+    {
+        private readonly HttpClient _http = http;
 
         public async Task<List<AggregatedTrashDto>> GetAggregatedTrashAsync()
         {
             var response = await _http.GetFromJsonAsync<List<AggregatedTrashDto>>(
                 "API URL GET REQUEST SENSORING");
 
-            return response ?? new List<AggregatedTrashDto>();
+            return response ?? [];
         }
 
     }

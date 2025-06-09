@@ -1,26 +1,18 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
-using TralaAI.CoreApi.Models;
-using TralaAI.CoreApi.Interfaces;
-using TralaAI.CoreApi.Data;
+using Api.Interfaces;
+using Api.Models;
+using Api.Data;
 
-namespace TralaAI.CoreApi.Controllers
+namespace Api.Controllers
 {
     [ApiController]
     [Route("api/v1/[controller]")]
 
-    public class TrashDTOController : ControllerBase
+    public class TrashDTOController(LitterDbContext context, IAggregatedTrashService aggregatedTrashService, ILitterRepository litterRepository) : ControllerBase
     {
-        private readonly LitterDbContext _context;
-        private readonly IAggregatedTrashService _aggregatedTrashService;
-        private readonly ILitterRepository _litterRepository;
-
-        public TrashDTOController(LitterDbContext context, IAggregatedTrashService aggregatedTrashService, ILitterRepository litterRepository)
-        {
-            _context = context;
-            _aggregatedTrashService = aggregatedTrashService;
-            _litterRepository = litterRepository;
-        }
+        private readonly LitterDbContext _context = context;
+        private readonly IAggregatedTrashService _aggregatedTrashService = aggregatedTrashService;
+        private readonly ILitterRepository _litterRepository = litterRepository;
 
         [HttpPost("import-trash-data")]
         public async Task<IActionResult> ImportTrashData()
@@ -41,7 +33,7 @@ namespace TralaAI.CoreApi.Controllers
                     //IsHoliday = isHoliday,
                     //Latitud = ?,
                     //Longitude = ?
-                    
+
                 };
 
                 await _litterRepository.AddAsync(litter);
