@@ -51,7 +51,11 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Login to Azure Container Registry
-        run: echo "${{ secrets.ACR_PASSWORD }}" | docker login ${{ secrets.AZURE_CONTAINER_REGISTRY }} -u ${{ secrets.ACR_USERNAME }} --password-stdin
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
+          username: ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }}
+          password: ${{ secrets.AZURE_CONTAINER_REGISTRY_PASSWORD }}
 
       - name: Build Docker image
         run: docker build -t ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
@@ -60,4 +64,5 @@ jobs:
         run: docker push ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Logout from Azure Container Registry
+        if: always() # Ensure logout runs even if previous steps fail
         run: docker logout ${{ secrets.AZURE_CONTAINER_REGISTRY }}
