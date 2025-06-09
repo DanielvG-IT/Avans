@@ -30,12 +30,12 @@ namespace Api.Services
             catch (HttpRequestException ex)
             {
                 // Log the exception or handle it as needed
-                throw new Exception($"Error fetching holiday data: {ex.Message}", ex);
+                throw; // Rethrow the original exception
             }
             catch (JsonException ex)
             {
                 // Log the exception or handle it as needed
-                throw new Exception($"Error parsing holiday data: {ex.Message}", ex);
+                throw; // Rethrow the original exception
             }
         }
     }
