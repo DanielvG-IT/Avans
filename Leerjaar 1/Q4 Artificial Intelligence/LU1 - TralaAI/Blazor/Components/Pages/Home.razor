@@ -1,11 +1,75 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 
-<PageTitle>Home</PageTitle>
+<div class="page-container">
 
-<h1>TralaAI</h1>
+    <div class="top-section" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <h1>Welkom bij de AI Voorspellingsapp</h1>
+        <p style="max-width: 600px; text-align: center; color: #444; font-size: 1.2rem;">
+            Ontdek interactieve AI-voorspellingen voor de data uit jouw camera met heldere visualisaties en uitleg.
+            Klik hieronder om direct aan de slag te gaan.
+        </p>
+    </div>
 
-Welcome to your new app.
+    <div class="middle-section" style="justify-content: center; align-items: center;">
+        <button class="start-button" @onclick="GoToPredictions">Start AI Voorspellingen</button>
+    </div>
+
+</div>
+
+<style>
+    .start-button {
+        background-color: #0078d4;
+        color: white;
+        font-size: 1.3rem;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 120, 212, 0.3);
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .start-button:hover {
+        background-color: #005a9e;
+    }
+
+    .page-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        background-color: #f0f2f5;
+        padding: 1rem;
+        gap: 1rem;
+        box-sizing: border-box;
+    }
+
+    .top-section {
+        flex: 3;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        padding: 2rem;
+    }
+
+    .middle-section {
+        flex: 1;
+        display: flex;
+        gap: 1rem;
+    }
+
+    @@media (max-width: 768px) {
+        .middle-section {
+            flex-direction: column;
+            justify-content: center;
+        }
+    }
+</style>
 
 @code {
+    [Inject] NavigationManager Navigation { get; set; }
 
+    private void GoToPredictions()
+    {
+        Navigation.NavigateTo("/ai-predictions");
+    }
 }
