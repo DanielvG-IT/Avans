@@ -7,7 +7,7 @@ using Api.Repository;
 var builder = WebApplication.CreateBuilder(args);
 
 // 🪄 Add custom variables for later use.
-var holidayApiKey = builder.Configuration["HolidayApiKey"];
+var holidayApiKey = builder.Configuration.GetSection("ApiKeys")["HolidayApiKey"];
 if (string.IsNullOrWhiteSpace(holidayApiKey))
     throw new InvalidOperationException("Holiday API key is not configured. Please set the 'HolidayApiKey' in the user secrets.");
 
