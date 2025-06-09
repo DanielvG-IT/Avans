@@ -7,39 +7,38 @@ namespace Api.Controllers
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-
-    public class TrashDTOController(LitterDbContext context, IAggregatedTrashService aggregatedTrashService, ILitterRepository litterRepository) : ControllerBase
+    public class TrashDTOController(LitterDbContext dbContext, IAggregatedTrashService aggregatedTrashService, IHolidayApiService holidayApiService) : ControllerBase
     {
-        private readonly LitterDbContext _context = context;
+        private readonly LitterDbContext _dbContext = dbContext;
         private readonly IAggregatedTrashService _aggregatedTrashService = aggregatedTrashService;
-        private readonly ILitterRepository _litterRepository = litterRepository;
+        private readonly IHolidayApiService _holidayApiService = holidayApiService;
 
         [HttpPost("import-trash-data")]
         public async Task<IActionResult> ImportTrashData()
         {
-            var sensoringData = await _aggregatedTrashService.GetAggregatedTrashAsync();
-
-            foreach (var dto in sensoringData)
+            var results = await _aggregatedTrashService.GetAggregatedTrashAsync();
+            foreach (var trash in results)
             {
-                //Misschien hier HOLIDAY API aan toevoegen. Dat het gelijk datum uitleest en aangeeft of het een Vakantiedag is of niet.
-                //bool isHoliday = await _holidayService.IsHolidayAsync(dto.Date);
+                // Finding out if it is a holiday
+                var isHoliday = await _holidayApiService.IsHolidayAsync(trash.Date, "NL");
+
+                // Create a new Litter object
                 var litter = new Litter
                 {
-                    Type = dto.Type,
-                    Date = dto.Date,
-                    Confidence = dto.Confidence,
-                    Weather = dto.Weather,
-                    Temperature = dto.Temperature,
-                    //IsHoliday = isHoliday,
-                    //Latitud = ?,
-                    //Longitude = ?
-
+                    Id = trash.Id,
+                    Type = trash.Type,
+                    Date = trash.Date,
+                    Confidence = trash.Confidence,
+                    Weather = trash.Weather,
+                    Temperature = trash.Temperature,
+                    Latitude = 0, // TODO Update with actual values
+                    Longitude = 0, // TODO Update with actual values
+                    IsHoliday = isHoliday
                 };
 
-                await _litterRepository.AddAsync(litter);
+                await _dbContext.Litters.AddAsync(litter);
             }
-
-            await _litterRepository.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
 
             return Ok("Data imported");
         }
