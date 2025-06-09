@@ -35,6 +35,7 @@ jobs:
     name: Publish and Push Docker Image
     runs-on: ubuntu-latest
     needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -67,5 +68,5 @@ jobs:
         run: docker push ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Logout from Azure Container Registry
-        if: always() # Ensure logout runs even if previous steps fail
+        if: always()
         run: docker logout ${{ secrets.AZURE_CONTAINER_REGISTRY }}
