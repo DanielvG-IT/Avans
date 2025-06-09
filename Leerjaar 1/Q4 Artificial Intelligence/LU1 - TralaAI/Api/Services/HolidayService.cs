@@ -17,26 +17,13 @@ namespace Api.Services
 
             string url = $"https://holidayapi.com/v1/holidays?country={countryCode}&year={date.Year}&month={date.Month}&day={date.Day}&key={_apiKey}";
 
-            try
-            {
-                HttpResponseMessage response = await _httpClient.GetAsync(url);
-                response.EnsureSuccessStatusCode();
+            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
 
-                string jsonResponse = await response.Content.ReadAsStringAsync();
-                var holidayResponse = JsonSerializer.Deserialize<HolidayApiResponse>(jsonResponse, _jsonSerializerOptions);
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+            var holidayResponse = JsonSerializer.Deserialize<HolidayApiResponse>(jsonResponse, _jsonSerializerOptions);
 
-                return holidayResponse?.Holidays?.Length > 0 ?? false;
-            }
-            catch (HttpRequestException ex)
-            {
-                // Log the exception or handle it as needed
-                throw; // Rethrow the original exception
-            }
-            catch (JsonException ex)
-            {
-                // Log the exception or handle it as needed
-                throw; // Rethrow the original exception
-            }
+            return holidayResponse?.Holidays != null && holidayResponse.Holidays.Length > 0;
         }
     }
 }
