@@ -1,4 +1,4 @@
-# core-api
+# WebApi
 
 **Beschrijving**  
 Deze ASP .NET Core Web API verwerkt inkomende requests van de Blazor-frontend, beheert de database (CRUD) en maakt HTTP-calls naar de Python FastAPI voor voorspellingsresultaten.
