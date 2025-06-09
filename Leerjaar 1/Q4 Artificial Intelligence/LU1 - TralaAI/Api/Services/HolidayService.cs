@@ -25,7 +25,7 @@ namespace Api.Services
                 string jsonResponse = await response.Content.ReadAsStringAsync();
                 var holidayResponse = JsonSerializer.Deserialize<HolidayApiResponse>(jsonResponse, _jsonSerializerOptions);
 
-                return holidayResponse?.Holidays?.Length > 0;
+                return holidayResponse?.Holidays?.Length > 0 ?? false;
             }
             catch (HttpRequestException ex)
             {
