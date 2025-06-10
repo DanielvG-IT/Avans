@@ -31,8 +31,8 @@ namespace Api.Controllers
                     Confidence = trash.Confidence,
                     Weather = trash.Weather,
                     Temperature = trash.Temperature,
-                    Latitude = 0, // TODO Update with actual values
-                    Longitude = 0, // TODO Update with actual values
+                    Latitude = trash.Latitude,
+                    Longitude = trash.Longitude,
                     IsHoliday = isHoliday
                 };
 

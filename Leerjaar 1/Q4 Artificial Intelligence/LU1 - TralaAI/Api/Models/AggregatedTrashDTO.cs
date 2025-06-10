@@ -9,6 +9,8 @@ namespace Api.Models
         public double Confidence { get; set; }
         public string? Weather { get; set; }
         public int Temperature { get; set; }
+        public float Latitude { get; set; }
+        public float Longitude { get; set; }
     }
 
 }

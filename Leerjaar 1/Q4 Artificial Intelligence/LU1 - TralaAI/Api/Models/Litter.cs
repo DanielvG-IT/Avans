@@ -8,8 +8,8 @@ namespace Api.Models
         public double Confidence { get; set; }
         public string? Weather { get; set; }
         public int Temperature { get; set; }
-        public decimal Latitude { get; set; } //! Staat niet in Sensoring API - Y-as
-        public decimal Longitude { get; set; } //! Staat niet in Sensoring API - X-as
+        public float Latitude { get; set; } 
+        public float Longitude { get; set; } 
         public bool IsHoliday { get; set; } //! Komt van externe API
 
     }
