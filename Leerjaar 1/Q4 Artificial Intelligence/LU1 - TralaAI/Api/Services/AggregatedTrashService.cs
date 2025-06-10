@@ -13,7 +13,7 @@ namespace Api.Services
         var request = new HttpRequestMessage(HttpMethod.Get, "API URL GET REQUEST SENSORING");
 
         // Voeg de API Key toe aan de headers
-        request.Headers.Add("x-api-key", _apiKey); // 
+        request.Headers.Add("API-Key", _apiKey);  
 
         var response = await _http.SendAsync(request);
 
