@@ -11,6 +11,10 @@ var holidayApiKey = builder.Configuration.GetSection("ApiKeys")["HolidayApiKey"]
 if (string.IsNullOrWhiteSpace(holidayApiKey))
     throw new InvalidOperationException("Holiday API key is not configured. Please set the 'HolidayApiKey' in the user secrets.");
 
+var sensoringApiKey = builder.Configuration.GetSection("ApiKeys")["SensoringApiKey"];
+if (string.IsNullOrWhiteSpace(sensoringApiKey))
+    throw new InvalidOperationException("Sensoring API key is not configured. Please set the 'SenoringApiKey' in the user secrets.");
+
 // 🛠️ Add services to the container.
 builder.Services.AddOpenApi();
 builder.Services.AddHttpClient();
@@ -25,7 +29,7 @@ builder.Services.AddScoped<IHolidayApiService, HolidayApiService>(provider =>
 builder.Services.AddScoped<IAggregatedTrashService, AggregatedTrashService>(provider =>
 {
     var httpClient = provider.GetRequiredService<IHttpClientFactory>().CreateClient();
-    return new AggregatedTrashService(httpClient);
+    return new AggregatedTrashService(httpClient, sensoringApiKey);
 });
 
 var app = builder.Build();
