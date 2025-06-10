@@ -1,8 +1,12 @@
 using Blazor.Components;
+using Blazor.Interfaces;
+using Blazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IBackendService, BackendService>();
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
 var app = builder.Build();
