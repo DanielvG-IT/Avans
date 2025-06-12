@@ -1,0 +1,120 @@
+﻿@page "/ai-predictions"
+@using Blazor.Interfaces;
+@inject IBackendService _backendService;
+
+<div class="page-container">
+
+    <!-- Middle: Left/Right split -->
+    <div class="middle-section">
+        <div class="left-panel">
+            <h3>AI Output</h3>
+            <div class="placeholder">[Tekstuele uitleg]</div>
+        </div>
+        <div class="right-panel">
+            <h3>Voorspellingsgrafiek</h3>
+            <div class="placeholder">[Grafiek]</div>
+        </div>
+    </div>
+
+    <!-- Heatmap section (verplaatst) -->
+    <div class="top-section">
+        <h3>Heatmap</h3>
+        <div class="placeholder">[Heatmap]</div>
+    </div>
+
+    <!-- Bottom: Top/Bottom split in the middle -->
+    <div class="bottom-section">
+        <h3>Extra Informatie</h3>
+        <div class="top-bottom-split">
+            <div class="top-inner">
+                <div class="placeholder">[Extra boven]</div>
+            </div>
+            <div class="bottom-inner">
+                <div class="placeholder">[Extra onder]</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    .page-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        background-color: #f0f2f5;
+        padding: 1rem;
+        gap: 1rem;
+        box-sizing: border-box;
+    }
+
+    .top-section {
+        flex: 3;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+    }
+
+    .middle-section {
+        flex: 3;
+        display: flex;
+        gap: 1rem;
+    }
+
+    .left-panel,
+    .right-panel {
+        flex: 2;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+    }
+
+    .bottom-section {
+        flex: 3;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .top-bottom-split {
+        flex: 2;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .top-inner,
+    .bottom-inner {
+        flex: 2;
+        border-radius: 7px;
+    }
+
+    h3 {
+        color: #0078d4;
+        margin-bottom: 0.5rem;
+    }
+
+    .placeholder {
+        height: 70%;
+        width: 100%;
+        border: 2px dashed #cccccc;
+        border-radius: 8px;
+        background-color: #fafafa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #888888;
+    }
+
+    @@media (max-width: 768px) {
+        .middle-section {
+            flex-direction: column;
+        }
+    }
+</style>
