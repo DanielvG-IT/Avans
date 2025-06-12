@@ -14,29 +14,37 @@ namespace Api.Repository
             _context = context;
         }
 
-        public async Task<List<Litter>> GetAllAsync()
-        {
-            return await _context.Litters.ToListAsync();
-        }
-
-        public async Task<Litter?> GetByIdAsync(int id)
-        {
-            return await _context.Litters.FindAsync(id);
-        }
-
         public async Task AddAsync(Litter litter)
         {
             await _context.Litters.AddAsync(litter);
         }
 
-        public void Remove(Litter litter)
-        {
-            _context.Litters.Remove(litter);
-        }
-
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<Litter>> GetFilteredAsync(LitterFilterDto filter)
+        {
+            var query = _context.Litters.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(filter.Type))
+                query = query.Where(x => x.Type == filter.Type);
+
+            if (filter.From.HasValue)
+                query = query.Where(x => x.Date >= filter.From.Value);
+
+            if (filter.To.HasValue)
+                query = query.Where(x => x.Date <= filter.To.Value);
+
+            if (filter.MinTemperature.HasValue)
+                query = query.Where(x => x.Temperature >= filter.MinTemperature.Value);
+
+            if (filter.MaxTemperature.HasValue)
+                query = query.Where(x => x.Temperature <= filter.MaxTemperature.Value);
+
+
+            return await query.ToListAsync();
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Api.Services
         private readonly HttpClient _http = http;
         private readonly string _apiKey = apiKey;
 
-         public async Task<List<AggregatedTrashDto>> GetAggregatedTrashAsync()
+        public async Task<List<AggregatedTrashDto>> GetAggregatedTrashAsync()
     {
         var request = new HttpRequestMessage(HttpMethod.Get, "API URL GET REQUEST SENSORING");
 
