@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Api.Data;
 using Api.Models;
 using Api.Interfaces;
 
@@ -8,14 +6,9 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
-public class LitterController : ControllerBase
+public class LitterController(ILitterRepository litterRepository) : ControllerBase
 {
-    private readonly ILitterRepository _litterRepository;
-
-    public LitterController(ILitterRepository litterRepository)
-    {
-        _litterRepository = litterRepository;
-    }
+    private readonly ILitterRepository _litterRepository = litterRepository;
 
     [HttpGet]
     public async Task<ActionResult<List<Litter>>> Get([FromQuery] LitterFilterDto filter)

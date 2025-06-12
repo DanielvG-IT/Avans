@@ -1,4 +1,4 @@
-namespace Api.Models.Enums
+namespace Api.Models.Enums.DTO
 {
     public enum LitterType
     {

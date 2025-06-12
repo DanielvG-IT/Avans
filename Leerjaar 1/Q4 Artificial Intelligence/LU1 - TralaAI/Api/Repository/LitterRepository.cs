@@ -1,18 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using Api.Interfaces;
+using Api.Models.Enums;
 using Api.Models;
 using Api.Data;
 
 namespace Api.Repository
 {
-    public class LitterRepository : ILitterRepository
+    public class LitterRepository(LitterDbContext context) : ILitterRepository
     {
-        private readonly LitterDbContext _context;
-
-        public LitterRepository(LitterDbContext context)
-        {
-            _context = context;
-        }
+        private readonly LitterDbContext _context = context;
 
         public async Task AddAsync(Litter litter)
         {
@@ -28,8 +24,8 @@ namespace Api.Repository
         {
             var query = _context.Litters.AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(filter.Type))
-                query = query.Where(x => x.Type == filter.Type);
+            if (filter.Type.HasValue)
+                query = query.Where(x => x.Type == filter.Type.Value);
 
             if (filter.From.HasValue)
                 query = query.Where(x => x.Date >= filter.From.Value);
@@ -42,7 +38,6 @@ namespace Api.Repository
 
             if (filter.MaxTemperature.HasValue)
                 query = query.Where(x => x.Temperature <= filter.MaxTemperature.Value);
-
 
             return await query.ToListAsync();
         }
