@@ -9,6 +9,10 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<IBackendService, BackendService>();
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
+//-------------------------------HIER NOG DE URL VOOR DE BACKEND API--------------------------
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://your-api-url.com/") });
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
