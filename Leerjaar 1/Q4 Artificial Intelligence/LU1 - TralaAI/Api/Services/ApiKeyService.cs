@@ -1,8 +1,9 @@
 using Api.Data;
+using Api.Interfaces;
 
 namespace Api.Services
 {
-    public class ApiKeyService(LitterDbContext context)
+    public class ApiKeyService(LitterDbContext context) : IApiKeyService
     {
         private readonly LitterDbContext _context = context;
 
