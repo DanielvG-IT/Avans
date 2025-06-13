@@ -1,7 +1,7 @@
 # WebApi
 
 **Beschrijving**  
-Deze ASP .NET Core Web API verwerkt inkomende requests van de Blazor-frontend, beheert de database (CRUD) en maakt HTTP-calls naar de Python FastAPI voor voorspellingsresultaten.
+Deze ASP.NET Core Web API verwerkt inkomende requests van de Blazor-frontend, beheert de database (CRUD) en maakt HTTP-calls naar de Python FastAPI voor voorspellingsresultaten.
 
 ---
 
@@ -12,8 +12,8 @@ Deze ASP .NET Core Web API verwerkt inkomende requests van de Blazor-frontend, b
 ## Installatie & Configuratie
 1. Clone de repo  
    ```bash
-   git clone https://github.com/TralaAI/core-api.git
-   cd core-api
+   git clone https://github.com/TralaAI/Api.git
+   cd Api
    ```
 2. Pas user secrets aan:
    ```json
