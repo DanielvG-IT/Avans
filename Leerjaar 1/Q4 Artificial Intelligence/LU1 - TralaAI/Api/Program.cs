@@ -19,7 +19,7 @@ if (string.IsNullOrWhiteSpace(sensoringApiKey))
 builder.Services.AddOpenApi();
 builder.Services.AddHttpClient();
 builder.Services.AddControllers();
-builder.Services.AddDbContext<LitterDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Database:ConnectionString")));
+builder.Services.AddDbContext<LitterDbContext>(options => options.UseSqlServer(builder.Configuration.GetSection("Database")["ConnectionString"]));
 builder.Services.AddScoped<ILitterRepository, LitterRepository>();
 builder.Services.AddScoped<IHolidayApiService, HolidayApiService>(provider =>
 {

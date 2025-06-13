@@ -1,10 +1,12 @@
+using Api.Models.Enums.DTO;
+
 namespace Api.Models
 {
 
     public class AggregatedTrashDto
     {
         public Guid Id { get; set; }
-        public string? Type { get; set; }
+        public LitterType? Type { get; set; }
         public DateTime Date { get; set; }
         public double Confidence { get; set; }
         public string? Weather { get; set; }

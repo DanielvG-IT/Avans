@@ -1,52 +1,23 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Api.Data;
 using Api.Models;
+using Api.Interfaces;
 
 namespace Api.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
-public class LitterController : ControllerBase
+public class LitterController(ILitterRepository litterRepository) : ControllerBase
 {
-    private readonly LitterDbContext _context;
+    private readonly ILitterRepository _litterRepository = litterRepository;
 
-    public LitterController(LitterDbContext context)
+    [HttpGet]
+    public async Task<ActionResult<List<Litter>>> Get([FromQuery] LitterFilterDto filter)
     {
-        _context = context;
-    }
+        var litters = await _litterRepository.GetFilteredAsync(filter);
 
-    [HttpGet("filter")]
-    public async Task<IActionResult> GetFiltered(
-        [FromQuery] string? type,
-        [FromQuery] DateTime? date,
-        [FromQuery] bool? isHoliday,
-        [FromQuery] string? weather,
-        [FromQuery] int? minTemp,
-        [FromQuery] int? maxTemp)
-    {
-        var query = _context.Litters.AsQueryable();
+        if (litters == null || litters.Count == 0)
+            return NotFound("No litter found matching the filter.");
 
-        if (!string.IsNullOrWhiteSpace(type))
-            query = query.Where(l => l.Type == type);
-
-        if (date.HasValue)
-            query = query.Where(l => l.Date.Date == date.Value.Date);
-
-        if (isHoliday.HasValue)
-            query = query.Where(l => l.IsHoliday == isHoliday.Value);
-
-        if (!string.IsNullOrWhiteSpace(weather))
-            query = query.Where(l => l.Weather == weather);
-
-        if (minTemp.HasValue)
-            query = query.Where(l => l.Temperature >= minTemp.Value);
-
-        if (maxTemp.HasValue)
-            query = query.Where(l => l.Temperature <= maxTemp.Value);
-
-        var result = await query.OrderByDescending(l => l.Date).ToListAsync();
-
-        return Ok(result);
+        return Ok(litters);
     }
 }
