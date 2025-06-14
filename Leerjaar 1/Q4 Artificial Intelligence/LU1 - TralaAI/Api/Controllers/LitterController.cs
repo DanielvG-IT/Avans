@@ -15,7 +15,7 @@ public class LitterController(ILitterRepository litterRepository) : ControllerBa
     {
         var litters = await _litterRepository.GetFilteredAsync(filter);
 
-        if (litters == null || litters.Count == 0)
+        if (litters is null || litters.Count == 0)
             return NotFound("No litter found matching the filter.");
 
         return Ok(litters);
