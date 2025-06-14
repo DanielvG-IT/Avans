@@ -20,6 +20,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<LitterDbContext>(options => options.UseSqlServer(builder.Configuration.GetSection("Database")["ConnectionString"]));
+builder.Services.AddScoped<IFastApiPredictionService, FastApiPredictionService>();
 builder.Services.AddScoped<ILitterRepository, LitterRepository>();
 builder.Services.AddScoped<IApiKeyService, ApiKeyService>();
 builder.Services.AddScoped<IHolidayApiService, HolidayApiService>(provider =>
