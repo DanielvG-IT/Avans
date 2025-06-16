@@ -1,5 +1,7 @@
 ﻿@page "/ai-predictions"
 @using Blazor.Interfaces;
+@using ApexCharts
+@rendermode InteractiveServer
 @inject IBackendService _backendService;
 
 <div class="page-container">
@@ -12,7 +14,16 @@
         </div>
         <div class="right-panel">
             <h3>Voorspellingsgrafiek</h3>
-            <div class="placeholder">[Grafiek]</div>
+            <ApexChart TItem="PieData"
+                       Title="Voorbeeld Data Pie Chart">
+
+                <ApexPointSeries TItem="PieData"
+                                 Items="pieData"
+                                 Name="Waarde"
+                                 SeriesType="SeriesType.Pie"
+                                 XValue="@(e => e.Label)"
+                                 YValue="@(e => e.Value)" />
+            </ApexChart>
         </div>
     </div>
 
@@ -118,3 +129,19 @@
         }
     }
 </style>
+
+@code {
+        private List<PieData> pieData = new()
+    {
+        new PieData { Label = "Rest", Value = 120 },
+        new PieData { Label = "GFT", Value = 200 },
+        new PieData { Label = "plastic", Value = 150 },
+        new PieData { Label = "Papier", Value = 90 }
+    };
+
+    public class PieData
+    {
+        public string Label { get; set; }
+        public decimal Value { get; set; }
+    }
+}
