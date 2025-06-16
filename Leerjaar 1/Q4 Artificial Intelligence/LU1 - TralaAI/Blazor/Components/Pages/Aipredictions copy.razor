@@ -2,6 +2,7 @@
 @using Blazor.Interfaces;
 @using ApexCharts
 @rendermode InteractiveServer
+@inject IJSRuntime JS
 @inject IBackendService _backendService;
 
 <div class="page-container">
@@ -30,7 +31,10 @@
     <!-- Heatmap section (verplaatst) -->
     <div class="top-section">
         <h3>Heatmap</h3>
-        <div class="placeholder">[Heatmap]</div>
+        <div id="heatmapContainer" class="heatmap-box">
+            <img src="images/Bredakaart.png" alt="Map of Breda" class="heatmap-background" />
+        </div>
+        <button class="btn btn-primary mt-3" @onclick="DrawHeatmap">Draw Heatmap</button>
     </div>
 
     <!-- Bottom: Top/Bottom split in the middle -->
@@ -123,6 +127,22 @@
         color: #888888;
     }
 
+        .heatmap-box {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    overflow: hidden;
+    }
+
+    .heatmap-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    }
+
+
     @@media (max-width: 768px) {
         .middle-section {
             flex-direction: column;
@@ -143,5 +163,21 @@
     {
         public string Label { get; set; }
         public decimal Value { get; set; }
+    }
+
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Console.WriteLine("Waiting 500ms before calling JS...");
+            await Task.Delay(500); // <-- gives JS time to initialize
+            await JS.InvokeVoidAsync("heatmapInterop.drawMap");
+        }
+    }
+
+    private async Task DrawHeatmap()
+    {
+        await JS.InvokeVoidAsync("heatmapInterop.drawMap");
     }
 }
