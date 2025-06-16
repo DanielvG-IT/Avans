@@ -24,26 +24,18 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
     }
 
     [HttpPost]
-    public async Task<IActionResult> Predict()
+    public async Task<IActionResult> Predict(List<PredictionRequestModel> dtos)
     {
-        var predictionResult = await _fastApiPredictionService.MakeLitterAmountPredictionAsync(DateTime.UtcNow); // TODO Update to use actual date input
+        if (dtos is null || dtos.Count == 0)
+            return BadRequest("Prediction request models cannot be null or empty.");
+
+        var predictionResult = await _fastApiPredictionService.MakeLitterAmountPredictionAsync(dtos);
         if (predictionResult is null)
             return BadRequest("Prediction failed. Please try again later.");
 
-        if (predictionResult.Prediction is null)
-            return NotFound("No prediction available for the given date.");
+        if (predictionResult.Predictions is null)
+            return NotFound("No prediction available for the given input.");
 
         return Ok(predictionResult);
-    }
-
-
-    [HttpPost]
-    public async Task<IActionResult> Retrain()
-    {
-        var predictionResult = await _fastApiPredictionService.RetrainModelAsync();
-        if (predictionResult is false)
-            return StatusCode(StatusCodes.Status500InternalServerError, "Retraining failed. Please try again later.");
-
-        return NoContent();
     }
 }
