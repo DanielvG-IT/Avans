@@ -1,15 +1,39 @@
 ﻿@page "/heatmap"
 @using Blazor.Interfaces;
+@rendermode InteractiveServer
 @inject IBackendService _backendService;
+@inject IJSRuntime JS
 
 <div class="page-container">
-
     <!-- Top Large section -->
     <div class="top-section">
         <h3>Heatmap</h3>
-        <div class="placeholder">[Heatmap]</div>
+        <div id="heatmapContainer" class="heatmap-box">
+            <img src="images/Bredakaart.png" alt="Map of Breda" class="heatmap-background" />
+        </div>
+        <button class="btn btn-primary mt-3" @onclick="DrawHeatmap">Draw Heatmap</button>
     </div>
+
 </div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Console.WriteLine("Waiting 500ms before calling JS...");
+            await Task.Delay(500); // <-- gives JS time to initialize
+            await JS.InvokeVoidAsync("heatmapInterop.drawMap");
+        }
+    }
+
+    private async Task DrawHeatmap()
+    {
+        await JS.InvokeVoidAsync("heatmapInterop.drawMap");
+    }
+}
+
+
 
 <style>
     .page-container {
@@ -23,11 +47,20 @@
     }
 
     .top-section {
-        flex: 3;
+        flex: 4;
         background-color: #ffffff;
         border-radius: 12px;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         padding: 1rem;
+    }
+
+
+    .heatmap-box {
+        height: 400px; /* or any fixed size */
+        width: 100%;
+        border-radius: 8px;
+        background-color: #fafafa;
+        position: relative; /* important for heatmap canvas */
     }
 
     .middle-section {
@@ -74,17 +107,21 @@
         margin-bottom: 0.5rem;
     }
 
-    .placeholder {
-        height: 70%;
-        width: 100%;
-        border: 2px dashed #cccccc;
-        border-radius: 8px;
-        background-color: #fafafa;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #888888;
+    .heatmap-box {
+    position: relative;
+    height: 600px;
+    width: 100%;
+    overflow: hidden;
     }
+
+    .heatmap-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    }
+
 
     @@media (max-width: 768px) {
         .middle-section {
