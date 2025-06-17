@@ -32,41 +32,37 @@ jobs:
         run: dotnet test --no-build --configuration Release --verbosity normal
 
   publish:
-    name: Publish and Push Docker Image
-    runs-on: ubuntu-latest
+    name: Deploy Blazor to Azure
     needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'pull_request' && github.ref == 'refs/heads/main' && github.event.action == 'closed' && github.event.pull_request.merged == true)
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write #This is required for requesting the OIDC JWT Token
+      contents: read #Required when GH token is used to authenticate with private repo
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - name: Azure Login
+        uses: azure/login@v1
         with:
-          dotnet-version: "9.0.x"
+          client-id: ${{ secrets.BLAZOR_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.BLAZOR_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.BLAZOR_AZURE_SUBSCRIPTION_ID }}
 
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build --no-restore --configuration Release
-
-      - name: Login to Azure Container Registry
-        uses: docker/login-action@v3
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
         with:
-          registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
-          username: ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }}
-          password: ${{ secrets.AZURE_CONTAINER_REGISTRY_PASSWORD }}
-
-      - name: Build Docker image
-        run: docker build -t ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
-
-      - name: Tag Docker image as latest
-        run: docker tag ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-
-      - name: Push Docker image
-        run: docker push ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-
-      - name: Logout from Azure Container Registry
-        if: always()
-        run: docker logout ${{ secrets.AZURE_CONTAINER_REGISTRY }}
+          appSourcePath: .
+          dockerfilePath: ./Dockerfile
+          registryUrl: tralaaidocker-f6fxesc2f4fhg5gj.azurecr.io
+          registryUsername: ${{ secrets.BLAZOR_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.BLAZOR_REGISTRY_PASSWORD }}
+          containerAppName: blazor
+          resourceGroup: L1Q4-TralaAI
+          imageToBuild: tralaaidocker-f6fxesc2f4fhg5gj.azurecr.io/blazor:${{ github.sha }}
+          _buildArgumentsKey_: |
+            _buildArgumentsValues_
