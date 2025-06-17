@@ -5,18 +5,10 @@ using System.Text.Json;
 
 namespace Api.Services
 {
-    public class FastApiPredictionService : IFastApiPredictionService
+    public class FastApiPredictionService(HttpClient httpClient, ILogger<FastApiPredictionService> logger) : IFastApiPredictionService
     {
-        private readonly HttpClient _httpClient;
-        private readonly ILogger<FastApiPredictionService> _logger;
-        private readonly string _baseUrl = "http://localhost:8000";
-
-        public FastApiPredictionService(HttpClient httpClient, ILogger<FastApiPredictionService> logger)
-        {
-            _httpClient = httpClient;
-            _logger = logger;
-            _httpClient.BaseAddress = new Uri(_baseUrl);
-        }
+        private readonly HttpClient _httpClient = httpClient;
+        private readonly ILogger<FastApiPredictionService> _logger = logger;
 
         public async Task<PredictionResponseWrapper> MakeLitterAmountPredictionAsync(List<PredictionRequestModel> requestModels)
         {

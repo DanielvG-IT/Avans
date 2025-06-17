@@ -1,30 +1,26 @@
+using Microsoft.Extensions.Options;
 using Api.Interfaces;
 using Api.Models;
 
 namespace Api.Services
 {
-    public class AggregatedTrashService(HttpClient http, string apiKey) : IAggregatedTrashService
+    public class AggregatedTrashService(HttpClient httpClient) : IAggregatedTrashService
     {
-        private readonly HttpClient _http = http;
-        private readonly string _apiKey = apiKey;
+        private readonly HttpClient _httpClient = httpClient;
 
         public async Task<List<AggregatedTrashDto>> GetAggregatedTrashAsync()
-    {
-        var request = new HttpRequestMessage(HttpMethod.Get, "API URL GET REQUEST SENSORING");
-
-        // Voeg de API Key toe aan de headers
-        request.Headers.Add("API-Key", _apiKey);  
-
-        var response = await _http.SendAsync(request);
-
-        if (!response.IsSuccessStatusCode)
         {
-            // Je kunt hier eventueel logging of foutafhandeling toevoegen
-            return [];
-        }
+            var request = new HttpRequestMessage(HttpMethod.Get, "API URL GET REQUEST SENSORING");
+            var response = await _httpClient.SendAsync(request);
 
-        var content = await response.Content.ReadFromJsonAsync<List<AggregatedTrashDto>>();
-        return content ?? [];
-    }
+            if (!response.IsSuccessStatusCode)
+            {
+                // TODO Je kunt hier eventueel logging of foutafhandeling toevoegen
+                return [];
+            }
+
+            var content = await response.Content.ReadFromJsonAsync<List<AggregatedTrashDto>>();
+            return content ?? [];
+        }
     }
 }
