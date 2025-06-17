@@ -53,12 +53,12 @@ jobs:
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }}/dockerfile
-          _dockerfilePathKey_: _dockerfilePath_
+          dockerfilePath: ${{ github.workspace }}/dockerfile
           registryUrl: tralaaidocker-f6fxesc2f4fhg5gj.azurecr.io
           registryUsername: ${{ secrets.WEBAPI_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.WEBAPI_REGISTRY_PASSWORD }}
           containerAppName: webapi
           resourceGroup: L1Q4-TralaAI
           imageToBuild: tralaaidocker-f6fxesc2f4fhg5gj.azurecr.io/webapi:${{ github.sha }}
-          _buildArgumentsKey_: |
-            _buildArgumentsValues_
+          buildArguments: |
+            CALLER_ID=github-actions-v2
