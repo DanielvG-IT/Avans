@@ -1,5 +1,4 @@
 using Api.Models.Enums;
-using Api.Models.Enums.DTO;
 
 namespace Api.Models
 {
@@ -9,7 +8,7 @@ namespace Api.Models
         public Category? Type { get; set; }
         public DateTime Date { get; set; }
         public double Confidence { get; set; }
-        public WeatherCondition? Weather { get; set; }
+        public string? Weather { get; set; } // TODO: Possibly map to WeatherCondition enum
         public int Temperature { get; set; }
         public float Latitude { get; set; }
         public float Longitude { get; set; }
