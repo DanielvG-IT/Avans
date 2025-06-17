@@ -58,3 +58,48 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+
+
+
+.status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f3f3f3;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #ccc;
+    font-size: 0.95rem;
+}
+
+.status-left {
+    flex: 1;
+    text-align: left;
+}
+
+.status-center {
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-weight: bold;
+}
+
+.status-right {
+    flex: 1;
+    text-align: right;
+}
+
+.api-status {
+    min-width: 100px;
+    text-align: center;
+}
+
+.refresh-button {
+    background-color: #0078d4;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+}

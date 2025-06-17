@@ -6,9 +6,21 @@
     </div>
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+        <div class="top-row px-4 status-bar">
+    <div class="status-left">
+        <strong>Laatste update:</strong> @lastUpdated?.ToString("HH:mm:ss")
+    </div>
+
+    <div class="status-center">
+        <span class="api-status" style="color:@(pythonStatus ? "limegreen" : "red")">Python API</span>
+        <span class="api-status" style="color:@(dotnetStatus ? "limegreen" : "red")">.NET API</span>
+        <span class="api-status" style="color:@(holidayStatus ? "limegreen" : "red")">Holiday API</span>
+    </div>
+
+    <div class="status-right">
+        <button class="refresh-button" @onclick="SimuleerStatusUpdate">🔄 Ophalen</button>
+    </div>
+</div>
 
         <article class="content px-4">
             @Body
@@ -17,7 +29,31 @@
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
+    Er is een onverwachte fout opgetreden.
+    <a href="." class="reload">Herlaad</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    private DateTime? lastUpdated;
+    private bool pythonStatus;
+    private bool dotnetStatus;
+    private bool holidayStatus;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await SimuleerStatusUpdate();
+    }
+
+    private async Task SimuleerStatusUpdate()
+    {
+        // Simuleer willekeurige status
+        var random = new Random();
+        pythonStatus = random.Next(2) == 0;
+        dotnetStatus = random.Next(2) == 0;
+        holidayStatus = random.Next(2) == 0;
+
+        lastUpdated = DateTime.Now;
+        await InvokeAsync(StateHasChanged);
+    }
+}
