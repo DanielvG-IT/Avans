@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Api.Models;
+using Api.Attributes;
 using Api.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -7,6 +8,7 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
+[ApiKeyAuth]
 public class LitterController(ILitterRepository litterRepository, IFastApiPredictionService fastApiPredictionService) : ControllerBase
 {
     private readonly ILitterRepository _litterRepository = litterRepository;

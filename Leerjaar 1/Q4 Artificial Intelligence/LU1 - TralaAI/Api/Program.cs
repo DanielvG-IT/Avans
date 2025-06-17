@@ -3,6 +3,7 @@ using Api.Data;
 using Api.Services;
 using Api.Interfaces;
 using Api.Repository;
+using Api.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<LitterDbContext>(options => options.UseSqlServer(builder.Configuration.GetSection("Database")["ConnectionString"]));
 builder.Services.AddScoped<IFastApiPredictionService, FastApiPredictionService>();
 builder.Services.AddScoped<ILitterRepository, LitterRepository>();
+builder.Services.AddScoped<ApiKeyAuthFilter>();
 builder.Services.AddScoped<IApiKeyService, ApiKeyService>();
 builder.Services.AddScoped<IHolidayApiService, HolidayApiService>(provider =>
 {
