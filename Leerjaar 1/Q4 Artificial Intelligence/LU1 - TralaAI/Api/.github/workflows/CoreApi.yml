@@ -31,9 +31,11 @@ jobs:
       - name: Test
         run: dotnet test --no-build --configuration Release --verbosity normal
 
-  build-and-deploy:
+  deploy:
     name: Build and Deploy Docker to Azure Container Apps
     runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
     permissions:
       id-token: write #This is required for requesting the OIDC JWT Token
       contents: read #Required when GH token is used to authenticate with private repo
@@ -53,7 +55,7 @@ jobs:
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }}
-          dockerfilePath: ${{ github.workspace }}/Api/Dockerfile
+          dockerfilePath: ${{ github.workspace }}/Dockerfile
           registryUrl: tralaaidocker-f6fxesc2f4fhg5gj.azurecr.io
           registryUsername: ${{ secrets.WEBAPI_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.WEBAPI_REGISTRY_PASSWORD }}
