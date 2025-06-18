@@ -14,45 +14,40 @@
         
         <ApexChart TItem="LitterData" Title="Afval per Type per Dag">
             
-            <ApexPointSeries TItem="LitterData"
-                            Items="LitterItems"
-                            Name="Plastic"
-                            XValue="@(e => e.Date)"
-                            YValue="@(e => e.Type == "plastic" ? (decimal?)e.Count : null)"
-                            OrderByDescending="e=>e.Y"
-                            SeriesType="SeriesType.Bar" />
-                            
-            <ApexPointSeries TItem="LitterData"
-                            Items="LitterItems"
-                            Name="Paper"
-                            XValue="@(e => e.Date)"
-                            YValue="@(e => e.Type == "paper" ? (decimal?)e.Count : null)"
-                            OrderByDescending="e=>e.Y"
-                            SeriesType="SeriesType.Bar" />
+        <ApexPointSeries TItem="LitterData"
+                        Items="PlasticItems"
+                        Name="Plastic"
+                        XValue="@(e => e.Date)"
+                        YValue="@(e => (decimal?)e.Count)"
+                        SeriesType="SeriesType.Bar" />
 
-            <ApexPointSeries TItem="LitterData"
-                            Items="LitterItems"
-                            Name="Metal"
-                            XValue="@(e => e.Date)"
-                            YValue="@(e => e.Type == "metal" ? (decimal?)e.Count : null)"
-                            OrderByDescending="e=>e.Y"
-                            SeriesType="SeriesType.Bar" />
+        <ApexPointSeries TItem="LitterData"
+                        Items="PaperItems"
+                        Name="Paper"
+                        XValue="@(e => e.Date)"
+                        YValue="@(e => (decimal?)e.Count)"
+                        SeriesType="SeriesType.Bar" />
 
-            <ApexPointSeries TItem="LitterData"
-                            Items="LitterItems"
-                            Name="Glass"
-                            XValue="@(e => e.Date)"
-                            YValue="@(e => e.Type == "glass" ? (decimal?)e.Count : null)"
-                            OrderByDescending="e=>e.Y"
-                            SeriesType="SeriesType.Bar" />
+        <ApexPointSeries TItem="LitterData"
+                        Items="MetalItems"
+                        Name="Plastic"
+                        XValue="@(e => e.Date)"
+                        YValue="@(e => (decimal?)e.Count)"
+                        SeriesType="SeriesType.Bar" />
 
-            <ApexPointSeries TItem="LitterData"
-                            Items="LitterItems"
-                            Name="Organic"
-                            XValue="@(e => e.Date)"
-                            YValue="@(e => e.Type == "organic" ? (decimal?)e.Count : null)"
-                            OrderByDescending="e=>e.Y"
-                            SeriesType="SeriesType.Bar" />
+        <ApexPointSeries TItem="LitterData"
+                        Items="GlassItems"
+                        Name="Plastic"
+                        XValue="@(e => e.Date)"
+                        YValue="@(e => (decimal?)e.Count)"
+                        SeriesType="SeriesType.Bar" />
+
+        <ApexPointSeries TItem="LitterData"
+                        Items="OrganicItems"
+                        Name="Paper"
+                        XValue="@(e => e.Date)"
+                        YValue="@(e => (decimal?)e.Count)"
+                        SeriesType="SeriesType.Bar" />
         </ApexChart>
 
     </div>
@@ -213,9 +208,12 @@
     }
 // Wordt gebruikt voor de bar chart bovenaan de pagina
     private List<LitterData> LitterItems { get; set; }
-        
+    private List<LitterData> PlasticItems;
+    private List<LitterData> PaperItems;
+    private List<LitterData> MetalItems;
+    private List<LitterData> GlassItems;
+    private List<LitterData> OrganicItems;
 
-// Deze method laadt data zodra de component geïnitialiseerd wordt om data in te laden
     protected override void OnInitialized()
     {
         LitterItems = new List<LitterData>
@@ -238,7 +236,14 @@
             new LitterData { Date = new DateTime(2025, 6, 20), Type = "glass", Count = 3.364 },
             new LitterData { Date = new DateTime(2025, 6, 20), Type = "organic", Count = 5.203 }
         };
+
+        PlasticItems = LitterItems.Where(x => x.Type == "plastic").ToList();
+        PaperItems = LitterItems.Where(x => x.Type == "paper").ToList();
+        MetalItems = LitterItems.Where(x => x.Type == "metal").ToList();
+        GlassItems = LitterItems.Where(x => x.Type == "glass").ToList();
+        OrganicItems = LitterItems.Where(x => x.Type == "organic").ToList();
     }
+
 
 // De datatype voor de barchart deffinieren
     public class LitterData
