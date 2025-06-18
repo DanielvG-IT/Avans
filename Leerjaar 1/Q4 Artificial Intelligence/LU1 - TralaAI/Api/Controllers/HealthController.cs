@@ -1,4 +1,6 @@
 using Api.Attributes;
+using Api.Models.Health;
+using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -12,19 +14,17 @@ namespace Api.Controllers
         [Route("status")]
         public IActionResult GetStatus()
         {
-            return Ok(new
-            {
-                status = "Healthy",
-                timestamp = DateTime.UtcNow,
-                details = new
-                {
-                    server = Environment.MachineName,
-                    uptime = GetUptime(),
-                    environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Unknown",
-                    memoryUsage = GetMemoryUsage(),
-                    version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown"
-                }
-            });
+            var healthDetails = new HealthDetails(
+                Environment.MachineName,
+                GetUptime(),
+                Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Unknown",
+                GetMemoryUsage(),
+                Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown"
+            );
+
+            var healthStatus = new HealthStatus("Healthy", DateTime.UtcNow, healthDetails);
+
+            return Ok(healthStatus);
         }
 
         private static string GetUptime()
