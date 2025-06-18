@@ -56,7 +56,7 @@ namespace Api.Services
 
                     // Determine if it's a holiday and get the category
                     var isHoliday = holidayDictionary[DateOnly.FromDateTime(trash.Date.Date)];
-                    var switchedType = trash.Type is not null ? _dTOService.GetCategory(trash.Type) : Category.Unknown;
+                    var switchedType = trash.Type is not null ? _dTOService.GetCategory(trash.Type) : LitterCategory.Unknown;
 
                     // Create a new Litter object
                     var litter = new Litter

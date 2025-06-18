@@ -8,19 +8,19 @@ namespace Api.Services
   {
     // This service can be used to convert LitterType to Category
     // and potentially other DTO-related operations in the future.
-    public Category? GetCategory(LitterType? litter)
+    public LitterCategory? GetCategory(LitterType? litter)
     {
       if (litter == null)
         return null;
 
       return litter switch
       {
-        LitterType.AluminiumFoil or LitterType.BottleCap or LitterType.Can or LitterType.PopTab => Category.Metal,
-        LitterType.Bottle or LitterType.BrokenGlass => Category.Glass,
-        LitterType.Carton or LitterType.Paper => Category.Paper,
-        LitterType.Cigarette => Category.Organic,
-        LitterType.Cup or LitterType.Lid or LitterType.OtherPlastic or LitterType.PlasticBagWrapper or LitterType.PlasticContainer or LitterType.Straw or LitterType.StyrofoamPiece => Category.Plastic,
-        _ => Category.Unknown,
+        LitterType.AluminiumFoil or LitterType.BottleCap or LitterType.Can or LitterType.PopTab => LitterCategory.Metal,
+        LitterType.Bottle or LitterType.BrokenGlass => LitterCategory.Glass,
+        LitterType.Carton or LitterType.Paper => LitterCategory.Paper,
+        LitterType.Cigarette => LitterCategory.Organic,
+        LitterType.Cup or LitterType.Lid or LitterType.OtherPlastic or LitterType.PlasticBagWrapper or LitterType.PlasticContainer or LitterType.Straw or LitterType.StyrofoamPiece => LitterCategory.Plastic,
+        _ => LitterCategory.Unknown,
       };
     }
 

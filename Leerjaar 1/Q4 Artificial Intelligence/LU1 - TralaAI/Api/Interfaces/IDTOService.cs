@@ -16,16 +16,16 @@ namespace Api.Interfaces;
 public interface IDTOService
 {
     /// <summary>
-    /// Retrieves the <see cref="Category"/> associated with a specific <see cref="LitterType"/>.
+    /// Retrieves the <see cref="LitterCategory"/> associated with a specific <see cref="LitterType"/>.
     /// </summary>
     /// <param name="litter">The type of litter for which to retrieve the category.
     /// This value can be <c>null</c>.</param>
     /// <returns>
-    /// The <see cref="Category"/> corresponding to the provided <paramref name="litter"/>.
+    /// The <see cref="LitterCategory"/> corresponding to the provided <paramref name="litter"/>.
     /// Returns <c>null</c> if the <paramref name="litter"/> is <c>null</c>,
     /// or if no category is defined for the given litter type.
     /// </returns>
-    Category? GetCategory(LitterType? litter);
+    LitterCategory? GetCategory(LitterType? litter);
 
     /// <summary>
     /// Determines the weather category based on the provided weather condition.

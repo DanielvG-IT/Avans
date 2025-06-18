@@ -1,6 +1,6 @@
 namespace Api.Models.Enums
 {
-  public enum Category
+  public enum LitterCategory
   {
     Organic,
     Plastic,
@@ -12,15 +12,15 @@ namespace Api.Models.Enums
 
   public static class CategoryExtensions
   {
-    public static string ToFriendlyString(this Category category)
+    public static string ToFriendlyString(this LitterCategory category)
     {
       return category switch
       {
-        Category.Organic => "Organic",
-        Category.Plastic => "Plastic",
-        Category.Paper => "Paper",
-        Category.Metal => "Metal",
-        Category.Glass => "Glass",
+        LitterCategory.Organic => "Organic",
+        LitterCategory.Plastic => "Plastic",
+        LitterCategory.Paper => "Paper",
+        LitterCategory.Metal => "Metal",
+        LitterCategory.Glass => "Glass",
         _ => "Unknown"
       };
     }
