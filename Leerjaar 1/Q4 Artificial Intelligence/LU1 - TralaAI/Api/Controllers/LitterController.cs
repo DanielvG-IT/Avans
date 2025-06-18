@@ -28,7 +28,7 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
     }
 
     [HttpPost("predict")]
-    public async Task<IActionResult> Predict(int amountOfDays, string location)
+    public async Task<IActionResult> Predict([FromQuery] int amountOfDays, [FromQuery] string location)
     {
         if (amountOfDays <= 0)
             return BadRequest("Amount of days must be greater than 0.");
@@ -78,6 +78,11 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
         var predictionResult = await _fastApiPredictionService.MakeLitterAmountPredictionAsync(predictionRequest);
         if (predictionResult is null)
             return BadRequest("Prediction failed. Please try again later.");
+        if (predictionResult.Predictions is null || predictionResult.Predictions.Count == 0)
+            return NotFound("No predictions found for the given inputs.");
+        if (predictionResult.Predictions.Count != amountOfDays)
+            return BadRequest($"Expected {amountOfDays} predictions, but got {predictionResult.Predictions.Count}.");
+
         return Ok(predictionResult);
     }
 
