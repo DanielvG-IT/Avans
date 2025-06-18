@@ -11,7 +11,6 @@ namespace Api.Controllers
     public class Health : ControllerBase
     {
         [HttpGet]
-        [Route("status")]
         public IActionResult GetStatus()
         {
             var healthDetails = new HealthDetails(
