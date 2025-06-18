@@ -1,10 +1,11 @@
 ﻿@page "/ai-predictions"
-@using Blazor.Interfaces;
-@using ApexCharts
-@using System.Linq;
 @rendermode InteractiveServer
-@inject IJSRuntime JS
+@using Blazor.Interfaces
+@using Blazor.Models
+@using System.Linq
+@using ApexCharts
 @inject IBackendService _backendService;
+@inject IJSRuntime JS;
 
 <div class="page-container">
     <div class="d-flex align-items-center gap-3 mb-3">
@@ -284,5 +285,19 @@ new LitterData { Date = new DateOnly(2025, 6, 20), Type = "organic", Count = 5.2
     {
         // Hier doe je de filtering van data
         Console.WriteLine($"Toepassen: {selectedDays} dagen en {selectedCamera}");
+    }
+
+    private async Task GetDataFromBackend()
+    {
+        // Voorbeeld van het ophalen van data van de backend
+        var filter = new LitterFilterDto { };
+        var tempLitterItems = await _backendService.GetLittersAsync(filter);
+        if (tempLitterItems is null || !tempLitterItems.Any())
+        {
+            Console.WriteLine("Geen data ontvangen van de backend.");
+            return;
+        }
+
+        @* TODO Add retrieving data from backend service *@
     }
 }
