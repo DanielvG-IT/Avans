@@ -67,8 +67,7 @@ namespace Api.Services
                         Confidence = trash.Confidence,
                         Weather = trash.Weather,
                         Temperature = trash.Temperature,
-                        Latitude = trash.Latitude,
-                        Longitude = trash.Longitude,
+                        Location = "Sensoring",
                         IsHoliday = isHoliday
                     };
 

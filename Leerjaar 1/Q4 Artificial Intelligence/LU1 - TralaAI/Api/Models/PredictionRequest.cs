@@ -1,6 +1,6 @@
 namespace Api.Models
 {
-    public class PredictionRequestModel
+    public class PredictionRequest
     {
         public int DayOfWeek { get; set; }
         public int Month { get; set; }

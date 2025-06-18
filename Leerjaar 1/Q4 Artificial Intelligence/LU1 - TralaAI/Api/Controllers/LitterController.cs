@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 namespace Api.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
 [ApiKeyAuth]
+[Route("api/v1/[controller]")]
 public class LitterController(ILitterRepository litterRepository, IFastApiPredictionService fastApiPredictionService) : ControllerBase
 {
     private readonly ILitterRepository _litterRepository = litterRepository;
@@ -25,8 +25,8 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
         return Ok(litters);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Predict(List<PredictionRequestModel> dtos)
+    [HttpPost("predict")]
+    public async Task<IActionResult> Predict(List<PredictionRequest> dtos)
     {
         if (dtos is null || dtos.Count == 0)
             return BadRequest("Prediction request models cannot be null or empty.");
@@ -35,9 +35,19 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
         if (predictionResult is null)
             return BadRequest("Prediction failed. Please try again later.");
 
-        if (predictionResult.Predictions is null)
+        if (predictionResult.Predictions is null || predictionResult.Predictions.Count == 0)
             return NotFound("No prediction available for the given input.");
 
         return Ok(predictionResult);
+    }
+
+    [HttpPost("retrain")]
+    public async Task<IActionResult> Retrain()
+    {
+        var retrainResult = await _fastApiPredictionService.RetrainModelAsync();
+        if (!retrainResult)
+            return BadRequest($"Retrain failed. Please try again later.");
+
+        return Ok("Model retrained successfully.");
     }
 }
