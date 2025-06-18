@@ -1,11 +1,13 @@
 using Api.Models.Enums;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Api.Models;
 
-using System.ComponentModel.DataAnnotations.Schema;
-
 public class Litter
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
     [Column(TypeName = "varchar(50)")]

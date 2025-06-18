@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(LitterDbContext))]
-    [Migration("20250618174552_AzureDeploy")]
-    partial class AzureDeploy
+    [Migration("20250618184800_InitialCreateForAzure")]
+    partial class InitialCreateForAzure
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -62,9 +62,11 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.Litter", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<double>("Confidence")
                         .HasColumnType("float");
@@ -81,11 +83,11 @@ namespace Api.Migrations
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("Type")
-                        .HasColumnType("int");
+                    b.Property<string>("Type")
+                        .HasColumnType("varchar(50)");
 
-                    b.Property<int?>("Weather")
-                        .HasColumnType("int");
+                    b.Property<string>("Weather")
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
 
