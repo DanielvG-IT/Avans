@@ -59,6 +59,19 @@ namespace Blazor.Services
       return healthStatus;
     }
 
+    public async Task<string?> ImportTrashDataAsync(CancellationToken cancellationToken = default)
+    {
+      var response = await _httpClient.PostAsync("/api/v1/TrashDTO/import-trash-data", null, cancellationToken);
+
+      if (response.StatusCode == HttpStatusCode.BadRequest)
+        return null;
+
+      response.EnsureSuccessStatusCode();
+
+      var message = await response.Content.ReadAsStringAsync(cancellationToken);
+      return message;
+    }
+
     private static string BuildQueryString(LitterFilterDto filter)
     {
       var properties = typeof(LitterFilterDto).GetProperties();

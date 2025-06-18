@@ -34,4 +34,14 @@ public interface IBackendService
   /// </summary>
   /// <returns>A task that represents the asynchronous operation. The task result contains the <see cref="HealthStatus"/> of the backend, or null if the request fails.</returns>
   Task<HealthStatus?> GetHealthStatusAsync();
+
+  /// <summary>
+  /// Asynchronously imports trash data from a predefined source.
+  /// </summary>
+  /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+  /// <returns>
+  /// A task that represents the asynchronous operation. 
+  /// The task result contains a string with a status or error message upon completion, or <c>null</c> if the operation fails without a specific message.
+  /// </returns>
+  Task<string?> ImportTrashDataAsync(CancellationToken cancellationToken = default);
 }
