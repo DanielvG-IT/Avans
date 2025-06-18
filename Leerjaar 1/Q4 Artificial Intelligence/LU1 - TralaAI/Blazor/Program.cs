@@ -9,9 +9,13 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<IBackendService, BackendService>();
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
-//-------------------------------HIER NOG DE URL VOOR DE BACKEND API--------------------------
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://your-api-url.com/") });
-
+builder.Services.AddHttpClient<IBackendService, BackendService>((serviceProvider, client) =>
+{
+    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+    var backendApiBaseAddress = configuration["ApiSettings:BackendApiBaseAddress"] ?? throw new InvalidOperationException("ApiSettings:BackendApiBaseAddress configuration is missing.");
+    client.BaseAddress = new Uri(backendApiBaseAddress);
+    client.DefaultRequestHeaders.Add("X-API-KEY", configuration["ApiKeys:BackendApiKey"]);
+});
 
 var app = builder.Build();
 
