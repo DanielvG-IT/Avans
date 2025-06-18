@@ -3,7 +3,6 @@ using Blazor.Services;
 using Blazor.Components;
 using Blazor.Interfaces;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // 🔐 Credential management
@@ -14,7 +13,6 @@ else
 
 // Add services to the container.
 builder.Services.AddHttpClient();
-builder.Services.AddScoped<IBackendService, BackendService>();
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
 builder.Services.AddHttpClient<IBackendService, BackendService>((serviceProvider, client) =>
