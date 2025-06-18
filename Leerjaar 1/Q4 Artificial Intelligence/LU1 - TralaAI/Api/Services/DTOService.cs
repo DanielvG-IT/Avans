@@ -23,5 +23,22 @@ namespace Api.Services
         _ => Category.Unknown,
       };
     }
+
+    public WeatherCategory? GetWeatherCategory(WeatherCondition? weather)
+    {
+      if (weather == null)
+        return null;
+
+      return weather switch
+      {
+        WeatherCondition.Blizzard or WeatherCondition.BlowingSnow or WeatherCondition.PatchySnowNearby or WeatherCondition.PatchySleetNearby or WeatherCondition.PatchyModerateSnow or WeatherCondition.ModerateSnow or WeatherCondition.PatchyHeavySnow or WeatherCondition.HeavySnow or WeatherCondition.LightSnow or WeatherCondition.PatchyLightSnow or WeatherCondition.ModerateOrHeavySnowShowers or WeatherCondition.LightSnowShowers => WeatherCategory.Snowy,
+        WeatherCondition.ThunderyOutbreaksInNearby or WeatherCondition.PatchyLightRainInAreaWithThunder or WeatherCondition.ModerateOrHeavyRainInAreaWithThunder or WeatherCondition.PatchyLightSnowInAreaWithThunder or WeatherCondition.ModerateOrHeavySnowInAreaWithThunder => WeatherCategory.Stormy,
+        WeatherCondition.PatchyLightRain or WeatherCondition.LightRain or WeatherCondition.ModerateRainAtTimes or WeatherCondition.ModerateRain or WeatherCondition.HeavyRainAtTimes or WeatherCondition.HeavyRain or WeatherCondition.LightRainShower or WeatherCondition.ModerateOrHeavyRainShower or WeatherCondition.TorrentialRainShower => WeatherCategory.Rainy,
+        WeatherCondition.Mist or WeatherCondition.FreezingFog or WeatherCondition.Fog or WeatherCondition.PatchyFreezingDrizzleNearby => WeatherCategory.Misty,
+        WeatherCondition.Cloudy or WeatherCondition.Overcast or WeatherCondition.PartlyCloudy => WeatherCategory.Cloudy,
+        WeatherCondition.Sunny => WeatherCategory.Sunny,
+        _ => WeatherCategory.Unknown,
+      };
+    }
   }
 }
