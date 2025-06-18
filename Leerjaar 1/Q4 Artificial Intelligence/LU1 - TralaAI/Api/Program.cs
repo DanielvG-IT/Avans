@@ -1,13 +1,19 @@
 using Api;
 using Api.Data;
-using Api.Filters;
 using Api.Services;
 using Api.Interfaces;
 using Api.Repository;
+using Azure.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// 🔐 Credential management
+if (builder.Environment.IsDevelopment())
+    builder.Configuration.AddUserSecrets<Program>();
+else
+    builder.Configuration.AddAzureKeyVault(new Uri(Environment.GetEnvironmentVariable("KEY_VAULT_URI") ?? throw new InvalidOperationException("KEY_VAULT_URI is not set.")), new DefaultAzureCredential());
 
 // Configure and validate options
 builder.Services.AddOptions<ApiKeysOptions>()
