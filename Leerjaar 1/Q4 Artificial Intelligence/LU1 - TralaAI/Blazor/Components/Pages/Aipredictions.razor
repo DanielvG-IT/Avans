@@ -1,37 +1,34 @@
 ﻿@page "/ai-predictions"
-@using Blazor.Interfaces;
-@using ApexCharts
-@using System.Linq;
 @rendermode InteractiveServer
-@inject IJSRuntime JS
+@using Blazor.Interfaces
+@using Blazor.Models
+@using System.Linq
+@using ApexCharts
 @inject IBackendService _backendService;
+@inject IJSRuntime JS;
 
 <div class="page-container">
     <div class="d-flex align-items-center gap-3 mb-3">
-    <!-- Number input field voor de dagen -->
-    <div>
-        <label for="daysInput" class="form-label me-2">Aantal dagen (1–14):</label>
-        <input id="daysInput"
-               type="number"
-               class="form-control d-inline-block w-auto"
-               min="1"
-               max="14"
-               @bind="selectedDays" />
-    </div>
-    <!-- Dropdown input field voor de camera's -->
-    <div>
-        <label for="cameraSelect" class="form-label me-2">Camera:</label>
-        <select id="cameraSelect" class="form-select d-inline-block w-auto" @bind="selectedCamera">
-            @foreach (var cam in cameraOptions)
-            {
-                <option value="@cam">@cam</option>
-            }
-        </select>
-    </div>
+        <!-- Number input field voor de dagen -->
+        <div>
+            <label for="daysInput" class="form-label me-2">Aantal dagen (1–14):</label>
+            <input id="daysInput" type="number" class="form-control d-inline-block w-auto" min="1" max="14"
+                @bind="selectedDays" />
+        </div>
+        <!-- Dropdown input field voor de camera's -->
+        <div>
+            <label for="cameraSelect" class="form-label me-2">Camera:</label>
+            <select id="cameraSelect" class="form-select d-inline-block w-auto" @bind="selectedCamera">
+                @foreach (var cam in cameraOptions)
+                {
+                    <option value="@cam">@cam</option>
+                }
+            </select>
+        </div>
 
-    <!-- Confirm button -->
-    <button class="btn btn-primary" @onclick="ApplyFilters">Toepassen</button>
-</div>
+        <!-- Confirm button -->
+        <button class="btn btn-primary" @onclick="ApplyFilters">Toepassen</button>
+    </div>
 
 
 
@@ -282,11 +279,25 @@ new LitterData { Date = new DateOnly(2025, 6, 20), Type = "organic", Count = 5.2
     }
 
     // Days select button on click
-    
+
     // Verandering in filters
-private void ApplyFilters()
+    private void ApplyFilters()
     {
         // Hier doe je de filtering van data
         Console.WriteLine($"Toepassen: {selectedDays} dagen en {selectedCamera}");
+    }
+
+    private async Task GetDataFromBackend()
+    {
+        // Voorbeeld van het ophalen van data van de backend
+        var filter = new LitterFilterDto { };
+        var tempLitterItems = await _backendService.GetLittersAsync(filter);
+        if (tempLitterItems is null || !tempLitterItems.Any())
+        {
+            Console.WriteLine("Geen data ontvangen van de backend.");
+            return;
+        }
+
+        @* TODO Add retrieving data from backend service *@
     }
 }
