@@ -10,7 +10,7 @@ namespace Api.Services
         private readonly HttpClient _httpClient = httpClient;
         private readonly ILogger<FastApiPredictionService> _logger = logger;
 
-        public async Task<PredictionResponseWrapper> MakeLitterAmountPredictionAsync(List<PredictionRequestModel> requestModels)
+        public async Task<PredictionResponse> MakeLitterAmountPredictionAsync(PredictionRequest requestModels)
         {
             try
             {
@@ -21,7 +21,7 @@ namespace Api.Services
                 response.EnsureSuccessStatusCode();
 
                 var jsonResponse = await response.Content.ReadAsStringAsync();
-                var predictionResponse = JsonSerializer.Deserialize<PredictionResponseWrapper>(jsonResponse) ?? throw new Exception("Failed to deserialize prediction response.");
+                var predictionResponse = JsonSerializer.Deserialize<PredictionResponse>(jsonResponse) ?? throw new Exception("Failed to deserialize prediction response.");
                 return predictionResponse;
             }
             catch (Exception ex)
@@ -31,20 +31,19 @@ namespace Api.Services
             }
         }
 
-        // [Obsolete("Retraining the model is not supported in the current version. This method will be added in a future release.")]
-        // public async Task<bool> RetrainModelAsync()
-        // {
-        //     try
-        //     {
-        //         var response = await _httpClient.PostAsync("/retrain", null);
-        //         response.EnsureSuccessStatusCode();
-        //         return true; // TODO Return true or handle the success case as needed
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         _logger.LogError(ex, "Error making POST request to {Endpoint}", "/retrain");
-        //         return false; // TODO Return false or handle the error as needed
-        //     }
-        // }
+        public async Task<bool> RetrainModelAsync()
+        {
+            try
+            {
+                var response = await _httpClient.PostAsync("/retrain", null);
+                response.EnsureSuccessStatusCode();
+                return true; // TODO Return true or handle the success case as needed
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error making POST request to {Endpoint}", "/retrain");
+                return false; // TODO Return false or handle the error as needed
+            }
+        }
     }
 }

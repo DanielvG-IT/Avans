@@ -5,7 +5,7 @@ namespace Api.Models
 
     public class AggregatedTrashDto
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public LitterType? Type { get; set; }
         public DateTime Date { get; set; }
         public double Confidence { get; set; }
