@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Api.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
     [ApiController]
+    [ApiKeyAuth]
     [Route("api/v1/[controller]")]
     public class Health : ControllerBase
     {
