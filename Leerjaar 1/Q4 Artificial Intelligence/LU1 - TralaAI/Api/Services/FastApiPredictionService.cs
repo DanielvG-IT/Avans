@@ -10,7 +10,7 @@ namespace Api.Services
         private readonly HttpClient _httpClient = httpClient;
         private readonly ILogger<FastApiPredictionService> _logger = logger;
 
-        public async Task<PredictionResponse> MakeLitterAmountPredictionAsync(List<PredictionRequest> requestModels)
+        public async Task<PredictionResponse> MakeLitterAmountPredictionAsync(PredictionRequest requestModels)
         {
             try
             {

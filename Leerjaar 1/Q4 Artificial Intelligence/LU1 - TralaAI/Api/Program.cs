@@ -24,11 +24,8 @@ builder.Services.AddOptions<ApiSettingsOptions>()
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<LitterDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetSection("Database")["ConnectionString"]));
-
+builder.Services.AddDbContext<LitterDbContext>(options => options.UseSqlServer(builder.Configuration.GetSection("Database")["ConnectionString"]));
 builder.Services.AddScoped<ILitterRepository, LitterRepository>();
-
 builder.Services.AddScoped<IApiKeyService, ApiKeyService>();
 
 builder.Services.AddHttpClient<IFastApiPredictionService, FastApiPredictionService>((serviceProvider, client) =>
@@ -50,6 +47,13 @@ builder.Services.AddHttpClient<IAggregatedTrashService, AggregatedTrashService>(
     var apiKeys = serviceProvider.GetRequiredService<IOptions<ApiKeysOptions>>().Value;
     client.BaseAddress = new Uri(apiSettings.FastApiBaseAddress);
     client.DefaultRequestHeaders.Add("API-Key", apiKeys.SensoringApiKey);
+});
+
+builder.Services.AddHttpClient<IWeatherService, WeatherService>((serviceProvider, client) =>
+{
+    var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettingsOptions>>().Value;
+    var apiKeys = serviceProvider.GetRequiredService<IOptions<ApiKeysOptions>>().Value;
+    client.BaseAddress = new Uri(apiSettings.WeatherApiBaseAddress);
 });
 
 var app = builder.Build();
