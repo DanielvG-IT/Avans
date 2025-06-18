@@ -77,16 +77,28 @@
     <!-- Bottom: Extra Informatie Hier moet de tabel komen -->
     <div class="bottom-section">
         <h3>Extra Informatie</h3>
-        <div class="top-bottom-split">
-            <div class="top-inner">
-                <div class="placeholder">[Extra boven]</div>
-            </div>
-            <div class="bottom-inner">
-                <div class="placeholder">[Extra onder]</div>
-            </div>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Datum</th>
+                        <th>Afvaltype</th>
+                        <th>Aantal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in LitterItems)
+                    {
+                        <tr>
+                            <td>@item.Date.ToString("dd-MM-yyyy")</td>
+                            <td>@item.Type</td>
+                            <td>@item.Count</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
-
 </div>
 
 
