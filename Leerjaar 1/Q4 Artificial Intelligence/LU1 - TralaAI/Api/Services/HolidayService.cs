@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using System.Text.Json;
 using Api.Interfaces;
+using System.Net;
 using Api.Models;
 
 namespace Api.Services
@@ -16,15 +17,18 @@ namespace Api.Services
             if (string.IsNullOrWhiteSpace(countryCode))
                 throw new ArgumentException("Country code cannot be null or empty.", nameof(countryCode));
 
-            string queryparams = $"?country={countryCode}&year={date.Year}&month={date.Month}&day={date.Day}&key={_apiKey}";
+            var queryparams = $"?country={countryCode}&year={date.Year}&month={date.Month}&day={date.Day}&key={_apiKey}";
 
-            HttpResponseMessage response = await _httpClient.GetAsync(queryparams);
+            var response = await _httpClient.GetAsync(queryparams);
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                return false; // No holidays found for the given date and country code
+
             response.EnsureSuccessStatusCode();
 
-            string jsonResponse = await response.Content.ReadAsStringAsync();
+            var jsonResponse = await response.Content.ReadAsStringAsync();
             var holidayResponse = JsonSerializer.Deserialize<HolidayApiResponse>(jsonResponse, _jsonSerializerOptions);
 
-            return holidayResponse?.Holidays != null && holidayResponse.Holidays.Length > 0;
+            return holidayResponse?.Holidays is not null && holidayResponse.Holidays.Length > 0;
         }
     }
 }
