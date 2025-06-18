@@ -11,7 +11,14 @@
     <div class="middle-section">
         <div class="left-panel">
             <h3>AI Output</h3>
-            <div class="placeholder">[Tekstuele uitleg]</div>
+                <ApexChart TItem="LitterData" Title="Afvalverdeling per Soort">
+                    <ApexPointSeries TItem="LitterData"
+                                    Items="LitterItems"
+                                    Name="Aantal"
+                                    XValue="@(e => e.Type)"
+                                    YValue="@(e => e.Count)"
+                                    SeriesType="SeriesType.Bar" />
+                </ApexChart>
         </div>
         <div class="right-panel">
             <h3>Voorspellingsgrafiek</h3>
@@ -163,6 +170,29 @@
     {
         public string Label { get; set; }
         public decimal Value { get; set; }
+    }
+
+        private List<LitterData> LitterItems { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // ✏️ Pas deze waarden gerust aan:
+        LitterItems = new List<LitterData>
+        {
+            new LitterData
+            {
+                Type = "Glas",
+                Count = 1
+            },
+            // Als je meer wil testen, voeg je hieronder extra regels toe
+            // new LitterData { Type = "Plastic", Count = 5 },
+        };
+    }
+
+    public class LitterData
+    {
+        public string Type { get; set; }
+        public int Count { get; set; }
     }
 
 
