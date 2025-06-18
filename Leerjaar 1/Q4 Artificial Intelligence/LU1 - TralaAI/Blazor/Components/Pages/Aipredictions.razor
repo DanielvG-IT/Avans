@@ -7,6 +7,33 @@
 @inject IBackendService _backendService;
 
 <div class="page-container">
+    <div class="d-flex align-items-center gap-3 mb-3">
+    <!-- Number input field voor de dagen -->
+    <div>
+        <label for="daysInput" class="form-label me-2">Aantal dagen (1–14):</label>
+        <input id="daysInput"
+               type="number"
+               class="form-control d-inline-block w-auto"
+               min="1"
+               max="14"
+               @bind="selectedDays" />
+    </div>
+    <!-- Dropdown input field voor de camera's -->
+    <div>
+        <label for="cameraSelect" class="form-label me-2">Camera:</label>
+        <select id="cameraSelect" class="form-select d-inline-block w-auto" @bind="selectedCamera">
+            @foreach (var cam in cameraOptions)
+            {
+                <option value="@cam">@cam</option>
+            }
+        </select>
+    </div>
+
+    <!-- Confirm button -->
+    <button class="btn btn-primary" @onclick="ApplyFilters">Toepassen</button>
+</div>
+
+
 
     <!-- Top: AI Output Bar graph -->
     <div class="top-section">
@@ -165,6 +192,14 @@
 </style>
 
 @code {
+    // Default aantal dagen
+    private int selectedDays = 3;
+    // Alle mogelijke opties voor dagen
+    private int[] daysOptions = new[] { 1, 3, 7, 14 };
+    // Default camera
+    private string selectedCamera = "Camera 1";
+    // Alle mogelijke cameras (misschien nog via api doen)
+    private List<string> cameraOptions = new() { "Camera 1", "Camera 2", "Camera 3" };
 
     // Pie Chart dummydata
     private List<PieData> pieData = new()
@@ -244,5 +279,14 @@ new LitterData { Date = new DateOnly(2025, 6, 20), Type = "organic", Count = 5.2
     private async Task DrawHeatmap()
     {
         await JS.InvokeVoidAsync("heatmapInterop.drawMap");
+    }
+
+    // Days select button on click
+    
+    // Verandering in filters
+private void ApplyFilters()
+    {
+        // Hier doe je de filtering van data
+        Console.WriteLine($"Toepassen: {selectedDays} dagen en {selectedCamera}");
     }
 }
