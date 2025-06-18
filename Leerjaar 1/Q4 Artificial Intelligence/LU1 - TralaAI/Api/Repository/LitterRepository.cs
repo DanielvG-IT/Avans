@@ -28,10 +28,10 @@ namespace Api.Repository
                 query = query.Where(x => x.Type == filter.Type.Value);
 
             if (filter.From.HasValue)
-                query = query.Where(x => x.Date >= filter.From.Value);
+                query = query.Where(x => x.TimeStamp >= filter.From.Value);
 
             if (filter.To.HasValue)
-                query = query.Where(x => x.Date <= filter.To.Value);
+                query = query.Where(x => x.TimeStamp <= filter.To.Value);
 
             if (filter.MinTemperature.HasValue)
                 query = query.Where(x => x.Temperature >= filter.MinTemperature.Value);

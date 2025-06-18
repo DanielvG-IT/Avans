@@ -63,7 +63,7 @@ namespace Api.Services
                     {
                         Id = trash.Id,
                         Type = switchedType,
-                        Date = trash.Date,
+                        TimeStamp = trash.Date,
                         Confidence = trash.Confidence,
                         Weather = trash.Weather,
                         Temperature = trash.Temperature,
