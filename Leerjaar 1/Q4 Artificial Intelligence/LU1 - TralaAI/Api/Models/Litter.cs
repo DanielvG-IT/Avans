@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 public class Litter
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
 
     [Column(TypeName = "varchar(50)")]
     public LitterCategory? Type { get; set; }

@@ -4,6 +4,7 @@ using Api.Interfaces;
 using Api.Models;
 using Api.Data;
 using System.Net.Http.Json;
+using System.Linq;
 
 namespace Api.Services
 {
@@ -34,22 +35,10 @@ namespace Api.Services
                     holidayDictionary[DateOnly.FromDateTime(date)] = await _holidayApiService.IsHolidayAsync(date, "NL");
                 }
 
-                // Check for existing IDs to avoid duplicates
-                var existingIds = await _dbContext.Litters
-                    .Where(l => results.Select(r => r.Id).Contains(l.Id))
-                    .Select(l => l.Id)
-                    .ToListAsync(ct);
-
                 var newLitters = new List<Litter>();
 
                 foreach (var trash in results)
                 {
-                    // Skip if already exists
-                    if (existingIds.Contains(trash.Id))
-                    {
-                        continue;
-                    }
-
                     // Determine if it's a holiday and get the category
                     var isHoliday = holidayDictionary[DateOnly.FromDateTime(trash.Date.Date)];
                     var switchedType = trash.Type is not null ? _dTOService.GetCategory(trash.Type) : LitterCategory.Unknown;
