@@ -1,8 +1,16 @@
+using Azure.Identity;
+using Blazor.Services;
 using Blazor.Components;
 using Blazor.Interfaces;
-using Blazor.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+// 🔐 Credential management
+if (builder.Environment.IsDevelopment())
+    builder.Configuration.AddUserSecrets<Program>();
+else
+    builder.Configuration.AddAzureKeyVault(new Uri(Environment.GetEnvironmentVariable("KEY_VAULT_URI") ?? throw new InvalidOperationException("KEY_VAULT_URI is not set.")), new DefaultAzureCredential());
 
 // Add services to the container.
 builder.Services.AddHttpClient();
@@ -27,8 +35,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-
 app.UseAntiforgery();
 
 app.MapStaticAssets();
