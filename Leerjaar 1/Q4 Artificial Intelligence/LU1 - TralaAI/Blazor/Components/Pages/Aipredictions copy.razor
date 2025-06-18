@@ -11,43 +11,23 @@
     <!-- Top: AI Output Bar graph -->
     <div class="top-section">
         <h3>AI Output</h3>
-        
+
         <ApexChart TItem="LitterData" Title="Afval per Type per Dag">
-            
-        <ApexPointSeries TItem="LitterData"
-                        Items="PlasticItems"
-                        Name="Plastic"
-                        XValue="@(e => e.Date)"
-                        YValue="@(e => (decimal?)e.Count)"
-                        SeriesType="SeriesType.Bar" />
 
-        <ApexPointSeries TItem="LitterData"
-                        Items="PaperItems"
-                        Name="Paper"
-                        XValue="@(e => e.Date)"
-                        YValue="@(e => (decimal?)e.Count)"
-                        SeriesType="SeriesType.Bar" />
+            <ApexPointSeries TItem="LitterData" Items="PlasticItems" Name="Plastic" XValue="@(e => e.Date)"
+                YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
 
-        <ApexPointSeries TItem="LitterData"
-                        Items="MetalItems"
-                        Name="Plastic"
-                        XValue="@(e => e.Date)"
-                        YValue="@(e => (decimal?)e.Count)"
-                        SeriesType="SeriesType.Bar" />
+            <ApexPointSeries TItem="LitterData" Items="PaperItems" Name="Paper" XValue="@(e => e.Date)"
+                YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
 
-        <ApexPointSeries TItem="LitterData"
-                        Items="GlassItems"
-                        Name="Plastic"
-                        XValue="@(e => e.Date)"
-                        YValue="@(e => (decimal?)e.Count)"
-                        SeriesType="SeriesType.Bar" />
+            <ApexPointSeries TItem="LitterData" Items="MetalItems" Name="Plastic" XValue="@(e => e.Date)"
+                YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
 
-        <ApexPointSeries TItem="LitterData"
-                        Items="OrganicItems"
-                        Name="Paper"
-                        XValue="@(e => e.Date)"
-                        YValue="@(e => (decimal?)e.Count)"
-                        SeriesType="SeriesType.Bar" />
+            <ApexPointSeries TItem="LitterData" Items="GlassItems" Name="Plastic" XValue="@(e => e.Date)"
+                YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
+
+            <ApexPointSeries TItem="LitterData" Items="OrganicItems" Name="Paper" XValue="@(e => e.Date)"
+                YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
         </ApexChart>
 
     </div>
@@ -56,14 +36,9 @@
     <div class="middle-section">
         <div class="left-panel">
             <h3>Pie-Chart</h3>
-            <ApexChart TItem="PieData"
-                       Title="Verdeling van afvaltypes voor de door jouw opgevraagde voorspelling.">
-                <ApexPointSeries TItem="PieData"
-                                 Items="pieData"
-                                 Name="Waarde"
-                                 SeriesType="SeriesType.Pie"
-                                 XValue="@(e => e.Label)"
-                                 YValue="@(e => e.Value)" />
+            <ApexChart TItem="PieData" Title="Verdeling van afvaltypes voor de door jouw opgevraagde voorspelling.">
+                <ApexPointSeries TItem="PieData" Items="pieData" Name="Waarde" SeriesType="SeriesType.Pie"
+                    XValue="@(e => e.Label)" YValue="@(e => e.Value)" />
             </ApexChart>
         </div>
         <div class="right-panel">
@@ -166,19 +141,19 @@
         color: #888888;
     }
 
-        .heatmap-box {
-    position: relative;
-    height: 300px;
-    width: 100%;
-    overflow: hidden;
+    .heatmap-box {
+        position: relative;
+        height: 300px;
+        width: 100%;
+        overflow: hidden;
     }
 
     .heatmap-background {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 0;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 0;
     }
 
 
@@ -190,23 +165,23 @@
 </style>
 
 @code {
-    
+
     // Pie Chart dummydata
     private List<PieData> pieData = new()
-    {
-        new PieData { Label = "Rest", Value = 120 },
-        new PieData { Label = "GFT", Value = 200 },
-        new PieData { Label = "plastic", Value = 150 },
-        new PieData { Label = "Papier", Value = 90 }
-    };
+{
+new PieData { Label = "Rest", Value = 120 },
+new PieData { Label = "GFT", Value = 200 },
+new PieData { Label = "plastic", Value = 150 },
+new PieData { Label = "Papier", Value = 90 }
+};
 
-// De datatype voor de piechart deffinieren
+    // De datatype voor de piechart deffinieren
     public class PieData
     {
         public string Label { get; set; }
         public decimal Value { get; set; }
     }
-// Wordt gebruikt voor de bar chart bovenaan de pagina
+    // Wordt gebruikt voor de bar chart bovenaan de pagina
     private List<LitterData> LitterItems { get; set; }
     private List<LitterData> PlasticItems;
     private List<LitterData> PaperItems;
@@ -217,25 +192,25 @@
     protected override void OnInitialized()
     {
         LitterItems = new List<LitterData>
-        {
-            new LitterData { Date = new DateTime(2025, 6, 18), Type = "plastic", Count = 0.775 },
-            new LitterData { Date = new DateTime(2025, 6, 18), Type = "paper", Count = 0.784 },
-            new LitterData { Date = new DateTime(2025, 6, 18), Type = "metal", Count = 1.226 },
-            new LitterData { Date = new DateTime(2025, 6, 18), Type = "glass", Count = 2.054 },
-            new LitterData { Date = new DateTime(2025, 6, 18), Type = "organic", Count = 2.238 },
+{
+new LitterData { Date = new DateOnly(2025, 6, 18), Type = "plastic", Count = 0.775 },
+new LitterData { Date = new DateOnly(2025, 6, 18), Type = "paper", Count = 0.784 },
+new LitterData { Date = new DateOnly(2025, 6, 18), Type = "metal", Count = 1.226 },
+new LitterData { Date = new DateOnly(2025, 6, 18), Type = "glass", Count = 2.054 },
+new LitterData { Date = new DateOnly(2025, 6, 18), Type = "organic", Count = 2.238 },
 
-            new LitterData { Date = new DateTime(2025, 6, 19), Type = "plastic", Count = 1.056 },
-            new LitterData { Date = new DateTime(2025, 6, 19), Type = "paper", Count = 0.757 },
-            new LitterData { Date = new DateTime(2025, 6, 19), Type = "metal", Count = 1.840 },
-            new LitterData { Date = new DateTime(2025, 6, 19), Type = "glass", Count = 1.237 },
-            new LitterData { Date = new DateTime(2025, 6, 19), Type = "organic", Count = 2.380 },
+new LitterData { Date = new DateOnly(2025, 6, 19), Type = "plastic", Count = 1.056 },
+new LitterData { Date = new DateOnly(2025, 6, 19), Type = "paper", Count = 0.757 },
+new LitterData { Date = new DateOnly(2025, 6, 19), Type = "metal", Count = 1.840 },
+new LitterData { Date = new DateOnly(2025, 6, 19), Type = "glass", Count = 1.237 },
+new LitterData { Date = new DateOnly(2025, 6, 19), Type = "organic", Count = 2.380 },
 
-            new LitterData { Date = new DateTime(2025, 6, 20), Type = "plastic", Count = 1.894 },
-            new LitterData { Date = new DateTime(2025, 6, 20), Type = "paper", Count = 1.449 },
-            new LitterData { Date = new DateTime(2025, 6, 20), Type = "metal", Count = 2.284 },
-            new LitterData { Date = new DateTime(2025, 6, 20), Type = "glass", Count = 3.364 },
-            new LitterData { Date = new DateTime(2025, 6, 20), Type = "organic", Count = 5.203 }
-        };
+new LitterData { Date = new DateOnly(2025, 6, 20), Type = "plastic", Count = 1.894 },
+new LitterData { Date = new DateOnly(2025, 6, 20), Type = "paper", Count = 1.449 },
+new LitterData { Date = new DateOnly(2025, 6, 20), Type = "metal", Count = 2.284 },
+new LitterData { Date = new DateOnly(2025, 6, 20), Type = "glass", Count = 3.364 },
+new LitterData { Date = new DateOnly(2025, 6, 20), Type = "organic", Count = 5.203 }
+};
 
         PlasticItems = LitterItems.Where(x => x.Type == "plastic").ToList();
         PaperItems = LitterItems.Where(x => x.Type == "paper").ToList();
@@ -245,16 +220,16 @@
     }
 
 
-// De datatype voor de barchart deffinieren
+    // De datatype voor de barchart deffinieren
     public class LitterData
     {
-        public DateTime Date { get; set; }
+        public DateOnly Date { get; set; }
         public string Type { get; set; }
         public double Count { get; set; }
     }
 
 
-// Heatmap tekenen bij opstart van de pagina
+    // Heatmap tekenen bij opstart van de pagina
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -265,7 +240,7 @@
         }
     }
 
-// Heatmap tekenen met knop
+    // Heatmap tekenen met knop
     private async Task DrawHeatmap()
     {
         await JS.InvokeVoidAsync("heatmapInterop.drawMap");
