@@ -168,7 +168,7 @@
         new PieData { Label = "Papier", Value = 90 }
     };
 
-// Wordt gebruikt voor de pie chart
+// De datatype voor de piechart deffinieren
     public class PieData
     {
         public string Label { get; set; }
@@ -183,28 +183,30 @@
     {
         LitterItems = new List<LitterData>
         {
-            new LitterData { Type = "plastic - dag 1", Count = 0.775 },
-            new LitterData { Type = "paper - dag 1", Count = 0.784 },
-            new LitterData { Type = "metal - dag 1", Count = 1.226 },
-            new LitterData { Type = "glass - dag 1", Count = 2.054 },
-            new LitterData { Type = "organic - dag 1", Count = 2.238 },
+            new LitterData { Date = "1", Type = "plastic", Count = 0.775 },
+            new LitterData { Date = "1", Type = "paper", Count = 0.784 },
+            new LitterData { Date = "1", Type = "metal", Count = 1.226 },
+            new LitterData { Date = "1", Type = "glass", Count = 2.054 },
+            new LitterData { Date = "1", Type = "organic", Count = 2.238 },
 
-            new LitterData { Type = "plastic - dag 2", Count = 1.056 },
-            new LitterData { Type = "paper - dag 2", Count = 0.757 },
-            new LitterData { Type = "metal - dag 2", Count = 1.840 },
-            new LitterData { Type = "glass - dag 2", Count = 1.237 },
-            new LitterData { Type = "organic - dag 2", Count = 2.380 },
+            new LitterData { Date = "2", Type = "plastic", Count = 1.056 },
+            new LitterData { Date = "2", Type = "paper", Count = 0.757 },
+            new LitterData { Date = "2", Type = "metal", Count = 1.840 },
+            new LitterData { Date = "2", Type = "glass", Count = 1.237 },
+            new LitterData { Date = "2", Type = "organic", Count = 2.380 },
 
-            new LitterData { Type = "plastic - dag 3", Count = 1.894 },
-            new LitterData { Type = "paper - dag 3", Count = 1.449 },
-            new LitterData { Type = "metal - dag 3", Count = 2.284 },
-            new LitterData { Type = "glass - dag 3", Count = 3.364 },
-            new LitterData { Type = "organic - dag 3", Count = 5.203 }
+            new LitterData { Date = "3", Type = "plastic", Count = 1.894 },
+            new LitterData { Date = "3", Type = "paper", Count = 1.449 },
+            new LitterData { Date = "3", Type = "metal", Count = 2.284 },
+            new LitterData { Date = "3", Type = "glass", Count = 3.364 },
+            new LitterData { Date = "3", Type = "organic", Count = 5.203 }
         };
     }
 
+// De datatype voor de barchart deffinieren
     public class LitterData
     {
+        public string Date { get; set; }
         public string Type { get; set; }
         public double Count { get; set; }
     }
