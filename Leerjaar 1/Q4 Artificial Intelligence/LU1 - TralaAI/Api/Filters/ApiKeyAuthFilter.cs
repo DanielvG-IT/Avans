@@ -4,14 +4,9 @@ using Api.Interfaces;
 
 namespace Api.Filters
 {
-    public class ApiKeyAuthFilter : IActionFilter
+    public class ApiKeyAuthFilter(IApiKeyService apiKeyService) : IActionFilter
     {
-        private readonly IApiKeyService _apiKeyService;
-
-        public ApiKeyAuthFilter(IApiKeyService apiKeyService)
-        {
-            _apiKeyService = apiKeyService;
-        }
+        private readonly IApiKeyService _apiKeyService = apiKeyService;
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
