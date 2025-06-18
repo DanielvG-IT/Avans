@@ -3,27 +3,23 @@ using Api.Models.Enums;
 using Api.Interfaces;
 using Api.Models;
 using Api.Data;
+using System.Net.Http.Json;
 
 namespace Api.Services
 {
-
-    public class TrashImportService(
-        LitterDbContext dbContext,
-        IAggregatedTrashService aggregatedTrashService,
-        IHolidayApiService holidayApiService,
-        IDTOService dTOService) : ITrashImportService
+    public class TrashImportService(LitterDbContext dbContext, IHolidayApiService holidayApiService, IDTOService dTOService, HttpClient httpClient) : ITrashImportService
     {
         private readonly LitterDbContext _dbContext = dbContext;
-        private readonly IAggregatedTrashService _aggregatedTrashService = aggregatedTrashService;
         private readonly IHolidayApiService _holidayApiService = holidayApiService;
         private readonly IDTOService _dTOService = dTOService;
+        private readonly HttpClient _httpClient = httpClient;
 
         public async Task<bool> ImportAsync(CancellationToken ct)
         {
             try
             {
-                var results = await _aggregatedTrashService.GetAggregatedTrashAsync();
-                if (results == null || results.Count == 0)
+                var results = await GetAggregatedTrashAsync();
+                if (results is null || results.Count == 0)
                 {
                     return false;
                 }
@@ -96,6 +92,18 @@ namespace Api.Services
             {
                 return false;
             }
+        }
+
+        private async Task<List<AggregatedTrashDto>> GetAggregatedTrashAsync()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "/Litter/getLitter");
+            var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode) // TODO Je kunt hier eventueel logging of foutafhandeling toevoegen
+                return [];
+
+            var content = await response.Content.ReadFromJsonAsync<List<AggregatedTrashDto>>();
+            return content ?? [];
         }
     }
 }

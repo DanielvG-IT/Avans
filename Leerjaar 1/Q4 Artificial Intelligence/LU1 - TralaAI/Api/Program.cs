@@ -41,7 +41,7 @@ builder.Services.AddHttpClient<IHolidayApiService, HolidayApiService>((servicePr
     var apiKeys = serviceProvider.GetRequiredService<IOptions<ApiKeysOptions>>().Value;
 });
 
-builder.Services.AddHttpClient<IAggregatedTrashService, AggregatedTrashService>((serviceProvider, client) =>
+builder.Services.AddHttpClient<ITrashImportService, TrashImportService>((serviceProvider, client) =>
 {
     var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettingsOptions>>().Value;
     var apiKeys = serviceProvider.GetRequiredService<IOptions<ApiKeysOptions>>().Value;
