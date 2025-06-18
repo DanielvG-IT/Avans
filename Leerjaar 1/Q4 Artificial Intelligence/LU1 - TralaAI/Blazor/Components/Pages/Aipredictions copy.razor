@@ -11,42 +11,49 @@
     <!-- Top: AI Output Bar graph -->
     <div class="top-section">
         <h3>AI Output</h3>
+        
         <ApexChart TItem="LitterData" Title="Afval per Type per Dag">
-    <ApexPointSeries TItem="LitterData"
-                     Items="LitterItems"
-                     Name="Plastic"
-                     XValue="@(e => e.Date)"
-                     YValue="@(e => e.Type == "plastic" ? (decimal?)e.Count : null)"
-                     SeriesType="SeriesType.Bar" />
-                     
-    <ApexPointSeries TItem="LitterData"
-                     Items="LitterItems"
-                     Name="Paper"
-                     XValue="@(e => e.Date)"
-                     YValue="@(e => e.Type == "paper" ? (decimal?)e.Count : null)"
-                     SeriesType="SeriesType.Bar" />
+            
+            <ApexPointSeries TItem="LitterData"
+                            Items="LitterItems"
+                            Name="Plastic"
+                            XValue="@(e => e.Date)"
+                            YValue="@(e => e.Type == "plastic" ? (decimal?)e.Count : null)"
+                            OrderByDescending="e=>e.Y"
+                            SeriesType="SeriesType.Bar" />
+                            
+            <ApexPointSeries TItem="LitterData"
+                            Items="LitterItems"
+                            Name="Paper"
+                            XValue="@(e => e.Date)"
+                            YValue="@(e => e.Type == "paper" ? (decimal?)e.Count : null)"
+                            OrderByDescending="e=>e.Y"
+                            SeriesType="SeriesType.Bar" />
 
-    <ApexPointSeries TItem="LitterData"
-                     Items="LitterItems"
-                     Name="Metal"
-                     XValue="@(e => e.Date)"
-                     YValue="@(e => e.Type == "metal" ? (decimal?)e.Count : null)"
-                     SeriesType="SeriesType.Bar" />
+            <ApexPointSeries TItem="LitterData"
+                            Items="LitterItems"
+                            Name="Metal"
+                            XValue="@(e => e.Date)"
+                            YValue="@(e => e.Type == "metal" ? (decimal?)e.Count : null)"
+                            OrderByDescending="e=>e.Y"
+                            SeriesType="SeriesType.Bar" />
 
-    <ApexPointSeries TItem="LitterData"
-                     Items="LitterItems"
-                     Name="Glass"
-                     XValue="@(e => e.Date)"
-                     YValue="@(e => e.Type == "glass" ? (decimal?)e.Count : null)"
-                     SeriesType="SeriesType.Bar" />
+            <ApexPointSeries TItem="LitterData"
+                            Items="LitterItems"
+                            Name="Glass"
+                            XValue="@(e => e.Date)"
+                            YValue="@(e => e.Type == "glass" ? (decimal?)e.Count : null)"
+                            OrderByDescending="e=>e.Y"
+                            SeriesType="SeriesType.Bar" />
 
-    <ApexPointSeries TItem="LitterData"
-                     Items="LitterItems"
-                     Name="Organic"
-                     XValue="@(e => e.Date)"
-                     YValue="@(e => e.Type == "organic" ? (decimal?)e.Count : null)"
-                     SeriesType="SeriesType.Bar" />
-</ApexChart>
+            <ApexPointSeries TItem="LitterData"
+                            Items="LitterItems"
+                            Name="Organic"
+                            XValue="@(e => e.Date)"
+                            YValue="@(e => e.Type == "organic" ? (decimal?)e.Count : null)"
+                            OrderByDescending="e=>e.Y"
+                            SeriesType="SeriesType.Bar" />
+        </ApexChart>
 
     </div>
 
