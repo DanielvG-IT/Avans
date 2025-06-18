@@ -65,7 +65,7 @@ namespace Api.Services
                         Type = switchedType,
                         TimeStamp = trash.Date,
                         Confidence = trash.Confidence,
-                        Weather = trash.Weather,
+                        Weather = _dTOService.GetWeatherCategory(trash.Weather),
                         Temperature = trash.Temperature,
                         Location = "Sensoring",
                         IsHoliday = isHoliday
