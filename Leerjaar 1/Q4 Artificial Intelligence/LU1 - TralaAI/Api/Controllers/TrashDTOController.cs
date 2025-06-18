@@ -1,10 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
-using Api.Models.Enums;
 using Api.Interfaces;
-using Api.Services;
-using Api.Models;
-using Api.Data;
 
 namespace Api.Controllers
 {
