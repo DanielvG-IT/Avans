@@ -1,7 +1,9 @@
 ﻿@page "/"
 @rendermode InteractiveServer
+@using Blazor.Interfaces
 @using Blazor.Models
 @inject HttpClient Http
+@inject NavigationManager Navigation
 
 <div class="page-container">
 
@@ -70,34 +72,8 @@
 </style>
 
 @code {
-    [Inject] NavigationManager Navigation { get; set; } = default!;
-
     private void GoToPredictions()
     {
         Navigation.NavigateTo("/ai-predictions");
-    }
-    private Litter? litterData;
-
-    protected override async Task OnInitializedAsync()
-    {
-        //DIT STUK IT VOOR TIJDELIJKE TEST DATA INLADEN
-        litterData = new Litter
-        {
-            Id = Guid.NewGuid(),
-            Type = "Cigarette",
-            Date = DateTime.Now,
-            Confidence = 0.89,
-            Weather = "Sunny",
-            Temperature = 23,
-            Latitude = 52.3702f,
-            Longitude = 4.8952f,
-            IsHoliday = true
-        };
-        // TOT HIER IS VOOR DE TEST DATA
-
-
-        // call to the api
-        // url moet worden aangepast naar de endpoint
-        //litterData = await Http.GetFromJsonAsync<Litter>("https://your-api.com/api/litter/123");
     }
 }
