@@ -1,6 +1,7 @@
 ﻿@page "/ai-predictions"
 @using Blazor.Interfaces;
 @using ApexCharts
+@using System.Linq;
 @rendermode InteractiveServer
 @inject IJSRuntime JS
 @inject IBackendService _backendService;
@@ -10,14 +11,43 @@
     <!-- Top: AI Output Bar graph -->
     <div class="top-section">
         <h3>AI Output</h3>
-        <ApexChart TItem="LitterData" Title="Afvalverdeling per Soort">
-            <ApexPointSeries TItem="LitterData"
-                            Items="LitterItems"
-                            Name="Aantal"
-                            XValue="@(e => e.Type)"
-                            YValue="@(e => (decimal)e.Count)"
-                            SeriesType="SeriesType.Bar" />
-        </ApexChart>
+        <ApexChart TItem="LitterData" Title="Afval per Type per Dag">
+    <ApexPointSeries TItem="LitterData"
+                     Items="LitterItems"
+                     Name="Plastic"
+                     XValue="@(e => e.Date)"
+                     YValue="@(e => e.Type == "plastic" ? (decimal?)e.Count : null)"
+                     SeriesType="SeriesType.Bar" />
+                     
+    <ApexPointSeries TItem="LitterData"
+                     Items="LitterItems"
+                     Name="Paper"
+                     XValue="@(e => e.Date)"
+                     YValue="@(e => e.Type == "paper" ? (decimal?)e.Count : null)"
+                     SeriesType="SeriesType.Bar" />
+
+    <ApexPointSeries TItem="LitterData"
+                     Items="LitterItems"
+                     Name="Metal"
+                     XValue="@(e => e.Date)"
+                     YValue="@(e => e.Type == "metal" ? (decimal?)e.Count : null)"
+                     SeriesType="SeriesType.Bar" />
+
+    <ApexPointSeries TItem="LitterData"
+                     Items="LitterItems"
+                     Name="Glass"
+                     XValue="@(e => e.Date)"
+                     YValue="@(e => e.Type == "glass" ? (decimal?)e.Count : null)"
+                     SeriesType="SeriesType.Bar" />
+
+    <ApexPointSeries TItem="LitterData"
+                     Items="LitterItems"
+                     Name="Organic"
+                     XValue="@(e => e.Date)"
+                     YValue="@(e => e.Type == "organic" ? (decimal?)e.Count : null)"
+                     SeriesType="SeriesType.Bar" />
+</ApexChart>
+
     </div>
 
     <!-- Middle: Pie Chart + Heatmap-->
@@ -178,35 +208,35 @@
     private List<LitterData> LitterItems { get; set; }
         
 
-// Deze method laadt data zodra de component geïnitialiseerd wordt
+// Deze method laadt data zodra de component geïnitialiseerd wordt om data in te laden
     protected override void OnInitialized()
     {
         LitterItems = new List<LitterData>
         {
-            new LitterData { Date = "1", Type = "plastic", Count = 0.775 },
-            new LitterData { Date = "1", Type = "paper", Count = 0.784 },
-            new LitterData { Date = "1", Type = "metal", Count = 1.226 },
-            new LitterData { Date = "1", Type = "glass", Count = 2.054 },
-            new LitterData { Date = "1", Type = "organic", Count = 2.238 },
+            new LitterData { Date = new DateTime(2025, 6, 18), Type = "plastic", Count = 0.775 },
+            new LitterData { Date = new DateTime(2025, 6, 18), Type = "paper", Count = 0.784 },
+            new LitterData { Date = new DateTime(2025, 6, 18), Type = "metal", Count = 1.226 },
+            new LitterData { Date = new DateTime(2025, 6, 18), Type = "glass", Count = 2.054 },
+            new LitterData { Date = new DateTime(2025, 6, 18), Type = "organic", Count = 2.238 },
 
-            new LitterData { Date = "2", Type = "plastic", Count = 1.056 },
-            new LitterData { Date = "2", Type = "paper", Count = 0.757 },
-            new LitterData { Date = "2", Type = "metal", Count = 1.840 },
-            new LitterData { Date = "2", Type = "glass", Count = 1.237 },
-            new LitterData { Date = "2", Type = "organic", Count = 2.380 },
+            new LitterData { Date = new DateTime(2025, 6, 19), Type = "plastic", Count = 1.056 },
+            new LitterData { Date = new DateTime(2025, 6, 19), Type = "paper", Count = 0.757 },
+            new LitterData { Date = new DateTime(2025, 6, 19), Type = "metal", Count = 1.840 },
+            new LitterData { Date = new DateTime(2025, 6, 19), Type = "glass", Count = 1.237 },
+            new LitterData { Date = new DateTime(2025, 6, 19), Type = "organic", Count = 2.380 },
 
-            new LitterData { Date = "3", Type = "plastic", Count = 1.894 },
-            new LitterData { Date = "3", Type = "paper", Count = 1.449 },
-            new LitterData { Date = "3", Type = "metal", Count = 2.284 },
-            new LitterData { Date = "3", Type = "glass", Count = 3.364 },
-            new LitterData { Date = "3", Type = "organic", Count = 5.203 }
+            new LitterData { Date = new DateTime(2025, 6, 20), Type = "plastic", Count = 1.894 },
+            new LitterData { Date = new DateTime(2025, 6, 20), Type = "paper", Count = 1.449 },
+            new LitterData { Date = new DateTime(2025, 6, 20), Type = "metal", Count = 2.284 },
+            new LitterData { Date = new DateTime(2025, 6, 20), Type = "glass", Count = 3.364 },
+            new LitterData { Date = new DateTime(2025, 6, 20), Type = "organic", Count = 5.203 }
         };
     }
 
 // De datatype voor de barchart deffinieren
     public class LitterData
     {
-        public string Date { get; set; }
+        public DateTime Date { get; set; }
         public string Type { get; set; }
         public double Count { get; set; }
     }
