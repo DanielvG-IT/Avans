@@ -15,7 +15,7 @@
                             Items="LitterItems"
                             Name="Aantal"
                             XValue="@(e => e.Type)"
-                            YValue="@(e => e.Count)"
+                            YValue="@(e => (decimal)e.Count)"
                             SeriesType="SeriesType.Bar" />
         </ApexChart>
     </div>
@@ -158,7 +158,9 @@
 </style>
 
 @code {
-        private List<PieData> pieData = new()
+    
+    // Pie Chart dummydata
+    private List<PieData> pieData = new()
     {
         new PieData { Label = "Rest", Value = 120 },
         new PieData { Label = "GFT", Value = 200 },
@@ -166,37 +168,50 @@
         new PieData { Label = "Papier", Value = 90 }
     };
 
+// Wordt gebruikt voor de pie chart
     public class PieData
     {
         public string Label { get; set; }
         public decimal Value { get; set; }
     }
+// Wordt gebruikt voor de bar chart bovenaan de pagina
+    private List<LitterData> LitterItems { get; set; }
+        
 
-        private List<LitterData> LitterItems { get; set; }
-
+// Deze method laadt data zodra de component geïnitialiseerd wordt
     protected override void OnInitialized()
     {
-        // ✏️ Pas deze waarden gerust aan:
         LitterItems = new List<LitterData>
         {
-            new LitterData
-            {
-                Type = "Glas",
-                Count = 1
-            },
-            // Als je meer wil testen, voeg je hieronder extra regels toe
-            // new LitterData { Type = "Plastic", Count = 5 },
+            new LitterData { Type = "plastic - dag 1", Count = 0.775 },
+            new LitterData { Type = "paper - dag 1", Count = 0.784 },
+            new LitterData { Type = "metal - dag 1", Count = 1.226 },
+            new LitterData { Type = "glass - dag 1", Count = 2.054 },
+            new LitterData { Type = "organic - dag 1", Count = 2.238 },
+
+            new LitterData { Type = "plastic - dag 2", Count = 1.056 },
+            new LitterData { Type = "paper - dag 2", Count = 0.757 },
+            new LitterData { Type = "metal - dag 2", Count = 1.840 },
+            new LitterData { Type = "glass - dag 2", Count = 1.237 },
+            new LitterData { Type = "organic - dag 2", Count = 2.380 },
+
+            new LitterData { Type = "plastic - dag 3", Count = 1.894 },
+            new LitterData { Type = "paper - dag 3", Count = 1.449 },
+            new LitterData { Type = "metal - dag 3", Count = 2.284 },
+            new LitterData { Type = "glass - dag 3", Count = 3.364 },
+            new LitterData { Type = "organic - dag 3", Count = 5.203 }
         };
     }
 
     public class LitterData
     {
         public string Type { get; set; }
-        public int Count { get; set; }
+        public double Count { get; set; }
     }
 
 
-        protected override async Task OnAfterRenderAsync(bool firstRender)
+// Heatmap tekenen bij opstart van de pagina
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
@@ -206,6 +221,7 @@
         }
     }
 
+// Heatmap tekenen met knop
     private async Task DrawHeatmap()
     {
         await JS.InvokeVoidAsync("heatmapInterop.drawMap");
