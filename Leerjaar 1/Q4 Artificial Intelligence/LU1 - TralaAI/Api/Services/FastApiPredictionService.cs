@@ -45,5 +45,25 @@ namespace Api.Services
                 return false; // TODO Return false or handle the error as needed
             }
         }
+
+        public async Task<bool> GetStatusAsync()
+        {
+            try
+            {
+                var response = await _httpClient.PostAsync("/status", null);
+                response.EnsureSuccessStatusCode();
+                return true;
+            }
+            catch (TaskCanceledException ex)
+            {
+                _logger.LogError(ex, "Request to {Endpoint} timed out", "/status");
+                return false; // Explicitly handle timeout as a failure
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error making POST request to {Endpoint}", "/status");
+                return false;
+            }
+        }
     }
 }
