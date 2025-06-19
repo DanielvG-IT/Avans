@@ -1,6 +1,5 @@
 using Api.Attributes;
 using Api.Models.Health;
-using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using Api.Interfaces;
 
