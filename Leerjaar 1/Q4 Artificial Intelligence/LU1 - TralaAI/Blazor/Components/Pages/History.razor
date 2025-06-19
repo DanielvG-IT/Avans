@@ -1,0 +1,27 @@
+@page "/history"
+@rendermode InteractiveServer
+@using ApexCharts
+@using Blazor.Models
+@using Blazor.Interfaces
+@inject IBackendService _backendService
+
+@* <div class="page-container">
+    <ApexChart TItem="totalLitter" Title="Totaal gedetecteerd afval">
+
+    <ApexPointSeries TItem="totalLitter"
+                Items="litterPerCamera"
+                SeriesType="SeriesType.Donut"
+                Name="Gross Value"
+                XValue="@(e => e.Country)"
+                YAggregate="@(e => e.Sum(e => e.GrossValue))"/>
+    </ApexChart>
+</div> *@
+
+@code {
+    @* private List<Litter> litterPerCamera = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        litterPerCamera = await _backendService.GetLittersAsync();
+    } *@
+}
