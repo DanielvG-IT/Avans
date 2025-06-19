@@ -6,7 +6,8 @@ namespace Api.Data
   public class LitterDbContext(DbContextOptions<LitterDbContext> options) : DbContext(options)
   {
     public DbSet<Litter> Litters { get; set; }
-    public DbSet<ApiKey> ApiKeys { get; set; }
+    public DbSet<ApiKey> BApiKeys { get; set; }
+    public DbSet<ApiKey> FApiKeys { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
