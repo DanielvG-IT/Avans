@@ -307,7 +307,7 @@ new LitterData { Date = new DateOnly(2025, 6, 20), Type = "organic", Count = 5.2
         Console.WriteLine($"Toepassen: {selectedDays} dagen en {selectedCamera}");
     }
 
-    private async Task GetDataFromBackend()
+    private async Task GetDataFromBackendAsync()
     {
         // Voorbeeld van het ophalen van data van de backend
         var filter = new LitterFilterDto { };
@@ -319,5 +319,12 @@ new LitterData { Date = new DateOnly(2025, 6, 20), Type = "organic", Count = 5.2
         }
 
         @* TODO Add retrieving data from backend service *@
+    }
+
+    private async Task MakePredictionAsync()
+    {
+        // Int AmoutOfDays into the future to predict!
+        // String Locaction has possible values: {"sensoring", "development", "suburbs", "city", "industrial"}
+        var lalala = await _backendService.PredictAsync()
     }
 }
