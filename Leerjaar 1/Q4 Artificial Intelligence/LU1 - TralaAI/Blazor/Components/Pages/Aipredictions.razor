@@ -60,7 +60,8 @@
     <div class="middle-section">
         <div class="left-panel">
             <h3>Pie-Chart</h3>
-            <ApexChart TItem="PieData" Title="Verdeling van afvaltypes voor de door jouw opgevraagde voorspelling." Height="350">
+            <ApexChart TItem="PieData" Title="Verdeling van afvaltypes voor de door jouw opgevraagde voorspelling."
+                Height="300">
                 <ApexPointSeries TItem="PieData" Items="pieData" Name="Waarde" SeriesType="SeriesType.Pie"
                     XValue="@(e => e.Label)" YValue="@(e => e.Value)" />
             </ApexChart>
@@ -107,7 +108,6 @@
         display: flex;
         flex-direction: column;
         height: 100vh;
-        background-color: #f0f2f5;
         padding: 1rem;
         gap: 1rem;
         box-sizing: border-box;
@@ -178,11 +178,11 @@
     }
 
     .heatmap-box {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 3 / 2;
-    max-width: 100%;
-    overflow: hidden;
+        position: relative;
+        width: 100%;
+        aspect-ratio: 3 / 2;
+        max-width: 100%;
+        overflow: hidden;
     }
 
 
