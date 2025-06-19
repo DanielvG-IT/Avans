@@ -38,7 +38,7 @@
 
     <p><b>Bovenstaande formulieren geven je de mogelijkheid een voorspelling op te vragen van een AI-model op een gekozen camera locatie.</b></p>
 
-    <ApexChart TItem="LitterData" Title="Afval per Type per Dag" Height="300">
+    <ApexChart TItem="LitterData" Title="Afval per Type per Dag" Height="400">
         <ApexPointSeries TItem="LitterData" Items="PlasticItems" Name="Plastic" XValue="@(e => e.Date)" YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
         <ApexPointSeries TItem="LitterData" Items="PaperItems" Name="Paper" XValue="@(e => e.Date)" YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
         <ApexPointSeries TItem="LitterData" Items="MetalItems" Name="Metal" XValue="@(e => e.Date)" YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
@@ -52,7 +52,7 @@
         <div class="left-panel">
             <h3>Pie-Chart</h3>
             <ApexChart TItem="PieData" Title="Verdeling van afvaltypes voor de door jouw opgevraagde voorspelling."
-                Height="300">
+                Height="500">
                 <ApexPointSeries TItem="PieData" Items="pieData" Name="Waarde" SeriesType="SeriesType.Pie"
                     XValue="@(e => e.Label)" YValue="@(e => e.Value)" />
             </ApexChart>
@@ -65,6 +65,19 @@
             <p><b>Concentratie van de voorspelde afval komende 7 dagen in Breda.</b></p>
             <div id="heatmapContainer" class="heatmap-box">
                 <img src="images/Breda_Central_Map.jpg" alt="Map of Breda" class="heatmap-background" />
+            </div>
+            <div class="CameraTable">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Camera</th>
+                            <th>Voorspelde hoeveelheid</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
