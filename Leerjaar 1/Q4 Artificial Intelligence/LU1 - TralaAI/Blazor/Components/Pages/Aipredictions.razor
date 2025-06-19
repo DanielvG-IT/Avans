@@ -36,7 +36,7 @@
     <div class="top-section">
         <h3>AI Output</h3>
 
-        <ApexChart TItem="LitterData" Title="Afval per Type per Dag">
+        <ApexChart TItem="LitterData" Title="Afval per Type per Dag" Height="300">
 
             <ApexPointSeries TItem="LitterData" Items="PlasticItems" Name="Plastic" XValue="@(e => e.Date)"
                 YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
@@ -60,7 +60,7 @@
     <div class="middle-section">
         <div class="left-panel">
             <h3>Pie-Chart</h3>
-            <ApexChart TItem="PieData" Title="Verdeling van afvaltypes voor de door jouw opgevraagde voorspelling.">
+            <ApexChart TItem="PieData" Title="Verdeling van afvaltypes voor de door jouw opgevraagde voorspelling." Height="300">
                 <ApexPointSeries TItem="PieData" Items="pieData" Name="Waarde" SeriesType="SeriesType.Pie"
                     XValue="@(e => e.Label)" YValue="@(e => e.Value)" />
             </ApexChart>
