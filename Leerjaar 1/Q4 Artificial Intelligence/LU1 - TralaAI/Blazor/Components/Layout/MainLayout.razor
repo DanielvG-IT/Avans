@@ -1,5 +1,8 @@
 ﻿@inherits LayoutComponentBase
 
+@inject NavigationManager Navigation
+
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -18,9 +21,14 @@
     </div> *@
 
     <div class="status-right">
-        <button class="refresh-button" @onclick="SimuleerStatusUpdate">Settings</button>
+            <NavLink class="nav-link" href="settings">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Settings⚙️
+            </NavLink>
+        </div>
+        @* <button class="refresh-button" @onclick="GoToSettings">Settings</button> *@
     </div>
-</div>
+
+
 
         <article class="content px-4">
             @Body
@@ -57,3 +65,12 @@
         await InvokeAsync(StateHasChanged);
     }
 }
+
+
+@code {
+    private void GoToSettings()
+    {
+        Navigation.NavigateTo("/settings");
+    }
+}
+

@@ -1,0 +1,133 @@
+@page "/settings"
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+
+<style>
+    .settings-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 2rem;
+        min-height: 50vh;
+        box-sizing: border-box;
+    }
+
+    @@media (min-width: 768px) {
+        .settings-container {
+            flex-direction: row;
+        }
+    }
+
+    .settings-block {
+        flex: 1;
+        background-color: #ffffff;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .settings-block h3 {
+        color: #0078d4;
+        margin-bottom: 1rem;
+    }
+
+    table.status-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table.status-table td {
+        padding: 0.5rem;
+        vertical-align: middle;
+    }
+
+    .status-indicator {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .status-green {
+        background-color: limegreen;
+    }
+
+    .status-red {
+        background-color: red;
+    }
+
+.retrain-button {
+    background-color: #0078d4;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 0.25rem; 
+}
+
+.model-info p {
+    margin-top: 0.5rem; 
+    margin-bottom: 0;   
+}
+
+
+    .retrain-button:hover {
+        background-color: #005fa3;
+    }
+
+    .info-text {
+        margin-top: 0.75rem;
+        font-size: 0.95rem;
+        color: #333;
+    }
+</style>
+
+<div class="settings-container">
+    <!-- Blok 1: API Status -->
+    <div class="settings-block">
+        <h3>API Status</h3>
+        <table class="status-table">
+            <tr>
+                <td>Python API</td>
+                <td><span class="status-indicator status-green"></span></td>
+            </tr>
+            <tr>
+                <td>.NET API</td>
+                <td><span class="status-indicator status-red"></span></td>
+            </tr>
+            <tr>
+                <td>Holiday API</td>
+                <td><span class="status-indicator status-green"></span></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Blok 2: Model Info -->
+    <div class="settings-block">
+        <button @onclick="RetrainModel" class="retrain-button">Retrain Model</button>
+
+       <tr></tr>
+        <div class="model-info">
+            <p><strong>Laatste update model:</strong> @lastModelUpdate?.ToString("g")</p>
+            <p><strong>Huidige RMSE:</strong> @modelRMSE</p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool pythonStatus = true;
+    private bool dotnetStatus = false;
+    private bool holidayStatus = true;
+
+    private DateTime? lastModelUpdate = DateTime.Now.AddHours(-3);
+    private double modelRMSE = 0.237;
+
+    private void RetrainModel()
+    {
+        // Hier komt je retrain logic of API call
+        lastModelUpdate = DateTime.Now;
+        modelRMSE = Math.Round(new Random().NextDouble(), 3); // tijdelijk simuleren
+    }
+}
+
