@@ -70,15 +70,22 @@
         </div>
 
         <!-- Blok 2: Model Info -->
-        <div class="settings-block">
-            <button @onclick="RetrainModel" class="retrain-button">Retrain Model</button>
+        <div class="settings-block d-flex flex-column justify-content-between">
+            <div>
+                <h3>Sensoring AI-Model status</h3>
+                <p><b>Bij opstart van de webapp wordt het model AI-Model opnieuw getraind. Via deze knop heb je ook de mogelijkheid om dit handmatig te forceren indien er nieuwe data beschikbaar is.</b></p>
+            </div>
 
-            <tr></tr>
-            <div class="model-info">
-                <p><strong>Laatste update model:</strong> @lastModelUpdate?.ToString("g")</p>
-                <p><strong>Huidige RMSE:</strong> @modelRMSE</p>
+            <div class="d-flex justify-content-between align-items-center mt-auto pt-3">
+                <div>
+                    <p class="mb-1"><strong>Response:</strong> <i>waiting...</i></p>
+                    <p class="mb-1"><strong>Model Type:</strong> Random forest</p>
+                    <p class="mb-0"><strong>Huidige RMSE:</strong> @modelRMSE</p>
+                </div>
+                <button @onclick="RetrainModel" class="btn btn-primary">Retrain Model</button>
             </div>
         </div>
+
     </div>
 </div>
 
