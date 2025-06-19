@@ -2,6 +2,86 @@
 @rendermode InteractiveServer
 @inject NavigationManager Navigation
 
+
+<div class="wholeass" style="height: calc(100svh - 4rem)">
+    <div class="settings-container">
+        <!-- Blok 1: API Status -->
+        <div class="settings-block">
+            <h3>API Status</h3>
+            <p><b>Een overzicht van alle API's die onze webapplicatie gebruikt</b></p>
+            <ul class="list-unstyled">
+                <li class="d-flex align-items-center gap-2 mb-1">
+                    @if (pythonStatus)
+                    {
+                        <span class="status-indicator status-green"></span>
+                    }
+                    else
+                    {
+                        <span class="status-indicator status-red"></span>
+                    }
+                    Fast API (AI-Predictions)
+                </li>
+                <li class="d-flex align-items-center gap-2 mb-1">
+                    @if (backendStatus)
+                    {
+                        <span class="status-indicator status-green"></span>
+                    }
+                    else
+                    {
+                        <span class="status-indicator status-red"></span>
+                    }
+                    .Net API (Backend)
+                </li>
+                <li class="d-flex align-items-center gap-2 mb-1">
+                    @if (sensoringStatus)
+                    {
+                        <span class="status-indicator status-green"></span>
+                    }
+                    else
+                    {
+                        <span class="status-indicator status-red"></span>
+                    }
+                    Sensoring API (Litter Recognition)
+                </li>
+                <li class="d-flex align-items-center gap-2 mb-1">
+                    @if (holidayStatus)
+                    {
+                        <span class="status-indicator status-green"></span>
+                    }
+                    else
+                    {
+                        <span class="status-indicator status-red"></span>
+                    }
+                    Holiday API (Holiday Information)
+                </li>
+                <li class="d-flex align-items-center gap-2 mb-1">
+                    @if (weatherStatus)
+                    {
+                        <span class="status-indicator status-green"></span>
+                    }
+                    else
+                    {
+                        <span class="status-indicator status-red"></span>
+                    }
+                    Weather API (Weather Forecasts)
+                </li>
+            </ul>
+
+        </div>
+
+        <!-- Blok 2: Model Info -->
+        <div class="settings-block">
+            <button @onclick="RetrainModel" class="retrain-button">Retrain Model</button>
+
+            <tr></tr>
+            <div class="model-info">
+                <p><strong>Laatste update model:</strong> @lastModelUpdate?.ToString("g")</p>
+                <p><strong>Huidige RMSE:</strong> @modelRMSE</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
     .settings-container {
         display: flex;
@@ -56,20 +136,20 @@
         background-color: red;
     }
 
-.retrain-button {
-    background-color: #0078d4;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.25rem;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 0.25rem; 
-}
+    .retrain-button {
+        background-color: #0078d4;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 0.25rem;
+    }
 
-.model-info p {
-    margin-top: 0.5rem; 
-    margin-bottom: 0;   
-}
+    .model-info p {
+        margin-top: 0.5rem;
+        margin-bottom: 0;
+    }
 
 
     .retrain-button:hover {
@@ -83,43 +163,8 @@
     }
 </style>
 
-<div class="settings-container">
-    <!-- Blok 1: API Status -->
-    <div class="settings-block">
-        <h3>API Status</h3>
-        <table class="status-table">
-            <tr>
-                <td>Python API</td>
-                <td><span class="status-indicator status-green"></span></td>
-            </tr>
-            <tr>
-                <td>.NET API</td>
-                <td><span class="status-indicator status-red"></span></td>
-            </tr>
-            <tr>
-                <td>Holiday API</td>
-                <td><span class="status-indicator status-green"></span></td>
-            </tr>
-        </table>
-    </div>
-
-    <!-- Blok 2: Model Info -->
-    <div class="settings-block">
-        <button @onclick="RetrainModel" class="retrain-button">Retrain Model</button>
-
-       <tr></tr>
-        <div class="model-info">
-            <p><strong>Laatste update model:</strong> @lastModelUpdate?.ToString("g")</p>
-            <p><strong>Huidige RMSE:</strong> @modelRMSE</p>
-        </div>
-    </div>
-</div>
-
 @code {
-    private bool pythonStatus = true;
-    private bool dotnetStatus = false;
-    private bool holidayStatus = true;
-
+    private bool pythonStatus, holidayStatus, backendStatus, weatherStatus, sensoringStatus = false;
     private DateTime? lastModelUpdate = DateTime.Now.AddHours(-3);
     private double modelRMSE = 0.237;
 
@@ -130,4 +175,3 @@
         modelRMSE = Math.Round(new Random().NextDouble(), 3); // tijdelijk simuleren
     }
 }
-
