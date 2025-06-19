@@ -8,17 +8,23 @@
 @inject IJSRuntime JS;
 
 <div class="page-container">
-    <div class="d-flex align-items-center gap-3 mb-3">
-        <!-- Number input field voor de dagen -->
-        <div>
-            <label for="daysInput" class="form-label me-2">Aantal dagen (1–14):</label>
-            <input id="daysInput" type="number" class="form-control d-inline-block w-auto" min="1" max="14"
-                @bind="selectedDays" />
+    
+    <!-- Top: AI Output Bar graph -->
+    <div class="top-section">
+    <h3>AI Output</h3>
+
+    <!-- Form + button in one horizontal line -->
+    <div class="d-flex align-items-end gap-3 mb-3 flex-wrap">
+        <!-- Number input -->
+        <div class="d-flex align-items-center gap-2">
+            <label for="daysInput" class="form-label mb-0">Aantal dagen (1–14):</label>
+            <input id="daysInput" type="number" class="form-control w-auto" min="1" max="14" @bind="selectedDays" />
         </div>
-        <!-- Dropdown input field voor de camera's -->
-        <div>
-            <label for="cameraSelect" class="form-label me-2">Camera:</label>
-            <select id="cameraSelect" class="form-select d-inline-block w-auto" @bind="selectedCamera">
+
+        <!-- Camera dropdown -->
+        <div class="d-flex align-items-center gap-2">
+            <label for="cameraSelect" class="form-label mb-0">Camera:</label>
+            <select id="cameraSelect" class="form-select w-auto" @bind="selectedCamera">
                 @foreach (var cam in cameraOptions)
                 {
                     <option value="@cam">@cam</option>
@@ -29,33 +35,17 @@
         <!-- Confirm button -->
         <button class="btn btn-primary" @onclick="ApplyFilters">Toepassen</button>
     </div>
+
     <p><b>Bovenstaande formulieren geven je de mogelijkheid een voorspelling op te vragen van een AI-model op een gekozen camera locatie.</b></p>
 
-
-
-    <!-- Top: AI Output Bar graph -->
-    <div class="top-section">
-        <h3>AI Output</h3>
-
-        <ApexChart TItem="LitterData" Title="Afval per Type per Dag" Height="300">
-
-            <ApexPointSeries TItem="LitterData" Items="PlasticItems" Name="Plastic" XValue="@(e => e.Date)"
-                YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
-
-            <ApexPointSeries TItem="LitterData" Items="PaperItems" Name="Paper" XValue="@(e => e.Date)"
-                YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
-
-            <ApexPointSeries TItem="LitterData" Items="MetalItems" Name="Plastic" XValue="@(e => e.Date)"
-                YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
-
-            <ApexPointSeries TItem="LitterData" Items="GlassItems" Name="Plastic" XValue="@(e => e.Date)"
-                YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
-
-            <ApexPointSeries TItem="LitterData" Items="OrganicItems" Name="Paper" XValue="@(e => e.Date)"
-                YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
-        </ApexChart>
-
-    </div>
+    <ApexChart TItem="LitterData" Title="Afval per Type per Dag" Height="300">
+        <ApexPointSeries TItem="LitterData" Items="PlasticItems" Name="Plastic" XValue="@(e => e.Date)" YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
+        <ApexPointSeries TItem="LitterData" Items="PaperItems" Name="Paper" XValue="@(e => e.Date)" YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
+        <ApexPointSeries TItem="LitterData" Items="MetalItems" Name="Metal" XValue="@(e => e.Date)" YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
+        <ApexPointSeries TItem="LitterData" Items="GlassItems" Name="Glass" XValue="@(e => e.Date)" YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
+        <ApexPointSeries TItem="LitterData" Items="OrganicItems" Name="Organic" XValue="@(e => e.Date)" YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
+    </ApexChart>
+</div>
 
     <!-- Middle: Pie Chart + Heatmap-->
     <div class="middle-section">
