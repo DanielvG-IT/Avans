@@ -41,5 +41,40 @@ namespace Api.Repository
 
             return await query.ToListAsync();
         }
+
+        public async Task<List<Litter>> GetLatestAsync(int? amoutOfRecords = null)
+        {
+            var query = _context.Litters.AsQueryable();
+
+            if (amoutOfRecords is not null && amoutOfRecords > 0)
+            {
+                query = query.OrderByDescending(l => l.TimeStamp).Take(amoutOfRecords.Value);
+            }
+            else
+            {
+                query = query.OrderByDescending(l => l.TimeStamp).Take(100);
+            }
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<LitterTypeAmount?> GetAmountPerLocationAsync()
+        {
+            var query = _context.Litters.AsQueryable();
+
+            var groupedQuery = await query.GroupBy(l => l.Location)
+                            .Select(g => new LitterTypeAmount
+                            {
+                                Organic = g.Count(l => l.Type == LitterCategory.Organic),
+                                Paper = g.Count(l => l.Type == LitterCategory.Paper),
+                                Plastic = g.Count(l => l.Type == LitterCategory.Plastic),
+                                Glass = g.Count(l => l.Type == LitterCategory.Glass),
+                                Metal = g.Count(l => l.Type == LitterCategory.Metal)
+                            })
+                            .OrderByDescending(l => l.Organic + l.Paper + l.Plastic + l.Glass + l.Metal)
+                            .FirstOrDefaultAsync();
+
+            return groupedQuery;
+        }
     }
 }

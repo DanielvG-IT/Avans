@@ -95,4 +95,58 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
 
         return Ok("Model retrained successfully.");
     }
+
+    [HttpGet("latest")]
+    public async Task<ActionResult<List<Litter>>> GetLatest([FromQuery] int? amount)
+    {
+        var litters = await _litterRepository.GetLatestAsync(amount);
+
+        if (litters is null || litters.Count == 0)
+            return NotFound("No latest litter records found.");
+
+        return Ok(litters);
+    }
+
+    [HttpGet("amount-per-location")]
+    public async Task<ActionResult<LitterTypeAmount?>> GetAmountPerLocation()
+    {
+        var amountPerLocation = await _litterRepository.GetAmountPerLocationAsync();
+
+        if (amountPerLocation is null)
+            return NotFound("No litter amount data found for the specified location.");
+
+        return Ok(amountPerLocation);
+    }
+
+    [HttpGet("history")]
+    public async Task<ActionResult<object>> GetHistory()
+    {
+        try
+        {
+            var amountPerLocationTask = _litterRepository.GetAmountPerLocationAsync();
+            var historyTask = _litterRepository.GetLatestAsync(100);
+
+            await Task.WhenAll(amountPerLocationTask, historyTask);
+
+            var amountPerLocation = await amountPerLocationTask ?? new LitterTypeAmount();
+            var history = await historyTask ?? [];
+
+            var response = new LitterHistoryResponse
+            {
+                AmountPerLocation = amountPerLocation,
+                History = history,
+                Metadata = new LitterHistoryMetadata
+                {
+                    RetrievedAt = DateTime.UtcNow,
+                    RecordCount = history.Count
+                }
+            };
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Problem(detail: ex.Message, statusCode: 500, title: "An unexpected error occurred while retrieving litter history.");
+        }
+    }
 }

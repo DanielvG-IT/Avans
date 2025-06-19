@@ -1,33 +1,42 @@
 using Api.Models;
 
-namespace Api.Interfaces
+namespace Api.Interfaces;
+
+/// <summary>
+/// Interface for managing litter-related data operations.
+/// </summary>
+public interface ILitterRepository
 {
     /// <summary>
-    /// Defines the contract for a repository that manages litter data.
+    /// Adds a new litter record asynchronously.
     /// </summary>
-    public interface ILitterRepository
-    {
-        /// <summary>
-        /// Asynchronously adds a new litter to the repository.
-        /// </summary>
-        /// <param name="litter">The litter object to add.</param>
-        /// <returns>A task that represents the asynchronous operation.</returns>
-        Task AddAsync(Litter litter);
+    /// <param name="litter">The litter entity to add.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task AddAsync(Litter litter);
 
-        /// <summary>
-        /// Asynchronously saves all changes made in the repository.
-        /// </summary>
-        /// <returns>A task that represents the asynchronous operation.</returns>
-        Task SaveChangesAsync();
+    /// <summary>
+    /// Saves changes made to the repository asynchronously.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task SaveChangesAsync();
 
-        /// <summary>
-        /// Asynchronously retrieves a list of litters based on the provided filter criteria.
-        /// </summary>
-        /// <param name="filter">The filter criteria to apply.</param>
-        /// <returns>
-        /// A task that represents the asynchronous operation.
-        /// The task result contains a list of <see cref="Litter"/> objects that match the filter.
-        /// </returns>
-        Task<List<Litter>> GetFilteredAsync(LitterFilterDto filter);
-    }
+    /// <summary>
+    /// Retrieves a filtered list of litter records asynchronously based on the specified filter criteria.
+    /// </summary>
+    /// <param name="filter">The filter criteria for retrieving litter records.</param>
+    /// <returns>A task representing the asynchronous operation, containing a list of filtered litter records.</returns>
+    Task<List<Litter>> GetFilteredAsync(LitterFilterDto filter);
+
+    /// <summary>
+    /// Retrieves the latest litter records asynchronously, with an optional limit on the number of records.
+    /// </summary>
+    /// <param name="amoutOfRecords">The optional number of records to retrieve. If null, retrieves all available records.</param>
+    /// <returns>A task representing the asynchronous operation, containing a list of the latest litter records.</returns>
+    Task<List<Litter>> GetLatestAsync(int? amoutOfRecords = null);
+
+    /// <summary>
+    /// Retrieves the amount of litter per location asynchronously.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation, containing the amount of litter per location.</returns>
+    Task<LitterTypeAmount?> GetAmountPerLocationAsync();
 }
