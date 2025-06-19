@@ -19,4 +19,4 @@ COPY --from=build /app/out ./
 EXPOSE 80
 
 # Set the entrypoint
-ENTRYPOINT ["dotnet", "blazor-ui.dll"]
+ENTRYPOINT ["dotnet", "Blazor.dll"]
