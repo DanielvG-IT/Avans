@@ -5,7 +5,7 @@
 @using Blazor.Interfaces
 @inject IBackendService _backendService
 
-<div class="page-container">
+@* <div class="page-container">
     <ApexChart TItem="totalLitter" Title="Totaal gedetecteerd afval">
 
     <ApexPointSeries TItem="totalLitter"
@@ -15,13 +15,13 @@
                 XValue="@(e => e.Country)"
                 YAggregate="@(e => e.Sum(e => e.GrossValue))"/>
     </ApexChart>
-</div>
+</div> *@
 
 @code {
-    private List<Litter> litterPerCamera = new();
+    @* private List<Litter> litterPerCamera = new();
 
     protected override async Task OnInitializedAsync()
     {
         litterPerCamera = await _backendService.GetLittersAsync();
-    }
+    } *@
 }
