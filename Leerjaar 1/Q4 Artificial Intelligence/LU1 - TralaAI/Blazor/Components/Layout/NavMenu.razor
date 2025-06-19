@@ -6,35 +6,55 @@
 
 <input type="checkbox" title="Navigation menu" class="navbar-toggler" />
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+<aside class="nav-menu shadow-sm d-flex flex-column p-0"
+    style="width: 230px; min-height: 100vh; position: fixed; top: 56px; left: 0;">
+    <nav class="nav flex-column py-3">
+        <div class="nav-item px-3 mb-2">
+            <NavLink class="nav-link d-flex align-items-center rounded" href="" Match="NavLinkMatch.All"
+                activeClass="active">
+                <span class="bi bi-house-door-fill me-2" aria-hidden="true"></span>
+                <span>Home</span>
             </NavLink>
         </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="ai-predictions">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Ai-predictions
+        <div class="nav-item px-3 mb-2">
+            <NavLink class="nav-link d-flex align-items-center rounded" href="ai-predictions" activeClass="active">
+                <span class="bi bi-list-nested me-2" aria-hidden="true"></span>
+                <span>AI Predictions</span>
             </NavLink>
         </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="heatmap">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Heatmap
+        <div class="nav-item px-3 mb-2">
+            <NavLink class="nav-link d-flex align-items-center rounded" href="heatmap" activeClass="active">
+                <span class="bi bi-graph-up me-2" aria-hidden="true"></span>
+                <span>Heatmap</span>
             </NavLink>
         </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="history">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> History
+        <div class="nav-item px-3 mb-2">
+            <NavLink class="nav-link d-flex align-items-center rounded" href="history" activeClass="active">
+                <span class="bi bi-clock-history me-2" aria-hidden="true"></span>
+                <span>History</span>
             </NavLink>
         </div>
-
-
-
-
     </nav>
-</div>
+</aside>
 
+<style>
+    .nav-menu {
+        transition: box-shadow 0.2s;
+        z-index: 1040;
+    }
+
+    .nav-link {
+        font-weight: 500;
+        padding: 0.75rem 1rem;
+        transition: background 0.15s, color 0.15s;
+    }
+
+    .nav-link.active,
+    .nav-link:hover {
+        /* No background or color */
+    }
+
+    .nav-link .bi {
+        font-size: 1.2rem;
+    }
+</style>
