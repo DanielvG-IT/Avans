@@ -88,5 +88,39 @@ namespace Blazor.Services
 
       return queryParams.Count > 0 ? string.Join("&", queryParams) : string.Empty;
     }
+
+    public async Task<List<Litter>?> GetLatestLittersAsync(int? amount)
+    {
+      var queryString = amount.HasValue ? $"amount={amount.Value}" : string.Empty;
+      var response = await _httpClient.GetAsync($"/api/v1/litters/latest?{queryString}");
+
+      if (response.StatusCode == HttpStatusCode.NotFound)
+        return null;
+
+      response.EnsureSuccessStatusCode();
+      return await response.Content.ReadFromJsonAsync<List<Litter>>();
+    }
+
+    public async Task<LitterTypeAmount?> GetAmountPerLocationAsync()
+    {
+      var response = await _httpClient.GetAsync("/api/v1/litters/amount-per-location");
+
+      if (response.StatusCode == HttpStatusCode.NotFound)
+        return null;
+
+      response.EnsureSuccessStatusCode();
+      return await response.Content.ReadFromJsonAsync<LitterTypeAmount>();
+    }
+
+    public async Task<LitterHistoryResponse?> GetLitterHistoryAsync()
+    {
+      var response = await _httpClient.GetAsync("/api/v1/litters/history");
+
+      if (response.StatusCode == HttpStatusCode.InternalServerError)
+        throw new Exception("An unexpected error occurred while retrieving litter history.");
+
+      response.EnsureSuccessStatusCode();
+      return await response.Content.ReadFromJsonAsync<LitterHistoryResponse>();
+    }
   }
 }
