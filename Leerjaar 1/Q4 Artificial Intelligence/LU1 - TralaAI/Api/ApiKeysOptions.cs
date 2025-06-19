@@ -14,4 +14,7 @@ public class ApiKeysOptions
 
   [Required(AllowEmptyStrings = false)]
   public string WeatherApiKey { get; set; } = string.Empty;
+
+  [Required(AllowEmptyStrings = false)]
+  public string FastApiKey { get; set; } = string.Empty;
 }

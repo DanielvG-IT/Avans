@@ -37,6 +37,8 @@ builder.Services.AddScoped<IApiKeyService, ApiKeyService>();
 builder.Services.AddHttpClient<IFastApiPredictionService, FastApiPredictionService>((serviceProvider, client) =>
 {
     var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettingsOptions>>().Value;
+    var apiKeys = serviceProvider.GetRequiredService<IOptions<ApiKeysOptions>>().Value;
+    client.DefaultRequestHeaders.Add("X-API-Key", apiKeys.FastApiKey);
     client.BaseAddress = new Uri(apiSettings.FastApiBaseAddress);
 });
 
