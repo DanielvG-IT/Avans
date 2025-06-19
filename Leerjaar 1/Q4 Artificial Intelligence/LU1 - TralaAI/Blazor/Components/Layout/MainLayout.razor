@@ -1,4 +1,7 @@
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
+
+@inject NavigationManager Navigation
+
 
 <div class="page">
     <div class="sidebar">
@@ -11,7 +14,9 @@
                 <strong>Laatste update AI-model:</strong> @lastUpdated?.ToString()
             </div>
             <div class="status-right">
-                <button class="refresh-button" @onclick="SimuleerStatusUpdate">Settings</button>
+                <NavLink class="nav-link" href="settings">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Settings⚙️
+                </NavLink>
             </div>
         </div>
 
@@ -50,3 +55,12 @@
         await InvokeAsync(StateHasChanged);
     }
 }
+
+
+@code {
+    private void GoToSettings()
+    {
+        Navigation.NavigateTo("/settings");
+    }
+}
+
