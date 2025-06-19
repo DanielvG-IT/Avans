@@ -33,6 +33,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<LitterDbContext>(options => options.UseSqlServer(builder.Configuration.GetSection("Database")["ConnectionString"]));
 builder.Services.AddScoped<ILitterRepository, LitterRepository>();
 builder.Services.AddScoped<IApiKeyService, ApiKeyService>();
+builder.Services.AddScoped<IDTOService, DTOService>();
 
 builder.Services.AddHttpClient<IFastApiPredictionService, FastApiPredictionService>((serviceProvider, client) =>
 {
