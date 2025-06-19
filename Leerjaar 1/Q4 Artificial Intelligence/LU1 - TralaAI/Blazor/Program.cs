@@ -8,8 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 // 🔐 Credential management
 if (builder.Environment.IsDevelopment())
     builder.Configuration.AddUserSecrets<Program>();
+
 else
-    builder.Configuration.AddAzureKeyVault(new Uri(Environment.GetEnvironmentVariable("KEY_VAULT_URI") ?? throw new InvalidOperationException("KEY_VAULT_URI is not set.")), new DefaultAzureCredential());
+    builder.Configuration.AddEnvironmentVariables();
 
 // Add services to the container.
 builder.Services.AddHttpClient();
@@ -20,7 +21,7 @@ builder.Services.AddHttpClient<IBackendService, BackendService>((serviceProvider
     var configuration = serviceProvider.GetRequiredService<IConfiguration>();
     var backendApiBaseAddress = configuration["ApiSettings:BackendApiBaseAddress"] ?? throw new InvalidOperationException("ApiSettings:BackendApiBaseAddress configuration is missing.");
     client.BaseAddress = new Uri(backendApiBaseAddress);
-    client.DefaultRequestHeaders.Add("X-API-KEY", configuration["ApiKeys:BackendApiKey"]);
+    client.DefaultRequestHeaders.Add("X-API-KEY", configuration["ApiKeys:BackendApiKey"] ?? throw new InvalidOperationException("ApiKeys:BackendApiKey configuration is missing."));
 });
 
 var app = builder.Build();
