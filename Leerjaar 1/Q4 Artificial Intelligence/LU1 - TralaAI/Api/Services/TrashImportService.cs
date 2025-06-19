@@ -8,12 +8,34 @@ using System.Linq;
 
 namespace Api.Services
 {
-    public class TrashImportService(LitterDbContext dbContext, IHolidayApiService holidayApiService, IDTOService dTOService, HttpClient httpClient) : ITrashImportService
+    public class TrashImportService : ITrashImportService
     {
-        private readonly LitterDbContext _dbContext = dbContext;
-        private readonly IHolidayApiService _holidayApiService = holidayApiService;
-        private readonly IDTOService _dTOService = dTOService;
-        private readonly HttpClient _httpClient = httpClient;
+        private readonly LitterDbContext _dbContext;
+        private readonly IHolidayApiService _holidayApiService;
+        private readonly IDTOService _dTOService;
+        private readonly HttpClient _httpClient;
+
+        public TrashImportService(
+            LitterDbContext dbContext,
+            IHolidayApiService holidayApiService,
+            IDTOService dTOService,
+            HttpClient httpClient,
+            IConfiguration configuration)
+        {
+            // Check for required configuration keys
+            var apiKeysSection = configuration.GetSection("apiKeys");
+            var apiSettingsSection = configuration.GetSection("apiSettings");
+
+            if (!apiKeysSection.Exists())
+                throw new InvalidOperationException("Missing required configuration section: apiKeys");
+            if (!apiSettingsSection.Exists())
+                throw new InvalidOperationException("Missing required configuration section: apiSettings");
+
+            _dbContext = dbContext;
+            _holidayApiService = holidayApiService;
+            _dTOService = dTOService;
+            _httpClient = httpClient;
+        }
 
         public async Task<bool> ImportAsync(CancellationToken ct)
         {
