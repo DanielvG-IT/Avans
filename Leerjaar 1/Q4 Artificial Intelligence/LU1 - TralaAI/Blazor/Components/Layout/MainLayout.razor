@@ -1,4 +1,4 @@
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 
 @inject NavigationManager Navigation
 
@@ -10,15 +10,14 @@
 
     <main style="overflow-y: auto; height: 100vh;">
         <div class="top-row px-4 status-bar">
-          <div class="status-left">
+            <div class="status-left">
                 <strong>Laatste update AI-model:</strong> @lastUpdated?.ToString()
             </div>
-    <div class="status-right">
-            <NavLink class="nav-link" href="settings">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Settings⚙️
-            </NavLink>
-        </div>
-    </div>
+            <div class="status-right">
+                <NavLink class="nav-link" href="settings">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Settings⚙️
+                </NavLink>
+            </div>
         </div>
 
         <article class="content px-4" style="background-color: #f0f2f5;">
