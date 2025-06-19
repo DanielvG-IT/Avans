@@ -29,6 +29,7 @@
         <!-- Confirm button -->
         <button class="btn btn-primary" @onclick="ApplyFilters">Toepassen</button>
     </div>
+    <p><b>Bovenstaande formulieren geven je de mogelijkheid een voorspelling op te vragen van een AI-model op een gekozen camera locatie.</b></p>
 
 
 
@@ -67,11 +68,27 @@
             </ApexChart>
         </div>
         <div class="right-panel">
-            <h3>Heatmap</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em">
+                <h3 style="margin: 0;">Heatmap</h3>
+                <button class="btn btn-primary" @onclick="DrawHeatmap">Draw Heatmap</button>
+            </div>
+            <p><b>Concentratie van de voorspelde afval komende 7 dagen in Breda.</b></p>
             <div id="heatmapContainer" class="heatmap-box">
                 <img src="images/Breda_Central_Map.jpg" alt="Map of Breda" class="heatmap-background" />
             </div>
-            <button class="btn btn-primary mt-3" @onclick="DrawHeatmap">Draw Heatmap</button>
+            <div class="CameraTable">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Camera</th>
+                            <th>Voorspelde hoeveelheid</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
