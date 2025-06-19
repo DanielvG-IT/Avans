@@ -5,22 +5,16 @@
         <NavMenu />
     </div>
 
-    <main>
+    <main style="overflow-y: auto; height: 100vh;">
         <div class="top-row px-4 status-bar">
-    <div class="status-left">
-        <strong>Laatste update:</strong> @lastUpdated?.ToString()
-    </div>
+            <div class="status-left">
+                <strong>Laatste update:</strong> @lastUpdated?.ToString()
+            </div>
 
-    @* <div class="status-center">
-        <span class="api-status" style="color:@(pythonStatus ? "limegreen" : "red")">Python API</span>
-        <span class="api-status" style="color:@(dotnetStatus ? "limegreen" : "red")">.NET API</span>
-        <span class="api-status" style="color:@(holidayStatus ? "limegreen" : "red")">Holiday API</span>
-    </div> *@
-
-    <div class="status-right">
-        <button class="refresh-button" @onclick="SimuleerStatusUpdate">Settings</button>
-    </div>
-</div>
+            <div class="status-right">
+                <button class="refresh-button" @onclick="SimuleerStatusUpdate">Settings</button>
+            </div>
+        </div>
 
         <article class="content px-4">
             @Body
