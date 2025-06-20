@@ -14,6 +14,6 @@ namespace Api.Interfaces
         /// A task that represents the asynchronous operation.
         /// The task result contains <c>true</c> if the specified date is a public holiday in the given country; otherwise, <c>false</c>.
         /// </returns>
-        Task<bool> IsHolidayAsync(DateTime date, string countryCode);
+        Task<bool> IsHolidayAsync(DateTime date, string countryCode, string year);
     }
 }

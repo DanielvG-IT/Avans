@@ -44,7 +44,7 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
 
             var holidayDictionary = new Dictionary<DateOnly, bool>();
             foreach (var date in uniqueDates)
-                holidayDictionary[DateOnly.FromDateTime(date)] = await _holidayApiService.IsHolidayAsync(date, "NL");
+                holidayDictionary[DateOnly.FromDateTime(date)] = await _holidayApiService.IsHolidayAsync(date, "NL", date.Year.ToString());
 
             var weatherDictionary = new Dictionary<DateOnly, FastApiWeatherRequirements>();
             foreach (var date in uniqueDates)

@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Caching.Memory;
 using System.Text.Json;
 using Api.Interfaces;
 using System.Net;
@@ -6,29 +6,47 @@ using Api.Models;
 
 namespace Api.Services
 {
-    public class HolidayApiService(HttpClient httpClient, IOptions<ApiKeysOptions> apiKeysOptions) : IHolidayApiService
+    public class HolidayApiService(HttpClient httpClient, IMemoryCache cache) : IHolidayApiService
     {
         private static readonly JsonSerializerOptions _jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
         private readonly HttpClient _httpClient = httpClient;
-        private readonly string _apiKey = apiKeysOptions.Value.HolidayApiKey;
+        private readonly IMemoryCache _cache = cache;
+        private static readonly TimeSpan CacheDuration = TimeSpan.FromHours(12);
 
-        public async Task<bool> IsHolidayAsync(DateTime date, string countryCode)
+        public async Task<bool> IsHolidayAsync(DateTime date, string countryCode, string year)
         {
             if (string.IsNullOrWhiteSpace(countryCode))
                 throw new ArgumentException("Country code cannot be null or empty.", nameof(countryCode));
 
-            var queryparams = $"?country={countryCode}&year={date.Year}&month={date.Month}&day={date.Day}&key={_apiKey}";
+            string cacheKey = $"{countryCode}:{year}";
+            HolidayApiResponse? holidayResponse = _cache.Get<HolidayApiResponse>(cacheKey);
 
-            var response = await _httpClient.GetAsync(queryparams);
-            if (response.StatusCode == HttpStatusCode.NotFound)
-                return false; // No holidays found for the given date and country code
+            if (holidayResponse == null)
+            {
+                try
+                {
+                    var response = await _httpClient.GetAsync($"/{year}/{countryCode}");
+                    if (response.StatusCode == HttpStatusCode.NotFound)
+                        return false;
 
-            response.EnsureSuccessStatusCode();
+                    response.EnsureSuccessStatusCode();
 
-            var jsonResponse = await response.Content.ReadAsStringAsync();
-            var holidayResponse = JsonSerializer.Deserialize<HolidayResponse>(jsonResponse, _jsonSerializerOptions);
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    holidayResponse = JsonSerializer.Deserialize<HolidayApiResponse>(jsonResponse, _jsonSerializerOptions);
 
-            return holidayResponse?.Holidays is not null && holidayResponse.Holidays.Length > 0;
+                    if (holidayResponse != null)
+                    {
+                        _cache.Set(cacheKey, holidayResponse, CacheDuration);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Optionally log the exception here
+                    throw new ApplicationException("An error occurred while checking for holidays.", ex);
+                }
+            }
+
+            return holidayResponse?.Holidays.Any(h => DateTime.Parse(h.Date).Date == date.Date && h.Public) ?? false;
         }
     }
 }
