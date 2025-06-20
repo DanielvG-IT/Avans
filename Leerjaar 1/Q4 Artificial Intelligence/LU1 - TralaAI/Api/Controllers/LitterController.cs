@@ -28,12 +28,12 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
     }
 
     [HttpPost("predict")]
-    public async Task<IActionResult> Predict([FromQuery] int amountOfDays, [FromQuery] string location)
+    public async Task<IActionResult> Predict([FromQuery] int amountOfDays, [FromQuery] int location)
     {
         if (amountOfDays <= 0)
             return BadRequest("Amount of days must be greater than 0.");
-        if (string.IsNullOrWhiteSpace(location))
-            return BadRequest("Location cannot be empty.");
+        if (location < 0 || location > 5)
+            return BadRequest("Location must be a positive integer.");
 
         var modelInputs = new List<Input>();
 
@@ -74,7 +74,7 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
             });
         }
 
-        var predictionRequest = new PredictionRequest { ModelIndex = location, Inputs = modelInputs };
+        var predictionRequest = new PredictionRequest { ModelIndex = $"{location}", Inputs = modelInputs };
         var predictionResult = await _fastApiPredictionService.MakeLitterAmountPredictionAsync(predictionRequest);
         if (predictionResult is null)
             return BadRequest("Prediction failed. Please try again later.");
