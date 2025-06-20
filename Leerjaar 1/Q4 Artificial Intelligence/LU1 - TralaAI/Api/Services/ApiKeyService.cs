@@ -9,11 +9,10 @@ namespace Api.Services
 
         public bool IsValidApiKey(Guid apiKey)
         {
-            var recievedApiKey = apiKey.ToString();
-            if (string.IsNullOrEmpty(recievedApiKey))
+            if (apiKey == Guid.Empty)
                 return false;
 
-            var apiKeyEntity = _context.ApiKeys.FirstOrDefault(x => x.Key.ToString() == recievedApiKey);
+            var apiKeyEntity = _context.ApiKeys.FirstOrDefault(x => x.Key == apiKey);
             if (apiKeyEntity is null || !apiKeyEntity.IsActive || apiKeyEntity.Type != "Backend")
                 return false;
 
