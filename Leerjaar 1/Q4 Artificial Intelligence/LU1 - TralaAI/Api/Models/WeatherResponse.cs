@@ -1,6 +1,58 @@
 namespace Api.Models;
 
-public class ForecastResponse
+public class WeatherResponse
+{
+    public Location Location { get; set; } = new();
+    public CurrentWeather Current { get; set; } = new();
+    public Forecast Forecast { get; set; } = new();
+}
+
+public class Location
+{
+    public string Name { get; set; } = string.Empty;
+    public string Region { get; set; } = string.Empty;
+    public string Country { get; set; } = string.Empty;
+    public double Lat { get; set; }
+    public double Lon { get; set; }
+    public string TzId { get; set; } = string.Empty;
+    public long LocaltimeEpoch { get; set; }
+    public string Localtime { get; set; } = string.Empty;
+}
+
+public class CurrentWeather
+{
+    public long LastUpdatedEpoch { get; set; }
+    public string LastUpdated { get; set; } = string.Empty;
+    public decimal TempC { get; set; }
+    public decimal TempF { get; set; }
+    public int IsDay { get; set; }
+    public Condition Condition { get; set; } = new();
+    public decimal WindMph { get; set; }
+    public decimal WindKph { get; set; }
+    public int WindDegree { get; set; }
+    public string WindDir { get; set; } = string.Empty;
+    public decimal PressureMb { get; set; }
+    public decimal PressureIn { get; set; }
+    public decimal PrecipMm { get; set; }
+    public decimal PrecipIn { get; set; }
+    public int Humidity { get; set; }
+    public int Cloud { get; set; }
+    public decimal FeelslikeC { get; set; }
+    public decimal FeelslikeF { get; set; }
+    public decimal WindchillC { get; set; }
+    public decimal WindchillF { get; set; }
+    public decimal HeatindexC { get; set; }
+    public decimal HeatindexF { get; set; }
+    public decimal DewpointC { get; set; }
+    public decimal DewpointF { get; set; }
+    public decimal VisKm { get; set; }
+    public decimal VisMiles { get; set; }
+    public decimal Uv { get; set; }
+    public decimal GustMph { get; set; }
+    public decimal GustKph { get; set; }
+}
+
+public class Forecast
 {
     public List<ForecastDay> Forecastday { get; set; } = [];
 }
@@ -57,6 +109,7 @@ public class Hour
     public string Time { get; set; } = string.Empty;
     public decimal TempC { get; set; }
     public decimal TempF { get; set; }
+    public int IsDay { get; set; }
     public Condition Condition { get; set; } = new();
     public decimal WindMph { get; set; }
     public decimal WindKph { get; set; }
@@ -79,11 +132,10 @@ public class Hour
     public decimal DewpointF { get; set; }
     public int WillItRain { get; set; }
     public int WillItSnow { get; set; }
-    public int IsDay { get; set; }
-    public decimal VisKm { get; set; }
-    public decimal VisMiles { get; set; }
     public int ChanceOfRain { get; set; }
     public int ChanceOfSnow { get; set; }
+    public decimal VisKm { get; set; }
+    public decimal VisMiles { get; set; }
     public decimal GustMph { get; set; }
     public decimal GustKph { get; set; }
     public decimal Uv { get; set; }
