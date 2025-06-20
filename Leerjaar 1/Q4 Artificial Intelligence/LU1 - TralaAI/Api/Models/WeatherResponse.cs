@@ -1,118 +1,105 @@
 namespace Api.Models;
 
-public class WeatherResponse
+public class ForecastResponse
 {
-    public required Location Location { get; set; }
-    public required CurrentWeather Current { get; set; }
-    public required Forecast Forecast { get; set; }
-}
-
-public class Location
-{
-    public required string Name { get; set; }
-    public required string Region { get; set; }
-    public required string Country { get; set; }
-    public double Lat { get; set; }
-    public double Lon { get; set; }
-    public required string TimeZoneId { get; set; }
-    public required string LocalTime { get; set; }
-}
-
-public class CurrentWeather
-{
-    public required string LastUpdated { get; set; }
-    public double TempC { get; set; }
-    public double TempF { get; set; }
-    public bool IsDay { get; set; }
-    public required WeatherCondition Condition { get; set; }
-    public double WindMph { get; set; }
-    public double WindKph { get; set; }
-    public int WindDegree { get; set; }
-    public required string WindDir { get; set; }
-    public double PressureMb { get; set; }
-    public double PressureIn { get; set; }
-    public double PrecipMm { get; set; }
-    public double PrecipIn { get; set; }
-    public int Humidity { get; set; }
-    public int Cloud { get; set; }
-    public double FeelsLikeC { get; set; }
-    public double FeelsLikeF { get; set; }
-    public double VisibilityKm { get; set; }
-    public double VisibilityMiles { get; set; }
-    public double UV { get; set; }
-    public double GustMph { get; set; }
-    public double GustKph { get; set; }
-}
-
-public class Forecast
-{
-    public required List<ForecastDay> ForecastDays { get; set; }
+    public List<ForecastDay> Forecastday { get; set; } = [];
 }
 
 public class ForecastDay
 {
-    public required string Date { get; set; }
-    public required DayWeather Day { get; set; }
-    public required Astro Astro { get; set; }
-    public required List<HourlyWeather> Hour { get; set; }
+    public string Date { get; set; } = string.Empty;
+    public long DateEpoch { get; set; }
+    public Day Day { get; set; } = new();
+    public Astro Astro { get; set; } = new();
+    public List<Hour> Hour { get; set; } = [];
+    public AirQuality AirQuality { get; set; } = new();
 }
 
-public class DayWeather
+public class Day
 {
-    public double MaxTempC { get; set; }
-    public double MaxTempF { get; set; }
-    public double MinTempC { get; set; }
-    public double MinTempF { get; set; }
-    public double AvgTempC { get; set; }
-    public double AvgTempF { get; set; }
-    public double MaxWindMph { get; set; }
-    public double MaxWindKph { get; set; }
-    public double TotalPrecipMm { get; set; }
-    public double TotalPrecipIn { get; set; }
-    public double AvgVisibilityKm { get; set; }
-    public double AvgVisibilityMiles { get; set; }
-    public int AvgHumidity { get; set; }
-    public required WeatherCondition Condition { get; set; }
-    public double UV { get; set; }
+    public decimal MaxtempC { get; set; }
+    public decimal MaxtempF { get; set; }
+    public decimal MintempC { get; set; }
+    public decimal MintempF { get; set; }
+    public decimal AvgtempC { get; set; }
+    public decimal AvgtempF { get; set; }
+    public decimal MaxwindMph { get; set; }
+    public decimal MaxwindKph { get; set; }
+    public decimal TotalprecipMm { get; set; }
+    public decimal TotalprecipIn { get; set; }
+    public decimal TotalsnowCm { get; set; }
+    public decimal AvgvisKm { get; set; }
+    public decimal AvgvisMiles { get; set; }
+    public int Avghumidity { get; set; }
+    public Condition Condition { get; set; } = new();
+    public decimal Uv { get; set; }
+    public int DailyWillItRain { get; set; }
+    public int DailyWillItSnow { get; set; }
+    public int DailyChanceOfRain { get; set; }
+    public int DailyChanceOfSnow { get; set; }
 }
 
 public class Astro
 {
-    public required string Sunrise { get; set; }
-    public required string Sunset { get; set; }
-    public required string Moonrise { get; set; }
-    public required string Moonset { get; set; }
-    public required string MoonPhase { get; set; }
-    public int MoonIllumination { get; set; }
+    public string Sunrise { get; set; } = string.Empty;
+    public string Sunset { get; set; } = string.Empty;
+    public string Moonrise { get; set; } = string.Empty;
+    public string Moonset { get; set; } = string.Empty;
+    public string MoonPhase { get; set; } = string.Empty;
+    public decimal MoonIllumination { get; set; }
+    public int IsMoonUp { get; set; }
+    public int IsSunUp { get; set; }
 }
 
-public class HourlyWeather
+public class Hour
 {
-    public required string Time { get; set; }
-    public double TempC { get; set; }
-    public double TempF { get; set; }
-    public bool IsDay { get; set; }
-    public required WeatherCondition Condition { get; set; }
-    public double WindMph { get; set; }
-    public double WindKph { get; set; }
+    public long TimeEpoch { get; set; }
+    public string Time { get; set; } = string.Empty;
+    public decimal TempC { get; set; }
+    public decimal TempF { get; set; }
+    public Condition Condition { get; set; } = new();
+    public decimal WindMph { get; set; }
+    public decimal WindKph { get; set; }
     public int WindDegree { get; set; }
-    public required string WindDir { get; set; }
-    public double PressureMb { get; set; }
-    public double PressureIn { get; set; }
-    public double PrecipMm { get; set; }
-    public double PrecipIn { get; set; }
+    public string WindDir { get; set; } = string.Empty;
+    public decimal PressureMb { get; set; }
+    public decimal PressureIn { get; set; }
+    public decimal PrecipMm { get; set; }
+    public decimal PrecipIn { get; set; }
+    public decimal SnowCm { get; set; }
     public int Humidity { get; set; }
     public int Cloud { get; set; }
-    public double FeelsLikeC { get; set; }
-    public double FeelsLikeF { get; set; }
-    public double VisibilityKm { get; set; }
-    public double VisibilityMiles { get; set; }
-    public double UV { get; set; }
+    public decimal FeelslikeC { get; set; }
+    public decimal FeelslikeF { get; set; }
+    public decimal WindchillC { get; set; }
+    public decimal WindchillF { get; set; }
+    public decimal HeatindexC { get; set; }
+    public decimal HeatindexF { get; set; }
+    public decimal DewpointC { get; set; }
+    public decimal DewpointF { get; set; }
+    public int WillItRain { get; set; }
+    public int WillItSnow { get; set; }
+    public int IsDay { get; set; }
+    public decimal VisKm { get; set; }
+    public decimal VisMiles { get; set; }
+    public int ChanceOfRain { get; set; }
+    public int ChanceOfSnow { get; set; }
+    public decimal GustMph { get; set; }
+    public decimal GustKph { get; set; }
+    public decimal Uv { get; set; }
+    public decimal ShortRad { get; set; }
+    public decimal DiffRad { get; set; }
+    public AirQuality AirQuality { get; set; } = new();
 }
 
-public class WeatherCondition
+public class Condition
 {
-    public required string Text { get; set; }
-    public string? Icon { get; set; }
+    public string Text { get; set; } = string.Empty;
+    public string Icon { get; set; } = string.Empty;
     public int Code { get; set; }
+}
+
+public class AirQuality
+{
+    // TODO May define based on AQI schema.
 }

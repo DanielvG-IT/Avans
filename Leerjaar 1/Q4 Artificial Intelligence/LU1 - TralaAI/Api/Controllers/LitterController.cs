@@ -33,60 +33,44 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
         if (amountOfDays <= 0)
             return BadRequest("Amount of days must be greater than 0.");
         if (location < 0 || location > 5)
-            return BadRequest("Location must be a positive integer.");
+            return BadRequest("Location must be between 0 and 5.");
 
-        var modelInputs = new List<Input>();
+        var today = DateTime.UtcNow.Date;
+        var dates = Enumerable.Range(0, amountOfDays).Select(i => today.AddDays(i)).ToList();
 
-        for (var i = 0; i < amountOfDays; i++)
+        // Fetch holidays in parallel for all dates
+        var holidayTasks = dates.Select(date => _holidayApiService.IsHolidayAsync(date, "NL", date.Year.ToString())).ToArray();
+        var holidays = await Task.WhenAll(holidayTasks);
+
+        // Optionally, fetch weather data in parallel for all dates
+        // For now, use placeholders as before
+        var modelInputs = dates.Select((date, idx) =>
         {
-            var uniqueDates = modelInputs.Select(input => DateTime.UtcNow.AddDays(input.DayOfWeek).Date).Distinct().ToList();
-            var currentDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(i).Date);
-
-            var holidayDictionary = new Dictionary<DateOnly, bool>();
-            foreach (var date in uniqueDates)
-                holidayDictionary[DateOnly.FromDateTime(date)] = await _holidayApiService.IsHolidayAsync(date, "NL", date.Year.ToString());
-
-            var weatherDictionary = new Dictionary<DateOnly, FastApiWeatherRequirements>();
-            foreach (var date in uniqueDates)
-            {
-                var dateWeatherData = await _weatherService.GetWeatherAsync(DateOnly.FromDateTime(date));
-                weatherDictionary[DateOnly.FromDateTime(date)] = dateWeatherData;
-            }
-
-            var dayOfWeek = (int)DateTime.UtcNow.AddDays(i).DayOfWeek;
-            var month = DateTime.UtcNow.AddDays(i).Month;
-            var holiday = holidayDictionary.TryGetValue(currentDate, out bool value) && value;
-            int weather = 0;
-            int temperatureCelcius = 20;
-            if (weatherDictionary.TryGetValue(currentDate, out FastApiWeatherRequirements? weatherData) && weatherData != null)
-            {
-                if (!string.IsNullOrEmpty(weatherData.Condition) && Enum.TryParse<WeatherCategory>(weatherData.Condition, true, out var parsedWeather))
-                {
-                    weather = (int)parsedWeather;
-                }
-                if (weatherData.Temperature < -50 || weatherData.Temperature > 50)
-                {
-                    return BadRequest("Weather data is missing or incomplete for the specified date.");
-                }
-                temperatureCelcius = (int)weatherData.Temperature;
-            }
-            temperatureCelcius = weatherData?.Temperature is not null ? (int)weatherData.Temperature : 20;
+            var dayOfWeek = (int)date.DayOfWeek;
+            var month = date.Month;
+            var holiday = holidays[idx];
             var isWeekend = dayOfWeek == 0 || dayOfWeek == 6; // Sunday or Saturday
 
-            modelInputs.Add(new Input
+            return new Input
             {
                 DayOfWeek = dayOfWeek,
                 Month = month,
                 Holiday = holiday,
-                Weather = weather,
-                TemperatureCelcius = temperatureCelcius,
+                Weather = 1, // Placeholder for weather condition index
+                TemperatureCelcius = 20, // Placeholder temperature
                 IsWeekend = isWeekend,
-                Label = $"{DateTime.UtcNow.AddDays(i):yyyy-MM-dd}"
-            });
-        }
+                Label = date.ToString("yyyy-MM-dd")
+            };
+        }).ToList();
 
-        var predictionRequest = new PredictionRequest { ModelIndex = $"{location}", Inputs = modelInputs };
+        var predictionRequest = new PredictionRequest
+        {
+            ModelIndex = location.ToString(),
+            Inputs = modelInputs
+        };
+
         var predictionResult = await _fastApiPredictionService.MakeLitterAmountPredictionAsync(predictionRequest);
+
         if (predictionResult is null)
             return BadRequest("Prediction failed. Please try again later.");
         if (predictionResult.Predictions is null || predictionResult.Predictions.Count == 0)
