@@ -44,7 +44,7 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
         var holidays = await Task.WhenAll(holidayTasks);
 
         var weatherForecasts = await _weatherService.GetWeatherAsync(amountOfDays);
-        if (weatherForecasts is null || weatherForecasts.Count != amountOfDays || weatherForecasts.Any(w => w is null))
+        if (weatherForecasts is null || weatherForecasts.Count != amountOfDays)
             return BadRequest("Invalid weather data received. Please try again later.");
 
 
@@ -90,9 +90,11 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
         var predictionResult = await _fastApiPredictionService.MakeLitterAmountPredictionAsync(predictionRequest);
 
         if (predictionResult is null)
-            return BadRequest("Invalid weather data received. Please try again later.");
+            return BadRequest("Prediction service returned null. Please try again later.");
         if (predictionResult.Predictions is null || predictionResult.Predictions.Count == 0)
             return NotFound("No predictions found for the given inputs.");
+        if (predictionResult.Predictions.Any(p => p is null))
+            return BadRequest("Invalid prediction data received. Please try again later.");
         if (predictionResult.Predictions.Count != amountOfDays)
             return BadRequest($"Expected {amountOfDays} predictions, but got {predictionResult.Predictions.Count}.");
 
