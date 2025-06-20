@@ -17,7 +17,7 @@ namespace Api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.5")
+                .HasAnnotation("ProductVersion", "9.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -42,9 +42,13 @@ namespace Api.Migrations
                     b.Property<Guid>("Key")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("ApiKey");
+                    b.ToTable("ApiKeys");
 
                     b.HasData(
                         new
@@ -53,7 +57,8 @@ namespace Api.Migrations
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             ExpiresAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            Key = new Guid("b7e2c8c7-3f9a-4e2b-8e2d-1a2b3c4d5e6f")
+                            Key = new Guid("b7e2c8c7-3f9a-4e2b-8e2d-1a2b3c4d5e6f"),
+                            Type = "Backend"
                         });
                 });
 

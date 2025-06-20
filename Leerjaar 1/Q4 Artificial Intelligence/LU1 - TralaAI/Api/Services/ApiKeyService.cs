@@ -13,8 +13,8 @@ namespace Api.Services
             if (string.IsNullOrEmpty(recievedApiKey))
                 return false;
 
-            var apiKeyEntity = _context.BApiKeys.FirstOrDefault(x => x.Key.ToString() == recievedApiKey);
-            if (apiKeyEntity is null || !apiKeyEntity.IsActive)
+            var apiKeyEntity = _context.ApiKeys.FirstOrDefault(x => x.Key.ToString() == recievedApiKey);
+            if (apiKeyEntity is null || !apiKeyEntity.IsActive || apiKeyEntity.Type != "Backend")
                 return false;
 
             if (apiKeyEntity.ExpiresAt.HasValue && apiKeyEntity.ExpiresAt <= DateTime.UtcNow)
