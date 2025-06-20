@@ -31,18 +31,18 @@ namespace Api.Services
             }
         }
 
-        public async Task<bool> RetrainModelAsync()
+        public async Task<bool> RetrainModelAsync(string cameraLocation)
         {
             try
             {
-                var response = await _httpClient.PostAsync("/retrain", null);
+                var response = await _httpClient.PostAsync($"/retrain?cameraLocation={cameraLocation}", null); // TODO May change cameraLocation to the body
                 response.EnsureSuccessStatusCode();
-                return true; // TODO Return true or handle the success case as needed
+                return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error making POST request to {Endpoint}", "/retrain");
-                return false; // TODO Return false or handle the error as needed
+                return false;
             }
         }
 

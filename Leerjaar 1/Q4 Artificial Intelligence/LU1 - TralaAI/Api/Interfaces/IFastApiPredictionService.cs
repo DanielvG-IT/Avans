@@ -28,7 +28,7 @@ namespace Api.Interfaces
         /// A task that represents the asynchronous operation. The task result is a boolean indicating
         /// whether the retraining process was initiated successfully (true) or not (false).
         /// </returns>
-        Task<bool> RetrainModelAsync();
+        Task<bool> RetrainModelAsync(string cameraLocation);
 
         /// <summary>
         /// Checks the status of the Fast API service.

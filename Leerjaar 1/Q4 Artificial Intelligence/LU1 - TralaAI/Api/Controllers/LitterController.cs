@@ -87,9 +87,9 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
     }
 
     [HttpPost("retrain")]
-    public async Task<IActionResult> Retrain()
+    public async Task<IActionResult> Retrain([FromQuery] string cameraLocation)
     {
-        var retrainResult = await _fastApiPredictionService.RetrainModelAsync();
+        var retrainResult = await _fastApiPredictionService.RetrainModelAsync(cameraLocation);
         if (!retrainResult)
             return BadRequest($"Retrain failed. Please try again later.");
 
