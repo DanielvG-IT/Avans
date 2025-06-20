@@ -66,4 +66,34 @@ public class DTOService : IDTOService
 
     return WeatherCategory.Unknown;
   }
+
+  public int? GetWeatherCategoryIndex(WeatherCategory? weatherCategory)
+  {
+    if (weatherCategory is null)
+      return null;
+
+    return weatherCategory switch
+    {
+      WeatherCategory.Snowy => 1,
+      WeatherCategory.Stormy => 2,
+      WeatherCategory.Rainy => 3,
+      WeatherCategory.Misty => 4,
+      WeatherCategory.Cloudy => 5,
+      WeatherCategory.Sunny => 6,
+      _ => null,
+    };
+  }
+
+  public int? GetWeatherCategoryIndex(string? weatherCategory)
+  {
+    if (string.IsNullOrWhiteSpace(weatherCategory))
+      return null;
+
+    if (Enum.TryParse<WeatherCategory>(weatherCategory, true, out var parsedWeatherCategory))
+    {
+      return GetWeatherCategoryIndex(parsedWeatherCategory);
+    }
+
+    return null;
+  }
 }
