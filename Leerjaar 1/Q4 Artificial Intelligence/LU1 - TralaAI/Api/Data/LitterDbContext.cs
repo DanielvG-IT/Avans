@@ -1,11 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Api.Models;
 
-namespace Api.Data
+namespace Api.Data;
+
+public class LitterDbContext(DbContextOptions<LitterDbContext> options) : DbContext(options)
 {
-  public class LitterDbContext(DbContextOptions<LitterDbContext> options) : DbContext(options)
-  {
-    public DbSet<Litter> Litters { get; set; }
-    public DbSet<ApiKey> ApiKeys { get; set; }
-  }
+  public DbSet<Litter> Litters { get; set; }
+  public DbSet<ApiKey> ApiKeys { get; set; }
 }
