@@ -56,10 +56,21 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
             var dayOfWeek = (int)DateTime.UtcNow.AddDays(i).DayOfWeek;
             var month = DateTime.UtcNow.AddDays(i).Month;
             var holiday = holidayDictionary.TryGetValue(currentDate, out bool value) && value;
-            var weather = weatherDictionary.TryGetValue(currentDate, out FastApiWeatherRequirements weatherData) && weatherData?.Condition is not null
-                ? Enum.TryParse<WeatherCategory>(weatherData.Condition, true, out var parsedWeather)
-                    ? (int)parsedWeather : 0 : 0;
-            var temperatureCelcius = weatherData?.Temperature is not null ? (int)weatherData.Temperature : 20;
+            int weather = 0;
+            int temperatureCelcius = 20;
+            if (weatherDictionary.TryGetValue(currentDate, out FastApiWeatherRequirements? weatherData) && weatherData != null)
+            {
+                if (!string.IsNullOrEmpty(weatherData.Condition) && Enum.TryParse<WeatherCategory>(weatherData.Condition, true, out var parsedWeather))
+                {
+                    weather = (int)parsedWeather;
+                }
+                if (weatherData.Temperature < -50 || weatherData.Temperature > 50)
+                {
+                    return BadRequest("Weather data is missing or incomplete for the specified date.");
+                }
+                temperatureCelcius = (int)weatherData.Temperature;
+            }
+            temperatureCelcius = weatherData?.Temperature is not null ? (int)weatherData.Temperature : 20;
             var isWeekend = dayOfWeek == 0 || dayOfWeek == 6; // Sunday or Saturday
 
             modelInputs.Add(new Input
