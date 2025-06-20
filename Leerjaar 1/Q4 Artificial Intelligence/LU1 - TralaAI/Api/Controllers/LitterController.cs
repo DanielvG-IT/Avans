@@ -9,12 +9,13 @@ namespace Api.Controllers;
 [ApiController]
 [ApiKeyAuth]
 [Route("api/v1/[controller]")]
-public class LitterController(ILitterRepository litterRepository, IFastApiPredictionService fastApiPredictionService, IHolidayApiService holidayApiService, IWeatherService weatherService) : ControllerBase
+public class LitterController(ILitterRepository litterRepository, IFastApiPredictionService fastApiPredictionService, IHolidayApiService holidayApiService, IWeatherService weatherService, IDTOService dTOService) : ControllerBase
 {
     private readonly ILitterRepository _litterRepository = litterRepository;
     private readonly IFastApiPredictionService _fastApiPredictionService = fastApiPredictionService;
     private readonly IHolidayApiService _holidayApiService = holidayApiService;
     private readonly IWeatherService _weatherService = weatherService;
+    private readonly IDTOService _dTOService = dTOService;
 
     [HttpGet]
     public async Task<ActionResult<List<Litter>>> Get([FromQuery] LitterFilterDto filter)
@@ -42,37 +43,54 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
         var holidayTasks = dates.Select(date => _holidayApiService.IsHolidayAsync(date, "NL", date.Year.ToString())).ToArray();
         var holidays = await Task.WhenAll(holidayTasks);
 
-        // Optionally, fetch weather data in parallel for all dates
-        // For now, use placeholders as before
+        var weatherForecasts = await _weatherService.GetWeatherAsync(amountOfDays);
+        if (weatherForecasts is null || weatherForecasts.Count != amountOfDays || weatherForecasts.Any(w => w is null))
+            return BadRequest("Invalid weather data received. Please try again later.");
+
+
         var modelInputs = dates.Select((date, idx) =>
         {
             var dayOfWeek = (int)date.DayOfWeek;
             var month = date.Month;
             var holiday = holidays[idx];
             var isWeekend = dayOfWeek == 0 || dayOfWeek == 6; // Sunday or Saturday
+            var weather = weatherForecasts[idx];
+
+            var weatherCondition = _dTOService.GetWeatherCategoryIndex(weather.Condition);
+            if (weatherCondition is null)
+                return null;
 
             return new Input
             {
                 DayOfWeek = dayOfWeek,
                 Month = month,
                 Holiday = holiday,
-                Weather = 1, // Placeholder for weather condition index
-                TemperatureCelcius = 20, // Placeholder temperature
+                Weather = (int)weatherCondition,
+                TemperatureCelcius = (int)weather.Temperature,
                 IsWeekend = isWeekend,
                 Label = date.ToString("yyyy-MM-dd")
             };
         }).ToList();
 
+        // Check for null inputs
+        if (modelInputs is null || modelInputs.Count == 0)
+            return BadRequest("No valid weather data received. Please try again later.");
+        if (modelInputs.Any(input => input is null))
+            return BadRequest("Invalid weather data received. Please try again later.");
+        modelInputs = [.. modelInputs.Where(input => input is not null)];
+        if (modelInputs.Count != amountOfDays)
+            return BadRequest($"Expected {amountOfDays} inputs, but got {modelInputs.Count}.");
+
         var predictionRequest = new PredictionRequest
         {
             ModelIndex = location.ToString(),
-            Inputs = modelInputs
+            Inputs = [.. modelInputs.Cast<Input>()]
         };
 
         var predictionResult = await _fastApiPredictionService.MakeLitterAmountPredictionAsync(predictionRequest);
 
         if (predictionResult is null)
-            return BadRequest("Prediction failed. Please try again later.");
+            return BadRequest("Invalid weather data received. Please try again later.");
         if (predictionResult.Predictions is null || predictionResult.Predictions.Count == 0)
             return NotFound("No predictions found for the given inputs.");
         if (predictionResult.Predictions.Count != amountOfDays)
