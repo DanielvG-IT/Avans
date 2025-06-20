@@ -14,7 +14,7 @@ namespace Blazor.Services
       filter ??= new LitterFilterDto();
 
       var queryString = BuildQueryString(filter);
-      var response = await _httpClient.GetAsync($"/api/v1/litters?{queryString}");
+      var response = await _httpClient.GetAsync($"/api/v1/litters{queryString}");
 
       if (response.StatusCode == HttpStatusCode.NotFound)
         return null;
@@ -26,8 +26,8 @@ namespace Blazor.Services
 
     public async Task<List<PredictionResponse>?> PredictAsync(int amountOfDays, string location)
     {
-      var queryString = $"amountOfDays={amountOfDays}&location={Uri.EscapeDataString(location)}";
-      var response = await _httpClient.PostAsync($"/api/v1/litter/predict?{queryString}", null);
+      var queryString = $"?amountOfDays={amountOfDays}&location={Uri.EscapeDataString(location)}";
+      var response = await _httpClient.PostAsync($"/api/v1/litter/predict{queryString}", null);
 
       if (response.StatusCode == HttpStatusCode.BadRequest)
         return null;
@@ -72,23 +72,6 @@ namespace Blazor.Services
       return message;
     }
 
-    private static string BuildQueryString(LitterFilterDto filter)
-    {
-      var properties = typeof(LitterFilterDto).GetProperties();
-      var queryParams = new List<string>();
-
-      foreach (var prop in properties)
-      {
-        var value = prop.GetValue(filter);
-        if (value != null)
-        {
-          queryParams.Add($"{prop.Name}={Uri.EscapeDataString(value.ToString()!)}");
-        }
-      }
-
-      return queryParams.Count > 0 ? string.Join("&", queryParams) : string.Empty;
-    }
-
     public async Task<List<Litter>?> GetLatestLittersAsync(int? amount)
     {
       var queryString = amount.HasValue ? $"amount={amount.Value}" : string.Empty;
@@ -121,6 +104,23 @@ namespace Blazor.Services
 
       response.EnsureSuccessStatusCode();
       return await response.Content.ReadFromJsonAsync<LitterHistoryResponse>();
+    }
+
+    private static string BuildQueryString(LitterFilterDto filter)
+    {
+      var properties = typeof(LitterFilterDto).GetProperties();
+      var queryParams = new List<string>();
+
+      foreach (var prop in properties)
+      {
+        var value = prop.GetValue(filter);
+        if (value is not null)
+        {
+          queryParams.Add($"?{prop.Name}={Uri.EscapeDataString(value.ToString()!)}");
+        }
+      }
+
+      return queryParams.Count > 0 ? string.Join("&", queryParams) : string.Empty;
     }
   }
 }
