@@ -12,6 +12,20 @@ public class WeatherService(HttpClient httpClient, IOptions<ApiKeysOptions> apiK
     private readonly string _apiKey = apiKeysOptions.Value.WeatherApiKey;
     private readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
 
+    public async Task<bool> GetStatusAsync()
+    {
+        try
+        {
+            var requestUrl = $"/v1/current.json?key={_apiKey}&q=Breda&aqi=no";
+            var response = await _httpClient.GetAsync(requestUrl);
+            return response.IsSuccessStatusCode;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     public async Task<List<FastApiWeatherRequirements>> GetWeatherAsync(int amountOfDays)
     {
         if (amountOfDays < 1 || amountOfDays > 14)

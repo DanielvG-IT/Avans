@@ -14,5 +14,13 @@ namespace Api.Interfaces
         /// The task result is <c>true</c> if the import was successful; otherwise, <c>false</c>.
         /// </returns>
         Task<bool> ImportAsync(CancellationToken ct);
+
+        /// <summary>
+        /// Asynchronously gets the status of the trash import operation.
+        /// </summary>
+        /// <returns>
+        /// A task that represents the asynchronous operation. The task result is <c>true</c> if the import is in a successful state; otherwise, <c>false</c>.
+        /// </returns>
+        Task<bool> GetStatusAsync();
     }
 }

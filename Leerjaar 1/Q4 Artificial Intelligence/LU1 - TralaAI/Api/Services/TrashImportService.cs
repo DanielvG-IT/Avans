@@ -35,6 +35,19 @@ namespace Api.Services
             _httpClient = httpClient;
         }
 
+        public async Task<bool> GetStatusAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("");
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         public async Task<bool> ImportAsync(CancellationToken ct)
         {
             try

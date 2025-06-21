@@ -37,5 +37,56 @@ namespace Api.Controllers
                 return StatusCode(500, new HealthStatus($"Error checking Fast API status: {ex.Message}", DateTime.UtcNow));
             }
         }
+
+        [HttpGet("holidayapi")]
+        public async Task<IActionResult> GetHolidayApiStatus()
+        {
+            try
+            {
+                var isHealthy = await _holidayApiService.IsHolidayAsync(DateTime.Now, "NL", DateTime.Now.Year.ToString());
+                if (isHealthy)
+                    return Ok(new HealthStatus("Holiday API is healthy", DateTime.UtcNow));
+                else
+                    return StatusCode(503, new HealthStatus("Holiday API is not healthy", DateTime.UtcNow));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new HealthStatus($"Error checking Holiday API status: {ex.Message}", DateTime.UtcNow));
+            }
+        }
+
+        [HttpGet("weatherapi")]
+        public async Task<IActionResult> GetWeatherApiStatus()
+        {
+            try
+            {
+                var isHealthy = await _weatherService.GetStatusAsync();
+                if (isHealthy)
+                    return Ok(new HealthStatus("Weather API is healthy", DateTime.UtcNow));
+                else
+                    return StatusCode(503, new HealthStatus("Weather API is not healthy", DateTime.UtcNow));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new HealthStatus($"Error checking Weather API status: {ex.Message}", DateTime.UtcNow));
+            }
+        }
+
+        [HttpGet("sensoringapi")]
+        public async Task<IActionResult> GetSensoringApiStatus()
+        {
+            try
+            {
+                var isHealthy = await _sensoringApiService.GetStatusAsync();
+                if (isHealthy)
+                    return Ok(new HealthStatus("Sensoring API is healthy", DateTime.UtcNow));
+                else
+                    return StatusCode(503, new HealthStatus("Sensoring API is not healthy", DateTime.UtcNow));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new HealthStatus($"Error checking Sensoring API status: {ex.Message}", DateTime.UtcNow));
+            }
+        }
     }
 }
