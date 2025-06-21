@@ -5,7 +5,7 @@ using Blazor.Models.Health;
 
 namespace Blazor.Services;
 
-public class BackendService(HttpClient httpClient) : IBackendService
+public class LitterService(HttpClient httpClient) : ILitterService
 {
   private readonly HttpClient _httpClient = httpClient;
 

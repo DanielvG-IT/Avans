@@ -6,7 +6,7 @@ namespace Blazor.Interfaces;
 /// <summary>
 /// Defines the contract for a service that interacts with the backend API.
 /// </summary>
-public interface IBackendService
+public interface ILitterService
 {
   /// <summary>
   /// Asynchronously retrieves a list of litters based on an optional filter.
