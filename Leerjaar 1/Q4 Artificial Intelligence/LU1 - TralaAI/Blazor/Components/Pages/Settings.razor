@@ -1,6 +1,9 @@
 @page "/settings"
 @rendermode InteractiveServer
+@using Blazor.Interfaces
 @inject NavigationManager Navigation
+@inject IHealthService _healthService
+@inject ILitterService _litterService
 
 
 <div class="wholeass" style="height: calc(100svh - 4rem)">
@@ -9,63 +12,70 @@
         <div class="settings-block">
             <h3>API Status</h3>
             <p><b>Een overzicht van alle API's die onze webapplicatie gebruikt</b></p>
-            <ul class="list-unstyled">
-                <li class="d-flex align-items-center gap-2 mb-1">
-                    @if (pythonStatus)
-                    {
-                        <span class="status-indicator status-green"></span>
-                    }
-                    else
-                    {
-                        <span class="status-indicator status-red"></span>
-                    }
-                    Fast API (AI-Predictions)
-                </li>
-                <li class="d-flex align-items-center gap-2 mb-1">
-                    @if (backendStatus)
-                    {
-                        <span class="status-indicator status-green"></span>
-                    }
-                    else
-                    {
-                        <span class="status-indicator status-red"></span>
-                    }
-                    .Net API (Backend)
-                </li>
-                <li class="d-flex align-items-center gap-2 mb-1">
-                    @if (sensoringStatus)
-                    {
-                        <span class="status-indicator status-green"></span>
-                    }
-                    else
-                    {
-                        <span class="status-indicator status-red"></span>
-                    }
-                    Sensoring API (Litter Recognition)
-                </li>
-                <li class="d-flex align-items-center gap-2 mb-1">
-                    @if (holidayStatus)
-                    {
-                        <span class="status-indicator status-green"></span>
-                    }
-                    else
-                    {
-                        <span class="status-indicator status-red"></span>
-                    }
-                    Holiday API (Holiday Information)
-                </li>
-                <li class="d-flex align-items-center gap-2 mb-1">
-                    @if (weatherStatus)
-                    {
-                        <span class="status-indicator status-green"></span>
-                    }
-                    else
-                    {
-                        <span class="status-indicator status-red"></span>
-                    }
-                    Weather API (Weather Forecasts)
-                </li>
-            </ul>
+            <table class="status-table" style="margin-bottom:0;">
+                <tbody>
+                    <tr style="height:32px;">
+                        <td style="padding-top:0.25rem; padding-bottom:0.25rem;">
+                            <span
+                                class="status-indicator @(backendStatus == null ? "status-loading" : (backendStatus.Value ? "status-green" : "status-red"))"></span>
+                        </td>
+                        <td style="padding-top:0.25rem; padding-bottom:0.25rem;">
+                            <strong>.NET API</strong> <span class="text-muted">(Backend)</span>
+                        </td>
+                        <td style="padding-top:0.25rem; padding-bottom:0.25rem;">
+                            @(backendStatus.HasValue ? (backendStatus.Value ? "Online" : "Offline") : "Loading...")
+                        </td>
+                    </tr>
+                    <tr style="height:32px;">
+                        <td style="padding-top:0.25rem; padding-bottom:0.25rem;">
+                            <span
+                                class="status-indicator @(pythonStatus == null ? "status-loading" : (pythonStatus.Value ? "status-green" : "status-red"))"></span>
+                        </td>
+                        <td style="padding-top:0.25rem; padding-bottom:0.25rem;">
+                            <strong>FastAPI</strong> <span class="text-muted">(AI-Predictions)</span>
+                        </td>
+                        <td style="padding-top:0.25rem; padding-bottom:0.25rem;">
+                            @(pythonStatus.HasValue ? (pythonStatus.Value ? "Online" : "Offline") : "Loading...")
+                        </td>
+                    </tr>
+                    <tr style="height:32px;">
+                        <td style="padding-top:0.25rem; padding-bottom:0.25rem;">
+                            <span
+                                class="status-indicator @(sensoringStatus == null ? "status-loading" : (sensoringStatus.Value ? "status-green" : "status-red"))"></span>
+                        </td>
+                        <td style="padding-top:0.25rem; padding-bottom:0.25rem;">
+                            <strong>Sensoring API</strong> <span class="text-muted">(Litter Recognition)</span>
+                        </td>
+                        <td style="padding-top:0.25rem; padding-bottom:0.25rem;">
+                            @(sensoringStatus.HasValue ? (sensoringStatus.Value ? "Online" : "Offline") : "Loading...")
+                        </td>
+                    </tr>
+                    <tr style="height:32px;">
+                        <td style="padding-top:0.25rem; padding-bottom:0.25rem;">
+                            <span
+                                class="status-indicator @(holidayStatus == null ? "status-loading" : (holidayStatus.Value ? "status-green" : "status-red"))"></span>
+                        </td>
+                        <td style="padding-top:0.25rem; padding-bottom:0.25rem;">
+                            <strong>Holiday API</strong> <span class="text-muted">(Holiday Information)</span>
+                        </td>
+                        <td style="padding-top:0.25rem; padding-bottom:0.25rem;">
+                            @(holidayStatus.HasValue ? (holidayStatus.Value ? "Online" : "Offline") : "Loading...")
+                        </td>
+                    </tr>
+                    <tr style="height:32px;">
+                        <td style="padding-top:0.25rem; padding-bottom:0.25rem;">
+                            <span
+                                class="status-indicator @(weatherStatus == null ? "status-loading" : (weatherStatus.Value ? "status-green" : "status-red"))"></span>
+                        </td>
+                        <td style="padding-top:0.25rem; padding-bottom:0.25rem;">
+                            <strong>Weather API</strong> <span class="text-muted">(Weather Forecasts)</span>
+                        </td>
+                        <td style="padding-top:0.25rem; padding-bottom:0.25rem;">
+                            @(weatherStatus.HasValue ? (weatherStatus.Value ? "Online" : "Offline") : "Loading...")
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
         </div>
 
@@ -73,7 +83,8 @@
         <div class="settings-block d-flex flex-column justify-content-between">
             <div>
                 <h3>Sensoring AI-Model status</h3>
-                <p><b>Bij opstart van de webapp wordt het model AI-Model opnieuw getraind. Via deze knop heb je ook de mogelijkheid om dit handmatig te forceren indien er nieuwe data beschikbaar is.</b></p>
+                <p><b>Bij opstart van de webapp wordt het model AI-Model opnieuw getraind. Via deze knop heb je ook de
+                        mogelijkheid om dit handmatig te forceren indien er nieuwe data beschikbaar is.</b></p>
             </div>
 
             <div class="d-flex justify-content-between align-items-center mt-auto pt-3">
@@ -90,21 +101,6 @@
 </div>
 
 <style>
-    .settings-container {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-        padding: 2rem;
-        min-height: 50vh;
-        box-sizing: border-box;
-    }
-
-    @@media (min-width: 768px) {
-        .settings-container {
-            flex-direction: row;
-        }
-    }
-
     .settings-block {
         flex: 1;
         background-color: #ffffff;
@@ -143,6 +139,11 @@
         background-color: red;
     }
 
+    .status-loading {
+        background-color: grey;
+        animation: pulse 1.5s infinite;
+    }
+
     .retrain-button {
         background-color: #0078d4;
         color: white;
@@ -171,14 +172,62 @@
 </style>
 
 @code {
-    private bool pythonStatus, holidayStatus, backendStatus, weatherStatus, sensoringStatus = false;
+    private bool? backendStatus, pythonStatus, sensoringStatus, weatherStatus, holidayStatus = null;
     private DateTime? lastModelUpdate = DateTime.Now.AddHours(-3);
-    private double modelRMSE = 0.237;
+    private double modelRMSE = 0.000;
 
-    private void RetrainModel()
+    protected override void OnInitialized()
     {
-        // Hier komt je retrain logic of API call
-        lastModelUpdate = DateTime.Now;
-        modelRMSE = Math.Round(new Random().NextDouble(), 3); // tijdelijk simuleren
+        // Fire-and-forget API status check, don't await to avoid blocking page load
+        _ = GetApiStatuses();
+    }
+
+    private async Task GetApiStatuses()
+    {
+        // Start all health checks in parallel
+        var backendTask = _healthService.GetBackendHealthAsync();
+        var fastApiTask = _healthService.GetFastApiHealthAsync();
+        var sensoringTask = _healthService.GetSensoringHealthAsync();
+        var weatherTask = _healthService.GetWeatherApiHealthAsync();
+        var holidayTask = _healthService.GetHolidayApiHealthAsync();
+
+        // Stream in each result as soon as it completes
+        var tasks = new[]
+        {
+(Task: backendTask, Setter: (Action<bool?>)(v => { backendStatus = v; })),
+(Task: fastApiTask, Setter: (Action<bool?>)(v => { pythonStatus = v; })),
+(Task: sensoringTask, Setter: (Action<bool?>)(v => { sensoringStatus = v; })),
+(Task: weatherTask, Setter: (Action<bool?>)(v => { weatherStatus = v; })),
+(Task: holidayTask, Setter: (Action<bool?>)(v => { holidayStatus = v; }))
+};
+
+        var remaining = tasks.ToList();
+
+        while (remaining.Count > 0)
+        {
+            var completed = await Task.WhenAny(remaining.Select(t => t.Task));
+            var tuple = remaining.First(t => t.Task == completed);
+
+            try
+            {
+                tuple.Setter(completed.Result);
+            }
+            catch
+            {
+                tuple.Setter(false);
+            }
+
+            await InvokeAsync(StateHasChanged);
+            remaining.Remove(tuple);
+        }
+    }
+
+    private async Task RetrainModel()
+    {
+        var result = await _litterService.RetrainModelAsync();
+        @* TODO @BaasW @DanielvG-IT
+        Geeft op dit moment alleen een boolean terug dat het gelukt is,
+        maar zou ook de RMSE moeten teruggeven en de laatste update tijd en mogelijk ook het model type.
+        *@
     }
 }

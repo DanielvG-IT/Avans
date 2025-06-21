@@ -1,11 +1,10 @@
 using System.Net;
 using Blazor.Models;
 using Blazor.Interfaces;
-using Blazor.Models.Health;
 
 namespace Blazor.Services;
 
-public class BackendService(HttpClient httpClient) : IBackendService
+public class LitterService(HttpClient httpClient) : ILitterService
 {
   private readonly HttpClient _httpClient = httpClient;
 
@@ -20,6 +19,12 @@ public class BackendService(HttpClient httpClient) : IBackendService
 
     response.EnsureSuccessStatusCode();
     return await response.Content.ReadFromJsonAsync<List<Litter>>();
+  }
+
+  public async Task<List<Camera>?> GetCamerasAsync()
+  {
+    var response = await _httpClient.GetAsync("/api/v1/litter/cameras");
+    return await response.Content.ReadFromJsonAsync<List<Camera>>();
   }
 
   public async Task<List<PredictionResponse>?> PredictAsync(int amountOfDays, int cameraId)
@@ -37,23 +42,12 @@ public class BackendService(HttpClient httpClient) : IBackendService
     return await response.Content.ReadFromJsonAsync<List<PredictionResponse>>();
   }
 
-  public async Task<string?> RetrainModelAsync(int cameraId)
+  public async Task<bool> RetrainModelAsync(int cameraId)
   {
     var queryString = $"?CameraId={cameraId}";
     var response = await _httpClient.PostAsync($"/api/v1/litter/retrain{queryString}", null);
 
-    if (response.StatusCode == HttpStatusCode.BadRequest)
-      return null;
-
-    response.EnsureSuccessStatusCode();
-    return await response.Content.ReadAsStringAsync();
-  }
-
-  public async Task<HealthStatus?> GetHealthStatusAsync()
-  {
-    var response = await _httpClient.GetAsync("/api/v1/health");
-    response.EnsureSuccessStatusCode();
-    return await response.Content.ReadFromJsonAsync<HealthStatus>();
+    return response.IsSuccessStatusCode;
   }
 
   public async Task<string?> ImportTrashDataAsync(CancellationToken cancellationToken = default)
