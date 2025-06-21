@@ -40,7 +40,6 @@ namespace Api.Services
                         response.EnsureSuccessStatusCode();
 
                         var jsonResponse = await response.Content.ReadAsStringAsync();
-                        Console.WriteLine($"{jsonResponse}");
                         holidayResponse = JsonSerializer.Deserialize<List<HolidayApiResponse>>(jsonResponse, _jsonSerializerOptions);
 
                         if (holidayResponse is not null)
