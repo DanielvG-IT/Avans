@@ -21,13 +21,13 @@ public interface IBackendService
   /// <param name="amountOfDays">The number of days to predict into the future.</param>
   /// <param name="location">The location for which to generate predictions.</param>
   /// <returns>A task that represents the asynchronous operation. The task result contains a list of <see cref="PredictionResponse"/> objects, or null if the request fails.</returns>
-  Task<List<PredictionResponse>?> PredictAsync(int amountOfDays, string location);
+  Task<List<PredictionResponse>?> PredictAsync(int amountOfDays, int cameraId);
 
   /// <summary>
   /// Asynchronously sends a request to retrain the machine learning model on the backend.
   /// </summary>
   /// <returns>A task that represents the asynchronous operation. The task result contains a string with a status message from the backend, or null if the request fails.</returns>
-  Task<string?> RetrainModelAsync();
+  Task<string?> RetrainModelAsync(int cameraId = 1);
 
   /// <summary>
   /// Asynchronously retrieves the health status of the backend service.
