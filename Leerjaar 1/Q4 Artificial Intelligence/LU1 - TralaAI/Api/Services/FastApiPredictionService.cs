@@ -66,7 +66,7 @@ namespace Api.Services
         {
             try
             {
-                var response = await _httpClient.PostAsync("/status", null);
+                var response = await _httpClient.GetAsync("/status");
                 response.EnsureSuccessStatusCode();
                 return true;
             }
