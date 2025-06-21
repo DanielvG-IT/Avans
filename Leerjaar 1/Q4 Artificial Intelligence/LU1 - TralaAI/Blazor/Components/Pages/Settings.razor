@@ -9,63 +9,70 @@
         <div class="settings-block">
             <h3>API Status</h3>
             <p><b>Een overzicht van alle API's die onze webapplicatie gebruikt</b></p>
-            <ul class="list-unstyled">
-                <li class="d-flex align-items-center gap-2 mb-1">
-                    @if (pythonStatus)
-                    {
-                        <span class="status-indicator status-green"></span>
-                    }
-                    else
-                    {
-                        <span class="status-indicator status-red"></span>
-                    }
-                    Fast API (AI-Predictions)
-                </li>
-                <li class="d-flex align-items-center gap-2 mb-1">
-                    @if (backendStatus)
-                    {
-                        <span class="status-indicator status-green"></span>
-                    }
-                    else
-                    {
-                        <span class="status-indicator status-red"></span>
-                    }
-                    .Net API (Backend)
-                </li>
-                <li class="d-flex align-items-center gap-2 mb-1">
-                    @if (sensoringStatus)
-                    {
-                        <span class="status-indicator status-green"></span>
-                    }
-                    else
-                    {
-                        <span class="status-indicator status-red"></span>
-                    }
-                    Sensoring API (Litter Recognition)
-                </li>
-                <li class="d-flex align-items-center gap-2 mb-1">
-                    @if (holidayStatus)
-                    {
-                        <span class="status-indicator status-green"></span>
-                    }
-                    else
-                    {
-                        <span class="status-indicator status-red"></span>
-                    }
-                    Holiday API (Holiday Information)
-                </li>
-                <li class="d-flex align-items-center gap-2 mb-1">
-                    @if (weatherStatus)
-                    {
-                        <span class="status-indicator status-green"></span>
-                    }
-                    else
-                    {
-                        <span class="status-indicator status-red"></span>
-                    }
-                    Weather API (Weather Forecasts)
-                </li>
-            </ul>
+            <table class="status-table">
+                <tbody>
+                    <tr>
+                        <td>
+                            <span
+                                class="status-indicator @(pythonStatus == null ? "status-loading" : (pythonStatus.Value ? "status-green" : "status-red"))"></span>
+                        </td>
+                        <td>
+                            <strong>FastAPI</strong> <span class="text-muted">(AI-Predictions)</span>
+                        </td>
+                        <td>
+                            @(pythonStatus.HasValue ? (pythonStatus.Value ? "Online" : "Offline") : "Loading...")
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span
+                                class="status-indicator @(backendStatus == null ? "status-loading" : (backendStatus.Value ? "status-green" : "status-red"))"></span>
+                        </td>
+                        <td>
+                            <strong>.NET API</strong> <span class="text-muted">(Backend)</span>
+                        </td>
+                        <td>
+                            @(backendStatus.HasValue ? (backendStatus.Value ? "Online" : "Offline") : "Loading...")
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span
+                                class="status-indicator @(sensoringStatus == null ? "status-loading" : (sensoringStatus.Value ? "status-green" : "status-red"))"></span>
+                        </td>
+                        <td>
+                            <strong>Sensoring API</strong> <span class="text-muted">(Litter Recognition)</span>
+                        </td>
+                        <td>
+                            @(sensoringStatus.HasValue ? (sensoringStatus.Value ? "Online" : "Offline") : "Loading...")
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span
+                                class="status-indicator @(holidayStatus == null ? "status-loading" : (holidayStatus.Value ? "status-green" : "status-red"))"></span>
+                        </td>
+                        <td>
+                            <strong>Holiday API</strong> <span class="text-muted">(Holiday Information)</span>
+                        </td>
+                        <td>
+                            @(holidayStatus.HasValue ? (holidayStatus.Value ? "Online" : "Offline") : "Loading...")
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span
+                                class="status-indicator @(weatherStatus == null ? "status-loading" : (weatherStatus.Value ? "status-green" : "status-red"))"></span>
+                        </td>
+                        <td>
+                            <strong>Weather API</strong> <span class="text-muted">(Weather Forecasts)</span>
+                        </td>
+                        <td>
+                            @(weatherStatus.HasValue ? (weatherStatus.Value ? "Online" : "Offline") : "Loading...")
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
         </div>
 
@@ -73,7 +80,8 @@
         <div class="settings-block d-flex flex-column justify-content-between">
             <div>
                 <h3>Sensoring AI-Model status</h3>
-                <p><b>Bij opstart van de webapp wordt het model AI-Model opnieuw getraind. Via deze knop heb je ook de mogelijkheid om dit handmatig te forceren indien er nieuwe data beschikbaar is.</b></p>
+                <p><b>Bij opstart van de webapp wordt het model AI-Model opnieuw getraind. Via deze knop heb je ook de
+                        mogelijkheid om dit handmatig te forceren indien er nieuwe data beschikbaar is.</b></p>
             </div>
 
             <div class="d-flex justify-content-between align-items-center mt-auto pt-3">
@@ -97,12 +105,6 @@
         padding: 2rem;
         min-height: 50vh;
         box-sizing: border-box;
-    }
-
-    @@media (min-width: 768px) {
-        .settings-container {
-            flex-direction: row;
-        }
     }
 
     .settings-block {
@@ -143,6 +145,11 @@
         background-color: red;
     }
 
+    .status-loading {
+        background-color: grey;
+        animation: pulse 1.5s infinite;
+    }
+
     .retrain-button {
         background-color: #0078d4;
         color: white;
@@ -171,9 +178,27 @@
 </style>
 
 @code {
-    private bool pythonStatus, holidayStatus, backendStatus, weatherStatus, sensoringStatus = false;
+    private bool? pythonStatus = null;
+    private bool? backendStatus = null;
+    private bool? sensoringStatus = null;
+    private bool? weatherStatus = null;
+    private bool? holidayStatus = null;
     private DateTime? lastModelUpdate = DateTime.Now.AddHours(-3);
-    private double modelRMSE = 0.237;
+    private double modelRMSE = 0.000;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simuleer API status checks
+        await Task.Delay(1000); // Simuleer netwerkvertraging
+
+        pythonStatus = true; // Simuleer dat de FastAPI online is
+        backendStatus = true; // Simuleer dat de .NET API online is
+        sensoringStatus = true; // Simuleer dat de sensoring API online is
+        weatherStatus = true; // Simuleer dat de weather API online is
+        holidayStatus = true; // Simuleer dat de holiday API online is
+
+        RetrainModel(); // Start model retraining bij initialisatie
+    }
 
     private void RetrainModel()
     {
