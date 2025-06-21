@@ -28,6 +28,16 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
         return Ok(litters);
     }
 
+    [HttpGet("cameras")]
+    public async Task<ActionResult> GetCameras()
+    {
+        var cameras = await _litterRepository.GetCamerasAsync();
+        if (cameras is null || cameras.Count == 0)
+            return NotFound("No cameras found.");
+
+        return Ok(cameras);
+    }
+
     [HttpPost("predict")]
     public async Task<IActionResult> Predict([FromQuery] int amountOfDays, [FromQuery] int CameraId)
     {

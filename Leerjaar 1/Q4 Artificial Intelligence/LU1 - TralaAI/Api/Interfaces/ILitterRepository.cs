@@ -22,6 +22,16 @@ public interface ILitterRepository
     Task SaveChangesAsync();
 
     /// <summary>
+    /// Asynchronously retrieves a list of cameras.
+    /// </summary>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains a list of <see cref="Camera"/> objects,
+    /// or <c>null</c> if no cameras are found.
+    /// </returns>
+    Task<List<Camera>?> GetCamerasAsync();
+
+
+    /// <summary>
     /// Retrieves a filtered list of litter records asynchronously based on the specified filter criteria.
     /// </summary>
     /// <param name="filter">The filter criteria for retrieving litter records.</param>

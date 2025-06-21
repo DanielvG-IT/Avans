@@ -21,6 +21,11 @@ namespace Api.Repository
             await _context.SaveChangesAsync();
         }
 
+        public async Task<List<Camera>?> GetCamerasAsync()
+        {
+            return await _context.Cameras.ToListAsync();
+        }
+
         public async Task<List<Litter>> GetFilteredAsync(LitterFilterDto filter)
         {
             var query = _context.Litters.AsQueryable();
