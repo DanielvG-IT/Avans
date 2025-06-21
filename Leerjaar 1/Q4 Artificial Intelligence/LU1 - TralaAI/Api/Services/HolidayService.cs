@@ -18,12 +18,18 @@ namespace Api.Services
             if (string.IsNullOrWhiteSpace(countryCode))
                 throw new ArgumentException("Country code cannot be null or empty.", nameof(countryCode));
 
-            string cacheKey = $"{countryCode}:{year}";
-            HolidayApiResponse? holidayResponse = _cache.Get<HolidayApiResponse>(cacheKey);
+            string cacheKey = $"holiday:{countryCode}:{year}:{date:yyyy-MM-dd}";
 
-            if (holidayResponse == null)
+            // Use GetOrCreateAsync to avoid cache stampede
+            return await _cache.GetOrCreateAsync(cacheKey, async entry =>
             {
-                try
+                entry.AbsoluteExpirationRelativeToNow = CacheDuration;
+
+                // Fetch the holidays for the year/country
+                string yearCacheKey = $"holidays:{countryCode}:{year}";
+                HolidayApiResponse? holidayResponse = _cache.Get<HolidayApiResponse>(yearCacheKey);
+
+                if (holidayResponse is null)
                 {
                     var response = await _httpClient.GetAsync($"/{year}/{countryCode}");
                     if (response.StatusCode == HttpStatusCode.NotFound)
@@ -36,17 +42,12 @@ namespace Api.Services
 
                     if (holidayResponse != null)
                     {
-                        _cache.Set(cacheKey, holidayResponse, CacheDuration);
+                        _cache.Set(yearCacheKey, holidayResponse, CacheDuration);
                     }
                 }
-                catch (Exception ex)
-                {
-                    // Optionally log the exception here
-                    throw new ApplicationException("An error occurred while checking for holidays.", ex);
-                }
-            }
 
-            return holidayResponse?.Holidays.Any(h => DateTime.Parse(h.Date).Date == date.Date && h.Public) ?? false;
+                return holidayResponse?.Holidays.Any(h => DateTime.Parse(h.Date).Date == date.Date && h.Public) ?? false;
+            });
         }
     }
 }
