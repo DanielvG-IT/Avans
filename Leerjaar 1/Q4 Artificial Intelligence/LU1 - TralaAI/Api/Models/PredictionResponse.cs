@@ -1,13 +1,31 @@
 namespace Api.Models;
 
+using System;
+using System.Text.Json.Serialization;
+
 public class PredictionResponse
 {
-    public required DateTime Date { get; set; }
-    public required List<Prediction> Predictions { get; set; }
+    [JsonPropertyName("date")]
+    public DateTime Date { get; set; }
+
+    [JsonPropertyName("predictions")]
+    public required PredictionValues Predictions { get; set; }
 }
 
-public class Prediction
+public class PredictionValues
 {
-    public required string Type { get; set; }
-    public required double Value { get; set; }
+    [JsonPropertyName("plastic")]
+    public double Plastic { get; set; }
+
+    [JsonPropertyName("paper")]
+    public double Paper { get; set; }
+
+    [JsonPropertyName("metal")]
+    public double Metal { get; set; }
+
+    [JsonPropertyName("glass")]
+    public double Glass { get; set; }
+
+    [JsonPropertyName("organic")]
+    public double Organic { get; set; }
 }

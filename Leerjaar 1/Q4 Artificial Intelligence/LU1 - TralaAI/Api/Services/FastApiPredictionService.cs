@@ -29,16 +29,13 @@ namespace Api.Services
                         _logger.LogError("Failed to retrain model for camera ID: {CameraId}", requestModels.CameraId);
                         throw new Exception("Failed to retrain model.");
                     }
-
-                    // Retry the prediction after retraining
-                    response = await _httpClient.PostAsync("/predict", content);
                 }
 
                 response.EnsureSuccessStatusCode();
 
                 await using var responseStream = await response.Content.ReadAsStreamAsync();
-                var predictionResponse = await JsonSerializer.DeserializeAsync<List<PredictionResponse>>(responseStream, _jsonOptions) ?? throw new Exception("Failed to deserialize prediction response.");
-                return predictionResponse;
+                var fastapiresponse = await JsonSerializer.DeserializeAsync<List<PredictionResponse>>(responseStream, _jsonOptions) ?? throw new Exception("Failed to deserialize prediction response.");
+                return fastapiresponse;
             }
             catch (Exception ex)
             {
