@@ -48,8 +48,10 @@ namespace Api.Services
         {
             try
             {
-                var content = new StringContent(JsonSerializer.Serialize(new { CameraLocation = cameraId }), Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync($"/retrain", content);
+                var request = new RetrainRequest { CameraLocation = cameraId };
+                var jsonRequest = JsonSerializer.Serialize(request, _jsonOptions);
+                var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync("/retrain", content);
                 response.EnsureSuccessStatusCode();
                 return true;
             }
