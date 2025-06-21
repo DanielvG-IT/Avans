@@ -25,11 +25,23 @@ public class WeatherService(HttpClient httpClient, IOptions<ApiKeysOptions> apiK
             return false;
         }
     }
+    // Simple in-memory cache for weather data by date
+    private static readonly Dictionary<string, List<FastApiWeatherRequirements>> _weatherCache = new();
+    private static readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(30);
+    private static readonly Dictionary<string, DateTime> _cacheTimestamps = new();
 
     public async Task<List<FastApiWeatherRequirements>> GetWeatherAsync(int amountOfDays)
     {
         if (amountOfDays < 1 || amountOfDays > 14)
             throw new ArgumentException("The number of days must be between 1 and 14.");
+
+        var cacheKey = $"Breda-{amountOfDays}";
+        if (_weatherCache.TryGetValue(cacheKey, out var cachedResult) &&
+            _cacheTimestamps.TryGetValue(cacheKey, out var cachedTime) &&
+            DateTime.UtcNow - cachedTime < _cacheDuration)
+        {
+            return cachedResult;
+        }
 
         var requestUrl = $"/v1/forecast.json?key={_apiKey}&q=Breda&days={amountOfDays}&aqi=no&alerts=no";
         var response = await _httpClient.GetAsync(requestUrl);
@@ -53,6 +65,10 @@ public class WeatherService(HttpClient httpClient, IOptions<ApiKeysOptions> apiK
                 Temperature = (double)day.Day.AvgtempC
             });
         }
+
+        _weatherCache[cacheKey] = result;
+        _cacheTimestamps[cacheKey] = DateTime.UtcNow;
+
         return result;
     }
 }
