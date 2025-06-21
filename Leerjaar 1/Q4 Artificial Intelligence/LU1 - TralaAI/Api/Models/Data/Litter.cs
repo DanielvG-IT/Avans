@@ -26,7 +26,7 @@ public class Litter
     public WeatherCategory Weather { get; set; }
 
     [Required]
-    public int? Temperature { get; set; }
+    public int Temperature { get; set; }
 
     [Required]
     public bool IsHoliday { get; set; }
