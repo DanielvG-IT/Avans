@@ -22,10 +22,10 @@ namespace Api.Services
 
                 if (response.StatusCode == HttpStatusCode.NotFound)
                 {
-                    var retrainResponse = await RetrainModelAsync(requestModels.ModelIndex);
+                    var retrainResponse = await RetrainModelAsync(requestModels.CameraId);
                     if (!retrainResponse)
                     {
-                        _logger.LogError("Failed to retrain model for camera location: {CameraLocation}", requestModels.ModelIndex);
+                        _logger.LogError("Failed to retrain model for camera ID: {CameraId}", requestModels.CameraId);
                         throw new Exception("Failed to retrain model.");
                     }
 
@@ -46,11 +46,11 @@ namespace Api.Services
             }
         }
 
-        public async Task<bool> RetrainModelAsync(string cameraLocation)
+        public async Task<bool> RetrainModelAsync(int cameraId)
         {
             try
             {
-                var response = await _httpClient.PostAsync($"/retrain?cameraLocation={cameraLocation}", null);
+                var response = await _httpClient.PostAsync($"/retrain?cameraLocation={cameraId}", null);
                 response.EnsureSuccessStatusCode();
                 return true;
             }

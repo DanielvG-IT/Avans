@@ -29,12 +29,12 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
     }
 
     [HttpPost("predict")]
-    public async Task<IActionResult> Predict([FromQuery] int amountOfDays, [FromQuery] int location)
+    public async Task<IActionResult> Predict([FromQuery] int amountOfDays, [FromQuery] int CameraId)
     {
         if (amountOfDays <= 0)
             return BadRequest("Amount of days must be greater than 0.");
-        if (location < 0 || location > 5)
-            return BadRequest("Location must be between 0 and 5.");
+        if (CameraId < 0 || CameraId > 5)
+            return BadRequest("Camera ID must be between 0 and 5.");
 
         var today = DateTime.UtcNow.Date;
         var dates = Enumerable.Range(0, amountOfDays).Select(i => today.AddDays(i)).ToList();
@@ -88,7 +88,7 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
 
         var predictionRequest = new PredictionRequest
         {
-            ModelIndex = location.ToString(),
+            CameraId = CameraId,
             Inputs = [.. modelInputs.Cast<Input>()]
         };
 
@@ -107,9 +107,9 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
     }
 
     [HttpPost("retrain")]
-    public async Task<IActionResult> Retrain([FromQuery] string cameraLocation)
+    public async Task<IActionResult> Retrain([FromQuery] int CameraId)
     {
-        var retrainResult = await _fastApiPredictionService.RetrainModelAsync(cameraLocation);
+        var retrainResult = await _fastApiPredictionService.RetrainModelAsync(CameraId);
         if (!retrainResult)
             return BadRequest($"Retrain failed. Please try again later.");
 

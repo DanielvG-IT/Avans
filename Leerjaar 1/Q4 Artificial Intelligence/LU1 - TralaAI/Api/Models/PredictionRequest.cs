@@ -4,8 +4,8 @@ namespace Api.Models;
 
 public class PredictionRequest
 {
-    [JsonPropertyName("modelIndex")]
-    public required string ModelIndex { get; set; }
+    [JsonPropertyName("cameraId")]
+    public required int CameraId { get; set; }
 
     [JsonPropertyName("inputs")]
     public required List<Input> Inputs { get; set; }
