@@ -10,6 +10,9 @@ public class PredictionResponse
 
 public class WastePrediction
 {
+    [JsonPropertyName("date")]
+    public DateOnly Date { get; set; }
+
     [JsonPropertyName("plastic")]
     public double Plastic { get; set; }
 
