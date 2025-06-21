@@ -1,3 +1,5 @@
+using Api.Models.Data;
+
 namespace Api.Models;
 
 public class LitterHistoryResponse
