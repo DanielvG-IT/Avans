@@ -1,7 +1,6 @@
 using System.Net;
 using Blazor.Models;
 using Blazor.Interfaces;
-using Blazor.Models.Health;
 
 namespace Blazor.Services;
 
@@ -37,23 +36,12 @@ public class LitterService(HttpClient httpClient) : ILitterService
     return await response.Content.ReadFromJsonAsync<List<PredictionResponse>>();
   }
 
-  public async Task<string?> RetrainModelAsync(int cameraId)
+  public async Task<bool> RetrainModelAsync(int cameraId)
   {
     var queryString = $"?CameraId={cameraId}";
     var response = await _httpClient.PostAsync($"/api/v1/litter/retrain{queryString}", null);
 
-    if (response.StatusCode == HttpStatusCode.BadRequest)
-      return null;
-
-    response.EnsureSuccessStatusCode();
-    return await response.Content.ReadAsStringAsync();
-  }
-
-  public async Task<HealthStatus?> GetHealthStatusAsync()
-  {
-    var response = await _httpClient.GetAsync("/api/v1/health");
-    response.EnsureSuccessStatusCode();
-    return await response.Content.ReadFromJsonAsync<HealthStatus>();
+    return response.IsSuccessStatusCode;
   }
 
   public async Task<string?> ImportTrashDataAsync(CancellationToken cancellationToken = default)

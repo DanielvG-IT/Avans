@@ -1,5 +1,4 @@
 using Blazor.Models;
-using Blazor.Models.Health;
 
 namespace Blazor.Interfaces;
 
@@ -27,13 +26,7 @@ public interface ILitterService
   /// Asynchronously sends a request to retrain the machine learning model on the backend.
   /// </summary>
   /// <returns>A task that represents the asynchronous operation. The task result contains a string with a status message from the backend, or null if the request fails.</returns>
-  Task<string?> RetrainModelAsync(int cameraId = 1);
-
-  /// <summary>
-  /// Asynchronously retrieves the health status of the backend service.
-  /// </summary>
-  /// <returns>A task that represents the asynchronous operation. The task result contains the <see cref="HealthStatus"/> of the backend, or null if the request fails.</returns>
-  Task<HealthStatus?> GetHealthStatusAsync();
+  Task<bool> RetrainModelAsync(int cameraId = 1);
 
   /// <summary>
   /// Asynchronously imports trash data from a predefined source.

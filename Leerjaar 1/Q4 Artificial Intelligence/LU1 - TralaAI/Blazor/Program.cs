@@ -15,7 +15,15 @@ else
 builder.Services.AddHttpClient();
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
-builder.Services.AddHttpClient<ILitterService, LitterApiService>((serviceProvider, client) =>
+builder.Services.AddHttpClient<ILitterService, LitterService>((serviceProvider, client) =>
+{
+    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+    var backendApiBaseAddress = configuration["ApiSettings:BackendApiBaseAddress"] ?? throw new InvalidOperationException("ApiSettings:BackendApiBaseAddress configuration is missing.");
+    client.BaseAddress = new Uri(backendApiBaseAddress);
+    client.DefaultRequestHeaders.Add("X-API-KEY", configuration["ApiKeys:BackendApiKey"] ?? throw new InvalidOperationException("ApiKeys:BackendApiKey configuration is missing."));
+});
+
+builder.Services.AddHttpClient<IHealthService, HealthService>((serviceProvider, client) =>
 {
     var configuration = serviceProvider.GetRequiredService<IConfiguration>();
     var backendApiBaseAddress = configuration["ApiSettings:BackendApiBaseAddress"] ?? throw new InvalidOperationException("ApiSettings:BackendApiBaseAddress configuration is missing.");

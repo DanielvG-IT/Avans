@@ -1,6 +1,9 @@
 @page "/settings"
 @rendermode InteractiveServer
+@using Blazor.Interfaces
 @inject NavigationManager Navigation
+@inject IHealthService _healthService
+@inject ILitterService _litterService
 
 
 <div class="wholeass" style="height: calc(100svh - 4rem)">
@@ -178,32 +181,50 @@
 </style>
 
 @code {
-    private bool? pythonStatus = null;
-    private bool? backendStatus = null;
-    private bool? sensoringStatus = null;
-    private bool? weatherStatus = null;
-    private bool? holidayStatus = null;
+    private bool? backendStatus, pythonStatus, sensoringStatus, weatherStatus, holidayStatus = null;
     private DateTime? lastModelUpdate = DateTime.Now.AddHours(-3);
     private double modelRMSE = 0.000;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        // Simuleer API status checks
-        await Task.Delay(1000); // Simuleer netwerkvertraging
-
-        pythonStatus = true; // Simuleer dat de FastAPI online is
-        backendStatus = true; // Simuleer dat de .NET API online is
-        sensoringStatus = true; // Simuleer dat de sensoring API online is
-        weatherStatus = true; // Simuleer dat de weather API online is
-        holidayStatus = true; // Simuleer dat de holiday API online is
-
-        RetrainModel(); // Start model retraining bij initialisatie
+        // Fire-and-forget API status check, don't await to avoid blocking page load
+        _ = GetApiStatuses();
     }
 
-    private void RetrainModel()
+    private async Task GetApiStatuses()
     {
-        // Hier komt je retrain logic of API call
-        lastModelUpdate = DateTime.Now;
-        modelRMSE = Math.Round(new Random().NextDouble(), 3); // tijdelijk simuleren
+        // Start all health checks in parallel
+        var fastApiTask = _healthService.GetFastApiHealthAsync();
+        var backendTask = _healthService.GetBackendHealthAsync();
+        var sensoringTask = _healthService.GetSensoringHealthAsync();
+        var weatherTask = _healthService.GetWeatherApiHealthAsync();
+        var holidayTask = _healthService.GetHolidayApiHealthAsync();
+
+        try
+        {
+            await Task.WhenAll(fastApiTask, backendTask, sensoringTask, weatherTask, holidayTask);
+
+            backendStatus = backendTask.Result;
+            pythonStatus = fastApiTask.Result;
+            sensoringStatus = sensoringTask.Result;
+            weatherStatus = weatherTask.Result;
+            holidayStatus = holidayTask.Result;
+        }
+        catch
+        {
+            backendStatus = backendTask.IsCompletedSuccessfully ? backendTask.Result : false;
+            pythonStatus = fastApiTask.IsCompletedSuccessfully ? fastApiTask.Result : false;
+            sensoringStatus = sensoringTask.IsCompletedSuccessfully ? sensoringTask.Result : false;
+            weatherStatus = weatherTask.IsCompletedSuccessfully ? weatherTask.Result : false;
+            holidayStatus = holidayTask.IsCompletedSuccessfully ? holidayTask.Result : false;
+        }
+
+        // Notify UI to update after statuses are loaded
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task RetrainModel()
+    {
+        var result = await _litterService.RetrainModelAsync();
     }
 }
