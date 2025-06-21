@@ -125,8 +125,17 @@ h1:focus {
   }
 }
 
-@media (max-width: 767.98px) {
+.settings-container {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  padding: 2rem;
+  min-height: 50vh;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1200px) {
   .settings-container {
-    flex-direction: row;
+    flex-direction: column;
   }
 }
