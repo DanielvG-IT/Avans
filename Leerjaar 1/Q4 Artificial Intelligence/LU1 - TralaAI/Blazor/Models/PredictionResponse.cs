@@ -4,11 +4,14 @@ namespace Blazor.Models;
 
 public class PredictionResponse
 {
+    [JsonPropertyName("date")]
+    public DateTime Date { get; set; }
+
     [JsonPropertyName("predictions")]
-    public List<Dictionary<string, WastePrediction>> Predictions { get; set; } = [];
+    public required PredictionValues Predictions { get; set; }
 }
 
-public class WastePrediction
+public class PredictionValues
 {
     [JsonPropertyName("plastic")]
     public double Plastic { get; set; }

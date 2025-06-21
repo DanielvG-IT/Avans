@@ -21,6 +21,12 @@ public class LitterService(HttpClient httpClient) : ILitterService
     return await response.Content.ReadFromJsonAsync<List<Litter>>();
   }
 
+  public async Task<List<Camera>?> GetCamerasAsync()
+  {
+    var response = await _httpClient.GetAsync("/api/v1/litter/cameras");
+    return await response.Content.ReadFromJsonAsync<List<Camera>>();
+  }
+
   public async Task<List<PredictionResponse>?> PredictAsync(int amountOfDays, int cameraId)
   {
     var queryString = $"?amountOfDays={amountOfDays}&CameraId={cameraId}";

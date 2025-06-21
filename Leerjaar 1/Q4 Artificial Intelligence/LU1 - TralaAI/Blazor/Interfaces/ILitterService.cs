@@ -37,4 +37,13 @@ public interface ILitterService
   /// The task result contains a string with a status or error message upon completion, or <c>null</c> if the operation fails without a specific message.
   /// </returns>
   Task<string?> ImportTrashDataAsync(CancellationToken cancellationToken = default);
+
+  /// <summary>
+  /// Asynchronously retrieves a list of available cameras.
+  /// </summary>
+  /// <returns>
+  /// A task that represents the asynchronous operation. The task result contains a list of <see cref="Camera"/> objects,
+  /// or <c>null</c> if no cameras are available.
+  /// </returns>
+  Task<List<Camera>?> GetCamerasAsync();
 }
