@@ -12,7 +12,7 @@ namespace Api.Services
         private readonly ILogger<FastApiPredictionService> _logger = logger;
         private readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
 
-        public async Task<PredictionResponse> MakeLitterAmountPredictionAsync(PredictionRequest requestModels)
+        public async Task<List<PredictionResponse>> MakeLitterAmountPredictionAsync(PredictionRequest requestModels)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace Api.Services
                 response.EnsureSuccessStatusCode();
 
                 await using var responseStream = await response.Content.ReadAsStreamAsync();
-                var predictionResponse = await JsonSerializer.DeserializeAsync<PredictionResponse>(responseStream, _jsonOptions) ?? throw new Exception("Failed to deserialize prediction response.");
+                var predictionResponse = await JsonSerializer.DeserializeAsync<List<PredictionResponse>>(responseStream, _jsonOptions) ?? throw new Exception("Failed to deserialize prediction response.");
                 return predictionResponse;
             }
             catch (Exception ex)

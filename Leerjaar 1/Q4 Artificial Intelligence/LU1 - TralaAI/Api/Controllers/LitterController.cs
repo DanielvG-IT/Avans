@@ -96,12 +96,12 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
 
         if (predictionResult is null)
             return BadRequest("Prediction service returned null. Please try again later.");
-        if (predictionResult.Predictions is null || predictionResult.Predictions.Count == 0)
+        if (predictionResult is null || predictionResult.Count == 0)
             return NotFound("No predictions found for the given inputs.");
-        if (predictionResult.Predictions.Any(p => p is null))
+        if (predictionResult.Any(p => p is null))
             return BadRequest("Invalid prediction data received. Please try again later.");
-        if (predictionResult.Predictions.Count != amountOfDays)
-            return BadRequest($"Expected {amountOfDays} predictions, but got {predictionResult.Predictions.Count}.");
+        if (predictionResult.Count != amountOfDays)
+            return BadRequest($"Expected {amountOfDays} predictions, but got {predictionResult.Count}.");
 
         return Ok(predictionResult);
     }

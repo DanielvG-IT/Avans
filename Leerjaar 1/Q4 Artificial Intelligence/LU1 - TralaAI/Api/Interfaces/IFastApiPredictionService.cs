@@ -18,7 +18,7 @@ namespace Api.Interfaces
         /// A task that represents the asynchronous operation. The task result contains a <see cref="PredictionResponse"/>
         /// which includes the prediction results.
         /// </returns>
-        Task<PredictionResponse> MakeLitterAmountPredictionAsync(PredictionRequest requestModels);
+        Task<List<PredictionResponse>> MakeLitterAmountPredictionAsync(PredictionRequest requestModels);
 
 
         /// <summary>
