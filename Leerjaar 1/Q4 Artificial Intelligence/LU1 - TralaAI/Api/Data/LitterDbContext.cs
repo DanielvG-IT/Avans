@@ -19,5 +19,13 @@ public class LitterDbContext(DbContextOptions<LitterDbContext> options) : DbCont
       .WithMany()
       .HasForeignKey(l => l.CameraId)
       .OnDelete(DeleteBehavior.Cascade);
+
+    modelBuilder.Entity<Camera>()
+      .Property(c => c.Latitude)
+      .HasPrecision(9, 0);
+
+    modelBuilder.Entity<Camera>()
+      .Property(c => c.Longitude)
+      .HasPrecision(9, 0);
   }
 }
