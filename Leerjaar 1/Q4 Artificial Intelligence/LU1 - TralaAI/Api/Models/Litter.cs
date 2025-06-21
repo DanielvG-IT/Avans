@@ -17,9 +17,9 @@ public class Litter
     public double Confidence { get; set; }
 
     [Column(TypeName = "varchar(50)")]
-    public WeatherCategory? Weather { get; set; } // TODO: Possibly map to WeatherCondition enum
+    public WeatherCategory? Weather { get; set; }
 
     public int Temperature { get; set; }
-    public string? Location { get; set; } // TODO: Possibly map to Location enum
-    public bool IsHoliday { get; set; } //! Komt van externe API
+    public bool IsHoliday { get; set; }
+    public string? Location { get; set; }
 }

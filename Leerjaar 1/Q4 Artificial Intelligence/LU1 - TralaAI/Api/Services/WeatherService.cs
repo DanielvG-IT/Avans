@@ -23,7 +23,6 @@ public class WeatherService(HttpClient httpClient, IOptions<ApiKeysOptions> apiK
         if (!response.IsSuccessStatusCode)
             throw new HttpRequestException($"Failed to fetch weather data: {response.ReasonPhrase}");
         var content = await response.Content.ReadAsStringAsync();
-        Console.WriteLine($"Weather API Response: {content}");
         var weatherData = JsonSerializer.Deserialize<WeatherResponse>(content, _jsonOptions);
 
         if (weatherData is null || weatherData.Forecast is null || weatherData.Forecast.Forecastday == null || weatherData.Forecast.Forecastday.Count == 0)
@@ -34,7 +33,9 @@ public class WeatherService(HttpClient httpClient, IOptions<ApiKeysOptions> apiK
         {
             result.Add(new FastApiWeatherRequirements
             {
+                Date = DateTime.Parse(day.Date),
                 Condition = day.Day.Condition.Text,
+                ConditionCode = day.Day.Condition.Code,
                 Temperature = (double)day.Day.AvgtempC
             });
         }

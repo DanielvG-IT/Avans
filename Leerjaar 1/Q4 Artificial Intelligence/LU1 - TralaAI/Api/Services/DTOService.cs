@@ -59,10 +59,28 @@ public class DTOService : IDTOService
     if (string.IsNullOrWhiteSpace(weather))
       return null;
 
+    // Try to parse as enum first
     if (Enum.TryParse<WeatherCondition>(weather, true, out var parsedWeather))
     {
       return GetWeatherCategory(parsedWeather);
     }
+
+    // Handle common descriptive phrases
+    var normalized = weather.Trim().ToLowerInvariant();
+
+    // Map common phrases to WeatherCondition
+    if (normalized.Contains("rain"))
+      return WeatherCategory.Rainy;
+    if (normalized.Contains("snow"))
+      return WeatherCategory.Snowy;
+    if (normalized.Contains("storm") || normalized.Contains("thunder"))
+      return WeatherCategory.Stormy;
+    if (normalized.Contains("mist") || normalized.Contains("fog"))
+      return WeatherCategory.Misty;
+    if (normalized.Contains("cloud"))
+      return WeatherCategory.Cloudy;
+    if (normalized.Contains("sun") || normalized.Contains("clear"))
+      return WeatherCategory.Sunny;
 
     return WeatherCategory.Unknown;
   }
@@ -82,18 +100,5 @@ public class DTOService : IDTOService
       WeatherCategory.Sunny => 6,
       _ => null,
     };
-  }
-
-  public int? GetWeatherCategoryIndex(string? weatherCategory)
-  {
-    if (string.IsNullOrWhiteSpace(weatherCategory))
-      return null;
-
-    if (Enum.TryParse<WeatherCategory>(weatherCategory, true, out var parsedWeatherCategory))
-    {
-      return GetWeatherCategoryIndex(parsedWeatherCategory);
-    }
-
-    return null;
   }
 }

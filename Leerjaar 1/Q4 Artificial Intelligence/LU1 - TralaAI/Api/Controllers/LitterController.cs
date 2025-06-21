@@ -40,13 +40,19 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
         var dates = Enumerable.Range(0, amountOfDays).Select(i => today.AddDays(i)).ToList();
 
         // Fetch holidays in parallel for all dates
+        Console.WriteLine("Fetching holidays for dates: " + string.Join(", ", dates.Select(d => d.ToString("yyyy-MM-dd"))));
         var holidayTasks = dates.Select(date => _holidayApiService.IsHolidayAsync(date, "NL", date.Year.ToString())).ToArray();
         var holidays = await Task.WhenAll(holidayTasks);
+        Console.WriteLine("Holidays fetched: " + string.Join(", ", holidays.Select((h, i) => $"{dates[i]:yyyy-MM-dd}:{h}")));
 
+        Console.WriteLine("Fetching weather forecasts for amountOfDays: " + amountOfDays);
         var weatherForecasts = await _weatherService.GetWeatherAsync(amountOfDays);
         if (weatherForecasts is null || weatherForecasts.Count != amountOfDays)
+        {
+            Console.WriteLine("Invalid weather data received.");
             return BadRequest("Invalid weather data received. Please try again later.");
-
+        }
+        Console.WriteLine("Weather forecasts fetched: " + string.Join(", ", weatherForecasts.Select(w => $"{w.Date:yyyy-MM-dd}:{w.Condition}/{w.Temperature}")));
 
         var modelInputs = dates.Select((date, idx) =>
         {
@@ -54,13 +60,22 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
             var month = date.Month;
             var holiday = holidays[idx];
             var isWeekend = dayOfWeek == 0 || dayOfWeek == 6; // Sunday or Saturday
-            var weather = weatherForecasts[idx];
-
-            var weatherCondition = _dTOService.GetWeatherCategoryIndex(weather.Condition);
-            if (weatherCondition is null)
+            var weather = weatherForecasts.Where(w => w.Date.Date == date.Date).FirstOrDefault();
+            if (weather is null)
+            {
+                Console.WriteLine($"No weather found for date {date:yyyy-MM-dd}");
                 return null;
+            }
+            Console.WriteLine($"Processing enums for date {date:yyyy-MM-dd} with weather condition {weather.Condition} and id {weather.ConditionCode}");
+            var weatherEnum = _dTOService.GetWeatherCategory(weather.Condition);
+            var weatherCondition = _dTOService.GetWeatherCategoryIndex(weatherEnum);
+            if (weatherCondition is null)
+            {
+                Console.WriteLine($"No weather category index found for condition {weather.Condition} on {date:yyyy-MM-dd}");
+                return null;
+            }
 
-            return new Input
+            var input = new Input
             {
                 DayOfWeek = dayOfWeek,
                 Month = month,
@@ -70,13 +85,15 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
                 IsWeekend = isWeekend,
                 Label = date.ToString("yyyy-MM-dd")
             };
+            Console.WriteLine($"Model input for {date:yyyy-MM-dd}: " + $"DayOfWeek={input.DayOfWeek}, Month={input.Month}, Holiday={input.Holiday}, Weather={input.Weather}, Temp={input.TemperatureCelcius}, IsWeekend={input.IsWeekend}, Label={input.Label}");
+            return input;
         }).ToList();
 
         // Check for null inputs
         if (modelInputs is null || modelInputs.Count == 0)
-            return BadRequest("No valid weather data received. Please try again later.");
+            return BadRequest("Couldn't create model inputs. Please try again later.");
         if (modelInputs.Any(input => input is null))
-            return BadRequest("Invalid weather data received. Please try again later.");
+            return BadRequest("Invalid input data received. Please check the dates and try again.");
         modelInputs = [.. modelInputs.Where(input => input is not null)];
         if (modelInputs.Count != amountOfDays)
             return BadRequest($"Expected {amountOfDays} inputs, but got {modelInputs.Count}.");

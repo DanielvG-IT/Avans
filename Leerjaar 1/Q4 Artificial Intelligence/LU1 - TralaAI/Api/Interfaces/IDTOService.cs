@@ -42,11 +42,4 @@ public interface IDTOService
     /// <param name="weatherCategory">The weather category.</param>
     /// <returns>An integer index (1–6) or null if the category is null or unknown.</returns>
     int? GetWeatherCategoryIndex(WeatherCategory? weatherCategory);
-
-    /// <summary>
-    /// Parses a string into <see cref="WeatherCategory"/> and returns its corresponding index.
-    /// </summary>
-    /// <param name="weatherCategory">The weather category string.</param>
-    /// <returns>An integer index (1–6) or null if parsing fails or input is null/whitespace.</returns>
-    int? GetWeatherCategoryIndex(string? weatherCategory);
 }

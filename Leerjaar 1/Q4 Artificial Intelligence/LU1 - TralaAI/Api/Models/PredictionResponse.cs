@@ -5,7 +5,7 @@ namespace Api.Models;
 public class PredictionResponse
 {
     [JsonPropertyName("predictions")]
-    public List<Dictionary<string, WastePrediction>> Predictions { get; set; } = [];
+    public List<WastePrediction> Predictions { get; set; } = new();
 }
 
 public class WastePrediction

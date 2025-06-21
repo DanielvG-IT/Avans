@@ -1,5 +1,6 @@
 using Api.Models;
 using Api.Interfaces;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 
@@ -18,10 +19,24 @@ namespace Api.Services
                 var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
                 var response = await _httpClient.PostAsync("/predict", content);
+
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    var retrainResponse = await RetrainModelAsync(requestModels.ModelIndex);
+                    if (!retrainResponse)
+                    {
+                        _logger.LogError("Failed to retrain model for camera location: {CameraLocation}", requestModels.ModelIndex);
+                        throw new Exception("Failed to retrain model.");
+                    }
+
+                    // Retry the prediction after retraining
+                    response = await _httpClient.PostAsync("/predict", content);
+                }
+
                 response.EnsureSuccessStatusCode();
 
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-                var predictionResponse = JsonSerializer.Deserialize<PredictionResponse>(jsonResponse) ?? throw new Exception("Failed to deserialize prediction response.");
+                await using var responseStream = await response.Content.ReadAsStreamAsync();
+                var predictionResponse = await JsonSerializer.DeserializeAsync<PredictionResponse>(responseStream) ?? throw new Exception("Failed to deserialize prediction response.");
                 return predictionResponse;
             }
             catch (Exception ex)
@@ -35,7 +50,7 @@ namespace Api.Services
         {
             try
             {
-                var response = await _httpClient.PostAsync($"/retrain?cameraLocation={cameraLocation}", null); // TODO May change cameraLocation to the body
+                var response = await _httpClient.PostAsync($"/retrain?cameraLocation={cameraLocation}", null);
                 response.EnsureSuccessStatusCode();
                 return true;
             }
