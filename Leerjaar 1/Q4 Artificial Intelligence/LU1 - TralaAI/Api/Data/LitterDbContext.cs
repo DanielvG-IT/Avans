@@ -15,10 +15,10 @@ public class LitterDbContext(DbContextOptions<LitterDbContext> options) : DbCont
     base.OnModelCreating(modelBuilder);
 
     modelBuilder.Entity<Litter>()
-      .HasOne<Camera>()
-      .WithMany()
-      .HasForeignKey(l => l.CameraId)
-      .OnDelete(DeleteBehavior.Cascade);
+        .HasOne(l => l.Camera)
+        .WithMany(c => c.Litters)
+        .HasForeignKey(l => l.CameraId)
+        .IsRequired();
 
     modelBuilder.Entity<Camera>()
       .Property(c => c.Latitude)

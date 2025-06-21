@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(LitterDbContext))]
-    [Migration("20250621134704_RefactorCamera")]
-    partial class RefactorCamera
+    [Migration("20250621204117_RedoingDatabase")]
+    partial class RedoingDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -63,14 +63,16 @@ namespace Api.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Latitude")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(9)
+                        .HasColumnType("decimal(10,6)");
 
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Longitude")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(9)
+                        .HasColumnType("decimal(10,6)");
 
                     b.HasKey("Id");
 
@@ -98,7 +100,7 @@ namespace Api.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -118,12 +120,17 @@ namespace Api.Migrations
             modelBuilder.Entity("Api.Models.Data.Litter", b =>
                 {
                     b.HasOne("Api.Models.Data.Camera", "Camera")
-                        .WithMany()
+                        .WithMany("Litters")
                         .HasForeignKey("CameraId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Camera");
+                });
+
+            modelBuilder.Entity("Api.Models.Data.Camera", b =>
+                {
+                    b.Navigation("Litters");
                 });
 #pragma warning restore 612, 618
         }

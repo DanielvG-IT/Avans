@@ -16,7 +16,8 @@ public class Litter
     public LitterCategory Type { get; set; }
 
     [Required]
-    public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
+    [Column(TypeName = "datetime")]
+    public DateTime TimeStamp { get; set; } = DateTime.Now;
 
     [Range(0, 1)]
     public double Confidence { get; set; }
@@ -31,9 +32,12 @@ public class Litter
     [Required]
     public bool IsHoliday { get; set; }
 
+    // Navigation property for Camera
     [Required]
+    public virtual Camera Camera { get; set; } = null!;
+
+    // Explicit foreign key
+    [ForeignKey(nameof(Camera))]
     public int CameraId { get; set; }
 
-    [ForeignKey(nameof(CameraId))]
-    public Camera Camera { get; set; } = null!;
 }
