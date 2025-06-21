@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Api.Interfaces;
 using Api.Models.Enums;
+using Api.Models.Data;
+using Api.Interfaces;
 using Api.Models;
 using Api.Data;
 
@@ -62,7 +63,7 @@ namespace Api.Repository
         {
             var query = _context.Litters.AsQueryable();
 
-            var groupedQuery = await query.GroupBy(l => l.Location)
+            var groupedQuery = await query.GroupBy(l => l.CameraId)
                             .Select(g => new LitterTypeAmount
                             {
                                 Organic = g.Count(l => l.Type == LitterCategory.Organic),

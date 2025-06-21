@@ -1,10 +1,8 @@
-using Microsoft.EntityFrameworkCore;
 using Api.Models.Enums;
+using Api.Models.Data;
 using Api.Interfaces;
 using Api.Models;
 using Api.Data;
-using System.Net.Http.Json;
-using System.Linq;
 
 namespace Api.Services
 {
@@ -67,13 +65,13 @@ namespace Api.Services
                     var litter = new Litter
                     {
                         Id = trash.Id,
-                        Type = switchedType,
+                        Type = switchedType ?? LitterCategory.Unknown,
                         TimeStamp = trash.Date,
                         Confidence = trash.Confidence,
-                        Weather = _dTOService.GetWeatherCategory(trash.Weather),
+                        Weather = _dTOService.GetWeatherCategory(trash.Weather) ?? WeatherCategory.Unknown,
                         Temperature = trash.Temperature,
-                        Location = "Sensoring",
-                        IsHoliday = isHoliday
+                        IsHoliday = isHoliday,
+                        CameraId = 1 // Assuming a sensoring group camera ID
                     };
 
                     newLitters.Add(litter);
