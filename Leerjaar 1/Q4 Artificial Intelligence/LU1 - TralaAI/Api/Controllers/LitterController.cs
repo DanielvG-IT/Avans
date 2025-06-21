@@ -88,7 +88,7 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
             {
                 DayOfWeek = (int)info.Date.DayOfWeek,
                 Month = info.Date.Month,
-                Holiday = info.Holiday,
+                Holiday = info.Holiday ?? false,
                 Weather = info.WeatherCondition ?? 0,
                 TemperatureCelcius = info.Weather is not null ? (int)info.Weather.Temperature : 0,
                 IsWeekend = info.Date.DayOfWeek == DayOfWeek.Saturday || info.Date.DayOfWeek == DayOfWeek.Sunday,

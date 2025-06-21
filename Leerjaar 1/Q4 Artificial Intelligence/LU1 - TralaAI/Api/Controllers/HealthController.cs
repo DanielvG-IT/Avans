@@ -43,11 +43,12 @@ namespace Api.Controllers
         {
             try
             {
-                var isHealthy = await _holidayApiService.IsHolidayAsync(DateTime.Now, "NL", DateTime.Now.Year.ToString());
-                if (isHealthy)
-                    return Ok(new HealthStatus("Holiday API is healthy", DateTime.UtcNow));
-                else
+                var date = DateTime.Now.Date;
+                var IsHoliday = await _holidayApiService.IsHolidayAsync(date, "NL", date.Year.ToString());
+                if (IsHoliday is null)
                     return StatusCode(503, new HealthStatus("Holiday API is not healthy", DateTime.UtcNow));
+                else
+                    return Ok(new HealthStatus("Holiday API is healthy", DateTime.UtcNow));
             }
             catch (Exception ex)
             {

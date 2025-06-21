@@ -64,7 +64,7 @@ namespace Api.Services
                 // Get holiday information for all dates
                 var holidayDictionary = new Dictionary<DateOnly, bool>();
                 foreach (var date in uniqueDates)
-                    holidayDictionary[DateOnly.FromDateTime(date)] = await _holidayApiService.IsHolidayAsync(date, "NL", date.Year.ToString());
+                    holidayDictionary[DateOnly.FromDateTime(date)] = await _holidayApiService.IsHolidayAsync(date, "NL", date.Year.ToString()) ?? false;
 
                 var newLitters = new List<Litter>();
 
