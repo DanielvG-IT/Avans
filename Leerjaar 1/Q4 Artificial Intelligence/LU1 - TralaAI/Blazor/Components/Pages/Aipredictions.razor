@@ -237,16 +237,16 @@ new PieData { Label = "Papier", Value = 90 }
     // De datatype voor de piechart deffinieren
     public class PieData
     {
-        public string Label { get; set; }
+        public required string Label { get; set; }
         public decimal Value { get; set; }
     }
     // Wordt gebruikt voor de bar chart bovenaan de pagina
-    private List<LitterData> LitterItems { get; set; } = new List<LitterData>();
-    private List<LitterData> PlasticItems;
-    private List<LitterData> PaperItems;
-    private List<LitterData> MetalItems;
-    private List<LitterData> GlassItems;
-    private List<LitterData> OrganicItems;
+    private List<LitterData> LitterItems = new();
+    private List<LitterData> PlasticItems = new();
+    private List<LitterData> PaperItems = new();
+    private List<LitterData> MetalItems = new();
+    private List<LitterData> GlassItems = new();
+    private List<LitterData> OrganicItems = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -292,7 +292,7 @@ new LitterData { Date = new DateOnly(2025, 6, 20), Type = "organic", Count = 5.2
     public class LitterData
     {
         public DateOnly Date { get; set; }
-        public string Type { get; set; }
+        public required string Type { get; set; }
         public double Count { get; set; }
     }
 
