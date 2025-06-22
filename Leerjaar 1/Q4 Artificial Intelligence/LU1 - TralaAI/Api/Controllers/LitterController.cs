@@ -127,7 +127,7 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
     }
 
     [HttpGet("latest")]
-    public async Task<ActionResult<List<Litter>>> GetLatest([FromQuery] int? amount)
+    public async Task<ActionResult<List<Litter>>> GetLatest([FromQuery] int amount = 100)
     {
         var litters = await _litterRepository.GetLatestAsync(amount);
 
@@ -138,9 +138,9 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
     }
 
     [HttpGet("amount-per-location")]
-    public async Task<ActionResult<LitterTypeAmount?>> GetAmountPerLocation()
+    public async Task<ActionResult<LitterAmountCamera>> GetAmountPerCamera()
     {
-        var amountPerLocation = await _litterRepository.GetAmountPerLocationAsync();
+        var amountPerLocation = await _litterRepository.GetAmountPerCameraAsync();
 
         if (amountPerLocation is null)
             return NotFound("No litter amount data found for the specified location.");
@@ -153,7 +153,7 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
     {
         try
         {
-            var amountPerLocation = await _litterRepository.GetAmountPerLocationAsync();
+            var amountPerLocation = await _litterRepository.GetAmountPerCameraAsync();
             var history = await _litterRepository.GetLatestAsync(100);
 
             if (history is null || amountPerLocation is null)

@@ -4,7 +4,7 @@ namespace Api.Models;
 
 public class LitterHistoryResponse
 {
-    public required LitterTypeAmount AmountPerLocation { get; set; }
+    public required List<LitterAmountCamera> AmountPerLocation { get; set; }
     public required List<Litter> History { get; set; }
     public required LitterHistoryMetadata Metadata { get; set; }
 }

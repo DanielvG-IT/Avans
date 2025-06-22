@@ -4,6 +4,7 @@ using Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(LitterDbContext))]
-    partial class LitterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250622121800_EnhanceEnums")]
+    partial class EnhanceEnums
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,7 +90,7 @@ namespace Api.Migrations
                     b.Property<int>("CameraId")
                         .HasColumnType("int");
 
-                    b.Property<double?>("Confidence")
+                    b.Property<double>("Confidence")
                         .HasColumnType("float");
 
                     b.Property<bool>("IsHoliday")
@@ -101,12 +104,10 @@ namespace Api.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
                     b.Property<string>("Weather")
                         .IsRequired()
-                        .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");

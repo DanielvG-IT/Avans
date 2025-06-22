@@ -78,10 +78,10 @@ namespace Api.Services
                     var litter = new Litter
                     {
                         Id = trash.Id,
-                        Type = switchedType ?? LitterCategory.Unknown,
+                        LitterCategory = switchedType ?? LitterCategory.Unknown,
                         TimeStamp = trash.Date,
                         Confidence = trash.Confidence,
-                        Weather = _dTOService.GetWeatherCategory(trash.Weather) ?? WeatherCategory.Unknown,
+                        WeatherCategory = _dTOService.GetWeatherCategory(trash.Weather) ?? WeatherCategory.Unknown,
                         Temperature = trash.Temperature,
                         IsHoliday = isHoliday,
                         CameraId = 1 // Assuming a sensoring group camera ID
