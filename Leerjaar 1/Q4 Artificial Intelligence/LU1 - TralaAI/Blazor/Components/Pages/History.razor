@@ -46,6 +46,8 @@
                         Name="Organisch" XValue="@(e => e.Day.ToString("dd-MM"))" YValue="@(e => e.Organic)" />
                     <ApexPointSeries TItem="TotalPerDay" Items="totalPerDays" SeriesType="SeriesType.Heatmap" Name="Papier"
                         XValue="@(e => e.Day.ToString("dd-MM"))" YValue="@(e => e.Paper)" />
+                    <ApexPointSeries TItem="TotalPerDay" Items="totalPerDays" SeriesType="SeriesType.Heatmap" Name="Plastic"
+                        XValue="@(e => e.Day.ToString("dd-MM"))" YValue="@(e => e.Plasic)" />
                 </ApexChart>
             }
         </div>
@@ -133,6 +135,7 @@
     {
         public DateTime Day { get; set; }
         public int Glass { get; set; }
+        public int Plasic { get; set; }
         public int Metal { get; set; }
         public int Organic { get; set; }
         public int Paper { get; set; }
@@ -168,7 +171,7 @@
 
     private async Task GetLatestLitterAsync()
     {
-        var litterResult = await _litterService.GetLatestLittersAsync(100);
+        var litterResult = await _litterService.GetLatestLittersAsync(150);
         if (litterResult is null)
         {
             @* GENIUS ERROR! *@
@@ -184,7 +187,8 @@
             Glass = g.Count(x => x.LitterCategory == LitterCategory.Glass),
             Metal = g.Count(x => x.LitterCategory == LitterCategory.Metal),
             Organic = g.Count(x => x.LitterCategory == LitterCategory.Organic),
-            Paper = g.Count(x => x.LitterCategory == LitterCategory.Paper)
+            Paper = g.Count(x => x.LitterCategory == LitterCategory.Paper),
+            Plasic = g.Count(x => x.LitterCategory == LitterCategory.Plastic)
         })
         .OrderBy(x => x.Day)
         .ToList();
