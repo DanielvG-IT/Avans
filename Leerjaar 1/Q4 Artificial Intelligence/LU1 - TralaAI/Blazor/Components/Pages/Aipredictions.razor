@@ -325,6 +325,7 @@ new LitterData { Date = new DateOnly(2025, 6, 20), Type = "organic", Count = 5.2
     {
         // Hier doe je de filtering van data
         Console.WriteLine($"Toepassen: {selectedDays} dagen en {selectedCameraId} camera geselecteerd.");
+        var predictionResponse = await _litterService.PredictAsync(selectedDays, selectedCameraId);
         await MakePredictionAsync();
     }
 
@@ -351,6 +352,26 @@ new LitterData { Date = new DateOnly(2025, 6, 20), Type = "organic", Count = 5.2
             Console.WriteLine("Geen of incorrecte data ontvangen van de backend.");
             return;
         }
+        else{
+            var newLitterItems = new List<LitterData>();
+            foreach (var day in predictionResponse)
+            {
+            Console.WriteLine("Probeert data op te halen");
+            newLitterItems.Add(new LitterData { Date = DateOnly.FromDateTime(day.Date), Type = "plastic", Count = day.Predictions.Plastic });
+            newLitterItems.Add(new LitterData { Date = DateOnly.FromDateTime(day.Date), Type = "paper", Count = day.Predictions.Paper });
+            newLitterItems.Add(new LitterData { Date = DateOnly.FromDateTime(day.Date), Type = "metal", Count = day.Predictions.Metal });
+            newLitterItems.Add(new LitterData { Date = DateOnly.FromDateTime(day.Date), Type = "glass", Count = day.Predictions.Glass });
+            newLitterItems.Add(new LitterData { Date = DateOnly.FromDateTime(day.Date), Type = "organic", Count = day.Predictions.Organic });
+            }
+            LitterItems = newLitterItems;
+            PlasticItems = LitterItems.Where(x => x.Type == "plastic").ToList();
+            PaperItems = LitterItems.Where(x => x.Type == "paper").ToList();
+            MetalItems = LitterItems.Where(x => x.Type == "metal").ToList();
+            GlassItems = LitterItems.Where(x => x.Type == "glass").ToList();
+            OrganicItems = LitterItems.Where(x => x.Type == "organic").ToList();
+        }
+        
+        
 
         @* 
         TODO @MathijsH6 @ReinoutvdG Put the prediction data onto the frontend
