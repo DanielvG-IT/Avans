@@ -7,6 +7,7 @@
 @inject ILitterService _litterService;
 @inject IJSRuntime JS;
 
+
 <div class="page-container">
 
     <!-- Top: AI Output Bar graph -->
@@ -39,7 +40,7 @@
         <p><b>Bovenstaande formulieren geven je de mogelijkheid een voorspelling op te vragen van een AI-model op een
                 gekozen camera locatie.</b></p>
 
-        <ApexChart TItem="LitterData" Title="Afval per Type per Dag" Height="400">
+        <ApexChart @ref="chart" TItem="LitterData" Title="Afval per Type per Dag" Height="400">
             <ApexPointSeries TItem="LitterData" Items="PlasticItems" Name="Plastic" XValue="@(e => e.Date)"
                 YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
             <ApexPointSeries TItem="LitterData" Items="PaperItems" Name="Paper" XValue="@(e => e.Date)"
@@ -256,35 +257,8 @@ new PieData { Label = "Papier", Value = 90 }
             return; // Error handling: No cameras found; Show an error message to user
 
         cameraOptions = cameraResponse;
-
-
-        LitterItems = new List<LitterData>
-{
-new LitterData { Date = new DateOnly(2025, 6, 18), Type = "plastic", Count = 0.775 },
-new LitterData { Date = new DateOnly(2025, 6, 18), Type = "paper", Count = 0.784 },
-new LitterData { Date = new DateOnly(2025, 6, 18), Type = "metal", Count = 1.226 },
-new LitterData { Date = new DateOnly(2025, 6, 18), Type = "glass", Count = 2.054 },
-new LitterData { Date = new DateOnly(2025, 6, 18), Type = "organic", Count = 2.238 },
-
-new LitterData { Date = new DateOnly(2025, 6, 19), Type = "plastic", Count = 1.056 },
-new LitterData { Date = new DateOnly(2025, 6, 19), Type = "paper", Count = 0.757 },
-new LitterData { Date = new DateOnly(2025, 6, 19), Type = "metal", Count = 1.840 },
-new LitterData { Date = new DateOnly(2025, 6, 19), Type = "glass", Count = 1.237 },
-new LitterData { Date = new DateOnly(2025, 6, 19), Type = "organic", Count = 2.380 },
-
-new LitterData { Date = new DateOnly(2025, 6, 20), Type = "plastic", Count = 1.894 },
-new LitterData { Date = new DateOnly(2025, 6, 20), Type = "paper", Count = 1.449 },
-new LitterData { Date = new DateOnly(2025, 6, 20), Type = "metal", Count = 2.284 },
-new LitterData { Date = new DateOnly(2025, 6, 20), Type = "glass", Count = 3.364 },
-new LitterData { Date = new DateOnly(2025, 6, 20), Type = "organic", Count = 5.203 }
-}
-        ;
-
-        PlasticItems = LitterItems.Where(x => x.Type == "plastic").ToList();
-        PaperItems = LitterItems.Where(x => x.Type == "paper").ToList();
-        MetalItems = LitterItems.Where(x => x.Type == "metal").ToList();
-        GlassItems = LitterItems.Where(x => x.Type == "glass").ToList();
-        OrganicItems = LitterItems.Where(x => x.Type == "organic").ToList();
+        await MakePredictionAsync();
+        
     }
 
 
@@ -319,7 +293,7 @@ new LitterData { Date = new DateOnly(2025, 6, 20), Type = "organic", Count = 5.2
     }
 
     // Days select button on click
-
+    private ApexChart<LitterData>? chart;
     // Verandering in filters
     private async Task ApplyFilters()
     {
@@ -327,6 +301,7 @@ new LitterData { Date = new DateOnly(2025, 6, 20), Type = "organic", Count = 5.2
         Console.WriteLine($"Toepassen: {selectedDays} dagen en {selectedCameraId} camera geselecteerd.");
         var predictionResponse = await _litterService.PredictAsync(selectedDays, selectedCameraId);
         await MakePredictionAsync();
+        await chart?.RenderAsync();
     }
 
     private async Task GetRecentDataFromBackendAsync()
@@ -341,6 +316,7 @@ new LitterData { Date = new DateOnly(2025, 6, 20), Type = "organic", Count = 5.2
         }
 
         @* ? @ReinoutvdG Wat wil je met de historische data doen? *@
+        //niks, plannen zijn veranderd
     }
 
     private async Task MakePredictionAsync()
@@ -369,6 +345,7 @@ new LitterData { Date = new DateOnly(2025, 6, 20), Type = "organic", Count = 5.2
             MetalItems = LitterItems.Where(x => x.Type == "metal").ToList();
             GlassItems = LitterItems.Where(x => x.Type == "glass").ToList();
             OrganicItems = LitterItems.Where(x => x.Type == "organic").ToList();
+            
         }
         
         
