@@ -47,6 +47,43 @@
                 </ApexChart>
             }
         </div> *@
+        <div class="recent-litter">
+            <h3>Recente afvaldetecties</h3>
+            @if (recentLitter.Count == 0)
+            {
+                <p>Er zijn momenteel geen recente afvaldetecties.</p>
+            }
+            else
+            {
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Type</th>
+                        <th>Timestamp</th>
+                        <th>Confidence</th>
+                        <th>Weather</th>
+                        <th>Temperature</th>
+                        <th>Location</th>
+                        <th>IsHoliday</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @* @foreach (var litter in recentLitter)
+                    {
+                        <tr>
+                            <td>@litter.Id</td>
+                            <td>@litter.Type</td>
+                            <td>@litter.TimeStamp.ToString("dd-MM-yyyy")</td>
+                            <td>@litter.Confidence</td>
+                            <td>@litter.Weather</td>
+                            <td>@litter.Temperature</td>
+                            <td>@litter.Location</td>
+                            <td>@litter.IsHoliday</td>
+                        </tr>
+                    } *@
+                </tbody>
+            }
+        </div>
     </div>
 </div>
 
@@ -69,12 +106,14 @@
 
     private ApexChartOptions<TotalLitterPerCamera> options { get; set; } = new();
     private List<Camera> cameras = new();
+    private List<Litter> recentLitter = new();
     private List<TotalLitterPerCamera> totalLitterPerCamera = new();
 
     protected override async Task OnInitializedAsync()
     {
         await GetCamerasAsync();
         await GetLitterPerCameraAsync();
+        @* await GetLatestLitterAsync(); *@
 
         options.PlotOptions = new PlotOptions
         {
@@ -92,6 +131,16 @@
         };
     }
 
+    private async Task GetLatestLitterAsync()
+    {
+        var litterResult = await _litterService.GetLatestLittersAsync(100);
+        if (litterResult is null)
+        {
+            @* GENIUS ERROR! *@
+            return;
+        }
+        recentLitter = litterResult;
+    }
     private async Task GetCamerasAsync()
     {
         var cameraResult = await _litterService.GetCamerasAsync();
