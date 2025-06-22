@@ -62,56 +62,58 @@
         }
         else
         {
-            <table class="insane-table">
-                @* TODO @BaasW Please make this scrollable! *@
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Type</th>
-                        <th>Timestamp</th>
-                        <th>Weather</th>
-                        <th>Temperature</th>
-                        <th>Location</th>
-                        <th>IsHoliday</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var litter in recentLitter)
-                    {
+            <div class="table-scroll-container">
+                <table class="insane-table">
+                    @* TODO @BaasW Please make this scrollable! *@
+                    <thead>
                         <tr>
-                            <td>@litter.Id</td>
-                            <td>
-                                <span class="type-badge type-@litter.LitterCategory.ToString().ToLower()">
-                                    @litter.Type
-                                </span>
-                            </td>
-                            <td>@litter.TimeStamp.ToString("dd-MM-yyyy HH:mm")</td>
-                            <td>
-                                <span class="weather-icon weather-@litter.Weather.ToString().ToLower()"></span>
-                                @litter.Weather
-                            </td>
-                            <td>
-                                <span class="temp-badge">@litter.Temperature&nbsp;°C</span>
-                            </td>
-                            <td>
-                                <span class="location-badge">
-                                    @(cameras.FirstOrDefault(c => c.Id == litter.CameraId)?.Location ?? "Onbekend")
-                                </span>
-                            </td>
-                            <td>
-                                @if (litter.IsHoliday)
-                                {
-                                    <span class="holiday-badge">Ja</span>
-                                }
-                                else
-                                {
-                                    <span class="no-holiday-badge">Nee</span>
-                                }
-                            </td>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Timestamp</th>
+                            <th>Weather</th>
+                            <th>Temperature</th>
+                            <th>Location</th>
+                            <th>IsHoliday</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var litter in recentLitter)
+                        {
+                            <tr>
+                                <td>@litter.Id</td>
+                                <td>
+                                    <span class="type-badge type-@litter.LitterCategory.ToString().ToLower()">
+                                        @litter.Type
+                                    </span>
+                                </td>
+                                <td>@litter.TimeStamp.ToString("dd-MM-yyyy HH:mm")</td>
+                                <td>
+                                    <span class="weather-icon weather-@litter.Weather.ToString().ToLower()"></span>
+                                    @litter.Weather
+                                </td>
+                                <td>
+                                    <span class="temp-badge">@litter.Temperature&nbsp;°C</span>
+                                </td>
+                                <td>
+                                    <span class="location-badge">
+                                        @(cameras.FirstOrDefault(c => c.Id == litter.CameraId)?.Location ?? "Onbekend")
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (litter.IsHoliday)
+                                    {
+                                        <span class="holiday-badge">Ja</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="no-holiday-badge">Nee</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
     </div>
 </div>

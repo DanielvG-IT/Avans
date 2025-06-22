@@ -240,10 +240,19 @@ h1:focus {
   font-size: 1.1rem;
 }
 
+.table-scroll-container {
+    height: 40vh;            
+    overflow-y: auto;        
+    overflow-x: hidden;      
+    border-radius: 8px;
+    background-color: #fff;
+}
+
 .insane-table th,
 .insane-table td {
-  padding: 1rem 1.2rem;
-  text-align: left;
+    padding: 0.5rem;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
 }
 
 .insane-table th {
@@ -251,7 +260,6 @@ h1:focus {
   color: #fff;
   font-weight: 700;
   letter-spacing: 1px;
-  border-bottom: 4px solid #f3e7e9;
 }
 
 .insane-table tbody tr {
