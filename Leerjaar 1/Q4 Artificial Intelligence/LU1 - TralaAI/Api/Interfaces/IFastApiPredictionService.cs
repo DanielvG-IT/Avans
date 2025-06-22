@@ -38,5 +38,15 @@ namespace Api.Interfaces
         /// whether the Fast API service is healthy (true) or not (false).
         /// </returns>
         Task<bool> GetStatusAsync();
+
+        /// <summary>
+        /// Retrieves the status of the model associated with the specified camera.
+        /// </summary>
+        /// <param name="cameraId">The unique identifier of the camera.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. The task result contains a <see cref="ModelStatusResponse"/> 
+        /// object with the model status information, or <c>null</c> if the status could not be retrieved.
+        /// </returns>
+        Task<ModelStatusResponse?> GetModelStatus(int cameraId);
     }
 }

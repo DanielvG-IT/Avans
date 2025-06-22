@@ -81,5 +81,27 @@ namespace Api.Services
                 return false;
             }
         }
+
+        public async Task<ModelStatusResponse?> GetModelStatus(int cameraId)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"/status/model?cameraId={cameraId}");
+                if (response.IsSuccessStatusCode)
+                    return await response.Content.ReadFromJsonAsync<ModelStatusResponse?>();
+
+                return null;
+            }
+            catch (TaskCanceledException ex)
+            {
+                _logger.LogError(ex, "Request to {Endpoint} timed out", "/status");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error making POST request to {Endpoint}", "/status");
+                return null;
+            }
+        }
     }
 }
