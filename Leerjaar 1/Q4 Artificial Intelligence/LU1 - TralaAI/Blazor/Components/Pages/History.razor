@@ -6,16 +6,36 @@
 @inject ILitterService _litterService
 
 <div class="page-container">
-    <ApexChart TItem="TotalLitterPerCamera" Title="Totaal gedetecteerd afval">
+    <div class="donut">
+    @if(totalLitterPerCamera is null || totalLitterPerCamera.Count == 0)
+    {
+        <p>Er zijn nog geen camera's gevonden.</p>
+    }
+    else
+    {
+    <ApexChart TItem="TotalLitterPerCamera" Title="Totaal gedetecteerd afval per camera" Height="400">
 
     <ApexPointSeries TItem="TotalLitterPerCamera"
                 Items="totalLitterPerCamera"
                 SeriesType="SeriesType.Donut"
-                Name="Gross Value"
-                XValue="@(e => e.Country)"
-                YAggregate="@(e => e.Amount)"/>
-    </ApexChart>
+                Name="Total Litter Per Camera"
+                XValue="@(e => e.Location)"
+                YValue="@(e => e.Amount)"/>
+    </ApexChart>    
+    }
+
+    </div>
 </div>
+
+<style>
+    .donut{
+        flex: 3;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+    }
+</style>
 
 @code {
     private class TotalLitterPerCamera
@@ -25,22 +45,12 @@
     }
 
     List<Camera> cameras = new();
-    List<LitterAmountCamera> litterPerCamera = new();
     List<TotalLitterPerCamera> totalLitterPerCamera = new();
 
     protected override async Task OnInitializedAsync()
     {
         await GetCamerasAsync();
         await GetLitterPerCameraAsync();
-        
-        foreach (var camera in litterPerCamera)
-        {
-            var item = new TotalLitterPerCamera{
-                Amount = camera.Glass + camera.Metal + camera.Organic + camera.Plastic + camera.Paper,
-                Location = cameras.Find(c => c.Id == camera.CameraId)?.Location ?? "Onbekend"
-            };
-            totalLitterPerCamera.Add(item);
-        }
     }
 
     private async Task GetCamerasAsync()
@@ -62,6 +72,13 @@
             @* GENIUS ERROR! *@
             return;
         }
-        litterPerCamera = litterResult;
+        foreach (var camera in litterResult)
+        {
+            var item = new TotalLitterPerCamera{
+                Amount = camera.Glass + camera.Metal + camera.Organic + camera.Plastic + camera.Paper,
+                Location = cameras.Find(c => c.Id == camera.CameraId)?.Location ?? "Onbekend"
+            };
+            totalLitterPerCamera.Add(item);
+        }
     }
 }
