@@ -3,47 +3,55 @@ using Blazor.Models;
 namespace Blazor.Interfaces;
 
 /// <summary>
-/// Defines the contract for a service that interacts with the backend API.
+/// Defines methods for managing and analyzing litter data, including retrieval, prediction, and model retraining operations.
 /// </summary>
 public interface ILitterService
 {
   /// <summary>
-  /// Asynchronously retrieves a list of litters based on an optional filter.
+  /// Retrieves a list of litters based on the specified filter criteria.
   /// </summary>
-  /// <param name="filter">The data transfer object containing filter criteria. Can be null.</param>
-  /// <returns>A task that represents the asynchronous operation. The task result contains a list of <see cref="Litter"/> objects, or null if the request fails.</returns>
+  /// <param name="filter">The filter criteria for retrieving litters.</param>
+  /// <returns>A task that represents the asynchronous operation. The task result contains a list of litters or null.</returns>
   Task<List<Litter>?> GetLittersAsync(LitterFilterDto? filter);
 
   /// <summary>
-  /// Asynchronously requests predictions from the backend.
+  /// Retrieves a list of available cameras.
   /// </summary>
-  /// <param name="amountOfDays">The number of days to predict into the future.</param>
-  /// <param name="location">The location for which to generate predictions.</param>
-  /// <returns>A task that represents the asynchronous operation. The task result contains a list of <see cref="PredictionResponse"/> objects, or null if the request fails.</returns>
+  /// <returns>A task that represents the asynchronous operation. The task result contains a list of cameras or null.</returns>
+  Task<List<Camera>?> GetCamerasAsync();
+
+  /// <summary>
+  /// Predicts litter occurrences for a specified number of days and camera.
+  /// </summary>
+  /// <param name="amountOfDays">The number of days to predict.</param>
+  /// <param name="cameraId">The identifier of the camera.</param>
+  /// <returns>A task that represents the asynchronous operation. The task result contains a list of prediction responses or null.</returns>
   Task<List<PredictionResponse>?> PredictAsync(int amountOfDays, int cameraId);
 
   /// <summary>
-  /// Asynchronously sends a request to retrain the machine learning model on the backend.
+  /// Retrains the prediction model for a specific camera.
   /// </summary>
-  /// <returns>A task that represents the asynchronous operation. The task result contains a string with a status message from the backend, or null if the request fails.</returns>
-  Task<bool> RetrainModelAsync(int cameraId = 1);
+  /// <param name="cameraId">The identifier of the camera.</param>
+  /// <returns>A task that represents the asynchronous operation. The task result indicates whether the retraining was successful.</returns>
+  Task<bool> RetrainModelAsync(int cameraId);
 
   /// <summary>
-  /// Asynchronously imports trash data from a predefined source.
+  /// Imports trash data asynchronously.
   /// </summary>
-  /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-  /// <returns>
-  /// A task that represents the asynchronous operation. 
-  /// The task result contains a string with a status or error message upon completion, or <c>null</c> if the operation fails without a specific message.
-  /// </returns>
+  /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+  /// <returns>A task that represents the asynchronous operation. The task result contains an import result message or null.</returns>
   Task<string?> ImportTrashDataAsync(CancellationToken cancellationToken = default);
 
   /// <summary>
-  /// Asynchronously retrieves a list of available cameras.
+  /// Retrieves the latest litters, limited by the specified amount.
   /// </summary>
-  /// <returns>
-  /// A task that represents the asynchronous operation. The task result contains a list of <see cref="Camera"/> objects,
-  /// or <c>null</c> if no cameras are available.
-  /// </returns>
-  Task<List<Camera>?> GetCamerasAsync();
+  /// <param name="amount">The maximum number of latest litters to retrieve.</param>
+  /// <returns>A task that represents the asynchronous operation. The task result contains a list of the latest litters or null.</returns>
+  Task<List<Litter>?> GetLatestLittersAsync(int? amount);
+
+  /// <summary>
+  /// Retrieves the amount of each litter type per location.
+  /// </summary>
+  /// <returns>A task that represents the asynchronous operation. The task result contains the amount per location or null.</returns>
+  Task<List<LitterAmountCamera>?> GetAmountPerLocationAsync();
 }

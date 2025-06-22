@@ -1,3 +1,5 @@
+using Api.Models;
+
 namespace Blazor.Interfaces;
 
 /// <summary>
@@ -34,4 +36,15 @@ public interface IHealthService
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The task result contains <c>true</c> if the Weather API service is healthy; otherwise, <c>false</c>.</returns>
     Task<bool> GetWeatherApiHealthAsync();
+
+    /// <summary>
+    /// Asynchronously retrieves model data from the FastAPI service for the specified camera.
+    /// </summary>
+    /// <param name="cameraId">The unique identifier of the camera for which to retrieve model data.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains a <see cref="ModelStatusResponse"/> object with the model data,
+    /// or <c>null</c> if no data is available.
+    /// </returns>
+    Task<ModelStatusResponse?> GetFastApiModelDataAsync(int cameraId);
+
 }

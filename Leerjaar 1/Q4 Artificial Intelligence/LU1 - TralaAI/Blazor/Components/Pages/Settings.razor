@@ -5,6 +5,12 @@
 @inject IHealthService _healthService
 @inject ILitterService _litterService
 
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" role="alert" style="margin-bottom: 1rem;">
+        @errorMessage
+    </div>
+}
 
 <div class="wholeass" style="height: calc(100svh - 4rem)">
     <div class="settings-container">
@@ -87,13 +93,80 @@
                         mogelijkheid om dit handmatig te forceren indien er nieuwe data beschikbaar is.</b></p>
             </div>
 
-            <div class="d-flex justify-content-between align-items-center mt-auto pt-3">
-                <div>
-                    <p class="mb-1"><strong>Response:</strong> <i>waiting...</i></p>
-                    <p class="mb-1"><strong>Model Type:</strong> Random forest</p>
-                    <p class="mb-0"><strong>Huidige RMSE:</strong> @modelRMSE</p>
+            <div class="d-flex justify-content-between align-items-center mt-auto pt-3 modern-model-status"
+                style="gap: 10rem;">
+                <div class="settings-block">
+                    <div class="model-status-row">
+                        <span class="model-status-label" style="padding-left: 1rem;"><strong>Response:</strong></span>
+                        @if (latestResponse is null)
+                        {
+                            <span class="skeleton skeleton-text w-50" style="margin-left: 0.5rem;"></span>
+                        }
+                        else
+                        {
+                            <span class="model-status-value" style="margin-left: 0.5rem;"><i>@latestResponse</i></span>
+                        }
+                    </div>
+                    <div class="model-status-row">
+                        <span class="model-status-label" style="padding-left: 1rem;"><strong>Model Type:</strong></span>
+                        @if (latestResponse is null)
+                        {
+                            <span class="skeleton skeleton-text w-50" style="margin-left: 0.5rem;"></span>
+                        }
+                        else
+                        {
+                            <span class="model-status-value" style="margin-left: 0.5rem;">Random forest</span>
+                        }
+                    </div>
+                    <div class="model-status-row">
+                        <span class="model-status-label" style="padding-left: 1rem;"><strong>Huidige
+                                RMSE:</strong></span>
+                        @if (modelRMSE is null)
+                        {
+                            <span class="skeleton skeleton-text w-50" style="margin-left: 0.5rem;"></span>
+                        }
+                        else
+                        {
+                            <span class="model-status-value" style="margin-left: 0.5rem;">@modelRMSE</span>
+                        }
+                    </div>
+                    <div class="model-status-row">
+                        <span class="model-status-label" style="padding-left: 1rem;"><strong>Laatst
+                                bijgewerkt:</strong></span>
+                        @if (lastModelUpdate is null)
+                        {
+                            <span class="skeleton skeleton-text w-50" style="margin-left: 0.5rem;"></span>
+                        }
+                        else
+                        {
+                            <span class="model-status-value"
+                                style="margin-left: 0.5rem;">@lastModelUpdate.Value.ToString("g")</span>
+                        }
+                    </div>
                 </div>
-                <button @onclick="RetrainModel" class="btn btn-primary">Retrain Model</button>
+                <div class="retrain-btn-container d-flex flex-column align-items-end">
+                    <button @onclick="RetrainModel" class="retrain-button-modern" disabled="@isRetraining">
+                        @if (isRetraining)
+                        {
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            <span class="ms-2">Model wordt opnieuw getraind...</span>
+                        }
+                        else
+                        {
+                            <span class="material-icons align-middle ms-2 autorenew">
+                                Model opnieuw trainen
+                            </span>
+                        }
+                    </button>
+                    @if (showRetrainSuccess)
+                    {
+                        <div class="retrain-success mt-2">
+                            <span class="material-icons text-success align-middle"
+                                style="font-size:1.2rem;">check_circle</span>
+                            <span class="ms-1">Model succesvol opnieuw getraind!</span>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
 
@@ -173,13 +246,18 @@
 
 @code {
     private bool? backendStatus, pythonStatus, sensoringStatus, weatherStatus, holidayStatus = null;
-    private DateTime? lastModelUpdate = DateTime.Now.AddHours(-3);
-    private double modelRMSE = 0.000;
+    private string? errorMessage = string.Empty;
+    private string? latestResponse = null!;
+    private DateTime? lastModelUpdate = null!;
+    private double? modelRMSE = null!;
+    private bool isRetraining = false;
+    private bool showRetrainSuccess = false;
 
     protected override void OnInitialized()
     {
         // Fire-and-forget API status check, don't await to avoid blocking page load
         _ = GetApiStatuses();
+        _ = GetModelStatus();
     }
 
     private async Task GetApiStatuses()
@@ -222,12 +300,45 @@
         }
     }
 
+    private async Task FetchNewDataFromSensoring()
+    {
+        var result = await _litterService.ImportTrashDataAsync();
+        @* if (!result)
+        {
+             TODO Error logging
+        } *@
+
+        await RetrainModel();
+    }
+
     private async Task RetrainModel()
     {
-        var result = await _litterService.RetrainModelAsync();
-        @* TODO @BaasW @DanielvG-IT
-        Geeft op dit moment alleen een boolean terug dat het gelukt is,
-        maar zou ook de RMSE moeten teruggeven en de laatste update tijd en mogelijk ook het model type.
-        *@
+        isRetraining = true;
+        var result = await _litterService.RetrainModelAsync(2);
+        if (!result)
+        {
+            @* TODO Error logging *@
+        }
+
+        isRetraining = false;
+        await GetModelStatus();
+    }
+
+    private async Task GetModelStatus()
+    {
+        var result = await _healthService.GetFastApiModelDataAsync(2); @*! Default sensoring cameraId *@
+        if (result is null)
+        {
+            latestResponse = "Er is iets foutgegaan";
+            modelRMSE = 0;
+            lastModelUpdate = DateTime.Now;
+            return;
+        }
+
+        latestResponse = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(result.Status ?? string.Empty);
+        modelRMSE = Math.Round(result.CurrentRmse, 3);
+        lastModelUpdate = result.LastUpdated;
+
+        await InvokeAsync(StateHasChanged);
     }
 }
