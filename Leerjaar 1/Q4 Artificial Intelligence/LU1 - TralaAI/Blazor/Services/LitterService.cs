@@ -13,10 +13,6 @@ public class LitterService(HttpClient httpClient) : ILitterService
     filter ??= new LitterFilterDto();
     var queryString = BuildQueryString(filter);
     var response = await _httpClient.GetAsync($"/api/v1/litter{queryString}");
-
-    if (response.StatusCode == HttpStatusCode.NotFound)
-      return null;
-
     if (!response.IsSuccessStatusCode)
       return null;
 
@@ -33,13 +29,6 @@ public class LitterService(HttpClient httpClient) : ILitterService
   {
     var queryString = $"?amountOfDays={amountOfDays}&CameraId={cameraId}";
     var response = await _httpClient.PostAsync($"/api/v1/litter/predict{queryString}", null);
-
-    if (response.StatusCode == HttpStatusCode.BadRequest)
-      return null;
-
-    if (response.StatusCode == HttpStatusCode.NotFound)
-      return null;
-
     if (!response.IsSuccessStatusCode)
       return null;
 
@@ -57,10 +46,6 @@ public class LitterService(HttpClient httpClient) : ILitterService
   public async Task<string?> ImportTrashDataAsync(CancellationToken cancellationToken = default)
   {
     var response = await _httpClient.PostAsync("/api/v1/TrashDTO/import-trash-data", null, cancellationToken);
-
-    if (response.StatusCode == HttpStatusCode.BadRequest)
-      return null;
-
     if (!response.IsSuccessStatusCode)
       return null;
 
@@ -70,10 +55,6 @@ public class LitterService(HttpClient httpClient) : ILitterService
   public async Task<List<LitterAmountCamera>?> GetAmountPerLocationAsync()
   {
     var response = await _httpClient.GetAsync("/api/v1/litter/amount-per-location");
-
-    if (response.StatusCode == HttpStatusCode.NotFound)
-      return null;
-
     if (!response.IsSuccessStatusCode)
       return null;
 
