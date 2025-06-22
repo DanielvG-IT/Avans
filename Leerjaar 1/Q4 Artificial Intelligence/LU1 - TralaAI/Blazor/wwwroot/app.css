@@ -241,18 +241,18 @@ h1:focus {
 }
 
 .table-scroll-container {
-    height: 40vh;            
-    overflow-y: auto;        
-    overflow-x: hidden;      
-    border-radius: 8px;
-    background-color: #fff;
+  height: 65vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 8px;
+  background-color: #fff;
 }
 
 .insane-table th,
 .insane-table td {
-    padding: 0.5rem;
-    text-align: left;
-    border-bottom: 1px solid #ccc;
+  padding: 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
 }
 
 .insane-table th {
