@@ -18,10 +18,22 @@
 </div> *@
 
 @code {
-    @* private List<Litter> litterPerCamera = new();
+    List<Camera> cameras = new();
 
     protected override async Task OnInitializedAsync()
     {
-        litterPerCamera = await _backendService.GetLittersAsync();
-    } *@
+        await GetCamerasAsync();
+    }
+
+    private async Task GetCamerasAsync()
+    {
+        var cameraResult = await _litterService.GetCamerasAsync();
+        if (cameraResult is null)
+        {
+            @* GENIUS ERROR! *@
+            return;
+        }
+
+        cameras = cameraResult;
+    }
 }
