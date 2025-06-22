@@ -99,7 +99,7 @@ namespace Api.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error making POST request to {Endpoint}", "/status");
+                _logger.LogError(ex, "Error making GET request to {Endpoint}", "/status");
                 return null;
             }
         }
