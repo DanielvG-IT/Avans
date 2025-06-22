@@ -67,20 +67,6 @@ public class LitterService(HttpClient httpClient) : ILitterService
     return await response.Content.ReadAsStringAsync(cancellationToken);
   }
 
-  public async Task<List<Litter>?> GetLatestLittersAsync(int? amount)
-  {
-    var queryString = amount.HasValue ? $"?amount={amount.Value}" : string.Empty;
-    var response = await _httpClient.GetAsync($"/api/v1/litter/latest{queryString}");
-
-    if (response.StatusCode == HttpStatusCode.NotFound)
-      return null;
-
-    if (!response.IsSuccessStatusCode)
-      return null;
-
-    return await response.Content.ReadFromJsonAsync<List<Litter>>();
-  }
-
   public async Task<List<LitterAmountCamera>?> GetAmountPerLocationAsync()
   {
     var response = await _httpClient.GetAsync("/api/v1/litter/amount-per-location");

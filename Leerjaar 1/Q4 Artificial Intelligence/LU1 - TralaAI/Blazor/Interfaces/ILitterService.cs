@@ -43,13 +43,6 @@ public interface ILitterService
   Task<string?> ImportTrashDataAsync(CancellationToken cancellationToken = default);
 
   /// <summary>
-  /// Retrieves the latest litters, limited by the specified amount.
-  /// </summary>
-  /// <param name="amount">The maximum number of latest litters to retrieve.</param>
-  /// <returns>A task that represents the asynchronous operation. The task result contains a list of the latest litters or null.</returns>
-  Task<List<Litter>?> GetLatestLittersAsync(int? amount);
-
-  /// <summary>
   /// Retrieves the amount of each litter type per location.
   /// </summary>
   /// <returns>A task that represents the asynchronous operation. The task result contains the amount per location or null.</returns>
