@@ -31,7 +31,7 @@ namespace Api.Repository
             var query = _context.Litters.AsQueryable();
 
             if (filter.Type.HasValue)
-                query = query.Where(x => x.Type == filter.Type.Value);
+                query = query.Where(x => x.LitterCategory == filter.Type);
 
             if (filter.From.HasValue)
                 query = query.Where(x => x.TimeStamp >= filter.From.Value);
@@ -48,39 +48,30 @@ namespace Api.Repository
             return await query.ToListAsync();
         }
 
-        public async Task<List<Litter>> GetLatestAsync(int? amoutOfRecords = null)
+        public async Task<List<Litter>> GetLatestAsync(int amoutOfRecords = 100)
         {
-            var query = _context.Litters.AsQueryable();
-
-            if (amoutOfRecords is not null && amoutOfRecords > 0)
-            {
-                query = query.OrderByDescending(l => l.TimeStamp).Take(amoutOfRecords.Value);
-            }
-            else
-            {
-                query = query.OrderByDescending(l => l.TimeStamp).Take(100);
-            }
-
-            return await query.ToListAsync();
+            return await _context.Litters.OrderByDescending(l => l.TimeStamp).Take(amoutOfRecords).ToListAsync();
         }
 
-        public async Task<LitterTypeAmount?> GetAmountPerLocationAsync()
+        public async Task<List<LitterAmountCamera>> GetAmountPerCameraAsync()
         {
-            var query = _context.Litters.AsQueryable();
+            var query = _context.Cameras
+                .GroupJoin(
+                    _context.Litters,
+                    camera => camera.Id,
+                    litter => litter.CameraId,
+                    (camera, litters) => new LitterAmountCamera
+                    {
+                        CameraId = camera.Id,
+                        Organic = litters.Count(l => l.LitterCategory == LitterCategory.Organic),
+                        Plastic = litters.Count(l => l.LitterCategory == LitterCategory.Plastic),
+                        Paper = litters.Count(l => l.LitterCategory == LitterCategory.Paper),
+                        Glass = litters.Count(l => l.LitterCategory == LitterCategory.Glass),
+                        Metal = litters.Count(l => l.LitterCategory == LitterCategory.Metal)
+                    }
+                );
 
-            var groupedQuery = await query.GroupBy(l => l.CameraId)
-                            .Select(g => new LitterTypeAmount
-                            {
-                                Organic = g.Count(l => l.Type == LitterCategory.Organic),
-                                Paper = g.Count(l => l.Type == LitterCategory.Paper),
-                                Plastic = g.Count(l => l.Type == LitterCategory.Plastic),
-                                Glass = g.Count(l => l.Type == LitterCategory.Glass),
-                                Metal = g.Count(l => l.Type == LitterCategory.Metal)
-                            })
-                            .OrderByDescending(l => l.Organic + l.Paper + l.Plastic + l.Glass + l.Metal)
-                            .FirstOrDefaultAsync();
-
-            return groupedQuery;
+            return await query.ToListAsync();
         }
     }
 }

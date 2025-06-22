@@ -52,9 +52,12 @@ namespace Api.Services
         {
             try
             {
-                var results = await GetAggregatedTrashAsync();
+                var request = new HttpRequestMessage(HttpMethod.Get, "/Litter/getLitter");
+                var response = await _httpClient.SendAsync(request, ct);
+                var results = await response.Content.ReadFromJsonAsync<List<AggregatedTrashDto>>(cancellationToken: ct);
                 if (results is null || results.Count == 0)
                 {
+                    Console.WriteLine("Couldn't import sensoring data because we received NULL"); // TODO @SanderBosselaar Maybe add more error handeling?
                     return false;
                 }
 
@@ -78,13 +81,13 @@ namespace Api.Services
                     var litter = new Litter
                     {
                         Id = trash.Id,
-                        Type = switchedType ?? LitterCategory.Unknown,
+                        LitterCategory = switchedType ?? LitterCategory.Unknown,
                         TimeStamp = trash.Date,
                         Confidence = trash.Confidence,
-                        Weather = _dTOService.GetWeatherCategory(trash.Weather) ?? WeatherCategory.Unknown,
+                        WeatherCategory = _dTOService.GetWeatherCategory(trash.Weather) ?? WeatherCategory.Unknown,
                         Temperature = trash.Temperature,
                         IsHoliday = isHoliday,
-                        CameraId = 1 // Assuming a sensoring group camera ID
+                        CameraId = 2 // Assuming a sensoring group camera ID
                     };
 
                     newLitters.Add(litter);
@@ -112,18 +115,6 @@ namespace Api.Services
             {
                 return false;
             }
-        }
-
-        private async Task<List<AggregatedTrashDto>> GetAggregatedTrashAsync()
-        {
-            var request = new HttpRequestMessage(HttpMethod.Get, "/Litter/getLitter");
-            var response = await _httpClient.SendAsync(request);
-
-            if (!response.IsSuccessStatusCode) // TODO Je kunt hier eventueel logging of foutafhandeling toevoegen
-                return [];
-
-            var content = await response.Content.ReadFromJsonAsync<List<AggregatedTrashDto>>();
-            return content ?? [];
         }
     }
 }

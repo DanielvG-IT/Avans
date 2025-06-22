@@ -38,6 +38,23 @@ namespace Api.Controllers
             }
         }
 
+        [HttpGet("fastapi/model")]
+        public async Task<IActionResult> GetFastApiStatus([FromQuery] int cameraId)
+        {
+            try
+            {
+                var cameraModelStatus = await _fastApiPredictionService.GetModelStatus(cameraId);
+                if (cameraModelStatus is null)
+                    return StatusCode(503, new HealthStatus("Fast API model status not found", DateTime.UtcNow));
+
+                return Ok(cameraModelStatus);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new HealthStatus($"Error checking Fast API status: {ex.Message}", DateTime.UtcNow));
+            }
+        }
+
         [HttpGet("holidayapi")]
         public async Task<IActionResult> GetHolidayApiStatus()
         {

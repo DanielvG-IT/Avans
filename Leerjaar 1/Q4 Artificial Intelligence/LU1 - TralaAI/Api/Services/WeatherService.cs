@@ -43,9 +43,7 @@ public class WeatherService(HttpClient httpClient, IOptions<ApiKeysOptions> apiK
             return cachedResult;
         }
 
-        var requestUrl = $"/v1/forecast.json?key={_apiKey}&q=Breda&days={amountOfDays}&aqi=no&alerts=no";
-        var response = await _httpClient.GetAsync(requestUrl);
-
+        var response = await _httpClient.GetAsync($"/v1/forecast.json?key={_apiKey}&q=Breda&days={amountOfDays}&aqi=no&alerts=no");
         if (!response.IsSuccessStatusCode)
             throw new HttpRequestException($"Failed to fetch weather data: {response.ReasonPhrase}");
         var content = await response.Content.ReadAsStringAsync();

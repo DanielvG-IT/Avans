@@ -43,11 +43,11 @@ public interface ILitterRepository
     /// </summary>
     /// <param name="amoutOfRecords">The optional number of records to retrieve. If null, retrieves all available records.</param>
     /// <returns>A task representing the asynchronous operation, containing a list of the latest litter records.</returns>
-    Task<List<Litter>> GetLatestAsync(int? amoutOfRecords = null);
+    Task<List<Litter>> GetLatestAsync(int amoutOfRecords = 100);
 
     /// <summary>
     /// Retrieves the amount of litter per location asynchronously.
     /// </summary>
     /// <returns>A task representing the asynchronous operation, containing the amount of litter per location.</returns>
-    Task<LitterTypeAmount?> GetAmountPerLocationAsync();
+    Task<List<LitterAmountCamera>> GetAmountPerCameraAsync();
 }
