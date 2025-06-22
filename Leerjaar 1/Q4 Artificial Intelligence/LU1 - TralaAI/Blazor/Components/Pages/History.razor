@@ -49,14 +49,27 @@
                     <ApexPointSeries TItem="TotalPerDay" Items="totalPerDays" SeriesType="SeriesType.Heatmap" Name="Papier"
                         XValue="@(e => e.Day.ToString("dd-MM"))" YValue="@(e => e.Paper)" />
                     <ApexPointSeries TItem="TotalPerDay" Items="totalPerDays" SeriesType="SeriesType.Heatmap" Name="Plastic"
-                        XValue="@(e => e.Day.ToString("dd-MM"))" YValue="@(e => e.Plasic)" />
+                        XValue="@(e => e.Day.ToString("dd-MM"))" YValue="@(e => e.Plastic)" />
                 </ApexChart>
             }
         </div>
     </div>
     <div class="insane-table-container">
         <h3>Recente afvaldetecties</h3>
-        
+
+        <DateRangePicker Culture="@(System.Globalization.CultureInfo.GetCultureInfo("nl-NL"))"
+            OnRangeSelect="GetLitterAsync">
+            <PickerTemplate>
+                <div id="@context.Id" @onclick="context.Toggle"
+                    style="background: #fff; cursor: pointer; padding: 5px 10px; width: 250px; border: 1px solid #ccc;">
+                    <i class="oi oi-calendar"></i>&nbsp;
+                    <span>@context.FormattedRange @(string.IsNullOrEmpty(context.FormattedRange) ? "Kies datums..." :
+                                                "")</span>
+                    <i class="oi oi-chevron-bottom float-right"></i>
+                </div>
+            </PickerTemplate>
+        </DateRangePicker>
+
         @if (recentLitter.Count == 0)
         {
             <p>Er zijn momenteel geen recente afvaldetecties.</p>
@@ -127,6 +140,7 @@
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         padding: 1rem;
     }
+
     .geschiedenis.titel {
         color: #6a5acd;
         font-size: 2.5rem;
@@ -134,7 +148,7 @@
         margin-bottom: 1rem;
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         font-weight: 700;
-    } 
+    }
 </style>
 
 @code {
@@ -148,7 +162,7 @@
     {
         public DateTime Day { get; set; }
         public int Glass { get; set; }
-        public int Plasic { get; set; }
+        public int Plastic { get; set; }
         public int Metal { get; set; }
         public int Organic { get; set; }
         public int Paper { get; set; }
@@ -160,14 +174,13 @@
     private List<TotalLitterPerCamera> totalLitterPerCamera = new();
     private ApexChartOptions<TotalLitterPerCamera> options { get; set; } = new();
 
-    private DateTime StartDate = DateTime.Now;
-    private DateTime EndDate = DateTime.Now.AddDays(-5);
+    DateTimeOffset? StartDate { get; set; } = DateTime.Today.AddDays(-5);
+    DateTimeOffset? EndDate { get; set; } = DateTime.Today;
 
     protected override async Task OnInitializedAsync()
     {
         await GetCamerasAsync();
         await GetLitterPerCameraAsync();
-        await GetLatestLitterAsync();
 
         options.PlotOptions = new PlotOptions
         {
@@ -185,15 +198,16 @@
         };
     }
 
-    private async Task GetLatestLitterAsync()
+    private async Task GetLitterAsync(DateRange range)
     {
-        var filter = new LitterFilterDto { From = StartDate, To = EndDate };
+        var filter = new LitterFilterDto { From = range.Start.DateTime, To = range.End.DateTime };
         var litterResult = await _litterService.GetLittersAsync(filter);
         if (litterResult is null)
         {
             @* GENIUS ERROR! *@
             return;
         }
+
         recentLitter = litterResult;
 
         totalPerDays = litterResult
@@ -205,10 +219,12 @@
             Metal = g.Count(x => x.LitterCategory == LitterCategory.Metal),
             Organic = g.Count(x => x.LitterCategory == LitterCategory.Organic),
             Paper = g.Count(x => x.LitterCategory == LitterCategory.Paper),
-            Plasic = g.Count(x => x.LitterCategory == LitterCategory.Plastic)
+            Plastic = g.Count(x => x.LitterCategory == LitterCategory.Plastic)
         })
         .OrderBy(x => x.Day)
         .ToList();
+
+        StateHasChanged();
     }
 
     private async Task GetCamerasAsync()
