@@ -147,34 +147,4 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
 
         return Ok(amountPerLocation);
     }
-
-    [HttpGet("history")]
-    public async Task<ActionResult<object>> GetHistory()
-    {
-        try
-        {
-            var amountPerLocation = await _litterRepository.GetAmountPerCameraAsync();
-            var history = await _litterRepository.GetLatestAsync(100);
-
-            if (history is null || amountPerLocation is null)
-                return BadRequest("Error getting data from database");
-
-            var response = new LitterHistoryResponse
-            {
-                AmountPerLocation = amountPerLocation,
-                History = history,
-                Metadata = new LitterHistoryMetadata
-                {
-                    RetrievedAt = DateTime.UtcNow,
-                    RecordCount = history.Count
-                }
-            };
-
-            return Ok(response);
-        }
-        catch (Exception ex)
-        {
-            return Problem(detail: ex.Message, statusCode: 500, title: "An unexpected error occurred while retrieving litter history.");
-        }
-    }
 }
