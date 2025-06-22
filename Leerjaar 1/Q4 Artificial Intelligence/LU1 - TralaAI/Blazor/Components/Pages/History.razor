@@ -50,7 +50,7 @@
             }
         </div>
     </div>
-    <div class="box-container mt-4" style="height: 80vh;">
+    <div class="insane-table-container">
         <h3>Recente afvaldetecties</h3>
         @if (recentLitter.Count == 0)
         {
@@ -58,33 +58,56 @@
         }
         else
         {
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Type</th>
-                    <th>Timestamp</th>
-                    <th>Confidence</th>
-                    <th>Weather</th>
-                    <th>Temperature</th>
-                    <th>Location</th>
-                    <th>IsHoliday</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var litter in recentLitter)
-                {
+            <table class="insane-table">
+                @* TODO @BaasW Please make this scrollable! *@
+                <thead>
                     <tr>
-                        <td>@litter.Id</td>
-                        <td>@litter.Type</td>
-                        <td>@litter.TimeStamp.ToString("dd-MM-yyyy")</td>
-                        <td>@litter.Confidence</td>
-                        <td>@litter.Weather</td>
-                        <td>@litter.Temperature</td>
-                        <td>@litter.IsHoliday</td>
-                        <td>@litter.CameraId</td>
+                        <th>ID</th>
+                        <th>Type</th>
+                        <th>Timestamp</th>
+                        <th>Weather</th>
+                        <th>Temperature</th>
+                        <th>Location</th>
+                        <th>IsHoliday</th>
                     </tr>
-                }
-            </tbody>
+                </thead>
+                <tbody>
+                    @foreach (var litter in recentLitter)
+                    {
+                        <tr>
+                            <td>@litter.Id</td>
+                            <td>
+                                <span class="type-badge type-@litter.LitterCategory.ToString().ToLower()">
+                                    @litter.Type
+                                </span>
+                            </td>
+                            <td>@litter.TimeStamp.ToString("dd-MM-yyyy HH:mm")</td>
+                            <td>
+                                <span class="weather-icon weather-@litter.Weather.ToString().ToLower()"></span>
+                                @litter.Weather
+                            </td>
+                            <td>
+                                <span class="temp-badge">@litter.Temperature&nbsp;°C</span>
+                            </td>
+                            <td>
+                                <span class="location-badge">
+                                    @(cameras.FirstOrDefault(c => c.Id == litter.CameraId)?.Location ?? "Onbekend")
+                                </span>
+                            </td>
+                            <td>
+                                @if (litter.IsHoliday)
+                                {
+                                    <span class="holiday-badge">Ja</span>
+                                }
+                                else
+                                {
+                                    <span class="no-holiday-badge">Nee</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         }
     </div>
 </div>
