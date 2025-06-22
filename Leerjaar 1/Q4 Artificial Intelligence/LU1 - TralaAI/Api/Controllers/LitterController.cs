@@ -138,7 +138,7 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
     }
 
     [HttpGet("amount-per-location")]
-    public async Task<ActionResult<LitterAmountCamera>> GetAmountPerCamera()
+    public async Task<ActionResult> GetAmountPerCamera()
     {
         var amountPerLocation = await _litterRepository.GetAmountPerCameraAsync();
 
