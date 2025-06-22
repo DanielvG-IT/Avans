@@ -10,18 +10,18 @@ namespace Blazor.Models.Enums
     Unknown
   }
 
-  public static class CategoryExtensions
+  public static partial class CategoryExtensions
   {
     public static string ToFriendlyString(this LitterCategory category)
     {
       return category switch
       {
-        LitterCategory.Organic => "Organic",
-        LitterCategory.Plastic => "Plastic",
-        LitterCategory.Paper => "Paper",
-        LitterCategory.Metal => "Metal",
-        LitterCategory.Glass => "Glass",
-        _ => "Unknown"
+        LitterCategory.Organic => "organic",
+        LitterCategory.Plastic => "plastic",
+        LitterCategory.Paper => "paper",
+        LitterCategory.Metal => "metal",
+        LitterCategory.Glass => "glass",
+        _ => "unknown"
       };
     }
   }
