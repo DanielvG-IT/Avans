@@ -71,19 +71,19 @@
                 </tr>
             </thead>
             <tbody>
-                @* @foreach (var litter in recentLitter)
-                    {
-                        <tr>
-                            <td>@litter.Id</td>
-                            <td>@litter.Type</td>
-                            <td>@litter.TimeStamp.ToString("dd-MM-yyyy")</td>
-                            <td>@litter.Confidence</td>
-                            <td>@litter.Weather</td>
-                            <td>@litter.Temperature</td>
-                            <td>@litter.Location</td>
-                            <td>@litter.IsHoliday</td>
-                        </tr>
-                    } *@
+                @foreach (var litter in recentLitter)
+                {
+                    <tr>
+                        <td>@litter.Id</td>
+                        <td>@litter.Type</td>
+                        <td>@litter.TimeStamp.ToString("dd-MM-yyyy")</td>
+                        <td>@litter.Confidence</td>
+                        <td>@litter.Weather</td>
+                        <td>@litter.Temperature</td>
+                        <td>@litter.IsHoliday</td>
+                        <td>@litter.CameraId</td>
+                    </tr>
+                }
             </tbody>
         }
     </div>
@@ -125,7 +125,7 @@
     {
         await GetCamerasAsync();
         await GetLitterPerCameraAsync();
-        @* await GetLatestLitterAsync(); *@
+        await GetLatestLitterAsync();
 
         options.PlotOptions = new PlotOptions
         {
@@ -158,10 +158,10 @@
         .Select(g => new TotalPerDay
         {
             Day = g.Key,
-            Glass = g.Count(x => x.Type == LitterCategory.Glass),
-            Metal = g.Count(x => x.Type == LitterCategory.Metal),
-            Organic = g.Count(x => x.Type == LitterCategory.Organic),
-            Paper = g.Count(x => x.Type == LitterCategory.Paper)
+            Glass = g.Count(x => x.LitterCategory == LitterCategory.Glass),
+            Metal = g.Count(x => x.LitterCategory == LitterCategory.Metal),
+            Organic = g.Count(x => x.LitterCategory == LitterCategory.Organic),
+            Paper = g.Count(x => x.LitterCategory == LitterCategory.Paper)
         })
         .OrderBy(x => x.Day)
         .ToList();
