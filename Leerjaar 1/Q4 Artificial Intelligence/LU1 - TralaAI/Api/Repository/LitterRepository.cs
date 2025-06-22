@@ -55,23 +55,27 @@ namespace Api.Repository
 
         public async Task<List<LitterAmountCamera>> GetAmountPerCameraAsync()
         {
-            var query = _context.Cameras
+            var cameras = await _context.Cameras.ToListAsync();
+            var litters = await _context.Litters.ToListAsync();
+
+            var result = cameras
                 .GroupJoin(
-                    _context.Litters,
+                    litters,
                     camera => camera.Id,
                     litter => litter.CameraId,
-                    (camera, litters) => new LitterAmountCamera
+                    (camera, cameraLitters) => new LitterAmountCamera
                     {
                         CameraId = camera.Id,
-                        Organic = litters.Count(l => l.LitterCategory == LitterCategory.Organic),
-                        Plastic = litters.Count(l => l.LitterCategory == LitterCategory.Plastic),
-                        Paper = litters.Count(l => l.LitterCategory == LitterCategory.Paper),
-                        Glass = litters.Count(l => l.LitterCategory == LitterCategory.Glass),
-                        Metal = litters.Count(l => l.LitterCategory == LitterCategory.Metal)
+                        Organic = cameraLitters.Count(l => l.LitterCategory == LitterCategory.Organic),
+                        Plastic = cameraLitters.Count(l => l.LitterCategory == LitterCategory.Plastic),
+                        Paper = cameraLitters.Count(l => l.LitterCategory == LitterCategory.Paper),
+                        Glass = cameraLitters.Count(l => l.LitterCategory == LitterCategory.Glass),
+                        Metal = cameraLitters.Count(l => l.LitterCategory == LitterCategory.Metal)
                     }
-                );
+                )
+                .ToList();
 
-            return await query.ToListAsync();
+            return result;
         }
     }
 }
