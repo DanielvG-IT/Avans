@@ -3,14 +3,16 @@
 @using ApexCharts
 @using Blazor.Models
 @using Blazor.Interfaces
+@using Blazor.Models.Enums
 @inject ILitterService _litterService
 
-<div class="page-container">
-    <div>
-        <div class="donut">
+<div class="page-container" style="height: 140vh;">
+    <div style="display: flex; gap: 2rem; align-items: flex-start; flex-direction: row;">
+        <div class="box-container" style="flex: 1; height: 440px; display: flex; flex-direction: column;">
             @if (cameras.Count == 0 || totalLitterPerCamera is null || totalLitterPerCamera.Count == 0)
             {
-                <div class="loading-indicator" style="font-size:2rem; padding:2rem;">
+                <div class="loading-indicator"
+                    style="font-size:2rem; padding:2rem; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                     <div class="spinner" style="width:48px; height:48px; border-width:8px;"></div>
                     <span style="font-size:2rem; margin-top:1rem; display:block;">Bezig met laden...</span>
                 </div>
@@ -23,52 +25,53 @@
                         Name="Total Litter Per Camera" XValue="@(e => e.Location)" YValue="@(e => e.Amount)" />
                 </ApexChart>
             }
-
         </div>
-        @* <div class="heatmap">
+        <div class="box-container" style="flex: 1; height: 440px; display: flex; flex-direction: column;">
             @if (cameras.Count == 0 || totalLitterPerCamera is null || totalLitterPerCamera.Count == 0)
             {
-                <div class="loading-indicator">
+                <div class="loading-indicator"
+                    style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                     <div class="spinner"></div>
                     <span>Bezig met laden...</span>
                 </div>
             }
             else
             {
-                <ApexChart TItem="" Title="Incident Severity">
-
-                    @foreach (var source in incidents.GroupBy(e => e.Source))
-                    {
-                        <ApexPointSeries TItem="SupportIncident" Items="source.OrderBy(e => e.WeekNumber)"
-                            Name="@source.Key.ToString()" SeriesType="SeriesType.Heatmap" XValue="@(e => e.WeekName)"
-                            YAggregate="@(e => (int)e.Average(a=>a.Severity))" />
-                    }
-
+                <ApexChart TItem="TotalPerDay" Title="Aantal afval per dag" Height="400">
+                    <ApexPointSeries TItem="TotalPerDay" Items="totalPerDays" SeriesType="SeriesType.Heatmap" Name="Glas"
+                        XValue="@(e => e.Day.ToString("dd-MM"))" YValue="@(e => e.Glass)" />
+                    <ApexPointSeries TItem="TotalPerDay" Items="totalPerDays" SeriesType="SeriesType.Heatmap" Name="Metaal"
+                        XValue="@(e => e.Day.ToString("dd-MM"))" YValue="@(e => e.Metal)" />
+                    <ApexPointSeries TItem="TotalPerDay" Items="totalPerDays" SeriesType="SeriesType.Heatmap"
+                        Name="Organisch" XValue="@(e => e.Day.ToString("dd-MM"))" YValue="@(e => e.Organic)" />
+                    <ApexPointSeries TItem="TotalPerDay" Items="totalPerDays" SeriesType="SeriesType.Heatmap" Name="Papier"
+                        XValue="@(e => e.Day.ToString("dd-MM"))" YValue="@(e => e.Paper)" />
                 </ApexChart>
             }
-        </div> *@
-        <div class="recent-litter">
-            <h3>Recente afvaldetecties</h3>
-            @if (recentLitter.Count == 0)
-            {
-                <p>Er zijn momenteel geen recente afvaldetecties.</p>
-            }
-            else
-            {
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Type</th>
-                        <th>Timestamp</th>
-                        <th>Confidence</th>
-                        <th>Weather</th>
-                        <th>Temperature</th>
-                        <th>Location</th>
-                        <th>IsHoliday</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @* @foreach (var litter in recentLitter)
+        </div>
+    </div>
+    <div class="box-container mt-4" style="height: 80vh;">
+        <h3>Recente afvaldetecties</h3>
+        @if (recentLitter.Count == 0)
+        {
+            <p>Er zijn momenteel geen recente afvaldetecties.</p>
+        }
+        else
+        {
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Type</th>
+                    <th>Timestamp</th>
+                    <th>Confidence</th>
+                    <th>Weather</th>
+                    <th>Temperature</th>
+                    <th>Location</th>
+                    <th>IsHoliday</th>
+                </tr>
+            </thead>
+            <tbody>
+                @* @foreach (var litter in recentLitter)
                     {
                         <tr>
                             <td>@litter.Id</td>
@@ -81,14 +84,13 @@
                             <td>@litter.IsHoliday</td>
                         </tr>
                     } *@
-                </tbody>
-            }
-        </div>
+            </tbody>
+        }
     </div>
 </div>
 
 <style>
-    .donut {
+    .box-container {
         flex: 3;
         background-color: #ffffff;
         border-radius: 12px;
@@ -104,10 +106,20 @@
         public int Amount { get; set; }
     }
 
-    private ApexChartOptions<TotalLitterPerCamera> options { get; set; } = new();
+    private class TotalPerDay
+    {
+        public DateTime Day { get; set; }
+        public int Glass { get; set; }
+        public int Metal { get; set; }
+        public int Organic { get; set; }
+        public int Paper { get; set; }
+    }
+
     private List<Camera> cameras = new();
     private List<Litter> recentLitter = new();
+    private List<TotalPerDay> totalPerDays = new();
     private List<TotalLitterPerCamera> totalLitterPerCamera = new();
+    private ApexChartOptions<TotalLitterPerCamera> options { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -140,7 +152,21 @@
             return;
         }
         recentLitter = litterResult;
+
+        totalPerDays = litterResult
+        .GroupBy(l => l.TimeStamp.Date)
+        .Select(g => new TotalPerDay
+        {
+            Day = g.Key,
+            Glass = g.Count(x => x.Type == LitterCategory.Glass),
+            Metal = g.Count(x => x.Type == LitterCategory.Metal),
+            Organic = g.Count(x => x.Type == LitterCategory.Organic),
+            Paper = g.Count(x => x.Type == LitterCategory.Paper)
+        })
+        .OrderBy(x => x.Day)
+        .ToList();
     }
+
     private async Task GetCamerasAsync()
     {
         var cameraResult = await _litterService.GetCamerasAsync();
