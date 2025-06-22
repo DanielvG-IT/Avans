@@ -126,22 +126,10 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
         return Ok("Model retrained successfully.");
     }
 
-    [HttpGet("latest")]
-    public async Task<ActionResult<List<Litter>>> GetLatest([FromQuery] int amount = 100)
-    {
-        var litters = await _litterRepository.GetLatestAsync(amount);
-
-        if (litters is null || litters.Count == 0)
-            return NotFound("No latest litter records found.");
-
-        return Ok(litters);
-    }
-
     [HttpGet("amount-per-location")]
     public async Task<ActionResult> GetAmountPerCamera()
     {
         var amountPerLocation = await _litterRepository.GetAmountPerCameraAsync();
-
         if (amountPerLocation is null)
             return NotFound("No litter amount data found for the specified camera.");
 

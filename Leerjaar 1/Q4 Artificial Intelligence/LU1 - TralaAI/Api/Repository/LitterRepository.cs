@@ -48,11 +48,6 @@ namespace Api.Repository
             return await query.ToListAsync();
         }
 
-        public async Task<List<Litter>> GetLatestAsync(int amoutOfRecords = 100)
-        {
-            return await _context.Litters.OrderByDescending(l => l.TimeStamp).Take(amoutOfRecords).ToListAsync();
-        }
-
         public async Task<List<LitterAmountCamera>> GetAmountPerCameraAsync()
         {
             var cameras = await _context.Cameras.ToListAsync();
