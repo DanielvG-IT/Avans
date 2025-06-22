@@ -139,3 +139,82 @@ h1:focus {
     flex-direction: column;
   }
 }
+
+.model-status-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.model-status-label {
+  min-width: 120px;
+  color: #555;
+  font-weight: 500;
+}
+
+.model-status-value {
+  margin-left: 0.5rem;
+  color: #222;
+}
+
+.skeleton {
+  display: inline-block;
+  height: 1em;
+  background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.2s infinite linear;
+  border-radius: 4px;
+}
+
+.skeleton-text {
+  height: 1em;
+}
+
+.w-75 {
+  width: 75px;
+}
+
+.w-50 {
+  width: 50px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.retrain-button-modern {
+  background: linear-gradient(90deg, #0078d4 60%, #005fa3 100%);
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.retrain-button-modern:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.retrain-button-modern:hover:not(:disabled) {
+  background: linear-gradient(90deg, #005fa3 60%, #0078d4 100%);
+}
+
+.retrain-success {
+  color: #28a745;
+  font-size: 0.98rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}

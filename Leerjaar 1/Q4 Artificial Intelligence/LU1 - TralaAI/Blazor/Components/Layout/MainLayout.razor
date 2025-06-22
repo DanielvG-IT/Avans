@@ -10,9 +10,6 @@
 
     <main style="overflow-y: auto; height: 100vh;">
         <div class="top-row px-4 status-bar">
-            <div class="status-left">
-                <strong>Laatste update AI-model:</strong> @lastUpdated?.ToString()
-            </div>
             <div class="status-right">
                 <a class="btn btn-primary" href="/settings">Status</a>
             </div>
@@ -31,34 +28,8 @@
 </div>
 
 @code {
-    private DateTime? lastUpdated;
-    private bool pythonStatus;
-    private bool dotnetStatus;
-    private bool holidayStatus;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await SimuleerStatusUpdate();
-    }
-
-    private async Task SimuleerStatusUpdate()
-    {
-        // Simuleer willekeurige status
-        var random = new Random();
-        pythonStatus = random.Next(2) == 0;
-        dotnetStatus = random.Next(2) == 0;
-        holidayStatus = random.Next(2) == 0;
-
-        lastUpdated = DateTime.Now;
-        await InvokeAsync(StateHasChanged);
-    }
-}
-
-
-@code {
     private void GoToSettings()
     {
         Navigation.NavigateTo("/settings");
     }
 }
-

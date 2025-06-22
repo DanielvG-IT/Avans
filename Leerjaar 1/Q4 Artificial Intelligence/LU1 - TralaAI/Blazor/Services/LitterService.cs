@@ -17,7 +17,9 @@ public class LitterService(HttpClient httpClient) : ILitterService
     if (response.StatusCode == HttpStatusCode.NotFound)
       return null;
 
-    response.EnsureSuccessStatusCode();
+    if (!response.IsSuccessStatusCode)
+      return null;
+
     return await response.Content.ReadFromJsonAsync<List<Litter>>();
   }
 
@@ -38,7 +40,9 @@ public class LitterService(HttpClient httpClient) : ILitterService
     if (response.StatusCode == HttpStatusCode.NotFound)
       return null;
 
-    response.EnsureSuccessStatusCode();
+    if (!response.IsSuccessStatusCode)
+      return null;
+
     return await response.Content.ReadFromJsonAsync<List<PredictionResponse>>();
   }
 
@@ -57,7 +61,9 @@ public class LitterService(HttpClient httpClient) : ILitterService
     if (response.StatusCode == HttpStatusCode.BadRequest)
       return null;
 
-    response.EnsureSuccessStatusCode();
+    if (!response.IsSuccessStatusCode)
+      return null;
+
     return await response.Content.ReadAsStringAsync(cancellationToken);
   }
 
@@ -69,7 +75,9 @@ public class LitterService(HttpClient httpClient) : ILitterService
     if (response.StatusCode == HttpStatusCode.NotFound)
       return null;
 
-    response.EnsureSuccessStatusCode();
+    if (!response.IsSuccessStatusCode)
+      return null;
+
     return await response.Content.ReadFromJsonAsync<List<Litter>>();
   }
 
@@ -80,19 +88,10 @@ public class LitterService(HttpClient httpClient) : ILitterService
     if (response.StatusCode == HttpStatusCode.NotFound)
       return null;
 
-    response.EnsureSuccessStatusCode();
+    if (!response.IsSuccessStatusCode)
+      return null;
+
     return await response.Content.ReadFromJsonAsync<LitterTypeAmount>();
-  }
-
-  public async Task<LitterHistoryResponse?> GetLitterHistoryAsync()
-  {
-    var response = await _httpClient.GetAsync("/api/v1/litter/history");
-
-    if (response.StatusCode == HttpStatusCode.InternalServerError)
-      throw new Exception("An unexpected error occurred while retrieving litter history.");
-
-    response.EnsureSuccessStatusCode();
-    return await response.Content.ReadFromJsonAsync<LitterHistoryResponse>();
   }
 
   private static string BuildQueryString(LitterFilterDto filter)

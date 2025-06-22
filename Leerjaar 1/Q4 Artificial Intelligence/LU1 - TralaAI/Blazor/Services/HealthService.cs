@@ -1,3 +1,4 @@
+using Api.Models;
 using Blazor.Interfaces;
 
 namespace Blazor.Services;
@@ -29,6 +30,22 @@ public class HealthService(HttpClient httpClient) : IHealthService
         catch (Exception)
         {
             return false;
+        }
+    }
+
+    public async Task<ModelStatusResponse?> GetFastApiModelDataAsync(int cameraId)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"/api/v1/health/fastapi/model?cameraId={cameraId}");
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadFromJsonAsync<ModelStatusResponse?>();
+        }
+        catch (Exception)
+        {
+            return null;
         }
     }
 
