@@ -74,7 +74,7 @@
         <div class="box-container" style="flex: 1; height: 440px; display: flex; flex-direction: column;">
             @if (totalPerDays is not null && totalPerDays.Count != 0)
             {
-                <ApexChart TItem="TotalPerDay" Title="Hoeveelheid afval per type per dag." Height="400">
+                <ApexChart TItem="TotalPerDay" Title="Hoeveelheid afval per type per dag." Height="400" @ref="heatmapChart">
                     <ApexPointSeries TItem="TotalPerDay" Items="totalPerDays" SeriesType="SeriesType.Heatmap" Name="Glas"
                         XValue="@(e => e.Day.ToString("dd-MM"))" YValue="@(e => e.Glass)" />
                     <ApexPointSeries TItem="TotalPerDay" Items="totalPerDays" SeriesType="SeriesType.Heatmap" Name="Metaal"
@@ -229,6 +229,9 @@
     private List<Litter>? recentLitter = null!;
     private List<TotalPerDay>? totalPerDays = null!;
     private List<TotalLitterPerCamera>? totalLitterPerCamera = null!;
+
+    // Apex Charts
+    private ApexChart<TotalPerDay>? heatmapChart;
     private ApexChartOptions<TotalLitterPerCamera> options { get; set; } = new();
 
     DateTimeOffset? StartDate { get; set; }
@@ -292,6 +295,10 @@
         })
         .OrderBy(x => x.Day).ToList();
 
+        if (heatmapChart is not null)
+        {
+            await heatmapChart.UpdateSeriesAsync();
+        }
         StateHasChanged();
     }
 
@@ -330,7 +337,7 @@
                 Amount = camera.Glass + camera.Metal + camera.Organic + camera.Plastic + camera.Paper,
                 Location = cameras.Find(c => c.Id == camera.CameraId)?.Location ?? "Onbekend"
             };
-            
+
             totalLitterPerCamera.Add(item);
         }
         
