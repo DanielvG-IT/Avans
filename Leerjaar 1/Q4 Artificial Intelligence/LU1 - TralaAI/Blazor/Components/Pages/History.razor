@@ -4,6 +4,7 @@
 @using Blazor.Models
 @using Blazor.Interfaces
 @using Blazor.Models.Enums
+@using BlazorDateRangePicker
 @inject ILitterService _litterService
 
 <div class="page-container" style="height: 140vh;">
@@ -159,6 +160,9 @@
     private List<TotalLitterPerCamera> totalLitterPerCamera = new();
     private ApexChartOptions<TotalLitterPerCamera> options { get; set; } = new();
 
+    private DateTime StartDate = DateTime.Now;
+    private DateTime EndDate = DateTime.Now.AddDays(-5);
+
     protected override async Task OnInitializedAsync()
     {
         await GetCamerasAsync();
@@ -183,7 +187,8 @@
 
     private async Task GetLatestLitterAsync()
     {
-        var litterResult = await _litterService.GetLatestLittersAsync(150);
+        var filter = new LitterFilterDto { From = StartDate, To = EndDate };
+        var litterResult = await _litterService.GetLittersAsync(filter);
         if (litterResult is null)
         {
             @* GENIUS ERROR! *@
