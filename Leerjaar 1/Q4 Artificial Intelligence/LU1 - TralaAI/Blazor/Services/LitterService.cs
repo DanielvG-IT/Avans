@@ -81,7 +81,7 @@ public class LitterService(HttpClient httpClient) : ILitterService
     return await response.Content.ReadFromJsonAsync<List<Litter>>();
   }
 
-  public async Task<LitterTypeAmount?> GetAmountPerLocationAsync()
+  public async Task<List<LitterAmountCamera>?> GetAmountPerLocationAsync()
   {
     var response = await _httpClient.GetAsync("/api/v1/litter/amount-per-location");
 
@@ -91,7 +91,7 @@ public class LitterService(HttpClient httpClient) : ILitterService
     if (!response.IsSuccessStatusCode)
       return null;
 
-    return await response.Content.ReadFromJsonAsync<LitterTypeAmount>();
+    return await response.Content.ReadFromJsonAsync<List<LitterAmountCamera>?>();
   }
 
   private static string BuildQueryString(LitterFilterDto filter)

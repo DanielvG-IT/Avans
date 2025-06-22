@@ -53,5 +53,5 @@ public interface ILitterService
   /// Retrieves the amount of each litter type per location.
   /// </summary>
   /// <returns>A task that represents the asynchronous operation. The task result contains the amount per location or null.</returns>
-  Task<LitterTypeAmount?> GetAmountPerLocationAsync();
+  Task<List<LitterAmountCamera>?> GetAmountPerLocationAsync();
 }
