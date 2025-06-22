@@ -54,10 +54,4 @@ public interface ILitterService
   /// </summary>
   /// <returns>A task that represents the asynchronous operation. The task result contains the amount per location or null.</returns>
   Task<LitterTypeAmount?> GetAmountPerLocationAsync();
-
-  /// <summary>
-  /// Retrieves the history of litter data.
-  /// </summary>
-  /// <returns>A task that represents the asynchronous operation. The task result contains the litter history response or null.</returns>
-  Task<LitterHistoryResponse?> GetLitterHistoryAsync();
 }

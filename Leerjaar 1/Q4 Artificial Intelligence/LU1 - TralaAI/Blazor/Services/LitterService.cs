@@ -94,19 +94,6 @@ public class LitterService(HttpClient httpClient) : ILitterService
     return await response.Content.ReadFromJsonAsync<LitterTypeAmount>();
   }
 
-  public async Task<LitterHistoryResponse?> GetLitterHistoryAsync()
-  {
-    var response = await _httpClient.GetAsync("/api/v1/litter/history");
-
-    if (response.StatusCode == HttpStatusCode.InternalServerError)
-      throw new Exception("An unexpected error occurred while retrieving litter history.");
-
-    if (!response.IsSuccessStatusCode)
-      return null;
-
-    return await response.Content.ReadFromJsonAsync<LitterHistoryResponse>();
-  }
-
   private static string BuildQueryString(LitterFilterDto filter)
   {
     var properties = typeof(LitterFilterDto).GetProperties();
