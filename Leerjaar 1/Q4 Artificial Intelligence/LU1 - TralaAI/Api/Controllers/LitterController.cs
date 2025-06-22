@@ -153,13 +153,11 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
     {
         try
         {
-            var amountPerLocationTask = _litterRepository.GetAmountPerLocationAsync();
-            var historyTask = _litterRepository.GetLatestAsync(100);
+            var amountPerLocation = await _litterRepository.GetAmountPerLocationAsync();
+            var history = await _litterRepository.GetLatestAsync(100);
 
-            await Task.WhenAll(amountPerLocationTask, historyTask);
-
-            var amountPerLocation = await amountPerLocationTask ?? new LitterTypeAmount();
-            var history = await historyTask ?? [];
+            if (history is null || amountPerLocation is null)
+                return BadRequest("Error getting data from database");
 
             var response = new LitterHistoryResponse
             {
