@@ -7,28 +7,24 @@
 
 <div class="page-container">
     <div class="donut">
-    @if(totalLitterPerCamera is null || totalLitterPerCamera.Count == 0)
-    {
-        <p>Er zijn nog geen camera's gevonden.</p>
-    }
-    else
-    {
-    <ApexChart TItem="TotalLitterPerCamera" Title="Totaal gedetecteerd afval per camera" Height="400">
-
-    <ApexPointSeries TItem="TotalLitterPerCamera"
-                Items="totalLitterPerCamera"
-                SeriesType="SeriesType.Donut"
-                Name="Total Litter Per Camera"
-                XValue="@(e => e.Location)"
-                YValue="@(e => e.Amount)"/>
-    </ApexChart>    
-    }
+        @if (totalLitterPerCamera is null || totalLitterPerCamera.Count == 0)
+        {
+            <p>Er zijn nog geen camera's gevonden.</p>
+        }
+        else
+        {
+            <ApexChart TItem="TotalLitterPerCamera" Title="Totaal gedetecteerd afval per camera" Height="400"
+                Options="options">
+                <ApexPointSeries TItem="TotalLitterPerCamera" Items="totalLitterPerCamera" SeriesType="SeriesType.Donut"
+                    Name="Total Litter Per Camera" XValue="@(e => e.Location)" YValue="@(e => e.Amount)" />
+            </ApexChart>
+        }
 
     </div>
 </div>
 
 <style>
-    .donut{
+    .donut {
         flex: 3;
         background-color: #ffffff;
         border-radius: 12px;
@@ -40,17 +36,33 @@
 @code {
     private class TotalLitterPerCamera
     {
-        public required string Location {get; set;}
-        public required int Amount { get; set; }
+        public required string Location { get; set; }
+        public int Amount { get; set; }
     }
 
-    List<Camera> cameras = new();
-    List<TotalLitterPerCamera> totalLitterPerCamera = new();
+    private ApexChartOptions<TotalLitterPerCamera> options { get; set; } = new();
+    private List<Camera> cameras = new();
+    private List<TotalLitterPerCamera> totalLitterPerCamera = new();
 
     protected override async Task OnInitializedAsync()
     {
         await GetCamerasAsync();
         await GetLitterPerCameraAsync();
+
+        options.PlotOptions = new PlotOptions
+        {
+            Pie = new PlotOptionsPie
+            {
+                Donut = new PlotOptionsDonut
+                {
+                    Labels = new DonutLabels
+                    {
+                        Total = new DonutLabelTotal { FontSize = "24px", Color = "#D807B8", Formatter = @"function (w)
+{return w.globals.seriesTotals.reduce((a, b) => { return (a + b) }, 0)}" }
+                    }
+                }
+            }
+        };
     }
 
     private async Task GetCamerasAsync()
@@ -74,7 +86,8 @@
         }
         foreach (var camera in litterResult)
         {
-            var item = new TotalLitterPerCamera{
+            var item = new TotalLitterPerCamera
+            {
                 Amount = camera.Glass + camera.Metal + camera.Organic + camera.Plastic + camera.Paper,
                 Location = cameras.Find(c => c.Id == camera.CameraId)?.Location ?? "Onbekend"
             };
