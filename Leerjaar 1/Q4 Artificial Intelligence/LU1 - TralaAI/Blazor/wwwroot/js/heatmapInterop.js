@@ -27,9 +27,10 @@ window.heatmapInterop = {
 
         // Your percentage-based data points
         const rawData = [
-            { x: 0.42, y: 0.50, value: 4 },  // 42% from left, 50% from top
-            { x: 0.60, y: 0.42, value: 2 },
-            { x: 0.30, y: 0.58, value: 3 }
+            { x: 0.50, y: 0.55, value: 5 }, //mc               // 42% from left, 50% from top
+            { x: 0.80, y: 0.65, value: 4 }, //avans 
+            { x: 0.65, y: 0.90, value: 3 }, //suburban
+            { x: 0.25, y: 0.10, value: 3 }  //bedrijven
         ];
 
         // Convert percentage positions to pixel values
@@ -53,3 +54,8 @@ window.heatmapInterop = {
 window.addEventListener("load", () => {
     console.log("Window loaded, ready for JS interop.");
 });
+
+//avans = 0.80 0.65
+//mcdonalds = 0.50 0.55
+//kievietstraat = 0.65 0.90
+//bedrijventerrein = 0.25 0.10
