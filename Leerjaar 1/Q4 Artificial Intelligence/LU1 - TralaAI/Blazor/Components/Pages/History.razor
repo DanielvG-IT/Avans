@@ -5,24 +5,42 @@
 @using Blazor.Interfaces
 @inject ILitterService _litterService
 
-@* <div class="page-container">
-    <ApexChart TItem="totalLitter" Title="Totaal gedetecteerd afval">
+<div class="page-container">
+    <ApexChart TItem="TotalLitterPerCamera" Title="Totaal gedetecteerd afval">
 
-    <ApexPointSeries TItem="totalLitter"
-                Items="litterPerCamera"
+    <ApexPointSeries TItem="TotalLitterPerCamera"
+                Items="totalLitterPerCamera"
                 SeriesType="SeriesType.Donut"
                 Name="Gross Value"
                 XValue="@(e => e.Country)"
-                YAggregate="@(e => e.Sum(e => e.GrossValue))"/>
+                YAggregate="@(e => e.Amount)"/>
     </ApexChart>
-</div> *@
+</div>
 
 @code {
+    private class TotalLitterPerCamera
+    {
+        public required string Location {get; set;}
+        public required int Amount { get; set; }
+    }
+
     List<Camera> cameras = new();
+    List<LitterAmountCamera> litterPerCamera = new();
+    List<TotalLitterPerCamera> totalLitterPerCamera = new();
 
     protected override async Task OnInitializedAsync()
     {
         await GetCamerasAsync();
+        await GetLitterPerCameraAsync();
+        
+        foreach (var camera in litterPerCamera)
+        {
+            var item = new TotalLitterPerCamera{
+                Amount = camera.Glass + camera.Metal + camera.Organic + camera.Plastic + camera.Paper,
+                Location = cameras.Find(c => c.Id == camera.CameraId)?.Location ?? "Onbekend"
+            };
+            totalLitterPerCamera.Add(item);
+        }
     }
 
     private async Task GetCamerasAsync()
@@ -33,7 +51,17 @@
             @* GENIUS ERROR! *@
             return;
         }
-
         cameras = cameraResult;
+    }
+
+    private async Task GetLitterPerCameraAsync()
+    {
+        var litterResult = await _litterService.GetAmountPerLocationAsync();
+        if (litterResult is null)
+        {
+            @* GENIUS ERROR! *@
+            return;
+        }
+        litterPerCamera = litterResult;
     }
 }
