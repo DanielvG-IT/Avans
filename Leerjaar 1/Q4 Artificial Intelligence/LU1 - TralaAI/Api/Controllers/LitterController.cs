@@ -143,7 +143,7 @@ public class LitterController(ILitterRepository litterRepository, IFastApiPredic
         var amountPerLocation = await _litterRepository.GetAmountPerCameraAsync();
 
         if (amountPerLocation is null)
-            return NotFound("No litter amount data found for the specified location.");
+            return NotFound("No litter amount data found for the specified camera.");
 
         return Ok(amountPerLocation);
     }
