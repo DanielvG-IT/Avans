@@ -1,132 +1,109 @@
 ﻿@page "/heatmap"
-@using Blazor.Interfaces;
-@rendermode InteractiveServer
-@inject ILitterService _backendService;
 @inject IJSRuntime JS
+@rendermode InteractiveServer
 
 <div class="page-container">
-    <!-- Top Large section -->
-    <div class="top-section">
-        <h3>Heatmap</h3>
-        <div id="heatmapContainer" class="heatmap-box">
-            <img src="images/Bredakaart.png" alt="Map of Breda" class="heatmap-background" />
+    <div class="heatmap-container">
+        <div id="map" class="heatmap-map">
+            @if (isLoading)
+            {
+                <div class="heatmap-loading">
+                    <span class="loader"></span>
+                    <span>Loading heatmap...</span>
+                </div>
+            }
         </div>
-        <button class="btn btn-primary mt-3" @onclick="DrawHeatmap">Draw Heatmap</button>
+        <button class="heatmap-btn" @onclick="DrawHeatmap" disabled="@isLoading">
+            @(isLoading ? "Loading..." : "Draw Heatmap")
+        </button>
     </div>
-
 </div>
 
+<style>
+    .heatmap-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 2rem;
+        background: #f8fafc;
+        border-radius: 1rem;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+        max-width: 600px;
+        margin: 2rem auto;
+    }
+
+    .heatmap-map {
+        width: 100%;
+        height: 400px;
+        border-radius: 0.75rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+        background: #e0e7ef;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .heatmap-btn {
+        padding: 0.75rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #fff;
+        background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .heatmap-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .heatmap-btn:hover:enabled {
+        background: linear-gradient(90deg, #1d4ed8 0%, #0ea5e9 100%);
+    }
+
+    .heatmap-loading {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.7);
+        z-index: 2;
+    }
+</style>
+
 @code {
+    private bool _clientRendered;
+    private bool isLoading = false;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (firstRender && !_clientRendered)
         {
-            Console.WriteLine("Waiting 500ms before calling JS...");
-            await Task.Delay(500); // <-- gives JS time to initialize
-            await JS.InvokeVoidAsync("heatmapInterop.drawMap");
+            _clientRendered = true;
+            isLoading = true;
+            StateHasChanged();
+            await Task.Delay(50);
+            await JS.InvokeVoidAsync("drawHeatmap");
+            isLoading = false;
+            StateHasChanged();
         }
     }
 
     private async Task DrawHeatmap()
     {
-        await JS.InvokeVoidAsync("heatmapInterop.drawMap");
+        isLoading = true;
+        StateHasChanged();
+        await JS.InvokeVoidAsync("drawHeatmap");
+        isLoading = false;
+        StateHasChanged();
     }
 }
-
-
-
-<style>
-    .page-container {
-        display: flex;
-        flex-direction: column;
-        padding: 1rem;
-        height: 100%;
-        gap: 1rem;
-        box-sizing: border-box;
-    }
-
-    .top-section {
-        flex: 4;
-        background-color: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        padding: 1rem;
-    }
-
-
-    .heatmap-box {
-        height: 400px;
-        /* or any fixed size */
-        width: 100%;
-        border-radius: 8px;
-        background-color: #fafafa;
-        position: relative;
-        /* important for heatmap canvas */
-    }
-
-    .middle-section {
-        flex: 3;
-        display: flex;
-        gap: 1rem;
-    }
-
-    .left-panel,
-    .right-panel {
-        flex: 2;
-        background-color: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        padding: 1rem;
-    }
-
-    .bottom-section {
-        flex: 3;
-        background-color: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        padding: 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .top-bottom-split {
-        flex: 2;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .top-inner,
-    .bottom-inner {
-        flex: 2;
-        border-radius: 7px;
-    }
-
-    h3 {
-        color: #0078d4;
-        margin-bottom: 0.5rem;
-    }
-
-    .heatmap-box {
-        position: relative;
-        height: 600px;
-        width: 100%;
-        overflow: hidden;
-    }
-
-    .heatmap-background {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        z-index: 0;
-    }
-
-
-    @@media (max-width: 768px) {
-        .middle-section {
-            flex-direction: column;
-        }
-    }
-</style>
