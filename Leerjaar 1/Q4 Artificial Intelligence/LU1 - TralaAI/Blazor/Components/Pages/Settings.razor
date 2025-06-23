@@ -85,89 +85,89 @@
             </table>
 
         </div>
-        <!-- Blok 2: Model Info -->
+        <!-- Blok 2: AI-Model Informatie & Acties -->
         <div class="settings-block d-flex flex-column justify-content-between">
             <div>
-                <h3>Sensoring AI-Model status</h3>
-                <p><b>Bij opstart van de webapp wordt het model AI-Model opnieuw getraind. Via deze knop heb je ook de
-                        mogelijkheid om dit handmatig te forceren indien er nieuwe data beschikbaar is.</b></p>
+                <h3>AI-Model Beheer</h3>
+                <p>
+                    <b>Bekijk de status van het AI-model en train het handmatig indien nodig. Selecteer eerst een
+                        locatie om het juiste model te beheren.</b>
+                </p>
+                <div class="d-flex align-items-center mb-3" style="gap: 0.75rem;">
+                    <label for="cameraSelect" class="mb-0"><strong>Locatie:</strong></label>
+                    <select id="cameraSelect" @bind="selectedCameraId" @bind:after="OnCameraChanged" class="form-select"
+                        style="width: 220px;">
+                        @foreach (var camera in cameras)
+                        {
+                            <option value="@camera.Id">@camera.Location</option>
+                        }
+                    </select>
+                </div>
             </div>
-            <div class="d-flex justify-content-between align-items-start mt-auto pt-3 modern-model-status"
-                style="gap: 10rem;">
-                <div class="settings-block">
-                    <div class="model-status-row">
-                        <span class="model-status-label" style="padding-left: 1rem;"><strong>Response:</strong></span>
+            <div class="d-flex justify-content-between align-items-start mt-auto pt-3 modern-model-status enhanced-model-status"
+                style="gap: 4rem;">
+                <div class="settings-block model-status-card shadow-lg"
+                    style="min-width: 340px; border: 1px solid #e0e7ef; background: linear-gradient(135deg, #f8fbff 0%, #eaf1fb 100%);">
+                    <div class="model-status-row mb-3">
+                        <span class="model-status-label"><strong>Status:</strong></span>
                         @if (latestResponse is null)
                         {
-                            <span class="skeleton skeleton-text w-50" style="margin-left: 0.5rem;"></span>
+                            <span class="skeleton skeleton-text w-50 ms-2"></span>
                         }
                         else
                         {
-                            <span class="model-status-value" style="margin-left: 0.5rem;"><i>@latestResponse</i></span>
+                            <span class="model-status-value ms-2"><i>@latestResponse</i></span>
                         }
                     </div>
-                    <div class="model-status-row">
-                        <span class="model-status-label" style="padding-left: 1rem;"><strong>Model Type:</strong></span>
+                    <div class="model-status-row mb-3">
+                        <span class="model-status-label"><strong>Modeltype:</strong></span>
                         @if (latestResponse is null)
                         {
-                            <span class="skeleton skeleton-text w-50" style="margin-left: 0.5rem;"></span>
+                            <span class="skeleton skeleton-text w-50 ms-2"></span>
                         }
                         else
                         {
-                            <span class="model-status-value" style="margin-left: 0.5rem;">Random forest</span>
+                            <span class="model-status-value ms-2">Random forest</span>
                         }
                     </div>
-                    <div class="model-status-row">
-                        <span class="model-status-label" style="padding-left: 1rem;"><strong>Huidige
-                                RMSE:</strong></span>
+                    <div class="model-status-row mb-3">
+                        <span class="model-status-label"><strong>Huidige RMSE:</strong></span>
                         @if (modelRMSE is null)
                         {
-                            <span class="skeleton skeleton-text w-50" style="margin-left: 0.5rem;"></span>
+                            <span class="skeleton skeleton-text w-50 ms-2"></span>
                         }
                         else
                         {
-                            <span class="model-status-value" style="margin-left: 0.5rem;">@modelRMSE</span>
+                            <span class="model-status-value ms-2">@modelRMSE</span>
                         }
                     </div>
-                    <div class="model-status-row">
-                        <span class="model-status-label" style="padding-left: 1rem;"><strong>Locatie:</strong></span>
+                    <div class="model-status-row mb-3">
+                        <span class="model-status-label"><strong>Locatie:</strong></span>
                         @if (modelRMSE is null)
                         {
-                            <span class="skeleton skeleton-text w-50" style="margin-left: 0.5rem;"></span>
+                            <span class="skeleton skeleton-text w-50 ms-2"></span>
                         }
                         else
                         {
-                            <span class="model-status-value" style="margin-left: 0.5rem;">@location</span>
+                            <span class="model-status-value ms-2">@location</span>
                         }
                     </div>
                     <div class="model-status-row">
-                        <span class="model-status-label" style="padding-left: 1rem;"><strong>Laatst
-                                bijgewerkt:</strong></span>
+                        <span class="model-status-label"><strong>Laatst bijgewerkt:</strong></span>
                         @if (lastModelUpdate is null)
                         {
-                            <span class="skeleton skeleton-text w-50" style="margin-left: 0.5rem;"></span>
+                            <span class="skeleton skeleton-text w-50 ms-2"></span>
                         }
                         else
                         {
-                            <span class="model-status-value"
-                                style="margin-left: 0.5rem;">@lastModelUpdate.Value.ToString("g")</span>
+                            <span class="model-status-value ms-2">@lastModelUpdate.Value.ToString("g")</span>
                         }
                     </div>
                 </div>
-
-                <!-- Camera's text now above button -->
-                <div class="retrain-btn-container d-flex flex-column align-items-end">
-                    <div class="d-flex align-items-center mb-2" style="gap: 0.5rem;">
-                        <p class="mb-0">Locatie voor retrain:</p>
-                        <select @bind="selectedCameraId" class="form-select" style="width: 200px;">
-                            @foreach (var camera in cameras)
-                            {
-                                <option value="@camera.Id">@camera.Location</option>
-                            }
-                        </select>
-                    </div>
-
-                    <button @onclick="RetrainButton" class="retrain-button-modern" disabled="@isRetraining">
+                <div class="retrain-btn-container d-flex flex-column align-items-end" style="min-width: 260px;">
+                    <button @onclick="RetrainButton" class="retrain-button-modern enhanced-retrain-btn"
+                        disabled="@isRetraining"
+                        style="width: 100%; box-shadow: 0 2px 8px rgba(0,123,212,0.10); font-size: 1.08rem; padding: 1rem 0;">
                         @if (isRetraining)
                         {
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -175,21 +175,92 @@
                         }
                         else
                         {
-                            <span class="material-icons align-middle ms-2 autorenew">
-                                Model opnieuw trainen
+                            <span class="material-icons align-middle ms-2 autorenew"
+                                style="vertical-align: middle; font-size: 1.3rem;">
                             </span>
+                            <span class="ms-2">Model opnieuw trainen</span>
                         }
                     </button>
                     @if (showRetrainSuccess)
                     {
-                        <div class="retrain-success mt-2">
+                        <div class="retrain-success mt-3 p-2 px-3 rounded-3 d-flex align-items-center"
+                            style="background: #e6f9ed; border: 1px solid #b6e7d6;">
                             <span class="material-icons text-success align-middle"
                                 style="font-size:1.2rem;">check_circle</span>
-                            <span class="ms-1">Model succesvol opnieuw getraind!</span>
+                            <span class="ms-2 text-success fw-semibold">Model succesvol opnieuw getraind!</span>
                         </div>
                     }
                 </div>
             </div>
+
+            <style>
+                .enhanced-model-status {
+                    background: transparent;
+                    border-radius: 16px;
+                    padding: 1.5rem 0 0.5rem 0;
+                }
+
+                .model-status-card {
+                    border-radius: 16px;
+                    transition: box-shadow 0.2s;
+                }
+
+                .model-status-card:hover {
+                    box-shadow: 0 4px 16px rgba(0, 123, 212, 0.13);
+                }
+
+                .model-status-row {
+                    display: flex;
+                    align-items: center;
+                    font-size: 1.07rem;
+                    padding: 0.25rem 0;
+                }
+
+                .model-status-label {
+                    min-width: 120px;
+                    color: #0078d4;
+                    font-weight: 500;
+                    letter-spacing: 0.01em;
+                }
+
+                .model-status-value {
+                    color: #222;
+                    font-weight: 500;
+                    font-family: 'Segoe UI', Arial, sans-serif;
+                }
+
+                .enhanced-retrain-btn {
+                    background: linear-gradient(90deg, #0078d4 0%, #005fa3 100%);
+                    color: #fff;
+                    border: none;
+                    border-radius: 10px;
+                    transition: background 0.2s, box-shadow 0.2s;
+                    font-weight: 600;
+                    letter-spacing: 0.01em;
+                }
+
+                .enhanced-retrain-btn:disabled,
+                .enhanced-retrain-btn[disabled] {
+                    background: #b3cbe6;
+                    color: #f8f9fa;
+                    cursor: not-allowed;
+                    opacity: 0.85;
+                }
+
+                .enhanced-retrain-btn:hover:not(:disabled) {
+                    background: linear-gradient(90deg, #005fa3 0%, #0078d4 100%);
+                    box-shadow: 0 4px 16px rgba(0, 123, 212, 0.18);
+                }
+
+                .retrain-success {
+                    font-size: 1rem;
+                    background: #e6f9ed;
+                    border: 1px solid #b6e7d6;
+                    color: #1e824c;
+                    font-weight: 500;
+                    box-shadow: 0 1px 4px rgba(30, 130, 76, 0.06);
+                }
+            </style>
         </div>
     </div>
 </div>
@@ -352,6 +423,11 @@
         }
 
         isRetraining = false;
+        await GetModelStatus(selectedCameraId);
+    }
+
+    private async Task OnCameraChanged()
+    {
         await GetModelStatus(selectedCameraId);
     }
 
