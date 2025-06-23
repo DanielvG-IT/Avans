@@ -308,6 +308,14 @@ new PieData { Label = "Papier", Value = 90 }
 
     private async Task GetRecentDataFromBackendAsync()
     {
+
+        var cameras = await _litterService.GetCamerasAsync();
+        Console.WriteLine($"Aantal camera's ontvangen: {cameras.Count}");
+        foreach (var camera in cameras)
+        {
+            Console.WriteLine($"Camera ID: {camera.Id}, Locatie: {camera.Location}, Latitude: {camera.Latitude}, Longitude: {camera.Longitude}");
+        }
+        
         // Voorbeeld van het ophalen van data van de backend
         var filter = new LitterFilterDto { From = DateTime.Now.AddDays(-14), To = DateTime.Now, }; // Misschien langer geleden?
         var recentLitters = await _litterService.GetLittersAsync(filter);
