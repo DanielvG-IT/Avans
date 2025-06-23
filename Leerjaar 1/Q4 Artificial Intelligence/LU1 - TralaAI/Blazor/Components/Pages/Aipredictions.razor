@@ -260,6 +260,10 @@ new PieData { Label = "Papier", Value = 90 }
 
         cameraOptions = cameraResponse;
         await MakePredictionAsync();
+
+        await GetHeatmapData();
+        ConvertToHeatMapInputs(heatmapItems);
+        _= DrawHeatmap();
         
     }
 
@@ -274,27 +278,27 @@ new PieData { Label = "Papier", Value = 90 }
 
 
     // Heatmap tekenen bij opstart van de pagina
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    @* protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            _ = DrawHeatmap();
             await GetHeatmapData();
             ConvertToHeatMapInputs(heatmapItems);
+            _= DrawHeatmap();
         }
-
-        @* ? Is het de bedoeling dat de predictions meteen geladen worden voor 3 dagen of misschien 1 dag?
-         await MakePredictionAsync(); 
-        *@
-    }
+    } *@
 
     // Heatmap tekenen met knop
-    private async Task DrawHeatmap()
-    {
-        Console.WriteLine("Waiting 500ms before calling JS...");
-        await Task.Delay(500); // <-- gives JS time to initializes
-        await JS.InvokeVoidAsync("heatmapInterop.drawMap");
-    }
+private async Task DrawHeatmap()
+{
+    Console.WriteLine("Waiting 500ms before calling JS...");
+    await Task.Delay(500); 
+    await JS.InvokeVoidAsync("heatmapInterop.setPoints", heatmapInputs);
+    await JS.InvokeVoidAsync("heatmapInterop.drawMap", heatmapInputs);
+
+    StateHasChanged();
+}
+
 
     // Days select button on click
     private ApexChart<LitterData>? chart;
@@ -316,7 +320,7 @@ new PieData { Label = "Papier", Value = 90 }
         if(cameras is not null)
         {
             foreach(var camera in cameras){
-                var cameraPredictions = await _litterService.PredictAsync(selectedDays, camera.Id);
+                var cameraPredictions = await _litterService.PredictAsync(7, camera.Id);
                 double totalPrediction = 0;
                 if (cameraPredictions is not null)
                 {
@@ -359,7 +363,8 @@ new PieData { Label = "Papier", Value = 90 }
                 "McDonald's Centrum" => (0.50, 0.55),
                 "Avans Lovensdijkstraat" => (0.80, 0.65),
                 "Kievitstraat" => (0.65, 0.90),
-                "Bedrijventerrein" => (0.25, 0.10),
+                @* "Bedrijventerrein" => (0.25, 0.10), *@
+                "Bedrijventerrein" => (0.99, 0.99),
                 _ => (0.0, 0.0) 
             };
 
@@ -379,9 +384,9 @@ new PieData { Label = "Papier", Value = 90 }
 
             result.Add(new HeatMapInput
             {
-                X = x,
-                Y = y,
-                Value = scaledValue
+                x = x,
+                y = y,
+                value = scaledValue
             });
         }
 

@@ -11,7 +11,7 @@ public class HeatmapData
 
 public class HeatMapInput
 {
-    public required double X { get; set; }
-    public required double Y { get; set; }
-    public required double Value { get; set; }
+    public required double x { get; set; }
+    public required double y { get; set; }
+    public required double value { get; set; }
 }

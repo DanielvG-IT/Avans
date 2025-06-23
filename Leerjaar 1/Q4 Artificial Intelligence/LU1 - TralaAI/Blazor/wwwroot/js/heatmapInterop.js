@@ -1,11 +1,11 @@
 window.heatmapInterop = {
-    drawMap: function () {
+    drawMap: function (points) {
         if (typeof h337 === "undefined") {
             console.error("h337 (heatmap.js) is not loaded yet.");
             return;
         }
 
-        console.log("heatmapInterop.drawMap called");
+        console.log("heatmapInterop.drawMap called with points:", points);
 
         const container = document.getElementById("heatmapContainer");
         if (!container) {
@@ -13,8 +13,16 @@ window.heatmapInterop = {
             return;
         }
 
-        const width = container.offsetWidth;
-        const height = container.offsetHeight;
+        // Use getBoundingClientRect() to account for zoom level and actual rendered size
+        const rect = container.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+
+        // Clear previous heatmap instance if necessary
+        if (container._heatmapInstance) {
+            container._heatmapInstance.setData({ max: 0, data: [] });
+            container._heatmapInstance = null;
+        }
 
         // Create heatmap instance
         const heatmapInstance = h337.create({
@@ -25,28 +33,26 @@ window.heatmapInterop = {
             blur: 0.85
         });
 
-        // Your percentage-based data points
-        const rawData = [
-            { x: 0.50, y: 0.55, value: 5 }, //mc               
-            { x: 0.80, y: 0.65, value: 4 }, //avans 
-            { x: 0.65, y: 0.90, value: 3 }, //suburban
-            { x: 0.25, y: 0.10, value: 3 }  //bedrijven
-        ];
+        const values = points.map(p => p.Value);
+        const maxValue = Math.max(...values);
 
         // Convert percentage positions to pixel values
-        const pixelData = rawData.map(p => ({
+        const pixelData = points.map(p => ({
             x: Math.round(p.x * width),
             y: Math.round(p.y * height),
-            value: p.value
+            value: p.Value
         }));
 
-        // Build final data object
         const data = {
-            max: 5,
+            max: maxValue,
             data: pixelData
         };
+        console.log(maxValue)
 
         heatmapInstance.setData(data);
+
+        // Store the instance for reuse/reset later
+        container._heatmapInstance = heatmapInstance;
     }
 };
 
@@ -55,7 +61,19 @@ window.addEventListener("load", () => {
     console.log("Window loaded, ready for JS interop.");
 });
 
-//avans = 0.80 0.65
-//mcdonalds = 0.50 0.55
-//kievietstraat = 0.65 0.90
-//bedrijventerrein = 0.25 0.10
+// Redraw heatmap on window resize to handle zoom or container size changes
+window.addEventListener("resize", () => {
+    const container = document.getElementById("heatmapContainer");
+    if (!container || !container._heatmapPoints) return;
+
+    // Redraw the map with the stored points
+    window.heatmapInterop.drawMap(container._heatmapPoints);
+});
+
+// Example: you should call this before drawing to store the points
+window.heatmapInterop.setPoints = function (points) {
+    const container = document.getElementById("heatmapContainer");
+    if (container) {
+        container._heatmapPoints = points;
+    }
+};
