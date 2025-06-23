@@ -248,6 +248,7 @@ new PieData { Label = "Papier", Value = 90 }
     private List<LitterData> MetalItems = new();
     private List<LitterData> GlassItems = new();
     private List<LitterData> OrganicItems = new();
+    private List<HeatmapWrapper> heatmapItems = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -277,6 +278,7 @@ new PieData { Label = "Papier", Value = 90 }
         if (firstRender)
         {
             _ = DrawHeatmap();
+            await GetHeatmapData();
         }
 
         @* ? Is het de bedoeling dat de predictions meteen geladen worden voor 3 dagen of misschien 1 dag?
@@ -306,27 +308,38 @@ new PieData { Label = "Papier", Value = 90 }
         await pieChart.RenderAsync();
     }
 
-    private async Task GetRecentDataFromBackendAsync()
+    private async Task GetHeatmapData()
     {
-
         var cameras = await _litterService.GetCamerasAsync();
-        Console.WriteLine($"Aantal camera's ontvangen: {cameras.Count}");
-        foreach (var camera in cameras)
+        if(cameras is not null)
         {
-            Console.WriteLine($"Camera ID: {camera.Id}, Locatie: {camera.Location}, Latitude: {camera.Latitude}, Longitude: {camera.Longitude}");
-        }
-        
-        // Voorbeeld van het ophalen van data van de backend
-        var filter = new LitterFilterDto { From = DateTime.Now.AddDays(-14), To = DateTime.Now, }; // Misschien langer geleden?
-        var recentLitters = await _litterService.GetLittersAsync(filter);
-        if (recentLitters is null || !recentLitters.Any())
-        {
-            Console.WriteLine("Geen data ontvangen van de backend.");
-            return;
-        }
+            foreach(var camera in cameras){
+                var cameraPredictions = await _litterService.PredictAsync(selectedDays, camera.Id);
+                var totalPrediction = new PredictionValues();
+                if (cameraPredictions is not null)
+                {
+                    foreach (var dailyPrediction in cameraPredictions)
+                    {
+                        totalPrediction.Plastic += dailyPrediction.Predictions.Plastic;
+                        totalPrediction.Paper += dailyPrediction.Predictions.Paper;
+                        totalPrediction.Metal += dailyPrediction.Predictions.Metal;
+                        totalPrediction.Glass += dailyPrediction.Predictions.Glass;
+                        totalPrediction.Organic += dailyPrediction.Predictions.Organic;
+                    }
+                }
 
-        @* ? @ReinoutvdG Wat wil je met de historische data doen? *@
-        //niks, plannen zijn veranderd
+                var item = new HeatmapWrapper
+                {
+                    PredictionValues = totalPrediction,
+                    Latitude = camera.Latitude,
+                    Longitude = camera.Longitude,
+                    Id = camera.Id,
+                    Location = camera.Location
+                };
+                heatmapItems.Add(item);
+            }
+        }
+        Console.WriteLine(heatmapItems);
     }
 
     private async Task MakePredictionAsync()
@@ -363,10 +376,7 @@ new PieData { Label = "Papier", Value = 90 }
                 Value = group.Sum(item => item.Count)
             })
             .ToList();
-            
         }
-        
-        
 
         @* 
         TODO @MathijsH6 @ReinoutvdG Put the prediction data onto the frontend
@@ -389,4 +399,5 @@ new PieData { Label = "Papier", Value = 90 }
 
         StateHasChanged();
     }
+
 }
