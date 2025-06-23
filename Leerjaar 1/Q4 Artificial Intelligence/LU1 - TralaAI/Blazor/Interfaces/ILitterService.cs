@@ -40,7 +40,7 @@ public interface ILitterService
   /// </summary>
   /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
   /// <returns>A task that represents the asynchronous operation. The task result contains an import result message or null.</returns>
-  Task<string?> ImportTrashDataAsync(CancellationToken cancellationToken = default);
+  Task<bool> ImportTrashDataAsync(CancellationToken cancellationToken = default);
 
   /// <summary>
   /// Retrieves the amount of each litter type per location.

@@ -77,7 +77,7 @@
                         <td style="padding-top:0.25rem; padding-bottom:0.25rem;">
                             <strong>Weather API</strong> <span class="text-muted">(Weather Forecasts)</span>
                         </td>
-                    <td style="padding-top:0.25rem; padding-bottom:0.25rem;">
+                        <td style="padding-top:0.25rem; padding-bottom:0.25rem;">
                             @(weatherStatus.HasValue ? (weatherStatus.Value ? "Online" : "Offline") : "Loading...")
                         </td>
                     </tr>
@@ -85,14 +85,15 @@
             </table>
 
         </div>
-                <!-- Blok 2: Model Info -->
+        <!-- Blok 2: Model Info -->
         <div class="settings-block d-flex flex-column justify-content-between">
             <div>
                 <h3>Sensoring AI-Model status</h3>
                 <p><b>Bij opstart van de webapp wordt het model AI-Model opnieuw getraind. Via deze knop heb je ook de
                         mogelijkheid om dit handmatig te forceren indien er nieuwe data beschikbaar is.</b></p>
             </div>
-            <div class="d-flex justify-content-between align-items-start mt-auto pt-3 modern-model-status" style="gap: 10rem;">
+            <div class="d-flex justify-content-between align-items-start mt-auto pt-3 modern-model-status"
+                style="gap: 10rem;">
                 <div class="settings-block">
                     <div class="model-status-row">
                         <span class="model-status-label" style="padding-left: 1rem;"><strong>Response:</strong></span>
@@ -117,7 +118,8 @@
                         }
                     </div>
                     <div class="model-status-row">
-                        <span class="model-status-label" style="padding-left: 1rem;"><strong>Huidige RMSE:</strong></span>
+                        <span class="model-status-label" style="padding-left: 1rem;"><strong>Huidige
+                                RMSE:</strong></span>
                         @if (modelRMSE is null)
                         {
                             <span class="skeleton skeleton-text w-50" style="margin-left: 0.5rem;"></span>
@@ -126,7 +128,7 @@
                         {
                             <span class="model-status-value" style="margin-left: 0.5rem;">@modelRMSE</span>
                         }
-                    </div>                    
+                    </div>
                     <div class="model-status-row">
                         <span class="model-status-label" style="padding-left: 1rem;"><strong>Locatie:</strong></span>
                         @if (modelRMSE is null)
@@ -139,14 +141,16 @@
                         }
                     </div>
                     <div class="model-status-row">
-                        <span class="model-status-label" style="padding-left: 1rem;"><strong>Laatst bijgewerkt:</strong></span>
+                        <span class="model-status-label" style="padding-left: 1rem;"><strong>Laatst
+                                bijgewerkt:</strong></span>
                         @if (lastModelUpdate is null)
                         {
                             <span class="skeleton skeleton-text w-50" style="margin-left: 0.5rem;"></span>
                         }
                         else
                         {
-                            <span class="model-status-value" style="margin-left: 0.5rem;">@lastModelUpdate.Value.ToString("g")</span>
+                            <span class="model-status-value"
+                                style="margin-left: 0.5rem;">@lastModelUpdate.Value.ToString("g")</span>
                         }
                     </div>
                 </div>
@@ -163,7 +167,7 @@
                         </select>
                     </div>
 
-                    <button @onclick="RetrainModel" class="retrain-button-modern" disabled="@isRetraining">
+                    <button @onclick="RetrainButton" class="retrain-button-modern" disabled="@isRetraining">
                         @if (isRetraining)
                         {
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -179,7 +183,8 @@
                     @if (showRetrainSuccess)
                     {
                         <div class="retrain-success mt-2">
-                            <span class="material-icons text-success align-middle" style="font-size:1.2rem;">check_circle</span>
+                            <span class="material-icons text-success align-middle"
+                                style="font-size:1.2rem;">check_circle</span>
                             <span class="ms-1">Model succesvol opnieuw getraind!</span>
                         </div>
                     }
@@ -276,11 +281,13 @@
     {
         // Fire-and-forget API status check, don't await to avoid blocking page load
         _ = GetApiStatuses();
-        _ = GetModelStatus();
+        _ = GetModelStatus(selectedCameraId);
     }
-    protected override async Task OnInitializedAsync(){
+    protected override async Task OnInitializedAsync()
+    {
         var response = await _litterService.GetCamerasAsync();
-        if(response is not null){
+        if (response is not null)
+        {
             cameras = response;
         }
     }
@@ -326,33 +333,31 @@
         }
     }
 
-    private async Task FetchNewDataFromSensoring()
-    {
-        var result = await _litterService.ImportTrashDataAsync();
-        @* if (!result)
-        {
-             TODO Error logging
-        } *@
-
-        await RetrainModel();
-    }
-
-    private async Task RetrainModel()
+    private async Task RetrainButton()
     {
         isRetraining = true;
-        var result = await _litterService.RetrainModelAsync(selectedCameraId);
-        if (!result)
+        if (selectedCameraId == 2) @* HardCode Sensoring group  *@
+        {
+            var importResult = await _litterService.ImportTrashDataAsync();
+            if (!importResult)
+            {
+                @* TODO Error logging *@
+            }
+        }
+
+        var retrainResult = await _litterService.RetrainModelAsync(selectedCameraId);
+        if (!retrainResult)
         {
             @* TODO Error logging *@
         }
 
         isRetraining = false;
-        await GetModelStatus();
+        await GetModelStatus(selectedCameraId);
     }
 
-    private async Task GetModelStatus()
+    private async Task GetModelStatus(int cameraId)
     {
-        var result = await _healthService.GetFastApiModelDataAsync(selectedCameraId); 
+        var result = await _healthService.GetFastApiModelDataAsync(cameraId);
         if (result is null)
         {
             latestResponse = "Er is iets foutgegaan";
