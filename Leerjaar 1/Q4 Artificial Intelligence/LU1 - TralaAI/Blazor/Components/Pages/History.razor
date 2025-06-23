@@ -3,25 +3,347 @@
 @using ApexCharts
 @using Blazor.Models
 @using Blazor.Interfaces
+@using Blazor.Models.Enums
+@using BlazorDateRangePicker
 @inject ILitterService _litterService
 
-@* <div class="page-container">
-    <ApexChart TItem="totalLitter" Title="Totaal gedetecteerd afval">
+<div class="page-container" style="height: 140vh;">
+    <h1 class="geschiedenis titel">Afvalgeschiedenis</h1>
 
-    <ApexPointSeries TItem="totalLitter"
-                Items="litterPerCamera"
-                SeriesType="SeriesType.Donut"
-                Name="Gross Value"
-                XValue="@(e => e.Country)"
-                YAggregate="@(e => e.Sum(e => e.GrossValue))"/>
-    </ApexChart>
-</div> *@
+    <div style="display: flex; justify-content: center; margin-bottom: 2rem;">
+        <DateRangePicker Culture="@(System.Globalization.CultureInfo.GetCultureInfo("nl-NL"))"
+            OnRangeSelect="GetLitterAsync" @bind-StartDate="StartDate" @bind-EndDate="EndDate">
+            <PickerTemplate>
+                <div id="@context.Id" @onclick="context.Toggle"
+                     style="background: #ffffff; 
+                            cursor: pointer; 
+                            padding: 0.75rem 1.25rem; 
+                            width: 350px; 
+                            border: 1px solid #e2e8f0; 
+                            border-radius: 0.5rem; 
+                            display: flex; 
+                            align-items: center; 
+                            justify-content: space-between; 
+                            font-size: 1rem; 
+                            color: #2d3748;
+                            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                            transition: all 0.2s ease-in-out;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <i class="oi oi-calendar" style="color: #6a5acd; font-size: 1.2rem;"></i>
+                        <span>
+                            @context.FormattedRange @(string.IsNullOrEmpty(context.FormattedRange) ? "Kies een datumbereik" : "")
+                        </span>
+                    </div>
+                    <i class="oi oi-chevron-bottom" style="color: #a0aec0;"></i>
+                </div>
+            </PickerTemplate>
+        </DateRangePicker>
+    </div>
+
+    <div style="display: flex; gap: 2rem; align-items: flex-start; flex-direction: row;">
+        <div class="box-container" style="flex: 1; height: 440px; display: flex; flex-direction: column;">
+            @if (totalLitterPerCamera is not null && totalLitterPerCamera.Count != 0)
+            {
+                <ApexChart TItem="TotalLitterPerCamera" Title="Totaal gedetecteerd afval per camera." Height="400"
+                    Options="options">
+                    <ApexPointSeries TItem="TotalLitterPerCamera" Items="totalLitterPerCamera" SeriesType="SeriesType.Donut"
+                        Name="Total Litter Per Camera" XValue="@(e => e.Location)" YValue="@(e => e.Amount)" />
+                </ApexChart>
+            }
+            else if (totalLitterPerCamera is null)
+            {
+                <div class="loading-indicator"
+                    style="font-size:2rem; padding:2rem; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div class="spinner" style="width:48px; height:48px; border-width:8px;"> <svg version="1.1"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
+                            style="width: 60px; height: 60px; margin-bottom: 1rem;">
+                            <path fill="#6a5acd"
+                                d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50">
+                                <animateTransform attributeName="transform" attributeType="XML" type="rotate" dur="1s"
+                                    from="0 50 50" to="360 50 50" repeatCount="indefinite" />
+                            </path>
+                        </svg></div>
+                    <span style="font-size:2rem; margin-top:1rem; display:block;">Bezig met laden...</span>
+                </div>
+            }
+            else
+            {
+                <p>Er zijn momenteel geen recente afvaldetecties.</p>
+            }
+        </div>
+        <div class="box-container" style="flex: 1; height: 440px; display: flex; flex-direction: column;">
+            @if (totalPerDays is not null && totalPerDays.Count != 0)
+            {
+                <ApexChart TItem="TotalPerDay" Title="Hoeveelheid afval per type per dag." Height="400" @ref="heatmapChart">
+                    <ApexPointSeries TItem="TotalPerDay" Items="totalPerDays" SeriesType="SeriesType.Heatmap" Name="Glas"
+                        XValue="@(e => e.Day.ToString("dd-MM"))" YValue="@(e => e.Glass)" />
+                    <ApexPointSeries TItem="TotalPerDay" Items="totalPerDays" SeriesType="SeriesType.Heatmap" Name="Metaal"
+                        XValue="@(e => e.Day.ToString("dd-MM"))" YValue="@(e => e.Metal)" />
+                    <ApexPointSeries TItem="TotalPerDay" Items="totalPerDays" SeriesType="SeriesType.Heatmap"
+                        Name="Organisch" XValue="@(e => e.Day.ToString("dd-MM"))" YValue="@(e => e.Organic)" />
+                    <ApexPointSeries TItem="TotalPerDay" Items="totalPerDays" SeriesType="SeriesType.Heatmap" Name="Papier"
+                        XValue="@(e => e.Day.ToString("dd-MM"))" YValue="@(e => e.Paper)" />
+                    <ApexPointSeries TItem="TotalPerDay" Items="totalPerDays" SeriesType="SeriesType.Heatmap" Name="Plastic"
+                        XValue="@(e => e.Day.ToString("dd-MM"))" YValue="@(e => e.Plastic)" />
+                </ApexChart>
+            }
+            else if (totalPerDays is null)
+            {
+                <div class="loading-indicator"
+                    style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div class="spinner" style="width:48px; height:48px; border-width:8px;"> <svg version="1.1"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
+                            style="width: 60px; height: 60px; margin-bottom: 1rem;">
+                            <path fill="#6a5acd"
+                                d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50">
+                                <animateTransform attributeName="transform" attributeType="XML" type="rotate" dur="1s"
+                                    from="0 50 50" to="360 50 50" repeatCount="indefinite" />
+                            </path>
+                        </svg></div>
+                    <span>Bezig met laden...</span>
+                </div>
+            }
+            else
+            {
+                <p>Er zijn momenteel geen recente afvaldetecties.</p>
+            }
+        </div>
+    </div>
+    <div class="insane-table-container">
+        <h3>Recente afvaldetecties</h3>
+
+        @if (cameras is not null && recentLitter is not null && recentLitter.Count != 0)
+        {
+            <div class="table-scroll-container">
+                <table class="insane-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Timestamp</th>
+                            <th>Weather</th>
+                            <th>Temperature</th>
+                            <th>Location</th>
+                            <th>IsHoliday</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var litter in recentLitter)
+                        {
+                            <tr>
+                                <td>@litter.Id</td>
+                                <td>
+                                    <span class="type-badge type-@litter.LitterCategory.ToString().ToLower()">
+                                        @litter.Type
+                                    </span>
+                                </td>
+                                <td>@litter.TimeStamp.ToString("dd-MM-yyyy HH:mm")</td>
+                                <td>
+                                    <span class="weather-icon weather-@litter.Weather.ToString().ToLower()"></span>
+                                    @litter.Weather
+                                </td>
+                                <td>
+                                    <span class="temp-badge">@litter.Temperature&nbsp;°C</span>
+                                </td>
+                                <td>
+                                    <span class="location-badge">
+                                        @(cameras.FirstOrDefault(c => c.Id == litter.CameraId)?.Location ?? "Onbekend")
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (litter.IsHoliday)
+                                    {
+                                        <span class="holiday-badge">Ja</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="no-holiday-badge">Nee</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else if(recentLitter is null)
+        {
+            <div class="loading-indicator"
+                style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <div class="spinner" style="width:48px; height:48px; border-width:8px;"> <svg version="1.1"
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
+                        style="width: 60px; height: 60px; margin-bottom: 1rem;">
+                        <path fill="#6a5acd"
+                            d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50">
+                            <animateTransform attributeName="transform" attributeType="XML" type="rotate" dur="1s"
+                                from="0 50 50" to="360 50 50" repeatCount="indefinite" />
+                        </path>
+                    </svg></div>
+                <span>Bezig met laden...</span>
+            </div>
+        }
+        else
+        {
+            <p>Er zijn momenteel geen recente afvaldetecties.</p>
+        }
+    </div>
+</div>
+
+<style>
+    .box-container {
+        flex: 3;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+    }
+
+    .geschiedenis.titel {
+        color: #6a5acd;
+        font-size: 2.5rem;
+        text-align: center;
+        margin-bottom: 1rem;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        font-weight: 700;
+    }
+</style>
 
 @code {
-    @* private List<Litter> litterPerCamera = new();
+    private class TotalLitterPerCamera
+    {
+        public required string Location { get; set; }
+        public int Amount { get; set; }
+    }
+
+    private class TotalPerDay
+    {
+        public DateTime Day { get; set; }
+        public int Glass { get; set; }
+        public int Plastic { get; set; }
+        public int Metal { get; set; }
+        public int Organic { get; set; }
+        public int Paper { get; set; }
+    }
+
+    private List<Camera>? cameras = null!;
+    private List<Litter>? recentLitter = null!;
+    private List<TotalPerDay>? totalPerDays = null!;
+    private List<TotalLitterPerCamera>? totalLitterPerCamera = null!;
+
+    // Apex Charts
+    private ApexChart<TotalPerDay>? heatmapChart;
+    private ApexChartOptions<TotalLitterPerCamera> options { get; set; } = new();
+
+    DateTimeOffset? StartDate { get; set; }
+    DateTimeOffset? EndDate { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        litterPerCamera = await _backendService.GetLittersAsync();
-    } *@
+        options.PlotOptions = new PlotOptions
+        {
+            Pie = new PlotOptionsPie
+            {
+                Donut = new PlotOptionsDonut
+                {
+                    Labels = new DonutLabels
+                    {
+                        Total = new DonutLabelTotal { FontSize = "24px", Color = "#D807B8", Formatter = @"function (w)
+{return w.globals.seriesTotals.reduce((a, b) => { return (a + b) }, 0)}" }
+                    }
+                }
+            }
+        };
+
+        StartDate = DateTime.Today.AddDays(-5);
+        EndDate = DateTime.Today;
+
+        await GetCamerasAsync();
+        await GetLitterPerCameraAsync();
+
+        if (StartDate.HasValue && EndDate.HasValue)
+        {
+            await GetLitterAsync(new DateRange { Start = StartDate.Value.DateTime, End = EndDate.Value.DateTime });
+        }
+
+        StateHasChanged();
+    }
+
+private async Task GetLitterAsync(DateRange range)
+{
+    var filter = new LitterFilterDto { From = range.Start.DateTime, To = range.End.DateTime };
+    var litterResult = await _litterService.GetLittersAsync(filter);
+    if (litterResult is null)
+    {
+      @* GENIUS ERROR *@
+        recentLitter = new();
+        totalPerDays = new();
+        return;
+    }
+
+    recentLitter = litterResult.ToList(); // Ensure new list instance
+
+    // Always create a new list instance for the chart data
+    totalPerDays = litterResult
+    .GroupBy(l => l.TimeStamp.Date)
+    .Select(g => new TotalPerDay
+    {
+        Day = g.Key,
+        Glass = g.Count(x => x.LitterCategory == LitterCategory.Glass),
+        Metal = g.Count(x => x.LitterCategory == LitterCategory.Metal),
+        Organic = g.Count(x => x.LitterCategory == LitterCategory.Organic),
+        Paper = g.Count(x => x.LitterCategory == LitterCategory.Paper),
+        Plastic = g.Count(x => x.LitterCategory == LitterCategory.Plastic)
+    })
+    .OrderBy(x => x.Day)
+    .ToList();
+
+    StateHasChanged(); // Notify Blazor of data change
+
+    if (heatmapChart is not null)
+    {
+        await heatmapChart.UpdateSeriesAsync(true); // Force update if supported
+    }
+}
+
+    private async Task GetCamerasAsync()
+    {
+        var cameraResult = await _litterService.GetCamerasAsync();
+
+        cameras = new();
+
+        if (cameraResult is null)
+        {
+            @* GENIUS ERROR! *@
+            return;
+        }
+
+        cameras = cameraResult;
+    }
+
+    private async Task GetLitterPerCameraAsync()
+    {
+        var litterResult = await _litterService.GetAmountPerLocationAsync();
+
+        totalLitterPerCamera = new();
+        
+        if (litterResult is null || cameras is null)
+        {
+            @* GENIUS ERROR! *@
+            return;
+        }
+        
+        foreach (var camera in litterResult)
+        {
+
+            var item = new TotalLitterPerCamera
+            {
+                Amount = camera.Glass + camera.Metal + camera.Organic + camera.Plastic + camera.Paper,
+                Location = cameras.Find(c => c.Id == camera.CameraId)?.Location ?? "Onbekend"
+            };
+
+            totalLitterPerCamera.Add(item);
+        }
+        
+        StateHasChanged();
+    }
 }

@@ -218,3 +218,191 @@ h1:focus {
   align-items: center;
   gap: 0.25rem;
 }
+
+.insane-table-container {
+  overflow-x: auto;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+  padding: 2rem;
+  margin-top: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.insane-table {
+  width: 100%;
+  margin-top: 1.5rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  overflow: hidden;
+  font-family: "Segoe UI", "Arial", sans-serif;
+  font-size: 1.1rem;
+}
+
+.table-scroll-container {
+  height: 65vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.insane-table th,
+.insane-table td {
+  padding: 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+
+.insane-table th {
+  background: #7f7fd5 100%;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.insane-table tbody tr {
+  transition: background 0.2s;
+}
+
+.insane-table tbody tr:hover {
+  background: #f7e8ff;
+  box-shadow: 0 2px 12px 0 rgba(216, 7, 184, 0.08);
+}
+
+.type-badge {
+  padding: 0.4em 1em;
+  border-radius: 20px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  text-transform: capitalize;
+}
+
+.type-glass {
+  background: #00bcd4;
+}
+
+.type-metal {
+  background: #757575;
+}
+
+.type-organic {
+  background: #4caf50;
+}
+
+.type-paper {
+  background: #ffb300;
+}
+
+.type-plastic {
+  background: #2196f3;
+}
+
+.confidence-bar {
+  background: #e0e0e0;
+  border-radius: 8px;
+  position: relative;
+  height: 22px;
+  width: 120px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.confidence-fill {
+  background: linear-gradient(90deg, #d807b8 0%, #7f7fd5 100%);
+  height: 100%;
+  border-radius: 8px 0 0 8px;
+  transition: width 0.4s cubic-bezier(0.4, 2, 0.6, 1);
+}
+
+.confidence-label {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  color: #fff;
+  font-size: 0.95em;
+  font-weight: 700;
+  text-shadow: 0 1px 2px #0002;
+}
+
+.weather-icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  margin-right: 0.5em;
+  vertical-align: middle;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.weather-sunny {
+  background-image: url("https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2600.svg");
+}
+
+.weather-rainy {
+  background-image: url("https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f327.svg");
+}
+
+.weather-cloudy {
+  background-image: url("https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2601.svg");
+}
+
+.weather-snowy {
+  background-image: url("https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f328.svg");
+}
+
+.weather-stormy {
+  background-image: url("https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f32a.svg");
+}
+
+.temp-badge {
+  background: linear-gradient(90deg, #ff9966 0%, #ff5e62 100%);
+  color: #fff;
+  border-radius: 12px;
+  padding: 0.3em 0.9em;
+  font-weight: 600;
+  font-size: 0.98em;
+}
+
+.location-badge {
+  color: black;
+  border-radius: 12px;
+  padding: 0.3em 0.9em;
+  font-weight: 600;
+  font-size: 0.98em;
+}
+
+.holiday-badge {
+  background: #f7971e;
+  color: white;
+  border-radius: 12px;
+  padding: 0.3em 0.9em;
+  font-weight: 600;
+  font-size: 0.98em;
+}
+
+.no-holiday-badge {
+  background: #e0e0e0;
+  color: #888;
+  border-radius: 12px;
+  padding: 0.3em 0.9em;
+  font-weight: 600;
+  font-size: 0.98em;
+}
+
+@media (max-width: 900px) {
+  .insane-table th,
+  .insane-table td {
+    padding: 0.7rem 0.5rem;
+    font-size: 0.95em;
+  }
+
+  .insane-table-container {
+    padding: 0.5rem;
+  }
+}

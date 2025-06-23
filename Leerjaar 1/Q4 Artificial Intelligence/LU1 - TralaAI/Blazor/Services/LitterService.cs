@@ -1,4 +1,3 @@
-using System.Net;
 using Blazor.Models;
 using Blazor.Interfaces;
 
@@ -10,13 +9,25 @@ public class LitterService(HttpClient httpClient) : ILitterService
 
   public async Task<List<Litter>?> GetLittersAsync(LitterFilterDto? filter)
   {
-    filter ??= new LitterFilterDto();
-    var queryString = BuildQueryString(filter);
+    var queryString = "";
+    if (filter is not null)
+    {
+      var queryParams = new List<string>();
+
+      if (filter.Type.HasValue)
+        queryParams.Add($"Type={filter.Type.Value}");
+
+      if (filter.From.HasValue)
+        queryParams.Add($"From={filter.From.Value:yyyy-MM-ddTHH:mm:ss.fffZ}");
+
+      if (filter.To.HasValue)
+        queryParams.Add($"To={filter.To.Value:yyyy-MM-ddTHH:mm:ss.fffZ}");
+
+      if (queryParams.Count > 0)
+        queryString = "?" + string.Join("&", queryParams);
+    }
+    Console.WriteLine(queryString);
     var response = await _httpClient.GetAsync($"/api/v1/litter{queryString}");
-
-    if (response.StatusCode == HttpStatusCode.NotFound)
-      return null;
-
     if (!response.IsSuccessStatusCode)
       return null;
 
@@ -33,13 +44,6 @@ public class LitterService(HttpClient httpClient) : ILitterService
   {
     var queryString = $"?amountOfDays={amountOfDays}&CameraId={cameraId}";
     var response = await _httpClient.PostAsync($"/api/v1/litter/predict{queryString}", null);
-
-    if (response.StatusCode == HttpStatusCode.BadRequest)
-      return null;
-
-    if (response.StatusCode == HttpStatusCode.NotFound)
-      return null;
-
     if (!response.IsSuccessStatusCode)
       return null;
 
@@ -57,57 +61,18 @@ public class LitterService(HttpClient httpClient) : ILitterService
   public async Task<string?> ImportTrashDataAsync(CancellationToken cancellationToken = default)
   {
     var response = await _httpClient.PostAsync("/api/v1/TrashDTO/import-trash-data", null, cancellationToken);
-
-    if (response.StatusCode == HttpStatusCode.BadRequest)
-      return null;
-
     if (!response.IsSuccessStatusCode)
       return null;
 
     return await response.Content.ReadAsStringAsync(cancellationToken);
   }
 
-  public async Task<List<Litter>?> GetLatestLittersAsync(int? amount)
-  {
-    var queryString = amount.HasValue ? $"?amount={amount.Value}" : string.Empty;
-    var response = await _httpClient.GetAsync($"/api/v1/litter/latest{queryString}");
-
-    if (response.StatusCode == HttpStatusCode.NotFound)
-      return null;
-
-    if (!response.IsSuccessStatusCode)
-      return null;
-
-    return await response.Content.ReadFromJsonAsync<List<Litter>>();
-  }
-
   public async Task<List<LitterAmountCamera>?> GetAmountPerLocationAsync()
   {
     var response = await _httpClient.GetAsync("/api/v1/litter/amount-per-location");
-
-    if (response.StatusCode == HttpStatusCode.NotFound)
-      return null;
-
     if (!response.IsSuccessStatusCode)
       return null;
 
     return await response.Content.ReadFromJsonAsync<List<LitterAmountCamera>?>();
-  }
-
-  private static string BuildQueryString(LitterFilterDto filter)
-  {
-    var properties = typeof(LitterFilterDto).GetProperties();
-    var queryParams = new List<string>();
-
-    foreach (var prop in properties)
-    {
-      var value = prop.GetValue(filter);
-      if (value is not null)
-      {
-        queryParams.Add($"{prop.Name}={Uri.EscapeDataString(value.ToString()!)}");
-      }
-    }
-
-    return queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : string.Empty;
   }
 }

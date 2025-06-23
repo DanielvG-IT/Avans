@@ -10,4 +10,23 @@ namespace Blazor.Models.Enums
         Sunny = 6,
         Unknown = 0
     }
+
+    public static partial class CategoryExtensions
+    {
+        public static string ToFriendlyString(this WeatherCategory category)
+        {
+            return category switch
+            {
+                WeatherCategory.Snowy => "snowy",
+                WeatherCategory.Stormy => "stormy",
+                WeatherCategory.Rainy => "rainy",
+                WeatherCategory.Misty => "misty",
+                WeatherCategory.Cloudy => "cloudy",
+                WeatherCategory.Sunny => "sunny",
+                WeatherCategory.Unknown => "unknown",
+                _ => "unknown"
+            };
+        }
+    }
+
 }
