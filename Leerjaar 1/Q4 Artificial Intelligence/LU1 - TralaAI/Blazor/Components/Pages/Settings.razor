@@ -126,10 +126,10 @@
                         {
                             <span class="model-status-value" style="margin-left: 0.5rem;">@modelRMSE</span>
                         }
-                    </div>
+                    </div>                    
                     <div class="model-status-row">
                         <span class="model-status-label" style="padding-left: 1rem;"><strong>Locatie:</strong></span>
-                        @if (location is null)
+                        @if (modelRMSE is null)
                         {
                             <span class="skeleton skeleton-text w-50" style="margin-left: 0.5rem;"></span>
                         }
@@ -137,6 +137,7 @@
                         {
                             <span class="model-status-value" style="margin-left: 0.5rem;">@location</span>
                         }
+                    </div>
                     <div class="model-status-row">
                         <span class="model-status-label" style="padding-left: 1rem;"><strong>Laatst bijgewerkt:</strong></span>
                         @if (lastModelUpdate is null)
@@ -154,7 +155,7 @@
                 <div class="retrain-btn-container d-flex flex-column align-items-end">
                     <div class="d-flex align-items-center mb-2" style="gap: 0.5rem;">
                         <p class="mb-0">Locatie voor retrain:</p>
-                        <select @bind="selectedLocation" class="form-select" style="width: 200px;">
+                        <select @bind="selectedCameraId" class="form-select" style="width: 200px;">
                             @foreach (var camera in cameras)
                             {
                                 <option value="@camera.Id">@camera.Location</option>
@@ -185,8 +186,6 @@
                 </div>
             </div>
         </div>
-
-
     </div>
 </div>
 
@@ -271,7 +270,7 @@
     private bool showRetrainSuccess = false;
     private string location = string.Empty;
     private List<Camera> cameras = new();
-    private int selectedLocation = 2;
+    private int selectedCameraId = 2;
 
     protected override void OnInitialized()
     {
@@ -341,7 +340,7 @@
     private async Task RetrainModel()
     {
         isRetraining = true;
-        var result = await _litterService.RetrainModelAsync(selectedLocation);
+        var result = await _litterService.RetrainModelAsync(selectedCameraId);
         if (!result)
         {
             @* TODO Error logging *@
@@ -353,11 +352,12 @@
 
     private async Task GetModelStatus()
     {
-        var result = await _healthService.GetFastApiModelDataAsync(selectedLocation); 
+        var result = await _healthService.GetFastApiModelDataAsync(selectedCameraId); 
         if (result is null)
         {
             latestResponse = "Er is iets foutgegaan";
             modelRMSE = 0;
+            location = "unknown";
             lastModelUpdate = DateTime.Now;
             return;
         }
@@ -365,6 +365,8 @@
         latestResponse = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(result.Status ?? string.Empty);
         modelRMSE = Math.Round(result.CurrentRmse, 3);
         lastModelUpdate = result.LastUpdated;
+        location = cameras.FirstOrDefault(c => c.Id == selectedCameraId)?.Location ?? string.Empty;
+
 
         await InvokeAsync(StateHasChanged);
     }
