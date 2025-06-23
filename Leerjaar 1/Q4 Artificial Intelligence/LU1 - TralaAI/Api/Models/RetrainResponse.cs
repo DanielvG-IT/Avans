@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Api.Services;
+namespace Api.Models;
 
 public class RetrainRequest
 {
