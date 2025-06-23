@@ -58,8 +58,8 @@
     <div class="middle-section">
         <div class="left-panel">
             <h3>Pie-Chart</h3>
-            <ApexChart @ref="pieChart" TItem="PieData" Title="Verdeling van afvaltypes voor de door jouw opgevraagde voorspelling."
-                Height="500">
+            <ApexChart @ref="pieChart" TItem="PieData"
+                Title="Verdeling van afvaltypes voor de door jouw opgevraagde voorspelling." Height="500">
                 <ApexPointSeries TItem="PieData" Items="pieData" Name="Waarde" SeriesType="SeriesType.Pie"
                     XValue="@(e => e.Label)" YValue="@(e => (decimal)e.Value)" />
             </ApexChart>
@@ -263,8 +263,8 @@ new PieData { Label = "Papier", Value = 90 }
 
         await GetHeatmapData();
         ConvertToHeatMapInputs(heatmapItems);
-        _= DrawHeatmap();
-        
+        _ = DrawHeatmap();
+
     }
 
 
@@ -289,15 +289,15 @@ new PieData { Label = "Papier", Value = 90 }
     } *@
 
     // Heatmap tekenen met knop
-private async Task DrawHeatmap()
-{
-    Console.WriteLine("Waiting 500ms before calling JS...");
-    await Task.Delay(500); 
-    await JS.InvokeVoidAsync("heatmapInterop.setPoints", heatmapInputs);
-    await JS.InvokeVoidAsync("heatmapInterop.drawMap", heatmapInputs);
+    private async Task DrawHeatmap()
+    {
+        Console.WriteLine("Waiting 500ms before calling JS...");
+        await Task.Delay(500);
+        await JS.InvokeVoidAsync("heatmapInterop.setPoints", heatmapInputs);
+        await JS.InvokeVoidAsync("heatmapInterop.drawMap", heatmapInputs);
 
-    StateHasChanged();
-}
+        StateHasChanged();
+    }
 
 
     // Days select button on click
@@ -317,9 +317,10 @@ private async Task DrawHeatmap()
     private async Task GetHeatmapData()
     {
         var cameras = await _litterService.GetCamerasAsync();
-        if(cameras is not null)
+        if (cameras is not null)
         {
-            foreach(var camera in cameras){
+            foreach (var camera in cameras)
+            {
                 var cameraPredictions = await _litterService.PredictAsync(7, camera.Id);
                 double totalPrediction = 0;
                 if (cameraPredictions is not null)
@@ -353,9 +354,6 @@ private async Task DrawHeatmap()
         if (heatmapDataList == null || heatmapDataList.Count == 0)
             return;
 
-        // Find the maximum value for normalization
-        var maxLitter = heatmapDataList.Max(h => h.totalLitterPerCamera);
-
         foreach (var item in heatmapDataList)
         {
             var (x, y) = item.Location switch
@@ -365,28 +363,17 @@ private async Task DrawHeatmap()
                 "Kievitstraat" => (0.65, 0.90),
                 @* "Bedrijventerrein" => (0.25, 0.10), *@
                 "Bedrijventerrein" => (0.99, 0.99),
-                _ => (0.0, 0.0) 
+                _ => (0.0, 0.0)
             };
 
             if (x == 0 && y == 0)
                 continue; // Skip unknown locations
 
-            double normalized = maxLitter > 0 ? (item.totalLitterPerCamera / maxLitter) : 0;
-
-            double scaledValue = normalized switch
-            {
-                >= 0.8 => 5,
-                >= 0.6 => 4,
-                >= 0.4 => 3,
-                >= 0.2 => 2,
-                _ => 1
-            };
-
             result.Add(new HeatMapInput
             {
                 x = x,
                 y = y,
-                value = scaledValue
+                value = item.totalLitterPerCamera
             });
         }
 
@@ -403,16 +390,47 @@ private async Task DrawHeatmap()
             Console.WriteLine("Geen of incorrecte data ontvangen van de backend.");
             return;
         }
-        else{
+        else
+        {
             var newLitterItems = new List<LitterData>();
             foreach (var day in predictionResponse)
             {
-            Console.WriteLine("Probeert data op te halen");
-            newLitterItems.Add(new LitterData { Date = DateOnly.FromDateTime(day.Date), Type = "plastic", Count = day.Predictions.Plastic });
-            newLitterItems.Add(new LitterData { Date = DateOnly.FromDateTime(day.Date), Type = "paper", Count = day.Predictions.Paper });
-            newLitterItems.Add(new LitterData { Date = DateOnly.FromDateTime(day.Date), Type = "metal", Count = day.Predictions.Metal });
-            newLitterItems.Add(new LitterData { Date = DateOnly.FromDateTime(day.Date), Type = "glass", Count = day.Predictions.Glass });
-            newLitterItems.Add(new LitterData { Date = DateOnly.FromDateTime(day.Date), Type = "organic", Count = day.Predictions.Organic });
+                Console.WriteLine("Probeert data op te halen");
+                newLitterItems.Add(new LitterData
+                {
+                    Date = DateOnly.FromDateTime(day.Date),
+                    Type = "plastic",
+                    Count =
+                day.Predictions.Plastic
+                });
+                newLitterItems.Add(new LitterData
+                {
+                    Date = DateOnly.FromDateTime(day.Date),
+                    Type = "paper",
+                    Count =
+                day.Predictions.Paper
+                });
+                newLitterItems.Add(new LitterData
+                {
+                    Date = DateOnly.FromDateTime(day.Date),
+                    Type = "metal",
+                    Count =
+                day.Predictions.Metal
+                });
+                newLitterItems.Add(new LitterData
+                {
+                    Date = DateOnly.FromDateTime(day.Date),
+                    Type = "glass",
+                    Count =
+                day.Predictions.Glass
+                });
+                newLitterItems.Add(new LitterData
+                {
+                    Date = DateOnly.FromDateTime(day.Date),
+                    Type = "organic",
+                    Count =
+                day.Predictions.Organic
+                });
             }
             LitterItems = newLitterItems;
             PlasticItems = LitterItems.Where(x => x.Type == "plastic").ToList();

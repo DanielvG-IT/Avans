@@ -33,10 +33,6 @@ window.heatmapInterop = {
       blur: 0.85,
     });
 
-    const values = points.map((p) => p.Value);
-    const maxValue = Math.max(...values);
-    const minValue = Math.min(...values);
-
     // Convert percentage positions to pixel values
     const pixelData = points.map((p) => ({
       x: Math.round(p.x * width),
@@ -44,14 +40,15 @@ window.heatmapInterop = {
       value: p.Value,
     }));
 
-    const data = {
-      min: minValue,
-      max: maxValue,
-      data: pixelData,
-    };
+    // Use the created heatmap instance
+    const heatmap = heatmapInstance;
     console.log("min:", minValue, "max:", maxValue);
 
-    heatmapInstance.setData(data);
+    heatmap.setData({
+      max: maxValue,
+      min: minValue,
+      data: pixelData,
+    });
 
     // Store the instance for reuse/reset later
     container._heatmapInstance = heatmapInstance;
