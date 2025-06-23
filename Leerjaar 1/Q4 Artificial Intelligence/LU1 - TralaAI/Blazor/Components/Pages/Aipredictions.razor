@@ -248,7 +248,8 @@ new PieData { Label = "Papier", Value = 90 }
     private List<LitterData> MetalItems = new();
     private List<LitterData> GlassItems = new();
     private List<LitterData> OrganicItems = new();
-    private List<HeatmapWrapper> heatmapItems = new();
+    private List<HeatmapData> heatmapItems = new();
+    private List<HeatMapInput> heatmapInputs = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -279,6 +280,7 @@ new PieData { Label = "Papier", Value = 90 }
         {
             _ = DrawHeatmap();
             await GetHeatmapData();
+            ConvertToHeatMapInputs(heatmapItems);
         }
 
         @* ? Is het de bedoeling dat de predictions meteen geladen worden voor 3 dagen of misschien 1 dag?
@@ -315,22 +317,21 @@ new PieData { Label = "Papier", Value = 90 }
         {
             foreach(var camera in cameras){
                 var cameraPredictions = await _litterService.PredictAsync(selectedDays, camera.Id);
-                var totalPrediction = new PredictionValues();
+                double totalPrediction = 0;
                 if (cameraPredictions is not null)
                 {
                     foreach (var dailyPrediction in cameraPredictions)
                     {
-                        totalPrediction.Plastic += dailyPrediction.Predictions.Plastic;
-                        totalPrediction.Paper += dailyPrediction.Predictions.Paper;
-                        totalPrediction.Metal += dailyPrediction.Predictions.Metal;
-                        totalPrediction.Glass += dailyPrediction.Predictions.Glass;
-                        totalPrediction.Organic += dailyPrediction.Predictions.Organic;
+                        totalPrediction += dailyPrediction.Predictions.Plastic;
+                        totalPrediction += dailyPrediction.Predictions.Paper;
+                        totalPrediction += dailyPrediction.Predictions.Metal;
+                        totalPrediction += dailyPrediction.Predictions.Glass;
+                        totalPrediction += dailyPrediction.Predictions.Organic;
                     }
                 }
-
-                var item = new HeatmapWrapper
+                var item = new HeatmapData
                 {
-                    PredictionValues = totalPrediction,
+                    totalLitterPerCamera = totalPrediction,
                     Latitude = camera.Latitude,
                     Longitude = camera.Longitude,
                     Id = camera.Id,
@@ -341,6 +342,52 @@ new PieData { Label = "Papier", Value = 90 }
         }
         Console.WriteLine(heatmapItems);
     }
+    private void ConvertToHeatMapInputs(List<HeatmapData> heatmapDataList)
+    {
+        var result = new List<HeatMapInput>();
+
+        if (heatmapDataList == null || heatmapDataList.Count == 0)
+            return;
+
+        // Find the maximum value for normalization
+        var maxLitter = heatmapDataList.Max(h => h.totalLitterPerCamera);
+
+        foreach (var item in heatmapDataList)
+        {
+            var (x, y) = item.Location switch
+            {
+                "McDonald's Centrum" => (0.50, 0.55),
+                "Avans Lovensdijkstraat" => (0.80, 0.65),
+                "Kievitstraat" => (0.65, 0.90),
+                "Bedrijventerrein" => (0.25, 0.10),
+                _ => (0.0, 0.0) 
+            };
+
+            if (x == 0 && y == 0)
+                continue; // Skip unknown locations
+
+            double normalized = maxLitter > 0 ? (item.totalLitterPerCamera / maxLitter) : 0;
+
+            double scaledValue = normalized switch
+            {
+                >= 0.8 => 5,
+                >= 0.6 => 4,
+                >= 0.4 => 3,
+                >= 0.2 => 2,
+                _ => 1
+            };
+
+            result.Add(new HeatMapInput
+            {
+                X = x,
+                Y = y,
+                Value = scaledValue
+            });
+        }
+
+        heatmapInputs = result;
+    }
+
 
     private async Task MakePredictionAsync()
     {
@@ -377,25 +424,6 @@ new PieData { Label = "Papier", Value = 90 }
             })
             .ToList();
         }
-
-        @* 
-        TODO @MathijsH6 @ReinoutvdG Put the prediction data onto the frontend
-
-        foreach (var day in predictionResponse)
-        {
-            day.Date // Is een datetime, speekt voorzich
-
-            day.Predictions // Is een lijst met voor spellingen voor elke categorie
-
-            day.Predictions.Paper 
-            day.Predictions.Metal
-            day.Predictions.Organic     // In de individuele entries zitten de amounts (als doubles)
-            day.Predictions.Plastic
-            day.Predictions.Glass
-        }
-
-        ! Als jullie een eigen List hebben kan je die er direct instoppen (moet type PredictionResponse hebben)
-        *@
 
         StateHasChanged();
     }

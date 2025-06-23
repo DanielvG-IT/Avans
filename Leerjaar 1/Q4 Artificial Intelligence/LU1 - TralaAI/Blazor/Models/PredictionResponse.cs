@@ -29,11 +29,3 @@ public class PredictionValues
     public double Organic { get; set; }
 }
 
-public class HeatmapWrapper
-{
-    public required PredictionValues PredictionValues { get; set; }
-    public required decimal Latitude { get; set; }
-    public required decimal Longitude { get; set; }
-    public required string Location { get; set; }
-    public required int Id { get; set; }
-}

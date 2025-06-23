@@ -27,7 +27,7 @@ window.heatmapInterop = {
 
         // Your percentage-based data points
         const rawData = [
-            { x: 0.50, y: 0.55, value: 5 }, //mc               // 42% from left, 50% from top
+            { x: 0.50, y: 0.55, value: 5 }, //mc               
             { x: 0.80, y: 0.65, value: 4 }, //avans 
             { x: 0.65, y: 0.90, value: 3 }, //suburban
             { x: 0.25, y: 0.10, value: 3 }  //bedrijven
