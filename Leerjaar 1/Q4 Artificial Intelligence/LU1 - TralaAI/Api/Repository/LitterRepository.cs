@@ -16,6 +16,26 @@ namespace Api.Repository
             await _context.Litters.AddAsync(litter);
         }
 
+        public async Task<bool> AddAsync(List<Litter> litter)
+        {
+            await _context.Litters.AddRangeAsync(litter);
+
+            // Transaction for data consistency
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var savedCount = await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return savedCount > 0;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                return false;
+            }
+        }
+
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();

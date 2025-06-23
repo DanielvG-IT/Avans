@@ -16,6 +16,13 @@ public interface ILitterRepository
     Task AddAsync(Litter litter);
 
     /// <summary>
+    /// Adds a new list of litter records asynchronously.
+    /// </summary>
+    /// <param name="litter">The list of litter entities to add.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task<bool> AddAsync(List<Litter> litter);
+
+    /// <summary>
     /// Saves changes made to the repository asynchronously.
     /// </summary>
     /// <returns>A task representing the asynchronous operation.</returns>

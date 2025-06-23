@@ -8,13 +8,13 @@ namespace Api.Services
 {
     public class TrashImportService : ITrashImportService
     {
-        private readonly LitterDbContext _dbContext;
+        private readonly ILitterRepository _litterRepository;
         private readonly IHolidayApiService _holidayApiService;
         private readonly IDTOService _dTOService;
         private readonly HttpClient _httpClient;
 
         public TrashImportService(
-            LitterDbContext dbContext,
+            ILitterRepository litterRepository,
             IHolidayApiService holidayApiService,
             IDTOService dTOService,
             HttpClient httpClient,
@@ -29,7 +29,7 @@ namespace Api.Services
             if (!apiSettingsSection.Exists())
                 throw new InvalidOperationException("Missing required configuration section: apiSettings");
 
-            _dbContext = dbContext;
+            _litterRepository = litterRepository;
             _holidayApiService = holidayApiService;
             _dTOService = dTOService;
             _httpClient = httpClient;
@@ -94,25 +94,12 @@ namespace Api.Services
                 }
 
                 // Use batch operation for efficiency
-                await _dbContext.Litters.AddRangeAsync(newLitters, ct);
-
-                // Transaction for data consistency
-                using var transaction = await _dbContext.Database.BeginTransactionAsync(ct);
-                try
-                {
-                    var savedCount = await _dbContext.SaveChangesAsync(ct);
-                    await transaction.CommitAsync(ct);
-
-                    return savedCount > 0;
-                }
-                catch
-                {
-                    await transaction.RollbackAsync(ct);
-                    return false;
-                }
+                return await _litterRepository.AddAsync(newLitters);
             }
-            catch
+            catch (Exception ex)
             {
+                Console.Error.WriteLine($"Error in ImportAsync: {ex.Message}");
+                Console.Error.WriteLine(ex.StackTrace);
                 return false;
             }
         }
