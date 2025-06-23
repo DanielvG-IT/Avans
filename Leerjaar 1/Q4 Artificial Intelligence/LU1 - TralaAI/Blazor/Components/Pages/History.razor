@@ -268,39 +268,42 @@
         StateHasChanged();
     }
 
-    private async Task GetLitterAsync(DateRange range)
+private async Task GetLitterAsync(DateRange range)
+{
+    var filter = new LitterFilterDto { From = range.Start.DateTime, To = range.End.DateTime };
+    var litterResult = await _litterService.GetLittersAsync(filter);
+    if (litterResult is null)
     {
-        var filter = new LitterFilterDto { From = range.Start.DateTime, To = range.End.DateTime };
-        var litterResult = await _litterService.GetLittersAsync(filter);
+      @* GENIUS ERROR *@
         recentLitter = new();
         totalPerDays = new();
-        
-        if (litterResult is null)
-        {
-            @* GENIUS ERROR! *@
-            return;
-        }
-        
-        recentLitter = litterResult;
-
-        totalPerDays = litterResult.GroupBy(l => l.TimeStamp.Date)
-        .Select(g => new TotalPerDay
-        {
-            Day = g.Key,
-            Glass = g.Count(x => x.LitterCategory == LitterCategory.Glass),
-            Metal = g.Count(x => x.LitterCategory == LitterCategory.Metal),
-            Organic = g.Count(x => x.LitterCategory == LitterCategory.Organic),
-            Paper = g.Count(x => x.LitterCategory == LitterCategory.Paper),
-            Plastic = g.Count(x => x.LitterCategory == LitterCategory.Plastic)
-        })
-        .OrderBy(x => x.Day).ToList();
-
-        if (heatmapChart is not null)
-        {
-            await heatmapChart.UpdateSeriesAsync();
-        }
-        StateHasChanged();
+        return;
     }
+
+    recentLitter = litterResult.ToList(); // Ensure new list instance
+
+    // Always create a new list instance for the chart data
+    totalPerDays = litterResult
+    .GroupBy(l => l.TimeStamp.Date)
+    .Select(g => new TotalPerDay
+    {
+        Day = g.Key,
+        Glass = g.Count(x => x.LitterCategory == LitterCategory.Glass),
+        Metal = g.Count(x => x.LitterCategory == LitterCategory.Metal),
+        Organic = g.Count(x => x.LitterCategory == LitterCategory.Organic),
+        Paper = g.Count(x => x.LitterCategory == LitterCategory.Paper),
+        Plastic = g.Count(x => x.LitterCategory == LitterCategory.Plastic)
+    })
+    .OrderBy(x => x.Day)
+    .ToList();
+
+    StateHasChanged(); // Notify Blazor of data change
+
+    if (heatmapChart is not null)
+    {
+        await heatmapChart.UpdateSeriesAsync(true); // Force update if supported
+    }
+}
 
     private async Task GetCamerasAsync()
     {
