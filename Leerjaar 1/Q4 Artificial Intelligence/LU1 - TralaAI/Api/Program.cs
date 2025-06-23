@@ -55,7 +55,7 @@ builder.Services.AddHttpClient<ITrashImportService, TrashImportService>((service
     var apiSettings = serviceProvider.GetRequiredService<IOptions<ApiSettingsOptions>>().Value;
     var apiKeys = serviceProvider.GetRequiredService<IOptions<ApiKeysOptions>>().Value;
     client.BaseAddress = new Uri(apiSettings.SensoringApiBaseAddress);
-    client.DefaultRequestHeaders.Add("API-Key", apiKeys.SensoringApiKey);
+    client.DefaultRequestHeaders.Add("X-API-KEY", apiKeys.SensoringApiKey);
 });
 
 builder.Services.AddHttpClient<IWeatherService, WeatherService>((serviceProvider, client) =>

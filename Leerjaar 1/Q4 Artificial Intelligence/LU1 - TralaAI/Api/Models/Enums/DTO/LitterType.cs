@@ -19,7 +19,9 @@ namespace Api.Models.Enums.DTO
         PopTab,
         Straw,
         StyrofoamPiece,
-        UnlabelledLitter
+        UnlabelledLitter,
+        // Added new items if not duplicates
+        PlasticBag_Wrapper, // "Plastic bag - wrapper" (distinct from PlasticBagWrapper)
+        Karton // "Karton" (distinct from Carton)
     }
-
 }

@@ -29,6 +29,16 @@ public interface ILitterRepository
     Task SaveChangesAsync();
 
     /// <summary>
+    /// Asynchronously retrieves the most recent timestamp when litter was detected by the specified camera.
+    /// </summary>
+    /// <param name="cameraId">The unique identifier of the camera to query.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains the latest <see cref="DateTime"/> 
+    /// when litter was detected, or <c>null</c> if no detection has been recorded for the specified camera.
+    /// </returns>
+    Task<DateTime?> GetLatestLitterTimeAsync(int cameraId);
+
+    /// <summary>
     /// Asynchronously retrieves a list of cameras.
     /// </summary>
     /// <returns>

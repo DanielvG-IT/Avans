@@ -29,12 +29,27 @@ public class DTOService : IDTOService
     if (string.IsNullOrWhiteSpace(litter))
       return null;
 
+    // Try to parse as enum first
     if (Enum.TryParse<LitterType>(litter, true, out var parsedLitter))
     {
       return GetCategory(parsedLitter);
     }
 
-    return LitterCategory.Unknown;
+    // Handle common descriptive phrases
+    var normalized = litter.Trim().ToLowerInvariant();
+
+    if (normalized.Contains("metal") || normalized.Contains("foil") || normalized.Contains("can") || normalized.Contains("cap") || normalized.Contains("tab"))
+      return LitterCategory.Metal;
+    if (normalized.Contains("glass") || normalized.Contains("bottle"))
+      return LitterCategory.Glass;
+    if (normalized.Contains("paper") || normalized.Contains("carton"))
+      return LitterCategory.Paper;
+    if (normalized.Contains("cigarette") || normalized.Contains("organic"))
+      return LitterCategory.Organic;
+    if (normalized.Contains("plastic") || normalized.Contains("cup") || normalized.Contains("lid") || normalized.Contains("straw") || normalized.Contains("styrofoam") || normalized.Contains("wrapper") || normalized.Contains("container"))
+      return LitterCategory.Plastic;
+
+    return LitterCategory.Plastic;
   }
 
   public WeatherCategory? GetWeatherCategory(WeatherCondition? weather)

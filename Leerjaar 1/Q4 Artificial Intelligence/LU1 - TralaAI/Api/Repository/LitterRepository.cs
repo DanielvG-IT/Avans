@@ -46,6 +46,15 @@ namespace Api.Repository
             return await _context.Cameras.ToListAsync();
         }
 
+        public async Task<DateTime?> GetLatestLitterTimeAsync(int cameraId)
+        {
+            var latestTimestamp = await _context.Litters
+                .Where(l => l.CameraId == cameraId)
+                .MaxAsync(l => (DateTime?)l.TimeStamp);
+
+            return latestTimestamp;
+        }
+
         public async Task<List<Litter>> GetFilteredAsync(LitterFilterDto filter)
         {
             var query = _context.Litters.AsQueryable();
