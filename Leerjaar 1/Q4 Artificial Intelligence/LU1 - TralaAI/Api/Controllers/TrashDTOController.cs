@@ -14,9 +14,9 @@ namespace Api.Controllers
         {
             var result = await _trashImportService.ImportAsync(cancellationToken);
             if (!result)
-                return BadRequest("Failed to start import.");
+                return BadRequest("Importing Data failed!");
 
-            return Ok("Import started successfully.");
+            return NoContent();
         }
     }
 }
