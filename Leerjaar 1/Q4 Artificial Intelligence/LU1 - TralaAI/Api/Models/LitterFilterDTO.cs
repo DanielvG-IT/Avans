@@ -4,7 +4,7 @@ namespace Api.Models
 {
     public class LitterFilterDto
     {
-        // TODO Add cameraId filter
+        public int? CameraId { get; set; }
         public LitterCategory? Type { get; set; }
         public DateTime? From { get; set; }
         public DateTime? To { get; set; }
