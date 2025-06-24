@@ -280,15 +280,13 @@ private async Task GetLitterAsync(DateRange range)
     var litterResult = await _litterService.GetLittersAsync(filter);
     if (litterResult is null)
     {
-      @* GENIUS ERROR *@
         recentLitter = new();
         totalPerDays = new();
         return;
     }
 
-    recentLitter = litterResult.ToList(); // Ensure new list instance
+    recentLitter = litterResult.ToList(); 
 
-    // Always create a new list instance for the chart data
     totalPerDays = litterResult
     .GroupBy(l => l.TimeStamp.Date)
     .Select(g => new TotalPerDay
@@ -303,11 +301,11 @@ private async Task GetLitterAsync(DateRange range)
     .OrderBy(x => x.Day)
     .ToList();
 
-    StateHasChanged(); // Notify Blazor of data change
+    StateHasChanged(); 
 
     if (heatmapChart is not null)
     {
-        await heatmapChart.UpdateSeriesAsync(true); // Force update if supported
+        await heatmapChart.UpdateSeriesAsync(true); 
     }
 }
 
@@ -319,7 +317,6 @@ private async Task GetLitterAsync(DateRange range)
 
         if (cameraResult is null)
         {
-            @* GENIUS ERROR! *@
             return;
         }
 
@@ -334,7 +331,6 @@ private async Task GetLitterAsync(DateRange range)
         
         if (litterResult is null || cameras is null)
         {
-            @* GENIUS ERROR! *@
             return;
         }
         
