@@ -31,9 +31,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/heatmap.js/2.0.0/heatmap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        window.drawHeatmap = function (parameter) {
+        window.drawHeatmap = function (parameter, element) {
             console.log("drawHeatmap called");
-            const mapEl = document.getElementById('map');
+            const mapEl = document.getElementById(element);
             console.log("mapEl size:", mapEl && mapEl.getBoundingClientRect());
 
             if (window._heatmapMap) {
@@ -47,11 +47,6 @@
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(window._heatmapMap);
 
-            var addressPoints = [
-                [51.5719, 4.7683, 0.2],
-                [51.5720, 4.7690, 0.5],
-                [51.5730, 4.7700, 0.8]
-            ];
             L.heatLayer(addressPoints, {
                 radius: 25,
                 blur: 15,
