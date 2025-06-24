@@ -392,6 +392,7 @@
         StateHasChanged();
 
         // Clear data to avoid showing stale data during loading
+        await RemoveHeatmapNew();
         LitterItems.Clear();
         PlasticItems.Clear();
         PaperItems.Clear();
@@ -425,9 +426,12 @@
 
     private async Task DrawHeatmapNew()
     {
-        StateHasChanged();
         await JS.InvokeVoidAsync("drawHeatmap", heatmapItems);
-        StateHasChanged();
+    }
+
+    private async Task RemoveHeatmapNew()
+    {
+        await JS.InvokeVoidAsync("removeHeatmap");
     }
 
     private async Task GetHeatmapData()
