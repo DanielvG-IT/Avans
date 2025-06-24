@@ -28,3 +28,4 @@ public class PredictionValues
     [JsonPropertyName("organic")]
     public double Organic { get; set; }
 }
+
