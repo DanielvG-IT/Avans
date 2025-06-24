@@ -29,15 +29,26 @@ public class LitterService(HttpClient httpClient) : ILitterService
     Console.WriteLine(queryString);
     var response = await _httpClient.GetAsync($"/api/v1/litter{queryString}");
     if (!response.IsSuccessStatusCode)
-      return null;
+    {
+      var error = await response.Content.ReadAsStringAsync();
+      throw new HttpRequestException($"Failed to get litters. Status: {response.StatusCode}. Details: {error}");
+    }
 
-    return await response.Content.ReadFromJsonAsync<List<Litter>>();
+    var result = await response.Content.ReadFromJsonAsync<List<Litter>>() ?? throw new InvalidOperationException("Failed to deserialize litter list from response.");
+    return result;
   }
 
   public async Task<List<Camera>?> GetCamerasAsync()
   {
     var response = await _httpClient.GetAsync("/api/v1/litter/cameras");
-    return await response.Content.ReadFromJsonAsync<List<Camera>>();
+    if (!response.IsSuccessStatusCode)
+    {
+      var error = await response.Content.ReadAsStringAsync();
+      throw new HttpRequestException($"Failed to get cameras. Status: {response.StatusCode}. Details: {error}");
+    }
+
+    var result = await response.Content.ReadFromJsonAsync<List<Camera>>();
+    return result == null ? throw new InvalidOperationException("Failed to deserialize camera list from response.") : result;
   }
 
   public async Task<List<PredictionResponse>?> PredictAsync(int amountOfDays, int cameraId)
@@ -45,9 +56,13 @@ public class LitterService(HttpClient httpClient) : ILitterService
     var queryString = $"?amountOfDays={amountOfDays}&CameraId={cameraId}";
     var response = await _httpClient.PostAsync($"/api/v1/litter/predict{queryString}", null);
     if (!response.IsSuccessStatusCode)
-      return null;
+    {
+      var error = await response.Content.ReadAsStringAsync();
+      throw new HttpRequestException($"Prediction failed. Status: {response.StatusCode}. Details: {error}");
+    }
 
-    return await response.Content.ReadFromJsonAsync<List<PredictionResponse>>();
+    var result = await response.Content.ReadFromJsonAsync<List<PredictionResponse>>();
+    return result == null ? throw new InvalidOperationException("Failed to deserialize prediction response.") : result;
   }
 
   public async Task<bool> RetrainModelAsync(int cameraId)
@@ -55,7 +70,13 @@ public class LitterService(HttpClient httpClient) : ILitterService
     var queryString = $"?CameraId={cameraId}";
     var response = await _httpClient.PostAsync($"/api/v1/litter/retrain{queryString}", null);
 
-    return response.IsSuccessStatusCode;
+    if (!response.IsSuccessStatusCode)
+    {
+      var error = await response.Content.ReadAsStringAsync();
+      throw new HttpRequestException($"Model retraining failed. Status: {response.StatusCode}. Details: {error}");
+    }
+
+    return true;
   }
 
   public async Task<bool> ImportTrashDataAsync(CancellationToken cancellationToken = default)
@@ -64,14 +85,17 @@ public class LitterService(HttpClient httpClient) : ILitterService
     {
       var response = await _httpClient.PostAsync("/api/v1/TrashDTO/import-trash-data", null, cancellationToken);
       if (!response.IsSuccessStatusCode)
-        return false;
+      {
+        var error = await response.Content.ReadAsStringAsync();
+        throw new HttpRequestException($"Importing trash data failed. Status: {response.StatusCode}. Details: {error}");
+      }
 
       return true;
     }
     catch (Exception ex)
     {
       Console.WriteLine($"Error importing trash data: {ex.Message}");
-      return false;
+      throw new InvalidOperationException("An error occurred while importing trash data.", ex);
     }
   }
 
@@ -79,8 +103,12 @@ public class LitterService(HttpClient httpClient) : ILitterService
   {
     var response = await _httpClient.GetAsync("/api/v1/litter/amount-per-location");
     if (!response.IsSuccessStatusCode)
-      return null;
+    {
+      var error = await response.Content.ReadAsStringAsync();
+      throw new HttpRequestException($"Failed to get amount per location. Status: {response.StatusCode}. Details: {error}");
+    }
 
-    return await response.Content.ReadFromJsonAsync<List<LitterAmountCamera>?>();
+    var result = await response.Content.ReadFromJsonAsync<List<LitterAmountCamera>>();
+    return result == null ? throw new InvalidOperationException("Failed to deserialize amount per location response.") : result;
   }
 }
