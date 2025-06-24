@@ -1,17 +1,13 @@
 @page "/settings"
 @rendermode InteractiveServer
+@using Blazor.Components.Shared
 @using Blazor.Interfaces
 @using Blazor.Models
 @inject NavigationManager Navigation
 @inject IHealthService _healthService
 @inject ILitterService _litterService
 
-@if (!string.IsNullOrEmpty(errorMessage))
-{
-    <div class="alert alert-danger" role="alert" style="margin-bottom: 1rem;">
-        @errorMessage
-    </div>
-}
+<ErrorModal Title="Oops!" Message="@errorMessage" Show="@showErrorModal" OnClose="@HandleModalClose" />
 
 <div class="wholeass" style="height: calc(100svh - 4rem)">
     <div class="settings-container">
@@ -347,6 +343,7 @@
     private string location = string.Empty;
     private List<Camera> cameras = new();
     private int selectedCameraId = 2;
+    private bool showErrorModal = false;
 
     protected override void OnInitialized()
     {
@@ -356,24 +353,28 @@
     }
     protected override async Task OnInitializedAsync()
     {
-        var response = await _litterService.GetCamerasAsync();
-        if (response is not null)
+        try
         {
-            cameras = response;
+            var response = await _litterService.GetCamerasAsync();
+            if (response is not null)
+            {
+                cameras = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowError("Kon camera's niet ophalen: " + ex.Message);
         }
     }
 
-
     private async Task GetApiStatuses()
     {
-        // Start all health checks in parallel
         var backendTask = _healthService.GetBackendHealthAsync();
         var fastApiTask = _healthService.GetFastApiHealthAsync();
         var sensoringTask = _healthService.GetSensoringHealthAsync();
         var weatherTask = _healthService.GetWeatherApiHealthAsync();
         var holidayTask = _healthService.GetHolidayApiHealthAsync();
 
-        // Stream in each result as soon as it completes
         var tasks = new[]
         {
 (Task: backendTask, Setter: (Action<bool?>)(v => { backendStatus = v; })),
@@ -394,9 +395,10 @@
             {
                 tuple.Setter(completed.Result);
             }
-            catch
+            catch (Exception ex)
             {
                 tuple.Setter(false);
+                ShowError("Fout bij ophalen API status: " + ex.Message);
             }
 
             await InvokeAsync(StateHasChanged);
@@ -407,23 +409,37 @@
     private async Task RetrainButton()
     {
         isRetraining = true;
-        if (selectedCameraId == 2) @* HardCode Sensoring group  *@
+        showRetrainSuccess = false;
+        try
         {
-            var importResult = await _litterService.ImportTrashDataAsync();
-            if (!importResult)
+            if (selectedCameraId == 2) // HardCode Sensoring group
             {
-                @* TODO Error logging *@
+                var importResult = await _litterService.ImportTrashDataAsync();
+                if (!importResult)
+                {
+                    ShowError("Importeren van trash data is mislukt.");
+                }
+            }
+
+            var retrainResult = await _litterService.RetrainModelAsync(selectedCameraId);
+            if (!retrainResult)
+            {
+                ShowError("Het opnieuw trainen van het model is mislukt.");
+            }
+            else
+            {
+                showRetrainSuccess = true;
             }
         }
-
-        var retrainResult = await _litterService.RetrainModelAsync(selectedCameraId);
-        if (!retrainResult)
+        catch (Exception ex)
         {
-            @* TODO Error logging *@
+            ShowError("Fout bij opnieuw trainen van model: " + ex.Message);
         }
-
-        isRetraining = false;
-        await GetModelStatus(selectedCameraId);
+        finally
+        {
+            isRetraining = false;
+            await GetModelStatus(selectedCameraId);
+        }
     }
 
     private async Task OnCameraChanged()
@@ -433,22 +449,43 @@
 
     private async Task GetModelStatus(int cameraId)
     {
-        var result = await _healthService.GetFastApiModelDataAsync(cameraId);
-        if (result is null)
+        try
         {
-            latestResponse = "Er is iets foutgegaan";
-            modelRMSE = 0;
-            location = "unknown";
-            lastModelUpdate = DateTime.Now;
-            return;
+            var result = await _healthService.GetFastApiModelDataAsync(cameraId);
+            if (result is null)
+            {
+                latestResponse = "Er is iets foutgegaan";
+                modelRMSE = 0;
+                location = "unknown";
+                lastModelUpdate = DateTime.Now;
+                ShowError("Kon modelstatus niet ophalen.");
+                return;
+            }
+
+            latestResponse = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(result.Status ?? string.Empty);
+            modelRMSE = Math.Round(result.CurrentRmse, 3);
+            lastModelUpdate = result.LastUpdated;
+            location = cameras.FirstOrDefault(c => c.Id == selectedCameraId)?.Location ?? string.Empty;
+        }
+        catch (Exception ex)
+        {
+            ShowError("Fout bij ophalen modelstatus: " + ex.Message);
         }
 
-        latestResponse = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(result.Status ?? string.Empty);
-        modelRMSE = Math.Round(result.CurrentRmse, 3);
-        lastModelUpdate = result.LastUpdated;
-        location = cameras.FirstOrDefault(c => c.Id == selectedCameraId)?.Location ?? string.Empty;
-
-
         await InvokeAsync(StateHasChanged);
+    }
+
+    private void ShowError(string message)
+    {
+        errorMessage = message;
+        showErrorModal = true;
+        StateHasChanged();
+    }
+
+    private void HandleModalClose()
+    {
+        showErrorModal = false;
+        errorMessage = string.Empty;
+        StateHasChanged();
     }
 }
