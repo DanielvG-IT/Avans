@@ -41,10 +41,11 @@
     </div>
 
     <div style="display: flex; gap: 2rem; align-items: flex-start; flex-direction: row;">
-        <div class="box-container" style="flex: 1; height: 440px; display: flex; flex-direction: column;">
+        <div class="box-container" style="flex: 1; height: 38vh; display: flex; flex-direction: column;">
+            <h3>Totaal Gedetecteerd Afval</h3>
             @if (totalLitterPerCamera is not null && totalLitterPerCamera.Count != 0)
             {
-                <ApexChart TItem="TotalLitterPerCamera" Title="Totaal gedetecteerd afval per camera." Height="400"
+                <ApexChart TItem="TotalLitterPerCamera" Height="420"
                     Options="options">
                     <ApexPointSeries TItem="TotalLitterPerCamera" Items="totalLitterPerCamera" SeriesType="SeriesType.Donut"
                         Name="Total Litter Per Camera" XValue="@(e => e.Location)" YValue="@(e => e.Amount)" />
@@ -71,10 +72,11 @@
                 <p>Er zijn momenteel geen recente afvaldetecties.</p>
             }
         </div>
-        <div class="box-container" style="flex: 1; height: 440px; display: flex; flex-direction: column;">
+        <div class="box-container" style="flex: 1; height: 38vh; display: flex; flex-direction: column;">
+            <h3>Totaal Afval per type per dag van @StartDate?.Date.ToString("dd-MM-yyyy") tot @EndDate?.Date.ToString("dd-MM-yyyy")</h3>
             @if (totalPerDays is not null && totalPerDays.Count != 0)
             {
-                <ApexChart TItem="TotalPerDay" Title="Hoeveelheid afval per type per dag." Height="400" @ref="heatmapChart">
+                <ApexChart TItem="TotalPerDay" Height="420" @ref="heatmapChart">
                     <ApexPointSeries TItem="TotalPerDay" Items="totalPerDays" SeriesType="SeriesType.Heatmap" Name="Glas"
                         XValue="@(e => e.Day.ToString("dd-MM"))" YValue="@(e => e.Glass)" />
                     <ApexPointSeries TItem="TotalPerDay" Items="totalPerDays" SeriesType="SeriesType.Heatmap" Name="Metaal"
@@ -110,7 +112,7 @@
         </div>
     </div>
     <div class="insane-table-container">
-        <h3>Recente afvaldetecties</h3>
+        <h3>Afvaldetecties van @StartDate?.Date.ToString("dd-MM-yyyy") tot @EndDate?.Date.ToString("dd-MM-yyyy")</h3>
 
         @if (cameras is not null && recentLitter is not null && recentLitter.Count != 0)
         {
@@ -205,6 +207,10 @@
         margin-bottom: 1rem;
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         font-weight: 700;
+    }
+    h3 {
+        color: #0078d4;
+        margin-bottom: 0.5rem;
     }
 </style>
 
