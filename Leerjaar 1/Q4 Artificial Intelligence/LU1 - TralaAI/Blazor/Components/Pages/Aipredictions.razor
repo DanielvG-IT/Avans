@@ -301,6 +301,8 @@ new PieData { Label = "Papier", Value = 90 }
             return; // Error handling: No cameras found; Show an error message to user
 
         cameraOptions = cameraResponse;
+        await MakePredictionAsync();
+        await GetHeatmapData();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -326,6 +328,7 @@ new PieData { Label = "Papier", Value = 90 }
     // Days select button on click
     private ApexChart<LitterData>? chart;
     private ApexChart<PieData>? pieChart;
+
     // Verandering in filters
     private async Task ApplyFilters()
     {
@@ -449,5 +452,4 @@ new PieData { Label = "Papier", Value = 90 }
 
         StateHasChanged();
     }
-
 }
