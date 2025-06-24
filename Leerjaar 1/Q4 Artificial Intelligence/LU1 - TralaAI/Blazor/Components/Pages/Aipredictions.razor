@@ -364,11 +364,7 @@
         if (firstRender && !_clientRendered)
         {
             _clientRendered = true;
-            await DrawHeatmapNew();
-            await MakePredictionAsync();
-            await GetHeatmapData();
-            isLoading = false;
-            StateHasChanged();
+            await LoadAllDataAsync();
         }
     }
 
@@ -384,32 +380,47 @@
     private ApexChart<LitterData>? chart;
     private ApexChart<PieData>? pieChart;
 
-    // Verandering in filters
-    private async Task ApplyFilters()
+    private async Task LoadAllDataAsync()
     {
         isLoading = true;
         StateHasChanged();
-        var predictionResponse = await _litterService.PredictAsync(selectedDays, selectedCameraId);
+
+        // Clear data to avoid showing stale data during loading
+        LitterItems.Clear();
+        PlasticItems.Clear();
+        PaperItems.Clear();
+        MetalItems.Clear();
+        GlassItems.Clear();
+        OrganicItems.Clear();
+        pieData.Clear();
+        heatmapItems.Clear();
+
         await MakePredictionAsync();
-        StateHasChanged();
+        await GetHeatmapData();
+        await DrawHeatmapNew();
+
         if (chart is not null)
             await chart.RenderAsync();
         if (pieChart is not null)
             await pieChart.RenderAsync();
-        await DrawHeatmapNew();
 
         appliedselectedDays = selectedDays;
         locatie = cameraOptions.FirstOrDefault(c => c.Id == selectedCameraId)?.Location ?? "Onbekende locatie";
+
         isLoading = false;
         StateHasChanged();
     }
 
+    // Verandering in filters
+    private async Task ApplyFilters()
+    {
+        await LoadAllDataAsync();
+    }
+
     private async Task DrawHeatmapNew()
     {
-        isLoading = true;
         StateHasChanged();
         await JS.InvokeVoidAsync("drawHeatmap", heatmapItems);
-        isLoading = false;
         StateHasChanged();
     }
 
@@ -447,7 +458,6 @@
 
     private async Task MakePredictionAsync()
     {
-        isLoading = true;
         // Voorbeeld van het maken van een voorspelling
         var predictionResponse = await _litterService.PredictAsync(selectedDays, selectedCameraId);
         if (predictionResponse is null || !predictionResponse.Any() || predictionResponse.Count != selectedDays)
@@ -512,8 +522,6 @@
             })
             .ToList();
         }
-
         StateHasChanged();
-        isLoading = false;
     }
 }
