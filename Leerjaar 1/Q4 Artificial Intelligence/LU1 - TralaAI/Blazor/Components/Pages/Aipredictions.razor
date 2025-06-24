@@ -34,35 +34,59 @@
             </div>
 
             <!-- Confirm button -->
-            <button class="btn btn-primary" @onclick="ApplyFilters">Toepassen</button>
+            <button class="btn btn-primary" @onclick="ApplyFilters" disabled="@isLoading">
+                @(isLoading ? "Laden..." : "Toepassen")
+            </button>
         </div>
 
         <p><b>Bovenstaande formulieren geven je de mogelijkheid een voorspelling op te vragen van een AI-model op een
                 gekozen camera locatie.</b></p>
 
-        <ApexChart @ref="chart" TItem="LitterData" Title="Afval per Type per Dag" Height="400">
-            <ApexPointSeries TItem="LitterData" Items="PlasticItems" Name="Plastic" XValue="@(e => e.Date)"
-                YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
-            <ApexPointSeries TItem="LitterData" Items="PaperItems" Name="Paper" XValue="@(e => e.Date)"
-                YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
-            <ApexPointSeries TItem="LitterData" Items="MetalItems" Name="Metal" XValue="@(e => e.Date)"
-                YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
-            <ApexPointSeries TItem="LitterData" Items="GlassItems" Name="Glass" XValue="@(e => e.Date)"
-                YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
-            <ApexPointSeries TItem="LitterData" Items="OrganicItems" Name="Organic" XValue="@(e => e.Date)"
-                YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
-        </ApexChart>
+        @if (isLoading || PlasticItems is null || PaperItems is null || MetalItems is null || GlassItems is null ||
+                OrganicItems is null)
+        {
+            <div class="loading-state d-flex flex-column align-items-center justify-content-center" style="height: 400px;">
+
+                <span class="loader mb-2"></span>
+                <span>AI voorspellingen worden geladen...</span>
+            </div>
+        }
+        else
+        {
+            <ApexChart @ref="chart" TItem="LitterData" Title="Afval per Type per Dag" Height="400">
+                <ApexPointSeries TItem="LitterData" Items="PlasticItems" Name="Plastic" XValue="@(e => e.Date)"
+                    YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
+                <ApexPointSeries TItem="LitterData" Items="PaperItems" Name="Paper" XValue="@(e => e.Date)"
+                    YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
+                <ApexPointSeries TItem="LitterData" Items="MetalItems" Name="Metal" XValue="@(e => e.Date)"
+                    YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
+                <ApexPointSeries TItem="LitterData" Items="GlassItems" Name="Glass" XValue="@(e => e.Date)"
+                    YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
+                <ApexPointSeries TItem="LitterData" Items="OrganicItems" Name="Organic" XValue="@(e => e.Date)"
+                    YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
+            </ApexChart>
+        }
     </div>
 
     <!-- Middle: Pie Chart + Heatmap-->
     <div class="middle-section">
         <div class="left-panel">
             <h3>Pie-Chart</h3>
-            <ApexChart @ref="pieChart" TItem="PieData"
-                Title="Verdeling van afvaltypes voor de door jouw opgevraagde voorspelling." Height="500">
-                <ApexPointSeries TItem="PieData" Items="pieData" Name="Waarde" SeriesType="SeriesType.Pie"
-                    XValue="@(e => e.Label)" YValue="@(e => (decimal)e.Value)" />
-            </ApexChart>
+            @if (isLoading || pieData is null)
+            {
+                <div class="d-flex flex-column align-items-center justify-content-center" style="height: 500px;">
+                    <span class="loader mb-2"></span>
+                    <span>Pie chart wordt geladen...</span>
+                </div>
+            }
+            else
+            {
+                <ApexChart @ref="pieChart" TItem="PieData"
+                    Title="Verdeling van afvaltypes voor de door jouw opgevraagde voorspelling." Height="500">
+                    <ApexPointSeries TItem="PieData" Items="pieData" Name="Waarde" SeriesType="SeriesType.Pie"
+                        XValue="@(e => e.Label)" YValue="@(e => (decimal)e.Value)" />
+                </ApexChart>
+            }
         </div>
         <div class="right-panel">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em">
@@ -77,9 +101,9 @@
                     <div id="map" class="heatmap-map">
                         @if (isLoading)
                         {
-                            <div class="heatmap-loading">
-                                <span class="loader"></span>
-                                <span>Loading heatmap...</span>
+                            <div class="d-flex flex-column align-items-center justify-content-center" style="height: 100%;">
+                                <span class="loader mb-2"></span>
+                                <span>Heatmap wordt geladen...</span>
                             </div>
                         }
                     </div>
@@ -294,6 +318,7 @@ new PieData { Label = "Papier", Value = 90 }
 
     protected override async Task OnInitializedAsync()
     {
+        isLoading = true;
         await ApplyFilters();
 
         var cameraResponse = await _litterService.GetCamerasAsync();
@@ -313,6 +338,7 @@ new PieData { Label = "Papier", Value = 90 }
             await MakePredictionAsync();
             await GetHeatmapData();
             await DrawHeatmapNew();
+            isLoading = false;
             StateHasChanged();
         }
     }
@@ -332,6 +358,7 @@ new PieData { Label = "Papier", Value = 90 }
     // Verandering in filters
     private async Task ApplyFilters()
     {
+        isLoading = true;
         // Hier doe je de filtering van data
         Console.WriteLine($"Toepassen: {selectedDays} dagen en {selectedCameraId} camera geselecteerd.");
         var predictionResponse = await _litterService.PredictAsync(selectedDays, selectedCameraId);
@@ -340,11 +367,12 @@ new PieData { Label = "Papier", Value = 90 }
             await chart.RenderAsync();
         if (pieChart is not null)
             await pieChart.RenderAsync();
+
+        isLoading = false;
     }
 
     private async Task DrawHeatmapNew()
     {
-        StateHasChanged();
         isLoading = true;
         StateHasChanged();
         await JS.InvokeVoidAsync("drawHeatmap", heatmapItems);
@@ -385,6 +413,7 @@ new PieData { Label = "Papier", Value = 90 }
 
     private async Task MakePredictionAsync()
     {
+        isLoading = true;
         // Voorbeeld van het maken van een voorspelling
         var predictionResponse = await _litterService.PredictAsync(selectedDays, selectedCameraId);
         if (predictionResponse is null || !predictionResponse.Any() || predictionResponse.Count != selectedDays)
@@ -451,5 +480,6 @@ new PieData { Label = "Papier", Value = 90 }
         }
 
         StateHasChanged();
+        isLoading = false;
     }
 }
