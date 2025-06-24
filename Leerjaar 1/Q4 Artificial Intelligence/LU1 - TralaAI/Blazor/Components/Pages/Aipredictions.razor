@@ -99,7 +99,7 @@
             <div class="page-container">
                 <div class="heatmap-container">
                     <div id="map" class="heatmap-map">
-                        @if (isLoading)
+                        @if (isLoading || heatmapItems is null)
                         {
                             <div class="d-flex flex-column align-items-center justify-content-center" style="height: 100%;">
                                 <span class="loader mb-2"></span>
@@ -319,8 +319,6 @@ new PieData { Label = "Papier", Value = 90 }
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
-        await ApplyFilters();
-
         var cameraResponse = await _litterService.GetCamerasAsync();
         if (cameraResponse is null || !cameraResponse.Any())
             return; // Error handling: No cameras found; Show an error message to user
@@ -328,6 +326,7 @@ new PieData { Label = "Papier", Value = 90 }
         cameraOptions = cameraResponse;
         await MakePredictionAsync();
         await GetHeatmapData();
+        isLoading = false;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
