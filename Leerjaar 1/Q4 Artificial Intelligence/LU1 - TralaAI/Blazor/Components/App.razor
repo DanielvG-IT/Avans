@@ -60,9 +60,9 @@
             }).addTo(window._heatmapMap);
 
             L.heatLayer(addressPoints, {
-                radius: 25,
-                blur: 15,
-                maxZoom: 17,
+                radius: 80,
+                blur: 50,
+                maxZoom: 10,
                 max: maxValue > 0 ? maxValue : 1
             }).addTo(window._heatmapMap);
         };
