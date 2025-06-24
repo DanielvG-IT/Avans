@@ -486,15 +486,22 @@
 
     private async Task LoadCameras()
     {
-        var cameraResponse = await _litterService.GetCamerasAsync();
-        if (cameraResponse is null || !cameraResponse.Any())
+        try
         {
-            ShowError("Geen camera's gevonden.");
-            return;
-        }
+            var cameraResponse = await _litterService.GetCamerasAsync();
+            if (cameraResponse is null || !cameraResponse.Any())
+            {
+                ShowError("Geen camera's gevonden.");
+                return;
+            }
 
-        cameraOptions = cameraResponse;
-        selectedCameraId = cameraOptions.Min(c => c.Id);
+            cameraOptions = cameraResponse;
+            selectedCameraId = cameraOptions.Min(c => c.Id);
+        }
+        catch (Exception ex)
+        {
+            ShowError($"Fout bij het ophalen van camera's: {ex.Message}");
+        }
     }
 
     private async Task GetHeatmapData()
@@ -538,70 +545,72 @@
 
     private async Task MakePredictionAsync()
     {
-        var predictionResponse = await _litterService.PredictAsync(selectedDays, selectedCameraId);
-        if (predictionResponse is null || !predictionResponse.Any() || predictionResponse.Count != selectedDays)
+        try
         {
-            Console.WriteLine("Geen of incorrecte data ontvangen van de backend.");
-            return;
-        }
-        else
-        {
-            var newLitterItems = new List<LitterData>();
-
-            foreach (var day in predictionResponse)
+            var predictionResponse = await _litterService.PredictAsync(selectedDays, selectedCameraId);
+            if (predictionResponse is null || !predictionResponse.Any() || predictionResponse.Count != selectedDays)
             {
-                Console.WriteLine("Probeert data op te halen");
-                newLitterItems.Add(new LitterData
-                {
-                    Date = DateOnly.FromDateTime(day.Date),
-                    Type = "plastic",
-                    Count =
-                day.Predictions.Plastic
-                });
-                newLitterItems.Add(new LitterData
-                {
-                    Date = DateOnly.FromDateTime(day.Date),
-                    Type = "paper",
-                    Count =
-                day.Predictions.Paper
-                });
-                newLitterItems.Add(new LitterData
-                {
-                    Date = DateOnly.FromDateTime(day.Date),
-                    Type = "metal",
-                    Count =
-                day.Predictions.Metal
-                });
-                newLitterItems.Add(new LitterData
-                {
-                    Date = DateOnly.FromDateTime(day.Date),
-                    Type = "glass",
-                    Count =
-                day.Predictions.Glass
-                });
-                newLitterItems.Add(new LitterData
-                {
-                    Date = DateOnly.FromDateTime(day.Date),
-                    Type = "organic",
-                    Count =
-                day.Predictions.Organic
-                });
+                Console.WriteLine("Geen of incorrecte data ontvangen van de backend.");
+                return;
             }
-            LitterItems = newLitterItems;
-            PlasticItems = LitterItems.Where(x => x.Type == "plastic").ToList();
-            PaperItems = LitterItems.Where(x => x.Type == "paper").ToList();
-            MetalItems = LitterItems.Where(x => x.Type == "metal").ToList();
-            GlassItems = LitterItems.Where(x => x.Type == "glass").ToList();
-            OrganicItems = LitterItems.Where(x => x.Type == "organic").ToList();
-            pieData = LitterItems
-            .GroupBy(item => item.Type)
-            .Select(group => new PieData
+            else
             {
-                Label = group.Key,
-                Value = group.Sum(item => item.Count)
-            })
-            .ToList();
+                var newLitterItems = new List<LitterData>();
+
+                foreach (var day in predictionResponse)
+                {
+                    Console.WriteLine("Probeert data op te halen");
+                    newLitterItems.Add(new LitterData
+                    {
+                        Date = DateOnly.FromDateTime(day.Date),
+                        Type = "plastic",
+                        Count = day.Predictions.Plastic
+                    });
+                    newLitterItems.Add(new LitterData
+                    {
+                        Date = DateOnly.FromDateTime(day.Date),
+                        Type = "paper",
+                        Count = day.Predictions.Paper
+                    });
+                    newLitterItems.Add(new LitterData
+                    {
+                        Date = DateOnly.FromDateTime(day.Date),
+                        Type = "metal",
+                        Count = day.Predictions.Metal
+                    });
+                    newLitterItems.Add(new LitterData
+                    {
+                        Date = DateOnly.FromDateTime(day.Date),
+                        Type = "glass",
+                        Count = day.Predictions.Glass
+                    });
+                    newLitterItems.Add(new LitterData
+                    {
+                        Date = DateOnly.FromDateTime(day.Date),
+                        Type = "organic",
+                        Count = day.Predictions.Organic
+                    });
+                }
+                LitterItems = newLitterItems;
+                PlasticItems = LitterItems.Where(x => x.Type == "plastic").ToList();
+                PaperItems = LitterItems.Where(x => x.Type == "paper").ToList();
+                MetalItems = LitterItems.Where(x => x.Type == "metal").ToList();
+                GlassItems = LitterItems.Where(x => x.Type == "glass").ToList();
+                OrganicItems = LitterItems.Where(x => x.Type == "organic").ToList();
+                pieData = LitterItems
+                .GroupBy(item => item.Type)
+                .Select(group => new PieData
+                {
+                    Label = group.Key,
+                    Value = group.Sum(item => item.Count)
+                })
+                .ToList();
+            }
+            StateHasChanged();
         }
-        StateHasChanged();
+        catch (Exception ex)
+        {
+            ShowError($"Fout bij het ophalen van AI voorspellingen: {ex.Message}");
+        }
     }
 }
