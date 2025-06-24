@@ -33,37 +33,71 @@
         window.drawHeatmap = function (parameter) {
             console.log("drawHeatmap called");
             const mapEl = document.getElementById('map');
-            console.log("mapEl size:", mapEl && mapEl.getBoundingClientRect());
-
-            if (window._heatmapMap) {
-                console.log("removing old map");
-                window._heatmapMap.remove();
+            if (!mapEl) {
+                console.error("Map element with id 'map' not found.");
+                return;
             }
 
-            // Assume 'parameter' is an array of HeatmapData objects from .NET
-            // Convert to [lat, lng, intensity] format for heatLayer
-            const addressPoints = parameter.map(item => [
-                Number(item.latitude),
-                Number(item.longitude),
-                Number(item.totalLitterPerCamera)
-            ]);
+            // Remove previous map instance if exists
+            if (window._heatmapMap) {
+                window._heatmapMap.remove();
+                window._heatmapMap = null;
+            }
+
+            // Prepare heatmap data: [lat, lng, intensity]
+            const addressPoints = Array.isArray(parameter)
+                ? parameter
+                    .filter(item => item.latitude && item.longitude && item.totalLitterPerCamera)
+                    .map(item => [
+                        Number(item.latitude),
+                        Number(item.longitude),
+                        Number(item.totalLitterPerCamera)
+                    ])
+                : [];
+
+            if (addressPoints.length === 0) {
+                console.warn("No valid heatmap data provided.");
+                return;
+            }
 
             // Find the max value for normalization
-            const maxValue = Math.max(...parameter.map(item => Number(item.totalLitterPerCamera)));
+            const maxValue = Math.max(...addressPoints.map(p => p[2]), 1);
 
-            const bredaCenter = [51.58843277555672, 4.776001205701836];
-            window._heatmapMap = L.map('map').setView(bredaCenter, 13);
+            // Center map on average of points, fallback to Breda center
+            let center = [51.58843277555672, 4.776001205701836];
+            if (addressPoints.length > 0) {
+                const avgLat = addressPoints.reduce((sum, p) => sum + p[0], 0) / addressPoints.length;
+                const avgLng = addressPoints.reduce((sum, p) => sum + p[1], 0) / addressPoints.length;
+                center = [avgLat, avgLng];
+            }
 
+            // Create map
+            window._heatmapMap = L.map('map', { zoomControl: true, attributionControl: true }).setView(center, 13);
+
+            // Add tile layer
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(window._heatmapMap);
 
+            // Add heat layer
             L.heatLayer(addressPoints, {
-                radius: 80,
-                blur: 60,
-                maxZoom: 8,
-                max: maxValue > 0 ? maxValue : 1
+                radius: 80, // Increased radius for more visibility when zoomed out
+                blur: 40,   // Increased blur for smoother appearance
+                maxZoom: 10, // Lower maxZoom so heatmap is visible at wider zooms
+                max: maxValue,
+                gradient: {
+                    0.0: 'blue',
+                    0.4: 'lime',
+                    0.7: 'yellow',
+                    1.0: 'red'
+                }
             }).addTo(window._heatmapMap);
+
+            // Optional: Fit bounds to data
+            const latLngs = addressPoints.map(p => [p[0], p[1]]);
+            if (latLngs.length > 1) {
+                window._heatmapMap.fitBounds(latLngs, { padding: [30, 30] });
+            }
         };
     </script>
 </body>
