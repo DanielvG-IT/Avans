@@ -1,11 +1,14 @@
 @page "/history"
 @rendermode InteractiveServer
 @using ApexCharts
+@using BlazorDateRangePicker
 @using Blazor.Models
 @using Blazor.Interfaces
 @using Blazor.Models.Enums
-@using BlazorDateRangePicker
+@using Blazor.Components.Shared
 @inject ILitterService _litterService
+
+<ErrorModal Title="Oops!" Message="@errorMessage" Show="@showErrorModal" OnClose="@HandleModalClose" />
 
 <div class="page-container" style="height: 140vh;">
     <h1 class="geschiedenis titel">Afvalgeschiedenis</h1>
@@ -243,6 +246,10 @@
     DateTimeOffset? StartDate { get; set; }
     DateTimeOffset? EndDate { get; set; }
 
+    // Error handling fields
+    private string? errorMessage;
+    private bool showErrorModal = false;
+
     protected override async Task OnInitializedAsync()
     {
         options.PlotOptions = new PlotOptions
@@ -263,89 +270,130 @@
         StartDate = DateTime.Today.AddDays(-5);
         EndDate = DateTime.Today;
 
-        await GetCamerasAsync();
-        await GetLitterPerCameraAsync();
-
-        if (StartDate.HasValue && EndDate.HasValue)
+        try
         {
-            await GetLitterAsync(new DateRange { Start = StartDate.Value.DateTime, End = EndDate.Value.DateTime });
+            await GetCamerasAsync();
+            await GetLitterPerCameraAsync();
+
+            if (StartDate.HasValue && EndDate.HasValue)
+            {
+                await GetLitterAsync(new DateRange { Start = StartDate.Value.DateTime, End = EndDate.Value.DateTime });
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowError("Er is een fout opgetreden tijdens het laden van de gegevens: " + ex.Message);
         }
 
         StateHasChanged();
     }
 
-private async Task GetLitterAsync(DateRange range)
-{
-    var filter = new LitterFilterDto { From = range.Start.DateTime, To = range.End.DateTime };
-    var litterResult = await _litterService.GetLittersAsync(filter);
-    if (litterResult is null)
+    private async Task GetLitterAsync(DateRange range)
     {
-        recentLitter = new();
-        totalPerDays = new();
-        return;
+        try
+        {
+            var filter = new LitterFilterDto { From = range.Start.DateTime, To = range.End.DateTime };
+            var litterResult = await _litterService.GetLittersAsync(filter);
+            if (litterResult is null)
+            {
+                recentLitter = new();
+                totalPerDays = new();
+                return;
+            }
+
+            recentLitter = litterResult.ToList();
+
+            totalPerDays = litterResult
+                .GroupBy(l => l.TimeStamp.Date)
+                .Select(g => new TotalPerDay
+                {
+                    Day = g.Key,
+                    Glass = g.Count(x => x.LitterCategory == LitterCategory.Glass),
+                    Metal = g.Count(x => x.LitterCategory == LitterCategory.Metal),
+                    Organic = g.Count(x => x.LitterCategory == LitterCategory.Organic),
+                    Paper = g.Count(x => x.LitterCategory == LitterCategory.Paper),
+                    Plastic = g.Count(x => x.LitterCategory == LitterCategory.Plastic)
+                })
+                .OrderBy(x => x.Day)
+                .ToList();
+
+            StateHasChanged();
+
+            if (heatmapChart is not null)
+            {
+                await heatmapChart.UpdateSeriesAsync(true);
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowError("Fout bij het ophalen van afvalgegevens: " + ex.Message);
+        }
     }
-
-    recentLitter = litterResult.ToList(); 
-
-    totalPerDays = litterResult
-    .GroupBy(l => l.TimeStamp.Date)
-    .Select(g => new TotalPerDay
-    {
-        Day = g.Key,
-        Glass = g.Count(x => x.LitterCategory == LitterCategory.Glass),
-        Metal = g.Count(x => x.LitterCategory == LitterCategory.Metal),
-        Organic = g.Count(x => x.LitterCategory == LitterCategory.Organic),
-        Paper = g.Count(x => x.LitterCategory == LitterCategory.Paper),
-        Plastic = g.Count(x => x.LitterCategory == LitterCategory.Plastic)
-    })
-    .OrderBy(x => x.Day)
-    .ToList();
-
-    StateHasChanged(); 
-
-    if (heatmapChart is not null)
-    {
-        await heatmapChart.UpdateSeriesAsync(true); 
-    }
-}
 
     private async Task GetCamerasAsync()
     {
-        var cameraResult = await _litterService.GetCamerasAsync();
-
-        cameras = new();
-
-        if (cameraResult is null)
+        try
         {
-            return;
-        }
+            var cameraResult = await _litterService.GetCamerasAsync();
 
-        cameras = cameraResult;
+            cameras = new();
+
+            if (cameraResult is null)
+            {
+                return;
+            }
+
+            cameras = cameraResult;
+        }
+        catch (Exception ex)
+        {
+            ShowError("Fout bij het ophalen van camera's: " + ex.Message);
+        }
     }
 
     private async Task GetLitterPerCameraAsync()
     {
-        var litterResult = await _litterService.GetAmountPerLocationAsync();
-
-        totalLitterPerCamera = new();
-        
-        if (litterResult is null || cameras is null)
+        try
         {
-            return;
-        }
-        
-        foreach (var camera in litterResult)
-        {
+            var litterResult = await _litterService.GetAmountPerLocationAsync();
 
-            var item = new TotalLitterPerCamera
+            totalLitterPerCamera = new();
+
+            if (litterResult is null || cameras is null)
             {
-                Amount = camera.Glass + camera.Metal + camera.Organic + camera.Plastic + camera.Paper,
-                Location = cameras.Find(c => c.Id == camera.CameraId)?.Location ?? "Onbekend"
-            };
+                return;
+            }
 
-            totalLitterPerCamera.Add(item);
+            foreach (var camera in litterResult)
+            {
+                var item = new TotalLitterPerCamera
+                {
+                    Amount = camera.Glass + camera.Metal + camera.Organic + camera.Plastic + camera.Paper,
+                    Location = cameras.Find(c => c.Id == camera.CameraId)?.Location ?? "Onbekend"
+                };
+
+                totalLitterPerCamera.Add(item);
+            }
+
+            StateHasChanged();
         }
-        
+        catch (Exception ex)
+        {
+            ShowError("Fout bij het ophalen van afval per camera: " + ex.Message);
+        }
+    }
+
+    private void ShowError(string message)
+    {
+        errorMessage = message;
+        showErrorModal = true;
+        StateHasChanged();
+    }
+
+    private void HandleModalClose()
+    {
+        showErrorModal = false;
+        errorMessage = null;
         StateHasChanged();
     }
 }
