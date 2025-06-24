@@ -57,7 +57,7 @@
             else if (totalLitterPerCamera is null)
             {
                 <div class="loading-indicator"
-                    style="font-size:2rem; padding:2rem; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                     <div class="spinner" style="width:48px; height:48px; border-width:8px;"> <svg version="1.1"
                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
                             style="width: 60px; height: 60px; margin-bottom: 1rem;">
@@ -67,7 +67,7 @@
                                     from="0 50 50" to="360 50 50" repeatCount="indefinite" />
                             </path>
                         </svg></div>
-                    <span style="font-size:2rem; margin-top:1rem; display:block;">Bezig met laden...</span>
+                    <span>Bezig met laden...</span>
                 </div>
             }
             else
@@ -250,7 +250,7 @@
     private string? errorMessage;
     private bool showErrorModal = false;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         options.PlotOptions = new PlotOptions
         {
@@ -269,23 +269,31 @@
 
         StartDate = DateTime.Today.AddDays(-5);
         EndDate = DateTime.Today;
+    }
 
-        try
+    private bool _firstRender = true;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_firstRender)
         {
-            await GetCamerasAsync();
-            await GetLitterPerCameraAsync();
-
-            if (StartDate.HasValue && EndDate.HasValue)
+            _firstRender = false;
+            try
             {
-                await GetLitterAsync(new DateRange { Start = StartDate.Value.DateTime, End = EndDate.Value.DateTime });
-            }
-        }
-        catch (Exception ex)
-        {
-            ShowError("Er is een fout opgetreden tijdens het laden van de gegevens: " + ex.Message);
-        }
+                await GetCamerasAsync();
+                await GetLitterPerCameraAsync();
 
-        StateHasChanged();
+                if (StartDate.HasValue && EndDate.HasValue)
+                {
+                    await GetLitterAsync(new DateRange { Start = StartDate.Value.DateTime, End = EndDate.Value.DateTime });
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowError("Er is een fout opgetreden tijdens het laden van de gegevens: " + ex.Message);
+            }
+
+            StateHasChanged();
+        }
     }
 
     private async Task GetLitterAsync(DateRange range)
