@@ -28,8 +28,7 @@
             <!-- Camera dropdown -->
             <div class="d-flex align-items-center gap-2">
                 <label for="cameraSelect" class="form-label mb-0">Locatie:</label>
-                <select id="cameraSelect" class="form-select w-auto" @bind="selectedCameraId"
-                    disabled="@isLoading || cameraOptions.Count == 0">
+                <select id="cameraSelect" class="form-select w-auto" @bind="selectedCameraId" disabled="@isLoading">
                     @if (isLoading)
                     {
                         <option>Camera's laden...</option>
