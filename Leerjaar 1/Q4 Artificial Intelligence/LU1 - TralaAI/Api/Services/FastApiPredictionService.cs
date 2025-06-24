@@ -20,17 +20,6 @@ namespace Api.Services
                 var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
                 var response = await _httpClient.PostAsync("/predict", content);
-
-                if (response.StatusCode == HttpStatusCode.NotFound)
-                {
-                    var retrainResponse = await RetrainModelAsync(requestModels.CameraId);
-                    if (!retrainResponse)
-                    {
-                        _logger.LogError("Failed to retrain model for camera ID: {CameraId}", requestModels.CameraId);
-                        throw new Exception("Failed to retrain model.");
-                    }
-                }
-
                 response.EnsureSuccessStatusCode();
 
                 await using var responseStream = await response.Content.ReadAsStreamAsync();
