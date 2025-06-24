@@ -58,13 +58,21 @@ public class LitterService(HttpClient httpClient) : ILitterService
     return response.IsSuccessStatusCode;
   }
 
-  public async Task<string?> ImportTrashDataAsync(CancellationToken cancellationToken = default)
+  public async Task<bool> ImportTrashDataAsync(CancellationToken cancellationToken = default)
   {
-    var response = await _httpClient.PostAsync("/api/v1/TrashDTO/import-trash-data", null, cancellationToken);
-    if (!response.IsSuccessStatusCode)
-      return null;
+    try
+    {
+      var response = await _httpClient.PostAsync("/api/v1/TrashDTO/import-trash-data", null, cancellationToken);
+      if (!response.IsSuccessStatusCode)
+        return false;
 
-    return await response.Content.ReadAsStringAsync(cancellationToken);
+      return true;
+    }
+    catch (Exception ex)
+    {
+      Console.WriteLine($"Error importing trash data: {ex.Message}");
+      return false;
+    }
   }
 
   public async Task<List<LitterAmountCamera>?> GetAmountPerLocationAsync()
