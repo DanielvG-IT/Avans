@@ -42,8 +42,12 @@
         <p><b>Bovenstaande formulieren geven je de mogelijkheid een voorspelling op te vragen van een AI-model op een
                 gekozen camera locatie.</b></p>
 
-        @if (isLoading || PlasticItems is null || PaperItems is null || MetalItems is null || GlassItems is null ||
-                OrganicItems is null)
+        @if (isLoading
+                || PlasticItems is null || PlasticItems.Count == 0
+                || PaperItems is null || PaperItems.Count == 0
+                || MetalItems is null || MetalItems.Count == 0
+                || GlassItems is null || GlassItems.Count == 0
+                || OrganicItems is null || OrganicItems.Count == 0)
         {
             <div class="loading-state d-flex flex-column align-items-center justify-content-center" style="height: 400px;">
 
@@ -72,7 +76,6 @@
     <div class="middle-section">
         <div class="left-panel">
             <h3>Pie-Chart</h3>
-            <p><b>Verdeling de afvaltypes op locatie @locatie in de komende @(appliedselectedDays == 1 ? "dag." : $"{appliedselectedDays} dagen.")</b></p>
             @if (isLoading || pieData is null)
             {
                 <div class="d-flex flex-column align-items-center justify-content-center" style="height: 500px;">
@@ -82,46 +85,75 @@
             }
             else
             {
-                <ApexChart @ref="pieChart" TItem="PieData"
-                    Title="Verdeling van Afvaltypes" Height="500">
-                    <ApexPointSeries TItem="PieData" Items="pieData" Name="Waarde" SeriesType="SeriesType.Pie"
-                        XValue="@(e => e.Label)" YValue="@(e => (decimal)e.Value)" />
-                </ApexChart>
-            }
+                <p><b>Verdeling de afvaltypes op locatie @locatie in de komende @(appliedselectedDays == 1 ? "dag." :
+                                            $"{appliedselectedDays} dagen.")</b></p>
+            <ApexChart @ref="pieChart" TItem="PieData" Title="Verdeling van Afvaltypes" Height="500">
+                <ApexPointSeries TItem="PieData" Items="pieData" Name="Waarde" SeriesType="SeriesType.Pie"
+                    XValue="@(e => e.Label)" YValue="@(e => (decimal)e.Value)" />
+            </ApexChart>
+                        }
         </div>
         <div class="right-panel">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em">
                 <h3 style="margin: 0;">Heatmap</h3>
-                @* <button class="heatmap-btn" @onclick="DrawHeatmapNew" disabled="@isLoading">
-                    @(isLoading ? "Loading..." : "Draw Heatmap")
-                </button> *@
             </div>
-            <p><b>Concentratie van de voorspelde afval komende  @(appliedselectedDays == 1 ? "dag" : $"{appliedselectedDays} dagen") in Breda.</b></p>
-            <div class="page-container">
-                <div class="heatmap-container">
-                    <div id="map" class="heatmap-map">
-                        @if (isLoading || heatmapItems is null)
-                        {
-                            <div class="d-flex flex-column align-items-center justify-content-center" style="height: 100%;">
-                                <span class="loader mb-2"></span>
-                                <span>Heatmap wordt geladen...</span>
-                            </div>
-                        }
+            <div>
+                @if (isLoading || heatmapItems is null)
+                {
+                    <div class="skeleton-loader" style="height: 32px; width: 80%; margin-bottom: 1rem;"></div>
+                }
+                else
+                {
+                    <p>
+                        <strong>Concentratie van de voorspelde afval komende @(appliedselectedDays == 1 ? "dag" :
+                                                    $"{appliedselectedDays} dagen") in Breda.</strong>
+                </p>
+                                }
+                <div class="page-container">
+                    <div class="heatmap-container">
+                        <div id="map" class="heatmap-map">
+                            @if (isLoading || heatmapItems is null)
+                            {
+                                <div class="d-flex flex-column align-items-center justify-content-center"
+                                    style="height: 100%;">
+                                    <span class="loader mb-2"></span>
+                                    <span>Heatmap wordt geladen...</span>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="CameraTable">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Camera</th>
-                            <th>Voorspelde hoeveelheid</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
-                </table>
+                @if (isLoading || heatmapItems is null || heatmapItems.Count == 0)
+                {
+                    <div class="d-flex flex-column align-items-center justify-content-center" style="height: 200px;">
+                        <span class="loader mb-2"></span>
+                        <span>Gegevens worden geladen...</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Locatie</th>
+                                    <th>Totaal Voorspelt Afval</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in heatmapItems)
+                                {
+                                    <tr>
+                                        <td>@item.Location</td>
+                                        <td>@item.TotalLitterPerCamera</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -130,25 +162,35 @@
     <div class="bottom-section">
         <h3>Extra Informatie</h3>
         <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Datum</th>
-                        <th>Afvaltype</th>
-                        <th>Aantal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in LitterItems)
-                    {
+            @if (isLoading || LitterItems is null || LitterItems.Count == 0)
+            {
+                <div class="d-flex flex-column align-items-center justify-content-center" style="height: 200px;">
+                    <span class="loader mb-2"></span>
+                    <span>Gegevens worden geladen...</span>
+                </div>
+            }
+            else
+            {
+                <table class="table table-striped">
+                    <thead>
                         <tr>
-                            <td>@item.Date.ToString("dd-MM-yyyy")</td>
-                            <td>@item.Type</td>
-                            <td>@item.Count</td>
+                            <th>Datum</th>
+                            <th>Afvaltype</th>
+                            <th>Aantal</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in LitterItems)
+                        {
+                            <tr>
+                                <td>@item.Date.ToString("dd-MM-yyyy")</td>
+                                <td>@item.Type</td>
+                                <td>@item.Count</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
         </div>
     </div>
 </div>
@@ -315,9 +357,6 @@
             return; // Error handling: No cameras found; Show an error message to user
 
         cameraOptions = cameraResponse;
-        await MakePredictionAsync();
-        await GetHeatmapData();
-        isLoading = false;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -325,9 +364,9 @@
         if (firstRender && !_clientRendered)
         {
             _clientRendered = true;
+            await DrawHeatmapNew();
             await MakePredictionAsync();
             await GetHeatmapData();
-            await DrawHeatmapNew();
             isLoading = false;
             StateHasChanged();
         }
@@ -349,8 +388,10 @@
     private async Task ApplyFilters()
     {
         isLoading = true;
+        StateHasChanged();
         var predictionResponse = await _litterService.PredictAsync(selectedDays, selectedCameraId);
         await MakePredictionAsync();
+        StateHasChanged();
         if (chart is not null)
             await chart.RenderAsync();
         if (pieChart is not null)
@@ -360,6 +401,7 @@
         appliedselectedDays = selectedDays;
         locatie = cameraOptions.FirstOrDefault(c => c.Id == selectedCameraId)?.Location ?? "Onbekende locatie";
         isLoading = false;
+        StateHasChanged();
     }
 
     private async Task DrawHeatmapNew()
@@ -396,6 +438,7 @@
                     TotalLitterPerCamera = totalPrediction,
                     Latitude = camera.Latitude,
                     Longitude = camera.Longitude,
+                    Location = camera.Location
                 };
                 heatmapItems.Add(item);
             }
