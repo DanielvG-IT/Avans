@@ -325,7 +325,7 @@ new PieData { Label = "Papier", Value = 90 }
 
     // Days select button on click
     private ApexChart<LitterData>? chart;
-    private ApexChart<PieData> pieChart;
+    private ApexChart<PieData>? pieChart;
     // Verandering in filters
     private async Task ApplyFilters()
     {
@@ -333,8 +333,10 @@ new PieData { Label = "Papier", Value = 90 }
         Console.WriteLine($"Toepassen: {selectedDays} dagen en {selectedCameraId} camera geselecteerd.");
         var predictionResponse = await _litterService.PredictAsync(selectedDays, selectedCameraId);
         await MakePredictionAsync();
-        await chart?.RenderAsync();
-        await pieChart.RenderAsync();
+        if (chart is not null)
+            await chart.RenderAsync();
+        if (pieChart is not null)
+            await pieChart.RenderAsync();
     }
 
     private async Task DrawHeatmapNew()
