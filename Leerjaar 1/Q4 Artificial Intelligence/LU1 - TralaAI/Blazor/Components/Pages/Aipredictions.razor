@@ -1,12 +1,14 @@
 ﻿@page "/ai-predictions"
-@rendermode InteractiveServer
+@using Blazor.Components.Shared
 @using Blazor.Interfaces
 @using Blazor.Models
 @using System.Linq
 @using ApexCharts
-@inject ILitterService _litterService;
-@inject IJSRuntime JS;
+@rendermode InteractiveServer
+@inject ILitterService _litterService
+@inject IJSRuntime JS
 
+<ErrorModal Title="Oops!" Message="@errorMessage" Show="@showErrorModal" OnClose="@HandleModalClose" />
 
 <div class="page-container">
 
@@ -330,8 +332,26 @@
 </style>
 
 @code {
+    // Error modal state
+    private string errorMessage = string.Empty;
+    private bool showErrorModal = false;
+
+    private void HandleModalClose()
+    {
+        showErrorModal = false;
+        StateHasChanged();
+    }
+
+    private void ShowError(string message)
+    {
+        errorMessage = message;
+        showErrorModal = true;
+        StateHasChanged();
+    }
+
     // Default aantal dagen
     private int selectedDays = 3;
+    private int selectedCameraId;
     private int appliedselectedDays = 3;
     private int[] daysOptions = new[] { 1, 3, 7, 14 };
     private int selectedCameraId;
@@ -344,6 +364,7 @@
         public required string Label { get; set; }
         public double Value { get; set; }
     }
+
     // Wordt gebruikt voor de bar chart bovenaan de pagina
     private List<LitterData> LitterItems = new();
     private List<LitterData> PlasticItems = new();
@@ -391,33 +412,42 @@
 
     private async Task LoadAllDataAsync()
     {
-        isLoading = true;
-        StateHasChanged();
+        try
+        {
+            isLoading = true;
+            StateHasChanged();
 
-        await RemoveHeatmapNew();
-        LitterItems.Clear();
-        PlasticItems.Clear();
-        PaperItems.Clear();
-        MetalItems.Clear();
-        GlassItems.Clear();
-        OrganicItems.Clear();
-        pieData.Clear();
-        heatmapItems.Clear();
+            await RemoveHeatmapNew();
+            LitterItems.Clear();
+            PlasticItems.Clear();
+            PaperItems.Clear();
+            MetalItems.Clear();
+            GlassItems.Clear();
+            OrganicItems.Clear();
+            pieData.Clear();
+            heatmapItems.Clear();
 
-        await MakePredictionAsync();
-        await GetHeatmapData();
-        await DrawHeatmapNew();
+            await MakePredictionAsync();
+            await GetHeatmapData();
+            await DrawHeatmapNew();
 
-        if (chart is not null)
-            await chart.RenderAsync();
-        if (pieChart is not null)
-            await pieChart.RenderAsync();
+            if (chart is not null)
+                await chart.RenderAsync();
+            if (pieChart is not null)
+                await pieChart.RenderAsync();
 
-        appliedselectedDays = selectedDays;
-        locatie = cameraOptions.FirstOrDefault(c => c.Id == selectedCameraId)?.Location ?? "Onbekende locatie";
-
-        isLoading = false;
-        StateHasChanged();
+            appliedselectedDays = selectedDays;
+            locatie = cameraOptions.FirstOrDefault(c => c.Id == selectedCameraId)?.Location ?? "Onbekende locatie";
+        }
+        catch (Exception ex)
+        {
+            ShowError($"Fout bij het laden van data: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
     }
     private async Task ApplyFilters()
     {
@@ -426,43 +456,64 @@
 
     private async Task DrawHeatmapNew()
     {
-        await JS.InvokeVoidAsync("drawHeatmap", heatmapItems);
+        try
+        {
+            await JS.InvokeVoidAsync("drawHeatmap", heatmapItems);
+        }
+        catch (Exception ex)
+        {
+            ShowError($"Fout bij het tekenen van de heatmap: {ex.Message}");
+        }
     }
 
     private async Task RemoveHeatmapNew()
     {
-        await JS.InvokeVoidAsync("removeHeatmap");
+        try
+        {
+            await JS.InvokeVoidAsync("removeHeatmap");
+        }
+        catch (Exception ex)
+        {
+            ShowError($"Fout bij het verwijderen van de heatmap: {ex.Message}");
+        }
     }
 
     private async Task GetHeatmapData()
     {
-        var cameras = await _litterService.GetCamerasAsync();
-        if (cameras is not null)
+        try
         {
-            foreach (var camera in cameras)
+            var cameras = await _litterService.GetCamerasAsync();
+            if (cameras is not null)
             {
-                var cameraPredictions = await _litterService.PredictAsync(selectedDays, camera.Id);
-                double totalPrediction = 0;
-                if (cameraPredictions is not null)
+                foreach (var camera in cameras)
                 {
-                    foreach (var dailyPrediction in cameraPredictions)
+                    var cameraPredictions = await _litterService.PredictAsync(selectedDays, camera.Id);
+                    double totalPrediction = 0;
+                    if (cameraPredictions is not null)
                     {
-                        totalPrediction += dailyPrediction.Predictions.Plastic;
-                        totalPrediction += dailyPrediction.Predictions.Paper;
-                        totalPrediction += dailyPrediction.Predictions.Metal;
-                        totalPrediction += dailyPrediction.Predictions.Glass;
-                        totalPrediction += dailyPrediction.Predictions.Organic;
+                        foreach (var dailyPrediction in cameraPredictions)
+                        {
+                            totalPrediction += dailyPrediction.Predictions.Plastic;
+                            totalPrediction += dailyPrediction.Predictions.Paper;
+                            totalPrediction += dailyPrediction.Predictions.Metal;
+                            totalPrediction += dailyPrediction.Predictions.Glass;
+                            totalPrediction += dailyPrediction.Predictions.Organic;
+                        }
                     }
+                    var item = new HeatmapData
+                    {
+                        TotalLitterPerCamera = totalPrediction,
+                        Latitude = camera.Latitude,
+                        Longitude = camera.Longitude,
+                        Location = camera.Location
+                    };
+                    heatmapItems.Add(item);
                 }
-                var item = new HeatmapData
-                {
-                    TotalLitterPerCamera = totalPrediction,
-                    Latitude = camera.Latitude,
-                    Longitude = camera.Longitude,
-                    Location = camera.Location
-                };
-                heatmapItems.Add(item);
             }
+        }
+        catch (Exception ex)
+        {
+            ShowError($"Fout bij het ophalen van heatmap data: {ex.Message}");
         }
     }
 
