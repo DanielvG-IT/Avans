@@ -334,7 +334,7 @@
     private int selectedDays = 3;
     private int appliedselectedDays = 3;
     private int[] daysOptions = new[] { 1, 3, 7, 14 };
-    private int selectedCameraId = 1;
+    private int selectedCameraId;
     private List<Camera> cameraOptions = new();
     private string locatie = "Avans Lovensdijkstraat";
 
@@ -360,9 +360,12 @@
         isLoading = true;
         var cameraResponse = await _litterService.GetCamerasAsync();
         if (cameraResponse is null || !cameraResponse.Any())
-            return; 
-
+        {
+            selectedCameraId = 2;
+            return;
+        }
         cameraOptions = cameraResponse;
+        selectedCameraId = cameraOptions.Min(c => c.Id);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -370,6 +373,8 @@
         if (firstRender && !_clientRendered)
         {
             _clientRendered = true;
+            if(selectedCameraId == 0)
+                selectedCameraId = cameraOptions.FirstOrDefault()?.Id ?? 2;
             await LoadAllDataAsync();
         }
     }
@@ -472,6 +477,7 @@
         else
         {
             var newLitterItems = new List<LitterData>();
+            
             foreach (var day in predictionResponse)
             {
                 Console.WriteLine("Probeert data op te halen");
