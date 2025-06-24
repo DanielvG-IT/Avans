@@ -83,14 +83,8 @@
             L.heatLayer(addressPoints, {
                 radius: 80, // Increased radius for more visibility when zoomed out
                 blur: 40,   // Increased blur for smoother appearance
-                maxZoom: 10, // Lower maxZoom so heatmap is visible at wider zooms
-                max: maxValue,
-                gradient: {
-                    0.0: 'blue',
-                    0.4: 'lime',
-                    0.7: 'yellow',
-                    1.0: 'red'
-                }
+                maxZoom: 8, // Lower maxZoom so heatmap is visible at wider zooms
+                max: maxValue
             }).addTo(window._heatmapMap);
 
             // Optional: Fit bounds to data
