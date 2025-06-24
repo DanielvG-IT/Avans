@@ -294,16 +294,13 @@ new PieData { Label = "Papier", Value = 90 }
 
     protected override async Task OnInitializedAsync()
     {
-        // Initialiseer de camera opties
+        await ApplyFilters();
+
         var cameraResponse = await _litterService.GetCamerasAsync();
         if (cameraResponse is null || !cameraResponse.Any())
             return; // Error handling: No cameras found; Show an error message to user
 
         cameraOptions = cameraResponse;
-        await MakePredictionAsync();
-        await GetHeatmapData();
-
-        @* ConvertToHeatMapInputs(heatmapItems); *@
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -311,7 +308,8 @@ new PieData { Label = "Papier", Value = 90 }
         if (firstRender && !_clientRendered)
         {
             _clientRendered = true;
-            await Task.Delay(50);
+            await MakePredictionAsync();
+            await GetHeatmapData();
             await DrawHeatmapNew();
             StateHasChanged();
         }
