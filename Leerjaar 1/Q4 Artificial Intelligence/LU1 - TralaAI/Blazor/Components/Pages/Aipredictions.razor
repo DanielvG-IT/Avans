@@ -360,7 +360,7 @@
         isLoading = true;
         var cameraResponse = await _litterService.GetCamerasAsync();
         if (cameraResponse is null || !cameraResponse.Any())
-            return; // Error handling: No cameras found; Show an error message to user
+            return; 
 
         cameraOptions = cameraResponse;
     }
@@ -374,7 +374,6 @@
         }
     }
 
-    // De datatype voor de barchart deffinieren
     public class LitterData
     {
         public DateOnly Date { get; set; }
@@ -382,7 +381,6 @@
         public double Count { get; set; }
     }
 
-    // Days select button on click
     private ApexChart<LitterData>? chart;
     private ApexChart<PieData>? pieChart;
 
@@ -391,7 +389,6 @@
         isLoading = true;
         StateHasChanged();
 
-        // Clear data to avoid showing stale data during loading
         await RemoveHeatmapNew();
         LitterItems.Clear();
         PlasticItems.Clear();
@@ -417,8 +414,6 @@
         isLoading = false;
         StateHasChanged();
     }
-
-    // Verandering in filters
     private async Task ApplyFilters()
     {
         await LoadAllDataAsync();
@@ -468,7 +463,6 @@
 
     private async Task MakePredictionAsync()
     {
-        // Voorbeeld van het maken van een voorspelling
         var predictionResponse = await _litterService.PredictAsync(selectedDays, selectedCameraId);
         if (predictionResponse is null || !predictionResponse.Any() || predictionResponse.Count != selectedDays)
         {
