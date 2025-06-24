@@ -29,7 +29,7 @@
             <div class="d-flex align-items-center gap-2">
                 <label for="cameraSelect" class="form-label mb-0">Locatie:</label>
                 <select id="cameraSelect" class="form-select w-auto" @bind="selectedCameraId" disabled="@isLoading">
-                    @if (isLoading)
+                    @if (isCameraLoading)
                     {
                         <option>Camera's laden...</option>
                     }
@@ -385,6 +385,7 @@
     private List<LitterData> OrganicItems = new();
     private List<HeatmapData> heatmapItems = new();
     private bool isLoading = false;
+    private bool isCameraLoading = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -393,7 +394,9 @@
             try
             {
                 isLoading = true;
+                isCameraLoading = true;
                 await LoadCameras();
+                isCameraLoading = false;
                 await LoadAllDataAsync();
             }
             catch (Exception ex)
