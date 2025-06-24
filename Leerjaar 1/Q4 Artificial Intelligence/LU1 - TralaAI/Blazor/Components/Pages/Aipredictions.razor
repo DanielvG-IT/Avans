@@ -160,7 +160,7 @@
 
     <!-- Bottom: Extra Informatie Hier moet de tabel komen -->
     <div class="bottom-section">
-        <h3>Extra Informatie</h3>
+        <h3>Binnenkomende Voorspelingsdata per dag</h3>
         <div class="table-responsive">
             @if (isLoading || LitterItems is null || LitterItems.Count == 0)
             {
@@ -175,17 +175,23 @@
                     <thead>
                         <tr>
                             <th>Datum</th>
-                            <th>Afvaltype</th>
-                            <th>Aantal</th>
+                            <th>Plastic</th>
+                            <th>Papier</th>
+                            <th>Metaal</th>
+                            <th>Glas</th>
+                            <th>Organisch</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in LitterItems)
+                        @for (int i = 0; i < PlasticItems!.Count; i++)
                         {
                             <tr>
-                                <td>@item.Date.ToString("dd-MM-yyyy")</td>
-                                <td>@item.Type</td>
-                                <td>@item.Count</td>
+                                <td>@PlasticItems![i].Date.ToString("dd-MM-yyyy")</td>
+                                <td>@PlasticItems![i].Count</td>
+                                <td>@PaperItems![i].Count</td>
+                                <td>@MetalItems![i].Count</td>
+                                <td>@GlassItems![i].Count</td>
+                                <td>@OrganicItems![i].Count</td>
                             </tr>
                         }
                     </tbody>
