@@ -93,6 +93,21 @@
                 window._heatmapMap.fitBounds(latLngs, { padding: [30, 30] });
             }
         };
+
+        window.removeHeatmap = function {
+            console.log("removeHeatmap called");
+            const mapEl = document.getElementById('map');
+            if (!mapEl) {
+                console.error("Map element with id 'map' not found.");
+                return;
+            }
+
+            // Remove map instance if exists
+            if (window._heatmapMap) {
+                window._heatmapMap.remove();
+                window._heatmapMap = null;
+            }
+        };
     </script>
 </body>
 
