@@ -385,12 +385,11 @@
     private List<LitterData> GlassItems = new();
     private List<LitterData> OrganicItems = new();
     private List<HeatmapData> heatmapItems = new();
-    private bool _clientRendered;
     private bool isLoading = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && !_clientRendered)
+        if (firstRender)
         {
             try
             {
