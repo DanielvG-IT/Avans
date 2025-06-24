@@ -40,7 +40,19 @@
                 console.log("removing old map");
                 window._heatmapMap.remove();
             }
-            const bredaCenter = [51.58843277555672, 4.776001205701836]
+
+            // Assume 'parameter' is an array of HeatmapData objects from .NET
+            // Convert to [lat, lng, intensity] format for heatLayer
+            const addressPoints = parameter.map(item => [
+                Number(item.latitude),
+                Number(item.longitude),
+                Number(item.totalLitterPerCamera)
+            ]);
+
+            // Find the max value for normalization
+            const maxValue = Math.max(...parameter.map(item => Number(item.totalLitterPerCamera)));
+
+            const bredaCenter = [51.58843277555672, 4.776001205701836];
             window._heatmapMap = L.map('map').setView(bredaCenter, 13);
 
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -51,6 +63,7 @@
                 radius: 25,
                 blur: 15,
                 maxZoom: 17,
+                max: maxValue > 0 ? maxValue : 1
             }).addTo(window._heatmapMap);
         };
     </script>
