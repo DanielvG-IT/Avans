@@ -21,16 +21,29 @@
             <!-- Number input -->
             <div class="d-flex align-items-center gap-2">
                 <label for="daysInput" class="form-label mb-0">Aantal dagen (1–14):</label>
-                <input id="daysInput" type="number" class="form-control w-auto" min="1" max="14" @bind="selectedDays" />
+                <input id="daysInput" type="number" class="form-control w-auto" min="1" max="14" @bind="selectedDays"
+                    disabled="@isLoading" />
             </div>
 
             <!-- Camera dropdown -->
             <div class="d-flex align-items-center gap-2">
                 <label for="cameraSelect" class="form-label mb-0">Locatie:</label>
-                <select id="cameraSelect" class="form-select w-auto" @bind="selectedCameraId">
-                    @foreach (var cam in cameraOptions)
+                <select id="cameraSelect" class="form-select w-auto" @bind="selectedCameraId"
+                    disabled="@isLoading || cameraOptions.Count == 0">
+                    @if (isLoading)
                     {
-                        <option value="@cam.Id">@cam.Location</option>
+                        <option>Camera's laden...</option>
+                    }
+                    else if (cameraOptions.Count == 0)
+                    {
+                        <option>Geen camera's gevonden</option>
+                    }
+                    else
+                    {
+                        @foreach (var cam in cameraOptions)
+                        {
+                            <option value="@cam.Id">@cam.Location</option>
+                        }
                     }
                 </select>
             </div>
@@ -375,27 +388,21 @@
     private bool _clientRendered;
     private bool isLoading = false;
 
-    protected override async Task OnInitializedAsync()
-    {
-        isLoading = true;
-        var cameraResponse = await _litterService.GetCamerasAsync();
-        if (cameraResponse is null || !cameraResponse.Any())
-        {
-            selectedCameraId = 2;
-            return;
-        }
-        cameraOptions = cameraResponse;
-        selectedCameraId = cameraOptions.Min(c => c.Id);
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !_clientRendered)
         {
-            _clientRendered = true;
-            if(selectedCameraId == 0)
-                selectedCameraId = cameraOptions.FirstOrDefault()?.Id ?? 2;
-            await LoadAllDataAsync();
+            try
+            {
+                isLoading = true;
+                await LoadCameras();
+                await LoadAllDataAsync();
+            }
+            catch (Exception ex)
+            {
+                ShowError($"Fout bij het ophalen van camera's: {ex.Message}");
+
+            }
         }
     }
 
@@ -477,6 +484,19 @@
         }
     }
 
+    private async Task LoadCameras()
+    {
+        var cameraResponse = await _litterService.GetCamerasAsync();
+        if (cameraResponse is null || !cameraResponse.Any())
+        {
+            ShowError("Geen camera's gevonden.");
+            return;
+        }
+
+        cameraOptions = cameraResponse;
+        selectedCameraId = cameraOptions.Min(c => c.Id);
+    }
+
     private async Task GetHeatmapData()
     {
         try
@@ -527,7 +547,7 @@
         else
         {
             var newLitterItems = new List<LitterData>();
-            
+
             foreach (var day in predictionResponse)
             {
                 Console.WriteLine("Probeert data op te halen");
