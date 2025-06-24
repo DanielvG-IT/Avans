@@ -19,9 +19,7 @@ public class Litter
     {
         get
         {
-            if (Enum.TryParse<LitterCategory>(Type, true, out var category))
-                return category;
-            return LitterCategory.Unknown;
+            return Enum.TryParse<LitterCategory>(Type, true, out var category) ? category : LitterCategory.Unknown;
         }
         set => Type = value.ToString().ToLowerInvariant();
     }
@@ -30,9 +28,7 @@ public class Litter
     {
         get
         {
-            if (Enum.TryParse<WeatherCategory>(Weather, true, out var category))
-                return category;
-            return WeatherCategory.Unknown;
+            return Enum.TryParse<WeatherCategory>(Weather, true, out var category) ? category : WeatherCategory.Unknown;
         }
         set => Weather = value.ToString().ToLowerInvariant();
     }
