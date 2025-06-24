@@ -311,11 +311,8 @@ new PieData { Label = "Papier", Value = 90 }
         if (firstRender && !_clientRendered)
         {
             _clientRendered = true;
-            isLoading = true;
-            StateHasChanged();
             await Task.Delay(50);
-            await JS.InvokeVoidAsync("drawHeatmap", heatmapItems);
-            isLoading = false;
+            await DrawHeatmapNew();
             StateHasChanged();
         }
     }
@@ -345,7 +342,10 @@ new PieData { Label = "Papier", Value = 90 }
     private async Task DrawHeatmapNew()
     {
         StateHasChanged();
-        await JS.InvokeVoidAsync("drawHeatmap", heatmapItems, "map");
+        isLoading = true;
+        StateHasChanged();
+        await JS.InvokeVoidAsync("drawHeatmap", heatmapItems);
+        isLoading = false;
         StateHasChanged();
     }
 
