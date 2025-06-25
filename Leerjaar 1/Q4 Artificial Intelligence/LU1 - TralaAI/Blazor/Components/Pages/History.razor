@@ -324,7 +324,10 @@
                 return;
             }
 
-            recentLitter = litterResult.ToList();
+            // Sort recentLitter by TimeStamp descending
+            recentLitter = litterResult
+                .OrderByDescending(l => l.TimeStamp)
+                .ToList();
 
             totalPerDays = litterResult
                 .GroupBy(l => l.TimeStamp.Date)
