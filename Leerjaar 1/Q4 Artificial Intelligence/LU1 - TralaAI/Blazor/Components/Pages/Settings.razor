@@ -86,8 +86,10 @@
             <div>
                 <h3>AI-Model Beheer</h3>
                 <p>
-                    <b>Bekijk de status van de AI-model(len) gekoppeld aan jouw cameras. Bij opstart van de webapp worden de modellen automatisch opnieuw getraind op de meest actuele data, maar dit kan ook handmatig.
-                         Selecteer eerst een locatie om het juiste model te beheren.</b>
+                    <b>Bekijk de status van de AI-model(len) gekoppeld aan jouw cameras. Bij opstart van de webapp
+                        worden de modellen automatisch opnieuw getraind op de meest actuele data, maar dit kan ook
+                        handmatig.
+                        Selecteer eerst een locatie om het juiste model te beheren.</b>
                 </p>
                 <div class="d-flex align-items-center mb-3" style="gap: 0.75rem;">
                     <label for="cameraSelect" class="mb-0"><strong>Locatie:</strong></label>
@@ -343,25 +345,32 @@
     private int selectedCameraId = 2;
     private bool showErrorModal = false;
 
-    protected override void OnInitialized()
+    private bool _initialized = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Fire-and-forget API status check, don't await to avoid blocking page load
-        _ = GetApiStatuses();
-        _ = GetModelStatus(selectedCameraId);
-    }
-    protected override async Task OnInitializedAsync()
-    {
-        try
+        if (firstRender && !_initialized)
         {
-            var response = await _litterService.GetCamerasAsync();
-            if (response is not null)
+            _initialized = true;
+
+            try
             {
-                cameras = response;
+                var response = await _litterService.GetCamerasAsync();
+                if (response is not null)
+                {
+                    cameras = response;
+                }
             }
-        }
-        catch (Exception ex)
-        {
-            ShowError("Kon camera's niet ophalen: " + ex.Message);
+            catch (Exception ex)
+            {
+                ShowError("Kon camera's niet ophalen: " + ex.Message);
+            }
+
+            // Fire-and-forget API status check, don't await to avoid blocking page load
+            _ = GetApiStatuses();
+            _ = GetModelStatus(selectedCameraId);
+
+            await InvokeAsync(StateHasChanged);
         }
     }
 
