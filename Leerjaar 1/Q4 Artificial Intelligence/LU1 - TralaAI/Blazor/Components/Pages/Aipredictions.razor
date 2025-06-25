@@ -54,7 +54,7 @@
         </div>
 
         <p><b>Bovenstaande formulieren geven je de mogelijkheid een voorspelling op te vragen van een AI-model op een
-                gekozen camera locatie.</b></p>
+                gekozen camera locatie. Hieronder een overzicht van de verdeling van afvaltypes voor de opgevraagde voorspelling.</b></p>
 
         @if (isLoading
                 || PlasticItems is null || PlasticItems.Count == 0
@@ -99,7 +99,7 @@
             }
             else
             {
-                <p><b>Verdeling de afvaltypes op locatie @locatie in de komende @(appliedselectedDays == 1 ? "dag." :
+                <p><b>Verdeling de afvaltypes op camera locatie "@locatie" in de komende @(appliedselectedDays == 1 ? "dag." :
                                             $"{appliedselectedDays} dagen.")</b></p>
             <ApexChart @ref="pieChart" TItem="PieData" Title="Verdeling van Afvaltypes" Height="500">
                 <ApexPointSeries TItem="PieData" Items="pieData" Name="Waarde" SeriesType="SeriesType.Pie"
@@ -119,8 +119,8 @@
                 else
                 {
                     <p>
-                        <strong>Concentratie van de voorspelde afval komende @(appliedselectedDays == 1 ? "dag" :
-                                                    $"{appliedselectedDays} dagen") in Breda.</strong>
+                        <strong>Concentratie van het voorspelde afval voor de komende @(appliedselectedDays == 1 ? "dag" :
+                                                    $"{appliedselectedDays} dagen") van alle camera's in jouw camera systeem.</strong>
                 </p>
                                 }
                 <div class="page-container">
@@ -152,7 +152,7 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Locatie</th>
+                                    <th>Camera Locatie</th>
                                     <th>Voorspelt Afval</th>
                                 </tr>
                             </thead>
@@ -174,7 +174,15 @@
 
     <!-- Bottom: Extra Informatie Hier moet de tabel komen -->
     <div class="bottom-section">
-        <h3>Binnenkomende Voorspelingsdata per dag</h3>
+        <h3>Binnenkomende Voorspelingsdata</h3>
+        @if(isLoading)
+        {
+        }
+        else{
+        <p><b>Rauwe voorspellingsdata van camera locatie "@locatie" in de komende @(appliedselectedDays == 1 ? "dag." :
+                                            $"{appliedselectedDays} dagen.") </b></p>
+        }
+
         <div class="table-responsive">
             @if (isLoading || LitterItems is null || LitterItems.Count == 0)
             {

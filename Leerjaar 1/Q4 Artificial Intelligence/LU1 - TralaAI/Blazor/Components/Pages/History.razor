@@ -46,9 +46,14 @@
     <div style="display: flex; gap: 2rem; align-items: flex-start; flex-direction: row;">
         <div class="box-container" style="flex: 1; height: 38vh; display: flex; flex-direction: column;">
             <h3>Totaal Gedetecteerd Afval</h3>
+            @if(totalLitterPerCamera is null){
+            }
+            else{
+            <p><b>Overzicht van al het gedetecteerde afval van alle camera's</b></p>
+            }
             @if (totalLitterPerCamera is not null && totalLitterPerCamera.Count != 0)
             {
-                <ApexChart TItem="TotalLitterPerCamera" Height="420"
+                <ApexChart TItem="TotalLitterPerCamera" Height="380"
                     Options="options">
                     <ApexPointSeries TItem="TotalLitterPerCamera" Items="totalLitterPerCamera" SeriesType="SeriesType.Donut"
                         Name="Total Litter Per Camera" XValue="@(e => e.Location)" YValue="@(e => e.Amount)" />
@@ -76,10 +81,15 @@
             }
         </div>
         <div class="box-container" style="flex: 1; height: 38vh; display: flex; flex-direction: column;">
-            <h3>Totaal Afval per type per dag van @StartDate?.Date.ToString("dd-MM-yyyy") tot @EndDate?.Date.ToString("dd-MM-yyyy")</h3>
+            <h3>Totaal Afval per Type per Tijdsbereik</h3>
+            @if(totalPerDays is null){
+            }
+            else{
+                <b>Totaal gedetecteerd afval van alle cameras per type per dag van @StartDate?.Date.ToString("dd-MM-yyyy") tot en met @EndDate?.Date.ToString("dd-MM-yyyy")</b>
+            }
             @if (totalPerDays is not null && totalPerDays.Count != 0)
             {
-                <ApexChart TItem="TotalPerDay" Height="420" @ref="heatmapChart">
+                <ApexChart TItem="TotalPerDay" Height="400" @ref="heatmapChart">
                     <ApexPointSeries TItem="TotalPerDay" Items="totalPerDays" SeriesType="SeriesType.Heatmap" Name="Glas"
                         XValue="@(e => e.Day.ToString("dd-MM"))" YValue="@(e => e.Glass)" />
                     <ApexPointSeries TItem="TotalPerDay" Items="totalPerDays" SeriesType="SeriesType.Heatmap" Name="Metaal"
@@ -115,7 +125,12 @@
         </div>
     </div>
     <div class="insane-table-container">
-        <h3>Afvaldetecties van @StartDate?.Date.ToString("dd-MM-yyyy") tot @EndDate?.Date.ToString("dd-MM-yyyy")</h3>
+        <h3>Afvaldetecties Rauwe Data</h3>
+        @if (recentLitter is null){
+        }
+        else{
+            <p><b>Rauwe data van al het gedetecteerd afval van alle cameras per type per dag van @StartDate?.Date.ToString("dd-MM-yyyy") tot en met @EndDate?.Date.ToString("dd-MM-yyyy")</b></p>
+        }
 
         @if (cameras is not null && recentLitter is not null && recentLitter.Count != 0)
         {
