@@ -59,6 +59,9 @@ namespace Api.Repository
         {
             var query = _context.Litters.AsQueryable();
 
+            if (filter.CameraId.HasValue)
+                query = query.Where(x => x.CameraId == filter.CameraId);
+
             if (filter.Type.HasValue)
                 query = query.Where(x => x.LitterCategory == filter.Type);
 
