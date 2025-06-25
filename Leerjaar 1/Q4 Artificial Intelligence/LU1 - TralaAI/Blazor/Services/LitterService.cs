@@ -78,7 +78,7 @@ public class LitterService(HttpClient httpClient) : ILitterService
 
     return true;
   }
-
+  //-
   public async Task<bool> ImportTrashDataAsync(CancellationToken cancellationToken = default)
   {
     try
