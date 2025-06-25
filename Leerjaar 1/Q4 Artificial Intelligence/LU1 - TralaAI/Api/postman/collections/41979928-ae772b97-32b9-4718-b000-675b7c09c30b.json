@@ -1,0 +1,838 @@
+{
+	"info": {
+		"_postman_id": "41979928-ae772b97-32b9-4718-b000-675b7c09c30b",
+		"name": "Api | v1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "api",
+			"item": [
+				{
+					"name": "v1",
+					"item": [
+						{
+							"name": "Health",
+							"item": [
+								{
+									"name": "fastapi",
+									"item": [
+										{
+											"name": "model",
+											"item": [
+												{
+													"name": "/api/v1/Health/fastapi/model",
+													"id": "41979928-71ff2ee0-548e-42b3-ba07-cb9a2a89b2f4",
+													"protocolProfileBehavior": {
+														"disableBodyPruning": true
+													},
+													"request": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/Health/fastapi/model?cameraId=-56901112",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"Health",
+																"fastapi",
+																"model"
+															],
+															"query": [
+																{
+																	"key": "cameraId",
+																	"value": "-56901112"
+																}
+															]
+														}
+													},
+													"response": [
+														{
+															"id": "41979928-06b43d06-c237-4b01-be3f-8ab496ac5245",
+															"name": "OK",
+															"originalRequest": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/api/v1/Health/fastapi/model?cameraId=-56901112",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"v1",
+																		"Health",
+																		"fastapi",
+																		"model"
+																	],
+																	"query": [
+																		{
+																			"key": "cameraId",
+																			"value": "-56901112"
+																		}
+																	]
+																}
+															},
+															"status": "OK",
+															"code": 200,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"responseTime": null,
+															"body": ""
+														}
+													]
+												}
+											],
+											"id": "41979928-6ae8d16c-ec49-4c3b-a154-eec7979aa766"
+										},
+										{
+											"name": "/api/v1/Health/fastapi",
+											"id": "41979928-eee7e534-1ea7-479d-94d8-57dba6df55a9",
+											"protocolProfileBehavior": {
+												"disableBodyPruning": true
+											},
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/Health/fastapi",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"Health",
+														"fastapi"
+													]
+												}
+											},
+											"response": [
+												{
+													"id": "41979928-0803c27b-5feb-44ec-a88a-5f42f4af97d8",
+													"name": "OK",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/Health/fastapi",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"Health",
+																"fastapi"
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"responseTime": null,
+													"body": ""
+												}
+											]
+										}
+									],
+									"id": "41979928-2bfae8ff-9856-404f-9def-d457a19b5e61"
+								},
+								{
+									"name": "holidayapi",
+									"item": [
+										{
+											"name": "/api/v1/Health/holidayapi",
+											"id": "41979928-99d4290a-c465-474b-9d5d-c6c89d21392b",
+											"protocolProfileBehavior": {
+												"disableBodyPruning": true
+											},
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/Health/holidayapi",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"Health",
+														"holidayapi"
+													]
+												}
+											},
+											"response": [
+												{
+													"id": "41979928-b4f9acaa-14a0-4551-8dfe-112757876abd",
+													"name": "OK",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/Health/holidayapi",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"Health",
+																"holidayapi"
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"responseTime": null,
+													"body": ""
+												}
+											]
+										}
+									],
+									"id": "41979928-d1146aff-47cc-44a2-825f-0cd4fea7d01c"
+								},
+								{
+									"name": "weatherapi",
+									"item": [
+										{
+											"name": "/api/v1/Health/weatherapi",
+											"id": "41979928-c708cb53-8bc7-4819-85fa-246e07512989",
+											"protocolProfileBehavior": {
+												"disableBodyPruning": true
+											},
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/Health/weatherapi",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"Health",
+														"weatherapi"
+													]
+												}
+											},
+											"response": [
+												{
+													"id": "41979928-460ca696-d838-432a-a077-ab0e126d7831",
+													"name": "OK",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/Health/weatherapi",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"Health",
+																"weatherapi"
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"responseTime": null,
+													"body": ""
+												}
+											]
+										}
+									],
+									"id": "41979928-80756d51-e351-4bba-bd71-223d53a7be50"
+								},
+								{
+									"name": "sensoringapi",
+									"item": [
+										{
+											"name": "/api/v1/Health/sensoringapi",
+											"id": "41979928-38cd9209-7d80-4367-af65-52aa27fc42e5",
+											"protocolProfileBehavior": {
+												"disableBodyPruning": true
+											},
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/Health/sensoringapi",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"Health",
+														"sensoringapi"
+													]
+												}
+											},
+											"response": [
+												{
+													"id": "41979928-f55f9f21-bae8-4840-b2b3-18595eada9c0",
+													"name": "OK",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/Health/sensoringapi",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"Health",
+																"sensoringapi"
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"responseTime": null,
+													"body": ""
+												}
+											]
+										}
+									],
+									"id": "41979928-21135269-313e-4703-8100-9127fbe962c7"
+								},
+								{
+									"name": "/api/v1/Health",
+									"id": "41979928-0a3751e0-3571-427d-8bee-20847d8e42af",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/Health",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"Health"
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "41979928-94d35805-95ad-4819-8766-53b3a414f73c",
+											"name": "OK",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/Health",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"Health"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"responseTime": null,
+											"body": ""
+										}
+									]
+								}
+							],
+							"id": "41979928-9da5409b-9071-4c15-aa4e-0435add69f8e"
+						},
+						{
+							"name": "Litter",
+							"item": [
+								{
+									"name": "cameras",
+									"item": [
+										{
+											"name": "/api/v1/Litter/cameras",
+											"id": "41979928-969c7366-9e48-467b-865c-871c7dc4cde0",
+											"protocolProfileBehavior": {
+												"disableBodyPruning": true
+											},
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/Litter/cameras",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"Litter",
+														"cameras"
+													]
+												}
+											},
+											"response": [
+												{
+													"id": "41979928-35e7550d-d1ea-4db8-a649-78ef4f6c67b2",
+													"name": "OK",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/Litter/cameras",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"Litter",
+																"cameras"
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"responseTime": null,
+													"body": ""
+												}
+											]
+										}
+									],
+									"id": "41979928-3b3af8af-6847-46b6-8250-82eb5fdea70e"
+								},
+								{
+									"name": "predict",
+									"item": [
+										{
+											"name": "/api/v1/Litter/predict",
+											"id": "41979928-9f8b1a13-0cb3-4380-a8ad-da9678d86b46",
+											"protocolProfileBehavior": {
+												"disableBodyPruning": true
+											},
+											"request": {
+												"method": "POST",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/Litter/predict?amountOfDays=-56901112&CameraId=-56901112",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"Litter",
+														"predict"
+													],
+													"query": [
+														{
+															"key": "amountOfDays",
+															"value": "-56901112"
+														},
+														{
+															"key": "CameraId",
+															"value": "-56901112"
+														}
+													]
+												}
+											},
+											"response": [
+												{
+													"id": "41979928-ff9ba353-1754-4df5-ab23-b6107ac5fa55",
+													"name": "OK",
+													"originalRequest": {
+														"method": "POST",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/Litter/predict?amountOfDays=-56901112&CameraId=-56901112",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"Litter",
+																"predict"
+															],
+															"query": [
+																{
+																	"key": "amountOfDays",
+																	"value": "-56901112"
+																},
+																{
+																	"key": "CameraId",
+																	"value": "-56901112"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"responseTime": null,
+													"body": ""
+												}
+											]
+										}
+									],
+									"id": "41979928-8d7169fd-9007-4e11-8727-b40b35bc8e16"
+								},
+								{
+									"name": "retrain",
+									"item": [
+										{
+											"name": "/api/v1/Litter/retrain",
+											"id": "41979928-fabec6af-c47e-4b53-8b77-56a663211d48",
+											"protocolProfileBehavior": {
+												"disableBodyPruning": true
+											},
+											"request": {
+												"method": "POST",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/Litter/retrain?CameraId=-56901112",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"Litter",
+														"retrain"
+													],
+													"query": [
+														{
+															"key": "CameraId",
+															"value": "-56901112"
+														}
+													]
+												}
+											},
+											"response": [
+												{
+													"id": "41979928-608154a9-a2e2-4bea-910a-a90964a73f9f",
+													"name": "OK",
+													"originalRequest": {
+														"method": "POST",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/Litter/retrain?CameraId=-56901112",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"Litter",
+																"retrain"
+															],
+															"query": [
+																{
+																	"key": "CameraId",
+																	"value": "-56901112"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"responseTime": null,
+													"body": ""
+												}
+											]
+										}
+									],
+									"id": "41979928-9a7d2334-c5cb-4162-afef-77210553621e"
+								},
+								{
+									"name": "amount-per-location",
+									"item": [
+										{
+											"name": "/api/v1/Litter/amount-per-location",
+											"id": "41979928-76716b6d-92e8-46d3-9b4b-40d8b83ac202",
+											"protocolProfileBehavior": {
+												"disableBodyPruning": true
+											},
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/Litter/amount-per-location",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"Litter",
+														"amount-per-location"
+													]
+												}
+											},
+											"response": [
+												{
+													"id": "41979928-e6f42adf-f77d-42b2-88ef-c9bb11551fb5",
+													"name": "OK",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/Litter/amount-per-location",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"Litter",
+																"amount-per-location"
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"responseTime": null,
+													"body": ""
+												}
+											]
+										}
+									],
+									"id": "41979928-fbdd24f9-5bbd-486a-a6de-caef8e1b4880"
+								},
+								{
+									"name": "/api/v1/Litter",
+									"id": "41979928-1575dd27-1b51-478e-8ca0-e5bcd8545f27",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "text/plain"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/v1/Litter?CameraId=-56901112&Type=officia minim aute qui sunt&From=2020-03-29T10:55:38.876Z&To=2020-03-29T10:55:38.876Z&MinTemperature=-56901112&MaxTemperature=-56901112",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"Litter"
+											],
+											"query": [
+												{
+													"key": "CameraId",
+													"value": "-56901112"
+												},
+												{
+													"key": "Type",
+													"value": "officia minim aute qui sunt"
+												},
+												{
+													"key": "From",
+													"value": "2020-03-29T10:55:38.876Z"
+												},
+												{
+													"key": "To",
+													"value": "2020-03-29T10:55:38.876Z"
+												},
+												{
+													"key": "MinTemperature",
+													"value": "-56901112"
+												},
+												{
+													"key": "MaxTemperature",
+													"value": "-56901112"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"id": "41979928-9364cb00-3095-4f06-aebc-9ac5aaa5b0b0",
+											"name": "OK",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "text/plain"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/Litter?CameraId=-56901112&Type=officia minim aute qui sunt&From=2020-03-29T10:55:38.876Z&To=2020-03-29T10:55:38.876Z&MinTemperature=-56901112&MaxTemperature=-56901112",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"Litter"
+													],
+													"query": [
+														{
+															"key": "CameraId",
+															"value": "-56901112"
+														},
+														{
+															"key": "Type",
+															"value": "officia minim aute qui sunt"
+														},
+														{
+															"key": "From",
+															"value": "2020-03-29T10:55:38.876Z"
+														},
+														{
+															"key": "To",
+															"value": "2020-03-29T10:55:38.876Z"
+														},
+														{
+															"key": "MinTemperature",
+															"value": "-56901112"
+														},
+														{
+															"key": "MaxTemperature",
+															"value": "-56901112"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"responseTime": null,
+											"body": "[\n  {\n    \"type\": \"amet ea irure officia\",\n    \"timeStamp\": \"1997-09-16T22:48:26.539Z\",\n    \"weather\": \"elit mollit nostrud Lorem\",\n    \"temperature\": 80,\n    \"isHoliday\": false,\n    \"camera\": {\n      \"latitude\": 30106908.535864368,\n      \"longitude\": 86522097.30193257,\n      \"location\": \"culpa labore\",\n      \"id\": -21584763\n    },\n    \"id\": 2198789,\n    \"confidence\": 0.45936638325768464,\n    \"cameraId\": 53805823,\n    \"litterCategory\": -2144992,\n    \"weatherCategory\": 10611368\n  },\n  {\n    \"type\": \"in esse velit\",\n    \"timeStamp\": \"2015-04-06T13:57:27.781Z\",\n    \"weather\": \"in est ut\",\n    \"temperature\": -51,\n    \"isHoliday\": false,\n    \"camera\": {\n      \"latitude\": -14874310.431974262,\n      \"longitude\": 88842807.00874597,\n      \"location\": \"id consequat\",\n      \"id\": -79330382\n    },\n    \"id\": 53009736,\n    \"confidence\": 0.624306469382109,\n    \"cameraId\": 96433259,\n    \"litterCategory\": 71324896,\n    \"weatherCategory\": 51741386\n  }\n]"
+										}
+									]
+								}
+							],
+							"id": "41979928-ca72c1a2-5ead-4721-a8fc-df5a4c3d422b"
+						},
+						{
+							"name": "TrashDTO",
+							"item": [
+								{
+									"name": "import-trash-data",
+									"item": [
+										{
+											"name": "/api/v1/TrashDTO/import-trash-data",
+											"id": "41979928-230a8bc4-49ec-4431-a0d1-8e59b18b9a8e",
+											"protocolProfileBehavior": {
+												"disableBodyPruning": true
+											},
+											"request": {
+												"method": "POST",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/v1/TrashDTO/import-trash-data",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"v1",
+														"TrashDTO",
+														"import-trash-data"
+													]
+												}
+											},
+											"response": [
+												{
+													"id": "41979928-7426211a-ee70-4126-9eee-28283c7efc02",
+													"name": "OK",
+													"originalRequest": {
+														"method": "POST",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/v1/TrashDTO/import-trash-data",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"v1",
+																"TrashDTO",
+																"import-trash-data"
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"responseTime": null,
+													"body": ""
+												}
+											]
+										}
+									],
+									"id": "41979928-1dc267e3-a762-44e0-933d-0cf2e3484edf"
+								}
+							],
+							"id": "41979928-283e6235-282f-46d5-8096-5f608010a227"
+						}
+					],
+					"id": "41979928-6b73fe75-b9fc-49b2-bb25-232ecb923ace"
+				}
+			],
+			"id": "41979928-dc16db18-3cfb-47ce-a6f2-dacd8dcd3d3b"
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000/"
+		}
+	]
+}
