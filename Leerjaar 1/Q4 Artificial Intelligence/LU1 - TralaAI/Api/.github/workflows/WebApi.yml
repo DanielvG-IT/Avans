@@ -49,9 +49,13 @@ jobs:
       - name: Add dotnet tools to PATH
         run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
-      - name: Run EF Core Migrations on Azure SQL
+      - name: Run EF Core Migrations on Azure SQL with retry
         run: |
-          dotnet ef database update --project ./Api/Api.csproj --startup-project ./Api/Api.csproj --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+          for i in 1 2 3; do
+            dotnet ef database update --project ./Api/Api.csproj --startup-project ./Api/Api.csproj --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}" && break
+            echo "Migration failed, waiting for database to wake up (attempt $i)..."
+            sleep 10
+          done
 
       - name: Azure Login
         uses: azure/login@v1
