@@ -43,6 +43,16 @@ jobs:
       - name: Checkout to the branch
         uses: actions/checkout@v2
 
+      - name: Install EF Core tools
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Add dotnet tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Run EF Core Migrations on Azure SQL
+        run: |
+          dotnet ef database update --project ./Api/Api.csproj --startup-project ./Api/Api.csproj --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+
       - name: Azure Login
         uses: azure/login@v1
         with:
