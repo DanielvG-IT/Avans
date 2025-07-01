@@ -13,7 +13,7 @@ The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
 Attribution:
-This software includes exercises and projects developed by [Your Name] based on materials from Avans University of Applied Sciences. **All rights to the original materials are retained by Avans University of Applied Sciences.** The exercises and projects are used with permission from Avans University of Applied Sciences, and any use of these materials must comply with the terms set by Avans University of Applied Sciences.
+This software includes exercises and projects developed by Daniël van Ginneken based on materials from Avans University of Applied Sciences. **All rights to the original materials are retained by Avans University of Applied Sciences.** The exercises and projects are used with permission from Avans University of Applied Sciences, and any use of these materials must comply with the terms set by Avans University of Applied Sciences.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
