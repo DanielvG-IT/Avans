@@ -1,0 +1,625 @@
+﻿@page "/ai-predictions"
+@using Blazor.Components.Shared
+@using Blazor.Interfaces
+@using Blazor.Models
+@using System.Linq
+@using ApexCharts
+@rendermode InteractiveServer
+@inject ILitterService _litterService
+@inject IJSRuntime JS
+
+<ErrorModal Title="Oops!" Message="@errorMessage" Show="@showErrorModal" OnClose="@HandleModalClose" />
+
+<div class="page-container">
+
+    <!-- Top: AI Output Bar graph -->
+    <div class="top-section">
+        <h3>AI Output</h3>
+
+        <!-- Form + button in one horizontal line -->
+        <div class="d-flex align-items-end gap-3 mb-3 flex-wrap">
+            <!-- Number input -->
+            <div class="d-flex align-items-center gap-2">
+                <label for="daysInput" class="form-label mb-0">Aantal dagen (1–14):</label>
+                <input id="daysInput" type="number" class="form-control w-auto" min="1" max="14" @bind="selectedDays"
+                    disabled="@isLoading" />
+            </div>
+
+            <!-- Camera dropdown -->
+            <div class="d-flex align-items-center gap-2">
+                <label for="cameraSelect" class="form-label mb-0">Locatie:</label>
+                <select id="cameraSelect" class="form-select w-auto" @bind="selectedCameraId" disabled="@isLoading">
+                    @if (isCameraLoading)
+                    {
+                        <option>Camera's laden...</option>
+                    }
+                    else if (cameraOptions.Count == 0)
+                    {
+                        <option>Geen camera's gevonden</option>
+                    }
+                    else
+                    {
+                        @foreach (var cam in cameraOptions)
+                        {
+                            <option value="@cam.Id">@cam.Location</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <!-- Confirm button -->
+            <button class="btn btn-primary" @onclick="ApplyFilters" disabled="@isLoading">
+                @(isLoading ? "Laden..." : "Toepassen")
+            </button>
+        </div>
+
+        <p><b>Bovenstaande formulieren geven je de mogelijkheid een voorspelling op te vragen van een AI-model op een
+                gekozen camera locatie. Hieronder een overzicht van de verdeling van afvaltypes voor de opgevraagde voorspelling.</b></p>
+
+        @if (isLoading
+                || PlasticItems is null || PlasticItems.Count == 0
+                || PaperItems is null || PaperItems.Count == 0
+                || MetalItems is null || MetalItems.Count == 0
+                || GlassItems is null || GlassItems.Count == 0
+                || OrganicItems is null || OrganicItems.Count == 0)
+        {
+            <div class="loading-state d-flex flex-column align-items-center justify-content-center" style="height: 400px;">
+
+                <span class="loader mb-2"></span>
+                <span>AI voorspellingen worden geladen...</span>
+            </div>
+        }
+        else
+        {
+            <ApexChart @ref="chart" TItem="LitterData" Title="Afval per Type per Dag" Height="400">
+                <ApexPointSeries TItem="LitterData" Items="PlasticItems" Name="Plastic" XValue="@(e => e.Date)"
+                    YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
+                <ApexPointSeries TItem="LitterData" Items="PaperItems" Name="Paper" XValue="@(e => e.Date)"
+                    YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
+                <ApexPointSeries TItem="LitterData" Items="MetalItems" Name="Metal" XValue="@(e => e.Date)"
+                    YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
+                <ApexPointSeries TItem="LitterData" Items="GlassItems" Name="Glass" XValue="@(e => e.Date)"
+                    YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
+                <ApexPointSeries TItem="LitterData" Items="OrganicItems" Name="Organic" XValue="@(e => e.Date)"
+                    YValue="@(e => (decimal?)e.Count)" SeriesType="SeriesType.Bar" />
+            </ApexChart>
+        }
+    </div>
+
+    <!-- Middle: Pie Chart + Heatmap-->
+    <div class="middle-section">
+        <div class="left-panel">
+            <h3>Pie-Chart</h3>
+            @if (isLoading || pieData is null)
+            {
+                <div class="d-flex flex-column align-items-center justify-content-center" style="height: 500px;">
+                    <span class="loader mb-2"></span>
+                    <span>Pie chart wordt geladen...</span>
+                </div>
+            }
+            else
+            {
+                <p><b>Verdeling de afvaltypes op camera locatie "@locatie" in de komende @(appliedselectedDays == 1 ? "dag." :
+                                            $"{appliedselectedDays} dagen.")</b></p>
+            <ApexChart @ref="pieChart" TItem="PieData" Title="Verdeling van Afvaltypes" Height="500">
+                <ApexPointSeries TItem="PieData" Items="pieData" Name="Waarde" SeriesType="SeriesType.Pie"
+                    XValue="@(e => e.Label)" YValue="@(e => (decimal)e.Value)" />
+            </ApexChart>
+                        }
+        </div>
+        <div class="right-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em">
+                <h3 style="margin: 0;">Heatmap</h3>
+            </div>
+            <div>
+                @if (isLoading || heatmapItems is null)
+                {
+                    <div class="skeleton-loader" style="height: 32px; width: 80%; margin-bottom: 1rem;"></div>
+                }
+                else
+                {
+                    <p>
+                        <strong>Concentratie van het voorspelde afval voor de komende @(appliedselectedDays == 1 ? "dag" :
+                                                    $"{appliedselectedDays} dagen") van alle camera's in jouw camera systeem.</strong>
+                </p>
+                                }
+                <div class="page-container">
+                    <div class="heatmap-container">
+                        <div id="map" class="heatmap-map">
+                            @if (isLoading || heatmapItems is null)
+                            {
+                                <div class="d-flex flex-column align-items-center justify-content-center"
+                                    style="height: 100%;">
+                                    <span class="loader mb-2"></span>
+                                    <span>Heatmap wordt geladen...</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="CameraTable">
+                @if (isLoading || heatmapItems is null || heatmapItems.Count == 0)
+                {
+                    <div class="d-flex flex-column align-items-center justify-content-center" style="height: 200px;">
+                        <span class="loader mb-2"></span>
+                        <span>Gegevens worden geladen...</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Camera Locatie</th>
+                                    <th>Voorspelt Afval</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in heatmapItems)
+                                {
+                                    <tr>
+                                        <td>@item.Location</td>
+                                        <td>@item.TotalLitterPerCamera.ToString("F2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom: Extra Informatie Hier moet de tabel komen -->
+    <div class="bottom-section">
+        <h3>Binnenkomende Voorspelingsdata</h3>
+        @if(isLoading)
+        {
+        }
+        else{
+        <p><b>Rauwe voorspellingsdata van camera locatie "@locatie" in de komende @(appliedselectedDays == 1 ? "dag." :
+                                            $"{appliedselectedDays} dagen.") </b></p>
+        }
+
+        <div class="table-responsive">
+            @if (isLoading || LitterItems is null || LitterItems.Count == 0)
+            {
+                <div class="d-flex flex-column align-items-center justify-content-center" style="height: 200px;">
+                    <span class="loader mb-2"></span>
+                    <span>Gegevens worden geladen...</span>
+                </div>
+            }
+            else
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Datum</th>
+                            <th>Plastic</th>
+                            <th>Papier</th>
+                            <th>Metaal</th>
+                            <th>Glas</th>
+                            <th>Organisch</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < PlasticItems!.Count; i++)
+                        {
+                            <tr>
+                                <td>@PlasticItems![i].Date.ToString("dd-MM-yyyy")</td>
+                                <td>@PlasticItems![i].Count</td>
+                                <td>@PaperItems![i].Count</td>
+                                <td>@MetalItems![i].Count</td>
+                                <td>@GlassItems![i].Count</td>
+                                <td>@OrganicItems![i].Count</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .heatmap-map {
+        width: 100%;
+        height: 400px;
+        border-radius: 0.75rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+        background: #e0e7ef;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: 1rem;
+        gap: 1rem;
+        box-sizing: border-box;
+    }
+
+    .top-section {
+        flex: 3;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+    }
+
+    .middle-section {
+        flex: 3;
+        display: flex;
+        gap: 1rem;
+    }
+
+    .left-panel,
+    .right-panel {
+        flex: 2;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+    }
+
+    .bottom-section {
+        flex: 3;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .top-bottom-split {
+        flex: 2;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .top-inner,
+    .bottom-inner {
+        flex: 2;
+        border-radius: 7px;
+    }
+
+    h3 {
+        color: #0078d4;
+        margin-bottom: 0.5rem;
+    }
+
+    .placeholder {
+        height: 70%;
+        width: 100%;
+        border: 2px dashed #cccccc;
+        border-radius: 8px;
+        background-color: #fafafa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #888888;
+    }
+
+    .heatmap-box {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 3 / 2;
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+
+    .heatmap-background {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        z-index: 0;
+    }
+
+    .heatmap-btn {
+        padding: 0.75rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #fff;
+        background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .heatmap-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+
+    @@media (max-width: 768px) {
+        .middle-section {
+            flex-direction: column;
+        }
+    }
+</style>
+
+@code {
+    // Error modal state
+    private string errorMessage = string.Empty;
+    private bool showErrorModal = false;
+
+    private void HandleModalClose()
+    {
+        showErrorModal = false;
+        StateHasChanged();
+    }
+
+    private void ShowError(string message)
+    {
+        errorMessage = message;
+        showErrorModal = true;
+        StateHasChanged();
+    }
+
+    // Default aantal dagen
+    private int selectedDays = 3;
+    private int selectedCameraId;
+    private int appliedselectedDays = 3;
+    private int[] daysOptions = new[] { 1, 3, 7, 14 };
+    private List<Camera> cameraOptions = new();
+    private string locatie = "Avans Lovensdijkstraat";
+
+    private List<PieData> pieData = new();
+    public class PieData
+    {
+        public required string Label { get; set; }
+        public double Value { get; set; }
+    }
+
+    // Wordt gebruikt voor de bar chart bovenaan de pagina
+    private List<LitterData> LitterItems = new();
+    private List<LitterData> PlasticItems = new();
+    private List<LitterData> PaperItems = new();
+    private List<LitterData> MetalItems = new();
+    private List<LitterData> GlassItems = new();
+    private List<LitterData> OrganicItems = new();
+    private List<HeatmapData> heatmapItems = new();
+    private bool isLoading = false;
+    private bool isCameraLoading = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                isLoading = true;
+                isCameraLoading = true;
+                await LoadCameras();
+                isCameraLoading = false;
+                await LoadAllDataAsync();
+            }
+            catch (Exception ex)
+            {
+                ShowError($"Fout bij het ophalen van camera's: {ex.Message}");
+
+            }
+        }
+    }
+
+    public class LitterData
+    {
+        public DateOnly Date { get; set; }
+        public required string Type { get; set; }
+        public double Count { get; set; }
+    }
+
+    private ApexChart<LitterData>? chart;
+    private ApexChart<PieData>? pieChart;
+
+    private async Task LoadAllDataAsync()
+    {
+        try
+        {
+            isLoading = true;
+            StateHasChanged();
+
+            await RemoveHeatmapNew();
+            LitterItems.Clear();
+            PlasticItems.Clear();
+            PaperItems.Clear();
+            MetalItems.Clear();
+            GlassItems.Clear();
+            OrganicItems.Clear();
+            pieData.Clear();
+            heatmapItems.Clear();
+
+            await MakePredictionAsync();
+            await GetHeatmapData();
+            await DrawHeatmapNew();
+
+            if (chart is not null)
+                await chart.RenderAsync();
+            if (pieChart is not null)
+                await pieChart.RenderAsync();
+
+            appliedselectedDays = selectedDays;
+            locatie = cameraOptions.FirstOrDefault(c => c.Id == selectedCameraId)?.Location ?? "Onbekende locatie";
+        }
+        catch (Exception ex)
+        {
+            ShowError($"Fout bij het laden van data: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+    private async Task ApplyFilters()
+    {
+        await LoadAllDataAsync();
+    }
+
+    private async Task DrawHeatmapNew()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("drawHeatmap", heatmapItems);
+        }
+        catch (Exception ex)
+        {
+            ShowError($"Fout bij het tekenen van de heatmap: {ex.Message}");
+        }
+    }
+
+    private async Task RemoveHeatmapNew()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("removeHeatmap");
+        }
+        catch (Exception ex)
+        {
+            ShowError($"Fout bij het verwijderen van de heatmap: {ex.Message}");
+        }
+    }
+
+    private async Task LoadCameras()
+    {
+        try
+        {
+            var cameraResponse = await _litterService.GetCamerasAsync();
+            if (cameraResponse is null || !cameraResponse.Any())
+            {
+                ShowError("Geen camera's gevonden.");
+                return;
+            }
+
+            cameraOptions = cameraResponse;
+            selectedCameraId = cameraOptions.Min(c => c.Id);
+        }
+        catch (Exception ex)
+        {
+            ShowError($"Fout bij het ophalen van camera's: {ex.Message}");
+        }
+    }
+
+    private async Task GetHeatmapData()
+    {
+        try
+        {
+            var cameras = await _litterService.GetCamerasAsync();
+            if (cameras is not null)
+            {
+                foreach (var camera in cameras)
+                {
+                    var cameraPredictions = await _litterService.PredictAsync(selectedDays, camera.Id);
+                    double totalPrediction = 0;
+                    if (cameraPredictions is not null)
+                    {
+                        foreach (var dailyPrediction in cameraPredictions)
+                        {
+                            totalPrediction += dailyPrediction.Predictions.Plastic;
+                            totalPrediction += dailyPrediction.Predictions.Paper;
+                            totalPrediction += dailyPrediction.Predictions.Metal;
+                            totalPrediction += dailyPrediction.Predictions.Glass;
+                            totalPrediction += dailyPrediction.Predictions.Organic;
+                        }
+                    }
+                    var item = new HeatmapData
+                    {
+                        TotalLitterPerCamera = totalPrediction,
+                        Latitude = camera.Latitude,
+                        Longitude = camera.Longitude,
+                        Location = camera.Location
+                    };
+                    heatmapItems.Add(item);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowError($"Fout bij het ophalen van heatmap data: {ex.Message}");
+        }
+    }
+
+    private async Task MakePredictionAsync()
+    {
+        try
+        {
+            var predictionResponse = await _litterService.PredictAsync(selectedDays, selectedCameraId);
+            if (predictionResponse is null || !predictionResponse.Any() || predictionResponse.Count != selectedDays)
+            {
+                Console.WriteLine("Geen of incorrecte data ontvangen van de backend.");
+                return;
+            }
+            else
+            {
+                var newLitterItems = new List<LitterData>();
+
+                foreach (var day in predictionResponse)
+                {
+                    Console.WriteLine("Probeert data op te halen");
+                    newLitterItems.Add(new LitterData
+                    {
+                        Date = DateOnly.FromDateTime(day.Date),
+                        Type = "plastic",
+                        Count = day.Predictions.Plastic
+                    });
+                    newLitterItems.Add(new LitterData
+                    {
+                        Date = DateOnly.FromDateTime(day.Date),
+                        Type = "paper",
+                        Count = day.Predictions.Paper
+                    });
+                    newLitterItems.Add(new LitterData
+                    {
+                        Date = DateOnly.FromDateTime(day.Date),
+                        Type = "metal",
+                        Count = day.Predictions.Metal
+                    });
+                    newLitterItems.Add(new LitterData
+                    {
+                        Date = DateOnly.FromDateTime(day.Date),
+                        Type = "glass",
+                        Count = day.Predictions.Glass
+                    });
+                    newLitterItems.Add(new LitterData
+                    {
+                        Date = DateOnly.FromDateTime(day.Date),
+                        Type = "organic",
+                        Count = day.Predictions.Organic
+                    });
+                }
+                LitterItems = newLitterItems;
+                PlasticItems = LitterItems.Where(x => x.Type == "plastic").ToList();
+                PaperItems = LitterItems.Where(x => x.Type == "paper").ToList();
+                MetalItems = LitterItems.Where(x => x.Type == "metal").ToList();
+                GlassItems = LitterItems.Where(x => x.Type == "glass").ToList();
+                OrganicItems = LitterItems.Where(x => x.Type == "organic").ToList();
+                pieData = LitterItems
+                .GroupBy(item => item.Type)
+                .Select(group => new PieData
+                {
+                    Label = group.Key,
+                    Value = group.Sum(item => item.Count)
+                })
+                .ToList();
+            }
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            ShowError($"Fout bij het ophalen van AI voorspellingen: {ex.Message}");
+        }
+    }
+}

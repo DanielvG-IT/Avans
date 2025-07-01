@@ -1,0 +1,35 @@
+﻿@inherits LayoutComponentBase
+
+@inject NavigationManager Navigation
+
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main style="overflow-y: auto; height: 100vh;">
+        <div class="top-row px-4 status-bar">
+            <div class="status-right">
+                <a class="btn btn-primary" href="/settings">Status</a>
+            </div>
+        </div>
+
+        <article class="content px-4" style="background-color: #f0f2f5;">
+            @Body
+        </article>
+    </main>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    Er is een onverwachte fout opgetreden.
+    <a href="." class="reload">Herlaad</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+@code {
+    private void GoToSettings()
+    {
+        Navigation.NavigateTo("/settings");
+    }
+}
