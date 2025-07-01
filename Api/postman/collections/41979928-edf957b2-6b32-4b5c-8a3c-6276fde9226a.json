@@ -1,0 +1,126 @@
+{
+	"info": {
+		"_postman_id": "41979928-edf957b2-6b32-4b5c-8a3c-6276fde9226a",
+		"name": "Systeem Testen",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/api/v1/Litter Copy",
+			"id": "41979928-0e065adb-25f1-4958-80a8-0a86a141ff70",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/plain"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/Litter?CameraId=-56901112&Type=officia minim aute qui sunt&From=2020-03-29T10:55:38.876Z&To=2020-03-29T10:55:38.876Z&MinTemperature=-56901112&MaxTemperature=-56901112",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"Litter"
+					],
+					"query": [
+						{
+							"key": "CameraId",
+							"value": "-56901112"
+						},
+						{
+							"key": "Type",
+							"value": "officia minim aute qui sunt"
+						},
+						{
+							"key": "From",
+							"value": "2020-03-29T10:55:38.876Z"
+						},
+						{
+							"key": "To",
+							"value": "2020-03-29T10:55:38.876Z"
+						},
+						{
+							"key": "MinTemperature",
+							"value": "-56901112"
+						},
+						{
+							"key": "MaxTemperature",
+							"value": "-56901112"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"id": "41979928-03906cdd-3fb1-4153-af65-20d24fb3c851",
+					"name": "OK",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "text/plain"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/Litter?CameraId=-56901112&Type=officia minim aute qui sunt&From=2020-03-29T10:55:38.876Z&To=2020-03-29T10:55:38.876Z&MinTemperature=-56901112&MaxTemperature=-56901112",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"Litter"
+							],
+							"query": [
+								{
+									"key": "CameraId",
+									"value": "-56901112"
+								},
+								{
+									"key": "Type",
+									"value": "officia minim aute qui sunt"
+								},
+								{
+									"key": "From",
+									"value": "2020-03-29T10:55:38.876Z"
+								},
+								{
+									"key": "To",
+									"value": "2020-03-29T10:55:38.876Z"
+								},
+								{
+									"key": "MinTemperature",
+									"value": "-56901112"
+								},
+								{
+									"key": "MaxTemperature",
+									"value": "-56901112"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"responseTime": null,
+					"body": "[\n  {\n    \"type\": \"amet ea irure officia\",\n    \"timeStamp\": \"1997-09-16T22:48:26.539Z\",\n    \"weather\": \"elit mollit nostrud Lorem\",\n    \"temperature\": 80,\n    \"isHoliday\": false,\n    \"camera\": {\n      \"latitude\": 30106908.535864368,\n      \"longitude\": 86522097.30193257,\n      \"location\": \"culpa labore\",\n      \"id\": -21584763\n    },\n    \"id\": 2198789,\n    \"confidence\": 0.45936638325768464,\n    \"cameraId\": 53805823,\n    \"litterCategory\": -2144992,\n    \"weatherCategory\": 10611368\n  },\n  {\n    \"type\": \"in esse velit\",\n    \"timeStamp\": \"2015-04-06T13:57:27.781Z\",\n    \"weather\": \"in est ut\",\n    \"temperature\": -51,\n    \"isHoliday\": false,\n    \"camera\": {\n      \"latitude\": -14874310.431974262,\n      \"longitude\": 88842807.00874597,\n      \"location\": \"id consequat\",\n      \"id\": -79330382\n    },\n    \"id\": 53009736,\n    \"confidence\": 0.624306469382109,\n    \"cameraId\": 96433259,\n    \"litterCategory\": 71324896,\n    \"weatherCategory\": 51741386\n  }\n]"
+				}
+			]
+		}
+	]
+}
