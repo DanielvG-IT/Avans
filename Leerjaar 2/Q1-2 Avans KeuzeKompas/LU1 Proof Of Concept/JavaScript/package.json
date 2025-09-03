@@ -1,4 +1,7 @@
 {
+    "name": "proof-of-concept-javascript",
+    "version": "0.1.2",
+    "type": "module",
     "dependencies": {
         "express": "^5.1.0"
     },
