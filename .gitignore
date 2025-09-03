@@ -6,6 +6,9 @@
 *.log
 *.tmp
 
+# MacOS
+.DS_Store
+
 # .NET Ignores (Blazor, Console & WebAPI)
 bin/
 obj/
