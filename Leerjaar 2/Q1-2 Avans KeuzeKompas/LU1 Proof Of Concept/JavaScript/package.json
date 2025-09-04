@@ -1,24 +1,37 @@
 {
-  "name": "javascript-sakila",
-  "version": "0.1.0",
-  "description": "Application for school that implements some functionality from the MySQL Sakila database",
-  "keywords": [
-    "Avans",
-    "ExpressJS"
-  ],
-  "license": "MIT",
-  "author": "Daniël van Ginneken",
-  "type": "module",
-  "main": "./src/app.js",
-  "directories": {
-    "test": "test"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "dependencies": {
-    "dotenv": "^17.2.2",
-    "express": "^5.1.0",
-    "winston": "^3.17.0"
-  }
+    "name": "javascript-sakila",
+    "version": "0.1.0",
+    "description": "Application for school that implements some functionality from the MySQL Sakila database",
+    "license": "MIT",
+    "author": "Daniël van Ginneken",
+    "type": "module",
+    "main": "./src/app.js",
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+        "start": "node ./src/app.js",
+        "dev": "nodemon ./src/app.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "dependencies": {
+        "dotenv": "^17.2.2",
+        "express": "^5.1.0",
+        "winston": "^3.17.0"
+    },
+    "devDependencies": {},
+    "keywords": [
+        "nodejs",
+        "express",
+        "expressjs",
+        "api",
+        "rest",
+        "school-project",
+        "avans",
+        "web-application",
+        "backend",
+        "frontend",
+        "fullstack",
+        "javascript"
+    ]
 }
