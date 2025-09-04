@@ -1,45 +1,42 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+import path from 'path';
 import express from 'express';
+import { fileURLToPath } from 'url';
 import logger from './util/logger.js';
 import createError from 'http-errors';
 import cookieParser from 'cookie-parser';
 import { create } from 'express-handlebars';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 var app = express();
 const PORT = process.env.PORT || 3000;
 const hbs = create({
-    partialsDir: './views/partials',
-    layoutsDir: './views/layouts',
+    partialsDir: path.join(__dirname, 'views/partials'),
+    layoutsDir: path.join(__dirname, 'views/layouts'),
     defaultLayout: 'main',
-    extname: '.hbs',
+    extname: 'hbs',
 });
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static('./public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // View engine
-app.engine('handlebars', hbs.engine);
-app.set('view engine', 'handlebars');
-app.set('views', './views');
+app.engine('hbs', hbs.engine);
+app.set('view engine', 'hbs');
+app.set('views', path.join(__dirname, 'views')); // absolute path
 
 // Import Routes
-app.get('/', (req, res) => {
-    logger.debug('/ route called');
-    res.render('main.hbs');
-});
-app.get('/login', (req, res) => {
-    logger.debug('/login route called');
-    res.render('login.hbs');
-});
-app.get('/register', (req, res) => {
-    logger.debug('/register route called');
-    res.render('register.hbs');
-});
+app.get('/', (req, res) => res.render('index'));
+app.get('/login', (req, res) => res.render('login'));
+app.get('/register', (req, res) => res.render('register'));
+app.get('/about', (req, res) => res.render('about'));
 
 // 404 Not Found handler
 app.use(function (req, res, next) {
