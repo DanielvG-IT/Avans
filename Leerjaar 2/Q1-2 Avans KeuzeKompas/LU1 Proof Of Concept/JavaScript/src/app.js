@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import path from 'path';
-import morgan from 'morgan';
 import express from 'express';
 import logger from './util/logger.js';
 import createError from 'http-errors';
@@ -19,7 +18,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // View engine
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+app.set('view engine', 'ejs');
 
 // Routes
 app.get('/', (req, res) => {
