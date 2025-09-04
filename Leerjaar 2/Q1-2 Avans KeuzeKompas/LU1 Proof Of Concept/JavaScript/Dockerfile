@@ -1,35 +1,34 @@
-# Use a small Node image
+# Use the official Node.js LTS (Long Term Support) image as base
 FROM node:22-alpine AS base
+
+# Set working directory
 WORKDIR /app
 
-# Copy package manifests first to leverage Docker layer cache
+# Copy package files for dependency installation
 COPY package*.json ./
 
-# Install production dependencies (use package-lock if present)
-RUN if [ -f package-lock.json ]; then \
-  npm ci --only=production; \
-    else \
-  npm install --production; \
-    fi
+# Install dependencies
+RUN npm ci --only=production && npm cache clean --force
 
-# Copy application sources
+# Create a non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+  adduser -S expressuser -u 1001
+
+# Copy application code
 COPY . .
 
-# Create a non-root user and give ownership of the app dir
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup && chown -R appuser:appgroup /app
+# Change ownership of the app directory to the non-root user
+RUN chown -R expressuser:nodejs /app
 
-USER appuser
+# Switch to non-root user
+USER expressuser
 
-# Default env config (app should respect PORT env var)
-ENV NODE_ENV=production
-ENV PORT=3000
-
-# Expose the port your Express app listens on
+# Expose the port your app runs on
 EXPOSE 3000
 
-# Basic healthcheck (expects the app to respond on /; adjust if needed)
+# Add health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget -qO- --timeout=2 http://localhost:${PORT}/ || exit 1
+  CMD node healthcheck.js
 
-# Start the app (expects a "start" script in package.json)
-CMD ["npm", "start"]
+# Start the application
+CMD ["npm", "run start"]
