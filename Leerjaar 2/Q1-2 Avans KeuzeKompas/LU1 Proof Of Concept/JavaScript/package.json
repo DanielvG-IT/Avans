@@ -3,6 +3,7 @@
     "version": "0.1.2",
     "type": "module",
     "dependencies": {
+        "bootstrap": "^5.3.8",
         "dotenv": "^17.2.2",
         "express": "^5.1.0",
         "mysql2": "^3.14.4",
