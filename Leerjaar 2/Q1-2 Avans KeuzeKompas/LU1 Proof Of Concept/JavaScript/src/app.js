@@ -1,29 +1,44 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import path from 'path';
 import express from 'express';
 import logger from './util/logger.js';
 import createError from 'http-errors';
 import cookieParser from 'cookie-parser';
+import { create } from 'express-handlebars';
 
 var app = express();
 const PORT = process.env.PORT || 3000;
+const hbs = create({
+    partialsDir: './views/partials',
+    layoutsDir: './views/layouts',
+    defaultLayout: 'main',
+    extname: '.hbs',
+});
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('./public'));
 
 // View engine
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+app.engine('handlebars', hbs.engine);
+app.set('view engine', 'handlebars');
+app.set('views', './views');
 
-// Routes
+// Import Routes
 app.get('/', (req, res) => {
-    logger.debug('fucka mensen');
-    res.json({ message: 'Hello World!' });
+    logger.debug('/ route called');
+    res.render('main.hbs');
+});
+app.get('/login', (req, res) => {
+    logger.debug('/login route called');
+    res.render('login.hbs');
+});
+app.get('/register', (req, res) => {
+    logger.debug('/register route called');
+    res.render('register.hbs');
 });
 
 // 404 Not Found handler
@@ -39,12 +54,12 @@ app.use(function (err, req, res, next) {
 
     // render the error page
     res.status(err.status || 500);
-    res.render('error');
+    res.json({ error: res.locals.message });
 });
 
-// Start server
+// Start the server
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    logger.info(`Server is running on port ${PORT}`);
 });
 
-module.exports = app;
+export default app;
