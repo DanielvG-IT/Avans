@@ -4,10 +4,13 @@ dotenv.config();
 import path from 'path';
 import express from 'express';
 import { fileURLToPath } from 'url';
-import logger from './util/logger.js';
 import createError from 'http-errors';
 import cookieParser from 'cookie-parser';
 import { create } from 'express-handlebars';
+
+import logger from './util/logger.js';
+import indexRouter from './controllers/index.routes.js';
+import authRouter from './controllers/auth.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,9 +36,8 @@ app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views')); // absolute path
 
 // Import Routes
-app.get('/', (req, res) => res.render('index'));
-app.get('/login', (req, res) => res.render('login'));
-app.get('/register', (req, res) => res.render('register'));
+app.use('/', indexRouter);
+app.use('/auth', authRouter);
 app.get('/about', (req, res) => res.render('about'));
 
 // 404 Not Found handler
@@ -56,7 +58,8 @@ app.use(function (err, req, res, next) {
 
 // Start the server
 app.listen(PORT, () => {
-    logger.info(`Server is running on port ${PORT}`);
+    const env = process.env.NODE_ENV || 'Node';
+    logger.info(`${env.charAt(0).toUpperCase() + env.slice(1)} server is running on port ${PORT}`);
 });
 
 export default app;
