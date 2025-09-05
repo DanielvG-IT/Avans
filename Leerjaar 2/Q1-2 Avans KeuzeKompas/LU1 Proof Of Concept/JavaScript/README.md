@@ -2,7 +2,7 @@
 
 ## Description
 
-A brief description of what this project does and who it's for.
+This repository is a small proof-of-concept created during the first three weeks of the semester to get familiar with JavaScript fundamentals.
 
 # LICENSE
 
