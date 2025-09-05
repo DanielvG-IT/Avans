@@ -8,7 +8,7 @@ import createError from 'http-errors';
 import cookieParser from 'cookie-parser';
 import { create } from 'express-handlebars';
 
-import logger from './util/logger.js';
+import { logger } from './util/logger.js';
 import indexRouter from './controllers/index.routes.js';
 import authRouter from './controllers/auth.routes.js';
 

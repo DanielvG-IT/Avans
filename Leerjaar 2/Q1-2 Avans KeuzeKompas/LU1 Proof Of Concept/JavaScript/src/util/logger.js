@@ -32,4 +32,4 @@ else {
     );
 }
 
-export default logger;
+export { logger };
