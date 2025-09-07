@@ -1,5 +1,5 @@
 import { getCategories } from '../dao/category.js';
-import logger from '../util/logger.js';
+import { logger } from '../util/logger.js';
 
 export const fetchCategories = (callback) => {
     getCategories((err, categories) => {
@@ -8,11 +8,17 @@ export const fetchCategories = (callback) => {
             return callback(err);
         }
 
-        const mapped = categories.map((c) => ({
-            categoryId: c.category_id,
-            name: c.name,
-        }));
+        callback(null, categories);
+    });
+};
 
-        callback(null, mapped);
+export const fetchCategoryNames = (callback) => {
+    fetchCategories((err, categories) => {
+        if (err) {
+            return callback(err);
+        }
+
+        const names = categories.map((c) => c.name);
+        callback(null, names);
     });
 };
