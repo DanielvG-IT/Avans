@@ -1,7 +1,7 @@
 import { query } from '../data/db.js';
 import { logger } from '../util/logger.js';
 
-export const getPopularFilms = (limit, callback) => {
+export const getPopularMovies = (limit, callback) => {
     const sql = `
         SELECT f.film_id, f.title, rc.rental_count, c.name as category, fc2.cover_url
         FROM (
@@ -28,3 +28,5 @@ export const getPopularFilms = (limit, callback) => {
         callback(null, rows);
     });
 };
+
+export const getMovies = (filters, callback) => {};
