@@ -34,7 +34,7 @@ export const getMovies = (filters, callback) => {
 
     // Construct the SQL query with filters
     let sql = `
-        SELECT f.film_id, f.title, f.description, f.release_year, f.language_id, f.original_language, f.rental_duration, f.rental_rate, f.length, f.replacement_cost, f.rating, f.special_features, f.last_update, c.name as category
+        SELECT f.film_id, f.title, f.description, f.release_year, f.language_id, f.rental_duration, f.rental_rate, f.length, f.replacement_cost, f.rating, f.special_features, f.last_update, c.name as category
         FROM film f
         JOIN film_category fc ON f.film_id = fc.film_id
         JOIN category c ON c.category_id = fc.category_id
@@ -70,4 +70,23 @@ export const getMovies = (filters, callback) => {
             callback(null, rows);
         }
     );
+};
+
+export const getMovieById = (id, callback) => {
+    const sql = `
+        SELECT f.film_id, f.title, f.description, f.release_year, f.language_id, f.original_language_id, f.rental_duration, f.rental_rate, f.length, f.replacement_cost, f.rating, f.special_features, f.last_update, c.name as category
+        FROM film f
+        JOIN film_category fc ON f.film_id = fc.film_id
+        JOIN category c ON c.category_id = fc.category_id
+        WHERE f.film_id = ?
+    `;
+
+    query(sql, [id], (err, rows) => {
+        if (typeof callback !== 'function') return;
+        if (err) {
+            logger.error('MySQL Error:', err);
+            return callback(err);
+        }
+        callback(null, rows[0]);
+    });
 };

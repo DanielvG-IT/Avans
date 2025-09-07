@@ -1,6 +1,7 @@
 import express from 'express';
 import { logger } from '../util/logger.js';
-import { getCategories } from '../dao/category.js';
+import { fetchMovies } from '../services/movieService.js';
+import { fetchCategoryNames } from '../services/categoryService.js';
 
 const moviesRouter = express.Router();
 
@@ -11,15 +12,13 @@ moviesRouter.get('/', (req, res, next) => {
     let sort = req.query.sort || 'title';
     let genre = req.query.genre || 'All';
 
-    getCategories((err, categories) => {
+    fetchCategoryNames((err, categories) => {
         if (err) {
             next(err);
         }
 
         // Use the categories to filter or enhance the movie query
-        genre === 'All'
-            ? (genre = [...categories.map((c) => c.name)])
-            : (genre = req.query.genre.split(','));
+        genre === 'All' ? (genre = [...categories]) : (genre = req.query.genre.split(','));
         req.query.sort ? (sort = req.query.sort.split(',')) : (sort = [sort]);
 
         let sortBy = {};
@@ -29,7 +28,7 @@ moviesRouter.get('/', (req, res, next) => {
             sortBy[sort[0]] = 'asc';
         }
 
-        const movies = getMovies({ page, limit, search, sortBy, genre }, (err, movies) => {
+        fetchMovies({ page, limit, search, sortBy, genre }, (err, movies) => {
             if (err) {
                 next(err);
             } else {
