@@ -1,6 +1,6 @@
 import express from 'express';
 import { logger } from '../util/logger.js';
-import { fetchPopularFilms } from '../services/filmService.js';
+import { fetchPopularMovies } from '../services/movieService.js';
 
 const indexRouter = express.Router();
 
@@ -9,11 +9,10 @@ const indexRouter = express.Router();
  */
 indexRouter.get('/', (req, res, next) => {
     try {
-        fetchPopularFilms(14, (error, result) => {
+        fetchPopularMovies(14, (error, result) => {
             if (error) {
                 return next(error);
             }
-            console.log(result);
             res.render('index', { title: 'Homepage', model: { movies: result } });
         });
     } catch (err) {
