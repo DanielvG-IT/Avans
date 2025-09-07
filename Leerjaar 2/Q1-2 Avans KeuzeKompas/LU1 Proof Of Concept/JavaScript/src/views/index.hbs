@@ -2,69 +2,17 @@
     <h3>Popular Movies</h3>
     <div id='rowCarousel' class='carousel slide position-relative' data-bs-ride='carousel'>
         <div class='carousel-inner'>
-            <div class='carousel-item active'>
-                <div class='d-flex gap-2'>
-                    {{!-- {{#each model.movies}} --}}
-                    <img
-                        src='https://plus.unsplash.com/premium_photo-1710409625244-e9ed7e98f67b?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG1vdmllfGVufDB8fDB8fHww'
-                        class='d-block'
-                        alt='Movie 1'
-                        width='400'
-                        height='200'
-                    />
-                    <img
-                        src='https://plus.unsplash.com/premium_photo-1710409625244-e9ed7e98f67b?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG1vdmllfGVufDB8fDB8fHww'
-                        class='d-block'
-                        alt='Movie 2'
-                        width='400'
-                        height='200'
-                    />
-                    <img
-                        src='https://plus.unsplash.com/premium_photo-1710409625244-e9ed7e98f67b?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG1vdmllfGVufDB8fDB8fHww'
-                        class='d-block'
-                        alt='Movie 3'
-                        width='400'
-                        height='200'
-                    />
-                    <img
-                        src='https://plus.unsplash.com/premium_photo-1710409625244-e9ed7e98f67b?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG1vdmllfGVufDB8fDB8fHww'
-                        class='d-block'
-                        alt='Movie 4'
-                        width='400'
-                        height='200'
-                    />
-                </div>
-            </div>
             <div class='carousel-item'>
                 <div class='d-flex gap-2'>
-                    <img
-                        src='https://plus.unsplash.com/premium_photo-1710409625244-e9ed7e98f67b?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG1vdmllfGVufDB8fDB8fHww'
-                        class='d-block'
-                        alt='Movie 5'
-                        width='400'
-                        height='200'
-                    />
-                    <img
-                        src='https://plus.unsplash.com/premium_photo-1710409625244-e9ed7e98f67b?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG1vdmllfGVufDB8fDB8fHww'
-                        class='d-block'
-                        alt='Movie 6'
-                        width='400'
-                        height='200'
-                    />
-                    <img
-                        src='https://plus.unsplash.com/premium_photo-1710409625244-e9ed7e98f67b?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG1vdmllfGVufDB8fDB8fHww'
-                        class='d-block'
-                        alt='Movie 7'
-                        width='400'
-                        height='200'
-                    />
-                    <img
-                        src='https://plus.unsplash.com/premium_photo-1710409625244-e9ed7e98f67b?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG1vdmllfGVufDB8fDB8fHww'
-                        class='d-block'
-                        alt='Movie 8'
-                        width='400'
-                        height='200'
-                    />
+                    {{#each model.movies}}
+                        <img
+                            src='https://plus.unsplash.com/premium_photo-1710409625244-e9ed7e98f67b?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG1vdmllfGVufDB8fDB8fHww'
+                            class='d-block'
+                            alt='{{this.title}}'
+                            width='400'
+                            height='200'
+                        />
+                    {{/each}}
                 </div>
             </div>
         </div>

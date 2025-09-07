@@ -51,9 +51,17 @@ app.use(function (err, req, res, next) {
     res.locals.message = err.message;
     res.locals.error = process.env.NODE_ENV === 'development' ? err : {};
 
+    const errorObj = {
+        title: res.locals.message,
+        statusCode: err.status || 500,
+        message: process.env.NODE_ENV === 'development' ? err.stack : null,
+    };
+
+    logger.error(errorObj);
+
     // render the error page
     res.status(err.status || 500);
-    res.json({ error: res.locals.message });
+    res.render('error', { error: errorObj });
 });
 
 // Start the server
@@ -61,5 +69,3 @@ app.listen(PORT, () => {
     const env = process.env.NODE_ENV || 'Node';
     logger.info(`${env.charAt(0).toUpperCase() + env.slice(1)} server is running on port ${PORT}`);
 });
-
-export default app;
