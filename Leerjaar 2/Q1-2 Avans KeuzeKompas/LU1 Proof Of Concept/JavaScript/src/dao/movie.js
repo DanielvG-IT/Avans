@@ -34,10 +34,11 @@ export const getMovies = (filters, callback) => {
 
     // Construct the SQL query with filters
     let sql = `
-        SELECT f.film_id, f.title, f.description, f.release_year, f.language_id, f.rental_duration, f.rental_rate, f.length, f.replacement_cost, f.rating, f.special_features, f.last_update, c.name as category
+        SELECT f.film_id, f.title, f.description, f.release_year, f.language_id, f.rental_duration, f.rental_rate, f.length, f.replacement_cost, f.rating, f.special_features, f.last_update, c.name as category, fc2.cover_url
         FROM film f
         JOIN film_category fc ON f.film_id = fc.film_id
         JOIN category c ON c.category_id = fc.category_id
+        LEFT JOIN film_cover fc2 ON fc2.film_id = f.film_id
         WHERE 1=1
     `;
 
