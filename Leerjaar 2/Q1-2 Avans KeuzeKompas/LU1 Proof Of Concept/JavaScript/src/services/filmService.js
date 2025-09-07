@@ -1,10 +1,10 @@
-import { getPopularFilms } from '../dao/film.js';
+import { getPopularMovies } from '../dao/movie.js';
 
-export const fetchPopularFilms = (limit, callback) => {
-    getPopularFilms(limit, (err, films) => {
+export const fetchPopularMovies = (limit, callback) => {
+    getPopularMovies(limit, (err, movies) => {
         if (err) return callback(err);
 
-        const mapped = films.map((f) => ({
+        const mapped = movies.map((f) => ({
             filmId: f.film_id,
             title: f.title,
             rentalCount: f.rental_count,
