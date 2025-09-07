@@ -1,0 +1,136 @@
+<div class='container py-5'>
+    <h1 class='mb-4'>About This Project</h1>
+    <p class='lead'>This project is built around the following Epics, User Stories, and Subtasks.</p>
+
+    <!-- Epic 1 -->
+    <div class='card mb-4 border-primary'>
+        <div class='card-header bg-primary text-white'>
+            Epic 1: Authentication & User Management
+        </div>
+        <div class='card-body'>
+            <p>Enable secure access and role-based functionality for customers, staff, and owners.</p>
+            <ul>
+                <li><strong>As a customer</strong>: Register and log in to access reservations and
+                    rentals.
+                    <ul>
+                        <li>Create registration form (/register)</li>
+                        <li>Validate and store user info in DB</li>
+                        <li>Hash passwords & implement secure login (/login)</li>
+                    </ul>
+                </li>
+                <li><strong>As staff</strong>: Log in to manage reservations and rentals for
+                    customers.
+                    <ul>
+                        <li>Add staff login flow with role-based session</li>
+                        <li>Restrict staff actions to their store only</li>
+                        <li>Middleware for access control (staff only routes)</li>
+                    </ul>
+                </li>
+                <li><strong>As an owner</strong>: Manage staff accounts.
+                    <ul>
+                        <li>Owner dashboard (/staff)</li>
+                        <li>Create form to add new staff linked to store</li>
+                        <li>Implement update & delete staff</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Epic 2 -->
+    <div class='card mb-4 border-success'>
+        <div class='card-header bg-success text-white'>
+            Epic 2: Film Catalog & Availability
+        </div>
+        <div class='card-body'>
+            <p>Provide customers and staff access to the movie catalog and store-specific
+                availability.</p>
+            <ul>
+                <li><strong>As a visitor</strong>: Browse the film catalog.
+                    <ul>
+                        <li>Build /films route with list of all films</li>
+                        <li>Connect to Sakila database (films table)</li>
+                        <li>Add search & filter by title/category</li>
+                    </ul>
+                </li>
+                <li><strong>As a customer</strong>: View details of a film.
+                    <ul>
+                        <li>Create film details page with metadata</li>
+                        <li>Show availability across stores</li>
+                        <li>Add "reserve" button (if logged in)</li>
+                    </ul>
+                </li>
+                <li><strong>As staff</strong>: Check film availability in their store.
+                    <ul>
+                        <li>Query films filtered by store_id</li>
+                        <li>Display availability in staff dashboard</li>
+                        <li>Prevent reservations for unavailable films</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Epic 3 -->
+    <div class='card mb-4 border-warning'>
+        <div class='card-header bg-warning'>
+            Epic 3: Reservations & Rentals
+        </div>
+        <div class='card-body'>
+            <p>Enable customers to reserve films and staff to manage rentals.</p>
+            <ul>
+                <li><strong>As a customer</strong>: Reserve a film.
+                    <ul>
+                        <li>Reserve button creates entry in DB</li>
+                        <li>Validate login before reserving</li>
+                        <li>Show confirmation message</li>
+                    </ul>
+                </li>
+                <li><strong>As staff</strong>: Confirm rentals.
+                    <ul>
+                        <li>Mark reservation as "rented"</li>
+                        <li>Store rental info (customer_id, staff_id, date)</li>
+                        <li>Update availability in store</li>
+                    </ul>
+                </li>
+                <li><strong>As a customer</strong>: See reserved/rented films.
+                    <ul>
+                        <li>Build /customer dashboard</li>
+                        <li>List reservations with status</li>
+                        <li>Show store location</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Epic 4 -->
+    <div class='card mb-4 border-info'>
+        <div class='card-header bg-info text-dark'>
+            Epic 4: Homepage & Recommendations
+        </div>
+        <div class='card-body'>
+            <p>Give visitors a landing page with film suggestions.</p>
+            <ul>
+                <li><strong>As a visitor</strong>: See a welcome message.
+                    <ul>
+                        <li>Homepage / with text "Welkom bij Sakila movie rental"</li>
+                        <li>Style with Bootstrap</li>
+                    </ul>
+                </li>
+                <li><strong>As a visitor</strong>: See recommended films.
+                    <ul>
+                        <li>Query recommended films (rental_count or category)</li>
+                        <li>Display in table with details link</li>
+                    </ul>
+                </li>
+                <li><strong>As a visitor</strong>: Click recommended film.
+                    <ul>
+                        <li>Link rows to film details page</li>
+                        <li>Ensure navigation works</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

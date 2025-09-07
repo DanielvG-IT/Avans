@@ -1,0 +1,79 @@
+<section
+    role='alert'
+    aria-labelledby='error-title'
+    aria-describedby='error-desc'
+    style="min-height:60vh; display:flex; align-items:center; justify-content:center; padding:48px 20px; background:none; position:relative; overflow:hidden; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color-scheme:dark;"
+>
+    <div
+        aria-hidden='true'
+        style='display:none; position:absolute; inset:0; z-index:0; background: radial-gradient(800px 300px at 10% 20%, rgba(233,9,20,0.08), transparent 6%), radial-gradient(600px 240px at 90% 80%, rgba(255,255,255,0.02), transparent 10%), linear-gradient(180deg, rgba(255,255,255,0.01), transparent); filter: blur(32px) saturate(110%); transform: translateZ(0);'
+    ></div>
+
+    <div
+        role='region'
+        aria-live='polite'
+        style='position:relative; z-index:1; width:100%; max-width:1100px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:14px; padding:28px; display:grid; gap:18px; grid-template-columns:1fr; box-shadow: 0 10px 30px rgba(2,6,23,0.6); backdrop-filter: blur(6px) saturate(120%); border:1px solid rgba(255,255,255,0.03);'
+    >
+        <header
+            style='background:transparent; box-shadow:none; border-bottom:none; margin:0; padding:0;'
+        >
+            <h1
+                style='display:flex; align-items:baseline; gap:12px; font-weight:700; color:#fff; margin:0; font-size:clamp(28px,6vw,44px); letter-spacing:-0.02em; line-height:1; text-transform:none; position:relative;'
+            >
+                <span
+                    style='color:#e50914; font-size:1.3em; font-weight:800; text-shadow: 0 2px 18px rgba(229,9,20,0.18);'
+                >
+                    {{error.statusCode}}
+                </span>
+
+                <span style='font-weight:600; color:#9aa3ac; font-size:0.6em; opacity:0.95;'>
+                    {{#if error.title}}{{error.title}}{{else}}Something went wrong{{/if}}
+                </span>
+            </h1>
+
+            <p id='error-desc' class='lead' style='margin:6px 0 0; color:#9aa3ac; max-width:70ch'>
+                {{#if error.message}}{{error.message}}{{else}}We couldn't find what you're looking
+                    for. Try again or browse something you'll love.{{/if}}
+            </p>
+        </header>
+
+        <section
+            aria-label='Error actions'
+            style='display:flex; flex-direction:column; gap:12px; padding:6px'
+        >
+            <div
+                class='control-row'
+                style='display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:6px'
+            >
+                <a
+                    class='btn btn-primary'
+                    href='/'
+                    title='Go home'
+                    style='display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:10px; font-weight:600; text-decoration:none; cursor:pointer; border:1px solid transparent; background: linear-gradient(180deg,#e50914,#b50a12); color:white; box-shadow: 0 6px 18px rgba(229,9,20,0.18);'
+                >Go Home</a>
+
+                <button
+                    id='retryBtn'
+                    type='button'
+                    class='btn btn-outline'
+                    style='display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:10px; font-weight:600; cursor:pointer; border:1px solid rgba(255,255,255,0.06); background:transparent; color:#fff;'
+                >Try Again</button>
+
+                {{#if supportEmail}}
+                    <a
+                        class='btn btn-ghost'
+                        href='mailto:{{error.supportEmail}}?subject=Error%20{{error.statusCode}}'
+                        style='display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:10px; font-weight:600; text-decoration:none; cursor:pointer; border:1px solid transparent; background:transparent; color:#9aa3ac;'
+                    >Contact Support</a>
+                {{/if}}
+            </div>
+        </section>
+    </div>
+    <style>header { background: transparent !important; box-shadow: none !important; }</style>
+
+    <script>
+        (function(){ const retry = document.getElementById('retryBtn'); if (retry) {
+        retry.addEventListener('click', function(){ retry.disabled = true; retry.textContent =
+        'Retrying...'; setTimeout(function(){ location.reload(); }, 450); }); } })();
+    </script>
+</section>
