@@ -5,9 +5,8 @@ export const fetchPopularFilms = (limit, callback) => {
         if (err) return callback(err);
 
         const mapped = films.map((f) => ({
-            id: f.film_id,
+            filmId: f.film_id,
             title: f.title,
-            description: f.description,
             rentalCount: f.rental_count,
             category: f.category,
             coverUrl: f.cover_url,

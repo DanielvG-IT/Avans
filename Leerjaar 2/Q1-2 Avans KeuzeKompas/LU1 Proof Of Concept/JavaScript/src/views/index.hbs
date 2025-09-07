@@ -2,59 +2,150 @@
     <h3>Popular Movies</h3>
     <div id='rowCarousel' class='carousel slide position-relative' data-bs-ride='carousel'>
         <div class='carousel-inner'>
-            <div class='carousel-item'>
-                <div class='d-flex gap-2'>
-                    {{#each model.movies}}
-                        <img
-                            src='https://plus.unsplash.com/premium_photo-1710409625244-e9ed7e98f67b?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG1vdmllfGVufDB8fDB8fHww'
-                            class='d-block'
-                            alt='{{this.title}}'
-                            width='400'
-                            height='200'
-                        />
+            {{#each (chunk model.movies 4)}}
+            <div class='carousel-item {{#if @first}}active{{/if}}'>
+                <div class='d-flex gap-2 pt-2 justify-content-center flex-wrap'>
+                    {{#each this}}
+                    <div class='movie-card'>
+                        <a href='/movies/{{this.filmId}}' style='text-decoration:none; color:inherit;'>
+                            <div class='card h-100 shadow-sm'>
+                                {{#if this.coverUrl}}
+                                <div class='poster'>
+                                    <img src='{{this.coverUrl}}' class='card-img-top' alt='{{this.title}}' />
+                                </div>
+                                {{else}}
+                                <div class='poster placeholder'>
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <rect width="24" height="24" rx="2" fill="#e0e0e0" />
+                                        <path d="M5 16L9 11l3 4 4-6 4 7H5z" fill="#cfcfcf" />
+                                    </svg>
+                                </div>
+                                {{/if}}
+                                <div class='card-body p-2'>
+                                    <h6 class='card-title mb-0' title='{{this.title}}'>
+                                        {{this.title}}
+                                    </h6>
+                                    {{#if this.category}}
+                                    <span class='badge bg-primary mb-2'>{{this.category}}</span>
+                                    {{/if}}
+                                </div>
+                            </div>
+                        </a>
+                    </div>
                     {{/each}}
                 </div>
             </div>
+            {{/each}}
         </div>
-        <button
-            class='carousel-control-prev'
-            type='button'
-            data-bs-target='#rowCarousel'
-            data-bs-slide='prev'
-            aria-label='Previous'
-            style='position:absolute; top:50%; left:12px; transform:translateY(-50%); width:48px; height:48px; border-radius:50%; background:rgba(0,0,0,0.6); border:none; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.35); z-index:2;'
-        >
-            <svg
-                width='20'
-                height='20'
-                viewBox='0 0 24 24'
-                fill='none'
-                aria-hidden='true'
-                focusable='false'
-            >
-                <path d='M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z' fill='#fff' />
-            </svg>
-            <span class='visually-hidden'>Previous</span>
-        </button>
-        <button
-            class='carousel-control-next'
-            type='button'
-            data-bs-target='#rowCarousel'
-            data-bs-slide='next'
-            aria-label='Next'
-            style='position:absolute; top:50%; right:12px; transform:translateY(-50%); width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,0.6);border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.35); z-index:2;'
-        >
-            <svg
-                width='20'
-                height='20'
-                viewBox='0 0 24 24'
-                fill='none'
-                aria-hidden='true'
-                focusable='false'
-            >
-                <path d='M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z' fill='#fff' />
-            </svg>
-            <span class='visually-hidden'>Next</span>
-        </button>
+
+        {{!-- Controls --}}
+        <div class="carousel-controls" aria-hidden="false"
+            style="position:absolute; top:50%; left:0; right:0; transform:translateY(-50%); display:flex; justify-content:space-between; align-items:center; pointer-events:none; padding:0 8px;">
+            <button class="carousel-control-prev btn-control" type="button" data-bs-target="#rowCarousel"
+                data-bs-slide="prev" aria-label="Previous"
+                style="pointer-events:auto; width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#e9ecef; border:1px solid rgba(0,0,0,0.08); box-shadow:0 4px 10px rgba(0,0,0,0.06); transition:background .12s ease;"
+                onmouseenter="this.style.background='#e0e0e0';" onmouseleave="this.style.background='#e9ecef';">
+                <span class="visually-hidden">Previous</span>
+                <svg class="icon icon-arrow-left" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"
+                    focusable="false" style="color:#6c757d;">
+                    <use xlink:href="/images/sprite.svg#icon-arrow-left"></use>
+                </svg>
+            </button>
+            <button class="carousel-control-next btn-control" type="button" data-bs-target="#rowCarousel"
+                data-bs-slide="next" aria-label="Next"
+                style="pointer-events:auto; width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#e9ecef; border:1px solid rgba(0,0,0,0.08); box-shadow:0 4px 10px rgba(0,0,0,0.06); transition:background .12s ease;"
+                onmouseenter="this.style.background='#e0e0e0';" onmouseleave="this.style.background='#e9ecef';">
+                <span class="visually-hidden">Next</span>
+                <svg class="icon icon-arrow-right" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"
+                    focusable="false" style="color:#6c757d;">
+                    <use xlink:href="/images/sprite.svg#icon-arrow-right"></use>
+                </svg>
+            </button>
+        </div>
     </div>
 </div>
+
+<style>
+    .movie-card {
+        flex: 0 0 20%;
+        /* 5 per row default */
+        max-width: 20%;
+        padding: 4px;
+    }
+
+    .movie-card .card {
+        border-radius: 8px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: transform .15s ease;
+    }
+
+    .movie-card .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .poster {
+        width: 100%;
+        aspect-ratio: 2 / 3;
+        overflow: hidden;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+
+    .poster img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .poster.placeholder {
+        background-color: #eee;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .card-title {
+        font-size: 0.9rem;
+        line-height: 1.2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* RESPONSIVE BREAKPOINTS */
+    @media (max-width: 1199.98px) {
+        .movie-card {
+            flex: 0 0 25%;
+            max-width: 25%;
+            /* 4 per row */
+        }
+    }
+
+    @media (max-width: 991.98px) {
+        .movie-card {
+            flex: 0 0 33.333%;
+            max-width: 33.333%;
+            /* 3 per row */
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .movie-card {
+            flex: 0 0 50%;
+            max-width: 50%;
+            /* 2 per row */
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .movie-card {
+            flex: 0 0 100%;
+            max-width: 100%;
+            /* 1 per row */
+        }
+    }
+</style>

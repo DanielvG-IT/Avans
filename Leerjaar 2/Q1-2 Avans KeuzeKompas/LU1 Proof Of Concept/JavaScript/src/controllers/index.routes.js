@@ -9,12 +9,12 @@ const indexRouter = express.Router();
  */
 indexRouter.get('/', (req, res, next) => {
     try {
-        fetchPopularFilms(8, (error, movies) => {
+        fetchPopularFilms(14, (error, result) => {
             if (error) {
                 return next(error);
             }
-            res.json(movies);
-            // res.render('index', { title: 'Homepage', model: { movies } });
+            console.log(result);
+            res.render('index', { title: 'Homepage', model: { movies: result } });
         });
     } catch (err) {
         next(err);
