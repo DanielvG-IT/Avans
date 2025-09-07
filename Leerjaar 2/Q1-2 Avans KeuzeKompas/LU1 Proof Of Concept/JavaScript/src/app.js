@@ -9,8 +9,9 @@ import cookieParser from 'cookie-parser';
 import { create } from 'express-handlebars';
 
 import { logger } from './util/logger.js';
-import indexRouter from './controllers/index.routes.js';
 import authRouter from './controllers/auth.routes.js';
+import indexRouter from './controllers/index.routes.js';
+import moviesRouter from './controllers/movies.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,6 +44,7 @@ app.set('views', path.join(__dirname, 'views')); // absolute path
 
 // Import Routes
 app.use('/', indexRouter);
+app.use('/movies', moviesRouter);
 app.use('/auth', authRouter);
 app.get('/about', (req, res) => res.render('about'));
 

@@ -29,4 +29,45 @@ export const getPopularMovies = (limit, callback) => {
     });
 };
 
-export const getMovies = (filters, callback) => {};
+export const getMovies = (filters, callback) => {
+    let { page, limit, search, sortBy, genre } = filters;
+
+    // Construct the SQL query with filters
+    let sql = `
+        SELECT f.film_id, f.title, f.description, f.release_year, f.language_id, f.original_language, f.rental_duration, f.rental_rate, f.length, f.replacement_cost, f.rating, f.special_features, f.last_update, c.name as category
+        FROM film f
+        JOIN film_category fc ON f.film_id = fc.film_id
+        JOIN category c ON c.category_id = fc.category_id
+        WHERE 1=1
+    `;
+
+    // Add search filter
+    if (search) {
+        sql += ` AND (f.title LIKE ? OR f.description LIKE ?)`;
+    }
+
+    // Add genre filter
+    if (genre && genre.length > 0) {
+        sql += ` AND c.name IN (${genre.map(() => '?').join(',')})`;
+    }
+
+    // Add sorting
+    sql += ` ORDER BY ${Object.keys(sortBy)
+        .map((key) => `f.${key} ${sortBy[key]}`)
+        .join(', ')}`;
+    sql += ` LIMIT ?, ?`;
+
+    // Execute the query
+    query(
+        sql,
+        [...(search ? [`%${search}%`, `%${search}%`] : []), ...(genre || []), page * limit, limit],
+        (err, rows) => {
+            if (typeof callback !== 'function') return;
+            if (err) {
+                logger.error('MySQL Error:', err);
+                return callback(err);
+            }
+            callback(null, rows);
+        }
+    );
+};
