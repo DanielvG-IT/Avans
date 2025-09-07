@@ -18,10 +18,16 @@ const __dirname = path.dirname(__filename);
 var app = express();
 const PORT = process.env.PORT || 3000;
 const hbs = create({
-    partialsDir: path.join(__dirname, 'views/partials'),
-    layoutsDir: path.join(__dirname, 'views/layouts'),
-    defaultLayout: 'main',
-    extname: 'hbs',
+    extname: '.hbs', // or '.handlebars'
+    helpers: {
+        chunk: (arr, size) => {
+            if (!Array.isArray(arr)) return [];
+            size = parseInt(size, 10) || 1;
+            const chunks = [];
+            for (let i = 0; i < arr.length; i += size) chunks.push(arr.slice(i, i + size));
+            return chunks;
+        },
+    },
 });
 
 // Middleware
