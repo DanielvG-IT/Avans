@@ -29,10 +29,22 @@ moviesRouter.get('/', (req, res, next) => {
         }
 
         fetchMovies({ page, limit, search, sortBy, genre }, (err, movies) => {
+            const model = {
+                movies: movies,
+                categories: categories,
+                search: search,
+                genre: genre,
+                sortBy: sortBy,
+            };
+
+            console.log(model);
             if (err) {
                 next(err);
             } else {
-                res.json(movies);
+                res.render('movies', {
+                    title: 'Movies',
+                    model: model,
+                });
             }
         });
     });

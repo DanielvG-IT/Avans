@@ -1,0 +1,274 @@
+<div class="container py-4">
+
+  <!-- Page Title -->
+  <h2 class="mb-4">Movies</h2>
+
+  <!-- Filters / Search / Sorting -->
+  <form method="GET" class="row g-2 mb-3 align-items-center">
+
+    <!-- Search -->
+    <div class="col-12 col-sm-6 col-md-4">
+      <input type="text" name="search" value="{{search}}" class="form-control" placeholder="Search by title...">
+    </div>
+
+    <!-- Category -->
+    <div class="col-6 col-sm-3 col-md-2">
+      <select name="category" class="form-select">
+        <option value="">All Categories</option>
+        {{#each model.categories}}
+        <option value="{{this}}" {{#ifEquals ../category this}}selected{{/ifEquals}}>{{this}}</option>
+        {{/each}}
+      </select>
+    </div>
+
+    <!-- Sort -->
+    <div class="col-6 col-sm-3 col-md-2">
+      <select name="sort" class="form-select">
+        <option value="title" {{#ifEquals sort "title" }}selected{{/ifEquals}}>Title</option>
+        <option value="year" {{#ifEquals sort "year" }}selected{{/ifEquals}}>Year</option>
+        <option value="length" {{#ifEquals sort "length" }}selected{{/ifEquals}}>Length</option>
+        <option value="rate" {{#ifEquals sort "rate" }}selected{{/ifEquals}}>Rental Rate</option>
+      </select>
+    </div>
+
+    <!-- Submit -->
+    <div class="col-12 col-md-auto">
+      <button type="submit" class="btn btn-primary w-100">Apply</button>
+    </div>
+  </form>
+
+  <!-- Movies Grid -->
+  <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3">
+    {{#each model.movies}}
+    <div class="col">
+      <a href="/movies/{{filmId}}" class="movie-card text-decoration-none text-dark">
+        <div class="card h-100 shadow-sm">
+
+          <!-- Poster -->
+          <div class="poster-wrapper">
+            {{#if coverUrl}}
+            <img src="{{coverUrl}}" alt="{{title}}" class="card-img-top poster">
+            {{else}}
+            <div class="poster placeholder d-flex align-items-center justify-content-center">
+              <svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="No image available" viewBox="0 0 64 96"
+                style="width:48%;height:auto;max-height:70%;display:block" preserveAspectRatio="xMidYMid meet">
+                <title>No image available</title>
+                <rect x="2" y="6" width="60" height="84" rx="4" fill="#f0f0f0" stroke="#d1d1d1" />
+                <g fill="#d6d6d6">
+                  <rect x="6" y="12" width="6" height="8" rx="1" />
+                  <rect x="6" y="28" width="6" height="8" rx="1" />
+                  <rect x="6" y="44" width="6" height="8" rx="1" />
+                  <rect x="6" y="60" width="6" height="8" rx="1" />
+                  <rect x="52" y="12" width="6" height="8" rx="1" />
+                  <rect x="52" y="28" width="6" height="8" rx="1" />
+                  <rect x="52" y="44" width="6" height="8" rx="1" />
+                  <rect x="52" y="60" width="6" height="8" rx="1" />
+                </g>
+                <rect x="14" y="16" width="36" height="64" rx="2" fill="#ffffff" />
+                <g transform="translate(14,16)">
+                  <circle cx="28" cy="12" r="6" fill="#ffd166" />
+                  <path d="M4 56 L20 26 L34 46 L50 20 L60 56 Z" fill="#d0d0d0" />
+                </g>
+                <polygon points="28,36 40,44 28,52" fill="#ffffff" opacity="0.9" />
+              </svg>
+            </div>
+            {{/if}}
+          </div>
+
+          <!-- Body -->
+          <div class="card-body p-2">
+            <h6 class="card-title mb-1 text-truncate">{{title}}</h6>
+            <div class="d-flex justify-content-between align-items-center">
+              <div
+                style="display: flex; flex-wrap: wrap; gap:0.25rem; align-items: center; flex: 1 1 auto; min-width: 0;">
+                {{#if category}}
+                <span class="badge category-{{category}} small me-1"
+                  style="max-width: 8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block;">{{category}}</span>
+                {{/if}}
+                <span class="badge bg-danger text-white small me-1 rating{{#if rating}}-{{rating}}{{else}}-PG18{{/if}}"
+                  style="max-width: 6rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block;">
+                  {{#if rating}}{{rating}}{{else}}PG18{{/if}}
+                </span>
+              </div>
+              <div class="d-flex flex-column align-items-end" style="min-width:0;">
+                <small class="text-muted">{{releaseYear}}</small>
+                {{#if rentalRate}}
+                <small class="text-primary fw-semibold">€{{rentalRate}}</small>
+                {{/if}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+    {{/each}}
+  </div>
+
+  <!-- Pagination -->
+  <nav aria-label="Movies pagination" class="mt-4">
+    <ul class="pagination justify-content-center flex-wrap">
+      {{#each (range 1 totalPages)}}
+      <li class="page-item {{#ifEquals ../page this}}active{{/ifEquals}}">
+        <a class="page-link" href="?search={{../search}}&category={{../category}}&sort={{../sort}}&page={{this}}">
+          {{this}}
+        </a>
+      </li>
+      {{/each}}
+    </ul>
+  </nav>
+
+</div>
+<style>
+  /* Default badge style */
+  .badge[class*="rating-"] {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.35em 0.6em;
+    border-radius: 0.375rem;
+    text-transform: uppercase;
+  }
+
+  /* Rating-specific colors */
+  .rating-G {
+    background-color: #28a745 !important;
+    /* green */
+    color: #fff !important;
+  }
+
+  .rating-PG {
+    background-color: #17a2b8 !important;
+    /* teal */
+    color: #fff !important;
+  }
+
+  .rating-PG-13 {
+    background-color: #ffc107 !important;
+    /* yellow */
+    color: #212529 !important;
+  }
+
+  .rating-R {
+    background-color: #dc3545 !important;
+    /* red */
+    color: #fff !important;
+  }
+
+  .rating-NC-17 {
+    background-color: #6f42c1 !important;
+    /* purple */
+    color: #fff !important;
+  }
+
+  /* Fallback if no rating */
+  .rating-PG18 {
+    background-color: #343a40 !important;
+    /* dark gray */
+    color: #fff !important;
+  }
+
+  /* Default category badge */
+  .badge[class*="category-"] {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.35em 0.6em;
+    border-radius: 0.375rem;
+    text-transform: capitalize;
+  }
+
+  /* Category-specific colors */
+  .category-Action {
+    background-color: #e63946 !important;
+    /* bold red */
+    color: #fff !important;
+  }
+
+  .category-Animation {
+    background-color: #ffb703 !important;
+    /* amber */
+    color: #212529 !important;
+  }
+
+  .category-Children {
+    background-color: #06d6a0 !important;
+    /* turquoise */
+    color: #fff !important;
+  }
+
+  .category-Classics {
+    background-color: #6c757d !important;
+    /* gray */
+    color: #fff !important;
+  }
+
+  .category-Comedy {
+    background-color: #ffd166 !important;
+    /* yellow */
+    color: #212529 !important;
+  }
+
+  .category-Documentary {
+    background-color: #118ab2 !important;
+    /* deep blue */
+    color: #fff !important;
+  }
+
+  .category-Drama {
+    background-color: #9d4edd !important;
+    /* violet */
+    color: #fff !important;
+  }
+
+  .category-Family {
+    background-color: #38b000 !important;
+    /* green */
+    color: #fff !important;
+  }
+
+  .category-Foreign {
+    background-color: #1d3557 !important;
+    /* navy */
+    color: #fff !important;
+  }
+
+  .category-Games {
+    background-color: #f72585 !important;
+    /* pink */
+    color: #fff !important;
+  }
+
+  .category-Horror {
+    background-color: #000000 !important;
+    /* black */
+    color: #fff !important;
+  }
+
+  .category-Music {
+    background-color: #ff006e !important;
+    /* neon magenta */
+    color: #fff !important;
+  }
+
+  .category-New {
+    background-color: #20c997 !important;
+    /* teal green */
+    color: #fff !important;
+  }
+
+  .category-Sci-Fi {
+    background-color: #4361ee !important;
+    /* sci-fi blue */
+    color: #fff !important;
+  }
+
+  .category-Sports {
+    background-color: #fb5607 !important;
+    /* orange */
+    color: #fff !important;
+  }
+
+  .category-Travel {
+    background-color: #3a86ff !important;
+    /* sky blue */
+    color: #fff !important;
+  }
+</style>

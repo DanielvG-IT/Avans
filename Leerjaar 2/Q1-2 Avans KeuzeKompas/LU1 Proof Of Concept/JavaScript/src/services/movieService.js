@@ -69,6 +69,7 @@ export const fetchMovieById = (id, callback) => {
             specialFeatures: result.special_features,
             lastUpdate: result.last_update,
             category: result.category,
+            coverUrl: result.cover_url,
         };
 
         callback(null, mapped);

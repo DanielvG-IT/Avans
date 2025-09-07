@@ -12,6 +12,7 @@ import { logger } from './util/logger.js';
 import authRouter from './controllers/auth.routes.js';
 import indexRouter from './controllers/index.routes.js';
 import moviesRouter from './controllers/movies.routes.js';
+import { expressHelpers } from './util/helpers.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,15 +21,7 @@ var app = express();
 const PORT = process.env.PORT || 3000;
 const hbs = create({
     extname: '.hbs', // or '.handlebars'
-    helpers: {
-        chunk: (arr, size) => {
-            if (!Array.isArray(arr)) return [];
-            size = parseInt(size, 10) || 1;
-            const chunks = [];
-            for (let i = 0; i < arr.length; i += size) chunks.push(arr.slice(i, i + size));
-            return chunks;
-        },
-    },
+    helpers: expressHelpers,
 });
 
 // Middleware
