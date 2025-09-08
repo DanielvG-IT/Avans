@@ -1,4 +1,5 @@
-import { getMovieById, getMovies, getPopularMovies } from '../dao/movie.js';
+import { getMovieById, getMovies, getMoviesCount, getPopularMovies } from '../dao/movie.js';
+import { logger } from '../util/logger.js';
 
 export const fetchPopularMovies = (limit, callback) => {
     getPopularMovies(limit, (err, movies) => {
@@ -44,6 +45,16 @@ export const fetchMovies = (filters, callback) => {
         }));
 
         callback(null, mapped);
+    });
+};
+
+export const fetchMovieCount = (callback) => {
+    getMoviesCount((error, count) => {
+        if (error) {
+            logger.error('Movie Count Error:', error);
+            return callback(error);
+        }
+        callback(null, count);
     });
 };
 
