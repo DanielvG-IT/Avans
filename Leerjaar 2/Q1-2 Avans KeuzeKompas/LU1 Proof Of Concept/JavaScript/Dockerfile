@@ -26,9 +26,5 @@ USER expressuser
 # Expose the port your app runs on
 EXPOSE 3000
 
-# Add health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node healthcheck.js
-
 # Start the application
-CMD ["npm", "run start"]
+CMD ["npm", "run", "start"]
