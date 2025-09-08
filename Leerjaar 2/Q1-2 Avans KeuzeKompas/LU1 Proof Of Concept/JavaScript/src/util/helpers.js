@@ -16,4 +16,7 @@ export const expressHelpers = {
         }
         return range;
     },
+    add: (a, b) => {
+        return a + b;
+    },
 };
