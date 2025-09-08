@@ -15,7 +15,7 @@
     <div class="col-6 col-sm-3 col-md-2">
       <select name="category" class="form-select">
         <option value="">All Categories</option>
-        {{#each model.categories}}
+        {{#each categories}}
         <option value="{{this}}" {{#ifEquals ../category this}}selected{{/ifEquals}}>{{this}}</option>
         {{/each}}
       </select>
@@ -24,10 +24,19 @@
     <!-- Sort -->
     <div class="col-6 col-sm-3 col-md-2">
       <select name="sort" class="form-select">
-        <option value="title" {{#ifEquals sort "title" }}selected{{/ifEquals}}>Title</option>
-        <option value="year" {{#ifEquals sort "year" }}selected{{/ifEquals}}>Year</option>
-        <option value="length" {{#ifEquals sort "length" }}selected{{/ifEquals}}>Length</option>
-        <option value="rate" {{#ifEquals sort "rate" }}selected{{/ifEquals}}>Rental Rate</option>
+        <option value="title,asc" {{#ifEquals sort "title,asc" }}selected{{/ifEquals}}>Title A–Z</option>
+        <option value="title,desc" {{#ifEquals sort "title,desc" }}selected{{/ifEquals}}>Title Z–A</option>
+
+        <option value="year,asc" {{#ifEquals sort "year,asc" }}selected{{/ifEquals}}>Release Year (Old → New)</option>
+        <option value="year,desc" {{#ifEquals sort "year,desc" }}selected{{/ifEquals}}>Release Year (New → Old)</option>
+
+        <option value="length,asc" {{#ifEquals sort "length,asc" }}selected{{/ifEquals}}>Length (Shortest → Longest)
+        </option>
+        <option value="length,desc" {{#ifEquals sort "length,desc" }}selected{{/ifEquals}}>Length (Longest → Shortest)
+        </option>
+
+        <option value="rate,asc" {{#ifEquals sort "rate,asc" }}selected{{/ifEquals}}>Rental Rate (Low → High)</option>
+        <option value="rate,desc" {{#ifEquals sort "rate,desc" }}selected{{/ifEquals}}>Rental Rate (High → Low)</option>
       </select>
     </div>
 
@@ -39,7 +48,7 @@
 
   <!-- Movies Grid -->
   <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3">
-    {{#each model.movies}}
+    {{#each movies}}
     <div class="col">
       <a href="/movies/{{filmId}}" class="movie-card text-decoration-none text-dark">
         <div class="card h-100 shadow-sm">
@@ -77,24 +86,29 @@
 
           <!-- Body -->
           <div class="card-body p-2">
-            <h6 class="card-title mb-1 text-truncate">{{title}}</h6>
+            <h6 class="card-title mb-1 text-truncate" title="{{title}}">{{title}}</h6>
             <div class="d-flex justify-content-between align-items-center">
-              <div
-                style="display: flex; flex-wrap: wrap; gap:0.25rem; align-items: center; flex: 1 1 auto; min-width: 0;">
+              <div style="display:flex;flex-wrap:wrap;gap:.25rem;align-items:center;flex:1 1 auto;min-width:0;">
                 {{#if category}}
                 <span class="badge category-{{category}} small me-1"
-                  style="max-width: 8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block;">{{category}}</span>
+                  style="max-width:8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;">{{category}}</span>
                 {{/if}}
-                <span class="badge bg-danger text-white small me-1 rating{{#if rating}}-{{rating}}{{else}}-PG18{{/if}}"
-                  style="max-width: 6rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block;">
+                <span class="badge rating{{#if rating}}-{{rating}}{{else}}-PG18{{/if}} small me-1"
+                  style="max-width:6rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;">
                   {{#if rating}}{{rating}}{{else}}PG18{{/if}}
                 </span>
               </div>
+
               <div class="d-flex flex-column align-items-end" style="min-width:0;">
                 <small class="text-muted">{{releaseYear}}</small>
-                {{#if rentalRate}}
-                <small class="text-primary fw-semibold">€{{rentalRate}}</small>
-                {{/if}}
+                <div class="d-flex gap-2 align-items-center">
+                  {{#if rentalRate}}
+                  <small class="text-primary fw-semibold">€{{rentalRate}}</small>
+                  {{/if}}
+                  {{#if length}}
+                  <small class="text-muted text-nowrap">• {{length}}&nbsp;min</small>
+                  {{/if}}
+                </div>
               </div>
             </div>
           </div>
