@@ -117,14 +117,37 @@
 
   <!-- Pagination -->
   <nav aria-label="Movies pagination" class="mt-4">
-    <ul class="pagination justify-content-center flex-wrap">
+    <ul class="pagination justify-content-center">
+      <li class="page-item {{#ifEquals page 1}}disabled{{/ifEquals}}">
+        {{#ifEquals page 1}}
+        <span class="page-link">Previous</span>
+        {{else}}
+        <a class="page-link"
+          href="?search={{search}}&category={{category}}&sort={{sort}}&page={{subtract page 1}}">Previous</a>
+        {{/ifEquals}}
+      </li>
+
       {{#each (range 1 totalPages)}}
       <li class="page-item {{#ifEquals ../page this}}active{{/ifEquals}}">
-        <a class="page-link" href="?search={{../search}}&category={{../category}}&sort={{../sort}}&page={{this}}">
+        {{#ifEquals ../page this}}
+        <span class="page-link" aria-current="page">
           {{this}}
-        </a>
+          <span class="visually-hidden" aria-current="page">(current)</span>
+        </span>
+        {{else}}
+        <a class="page-link"
+          href="?search={{../search}}&category={{../category}}&sort={{../sort}}&page={{this}}">{{this}}</a>
+        {{/ifEquals}}
       </li>
       {{/each}}
+
+      <li class="page-item {{#ifEquals page totalPages}}disabled{{/ifEquals}}">
+        {{#ifEquals page totalPages}}
+        <span class="page-link">Next</span>
+        {{else}}
+        <a class="page-link" href="?search={{search}}&category={{category}}&sort={{sort}}&page={{add page 1}}">Next</a>
+        {{/ifEquals}}
+      </li>
     </ul>
   </nav>
 
