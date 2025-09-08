@@ -42,6 +42,7 @@ export const fetchMovies = (filters, callback) => {
             specialFeatures: f.special_features,
             lastUpdate: f.last_update,
             category: f.category,
+            coverUrl: f.cover_url,
         }));
 
         callback(null, mapped);
