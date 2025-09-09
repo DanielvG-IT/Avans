@@ -1,11 +1,18 @@
-import { getMovieById, getMovies, getMoviesCount, getPopularMovies } from '../dao/movie.js';
+import {
+    getMovieAvailability,
+    getMovieById,
+    getMovies,
+    getMoviesCount,
+    getPopularMovies,
+} from '../dao/movie.js';
+import { getActorsInMovie } from '../dao/actor.js';
 import { logger } from '../util/logger.js';
 
 export const fetchPopularMovies = (limit, callback) => {
-    getPopularMovies(limit, (err, movies) => {
-        if (err) {
-            logger.error('Movies Error:', err);
-            return callback(err);
+    getPopularMovies(limit, (error, movies) => {
+        if (error) {
+            logger.error('Movies Error:', error);
+            callback(error);
         }
 
         const mapped = movies.map((f) => ({
@@ -21,10 +28,10 @@ export const fetchPopularMovies = (limit, callback) => {
 };
 
 export const fetchMovies = (filters, callback) => {
-    getMovies(filters, (err, movies) => {
-        if (err) {
-            logger.error('Movies Error:', err);
-            return callback(err);
+    getMovies(filters, (error, movies) => {
+        if (error) {
+            logger.error('Movies Error:', error);
+            callback(error);
         }
 
         const mapped = movies.map((f) => ({
@@ -53,37 +60,63 @@ export const fetchMovieCount = (callback) => {
     getMoviesCount((error, count) => {
         if (error) {
             logger.error('Movie Count Error:', error);
-            return callback(error);
+            callback(error);
         }
         callback(null, count);
     });
 };
 
 export const fetchMovieById = (id, callback) => {
-    getMovieById(id, (error, result) => {
+    getMovieById(id, (error, movie) => {
         if (error) {
             logger.error('Movie Error:', error);
-            return callback(error);
+            callback(error);
         }
 
-        const mapped = {
-            filmId: result.film_id,
-            title: result.title,
-            description: result.description,
-            releaseYear: result.release_year,
-            languageId: result.language_id,
-            originalLanguage: result.original_language,
-            rentalDuration: result.rental_duration,
-            rentalRate: result.rental_rate,
-            length: result.length,
-            replacementCost: result.replacement_cost,
-            rating: result.rating,
-            specialFeatures: result.special_features,
-            lastUpdate: result.last_update,
-            category: result.category,
-            coverUrl: result.cover_url,
-        };
+        getActorsInMovie(id, (error, actors) => {
+            if (error) {
+                logger.error('Movie Error:', error);
+                callback(error);
+            }
 
-        callback(null, mapped);
+            const actorArray = actors.map((a) => {
+                return {
+                    firstName: a.first_name,
+                    lastName: a.last_name,
+                };
+            });
+
+            getMovieAvailability(id, (error, stores) => {
+                if (error) {
+                    logger.error('Movie Error:', error);
+                    callback(error);
+                }
+
+                const storeArray = stores.map((s) => {
+                    return { storeName: s.store_name, copies: s.copies };
+                });
+
+                const mapped = {
+                    filmId: movie.film_id,
+                    title: movie.title,
+                    description: movie.description,
+                    releaseYear: movie.release_year,
+                    language: movie.language,
+                    rentalDuration: movie.rental_duration,
+                    rentalRate: movie.rental_rate,
+                    length: movie.length,
+                    replacementCost: movie.replacement_cost,
+                    rating: movie.rating,
+                    specialFeatures: movie.special_features,
+                    lastUpdate: movie.last_update,
+                    category: movie.category,
+                    coverUrl: movie.cover_url,
+                    actors: actorArray,
+                    availability: storeArray,
+                };
+
+                callback(null, mapped);
+            });
+        });
     });
 };

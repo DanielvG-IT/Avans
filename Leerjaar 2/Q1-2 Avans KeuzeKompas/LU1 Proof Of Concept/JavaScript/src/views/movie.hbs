@@ -1,0 +1,111 @@
+<div class="container position-relative pb-0 pb-sm-5 px-4 py-5 z-10">
+  <div class="row gx-5 pt-5">
+    <div class="col-lg-3" style="top: 2rem;">
+      <div class="card shadow border-0 bg-dark text-light">
+        {{#if movie.coverUrl}}
+        <img src="{{movie.coverUrl}}" alt="{{movie.title}} cover image" class="card-img-top img-fluid rounded"
+          style="object-fit: cover; height: 420px; filter: brightness(0.95);">
+        {{else}}
+        <div class="d-flex align-items-center justify-content-center" style="height: 420px; background: #23272b;">
+          <svg width="120" height="180" viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg"
+            aria-label="No cover image available">
+            <rect width="120" height="180" fill="#343a40" rx="12" />
+            <text x="50%" y="50%" text-anchor="middle" fill="#6c757d" font-size="18" font-family="Arial, sans-serif"
+              dy=".3em">
+              No Cover
+            </text>
+          </svg>
+        </div>
+        {{/if}}
+      </div>
+    </div>
+    <div class="col-lg-9 d-flex align-items-start flex-column">
+      <div class="mb-3 w-100 d-flex flex-wrap align-items-center justify-content-between">
+        <div>
+          <h1 class="fw-bold mb-1 text-light">{{movie.title}}</h1>
+          {{#if movie.releaseYear}}<span class="badge bg-secondary me-2">{{movie.releaseYear}}</span>{{/if}}
+          {{#if movie.category}}<span class="badge bg-info text-dark me-2">{{movie.category}}</span>{{/if}}
+          {{#if movie.rating}}<span class="badge bg-warning text-dark">{{movie.rating}}</span>{{/if}}
+        </div>
+        {{#if movie.length}}
+        <span class="badge bg-primary align-self-start ms-lg-3 mt-2 mt-lg-0">
+          <i class="bi bi-clock"></i> {{movie.length}} min
+        </span>
+        {{/if}}
+      </div>
+      {{#if movie.description}}
+      <p class="lead text-light opacity-75 mb-4" style="max-width: 700px;">{{movie.description}}</p>
+      {{/if}}
+      <ul class="list-group list-group-flush mb-4 w-100" style="max-width: 700px;">
+        {{#if movie.language}}
+        <li
+          class="list-group-item bg-dark text-light border-secondary px-0 d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-translate me-2 text-info"></i><strong>Language:</strong></span>
+          <span>{{movie.language}}</span>
+        </li>
+        {{/if}}
+        {{#if movie.rentalDuration}}
+        <li
+          class="list-group-item bg-dark text-light border-secondary px-0 d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-calendar2-week me-2 text-info"></i><strong>Rental Duration:</strong></span>
+          <span>{{movie.rentalDuration}} days</span>
+        </li>
+        {{/if}}
+        {{#if movie.rentalRate}}
+        <li
+          class="list-group-item bg-dark text-light border-secondary px-0 d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-currency-dollar me-2 text-info"></i><strong>Rental Rate:</strong></span>
+          <span>${{movie.rentalRate}}</span>
+        </li>
+        {{/if}}
+        {{#if movie.replacementCost}}
+        <li
+          class="list-group-item bg-dark text-light border-secondary px-0 d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-cash-stack me-2 text-info"></i><strong>Replacement Cost:</strong></span>
+          <span>${{movie.replacementCost}}</span>
+        </li>
+        {{/if}}
+        {{#if movie.specialFeatures}}
+        <li
+          class="list-group-item bg-dark text-light border-secondary px-0 d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-stars me-2 text-info"></i><strong>Special Features:</strong></span>
+          <span>{{movie.specialFeatures}}</span>
+        </li>
+        {{/if}}
+      </ul>
+      {{#if movie.actors}}
+      <div class="mb-4 w-100" style="max-width: 700px;">
+        <h5 class="text-light mb-2"><i class="bi bi-people-fill me-2 text-info"></i>Actors</h5>
+        <ul class="list-inline mb-0">
+          {{#each movie.actors}}
+          <li class="list-inline-item mb-1">
+            <span class="badge bg-secondary text-light px-3 py-2 fs-6">
+              {{this.firstName}} {{this.lastName}}
+            </span>
+          </li>
+          {{/each}}
+        </ul>
+      </div>
+      {{/if}}
+
+      <div class="mb-4 w-100" style="max-width: 700px;">
+        <h5 class="text-light mb-2"><i class="bi bi-shop me-2 text-info"></i>Availability</h5>
+        {{#if movie.availability}}
+        <ul class="list-group">
+          {{#each movie.availability}}
+          <li
+            class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between align-items-center">
+            <span>{{this.storeName}}</span>
+            <span class="badge bg-success">{{this.copies}} copies</span>
+          </li>
+          {{/each}}
+        </ul>
+        {{else}}
+        <div class="alert alert-danger mb-0" role="alert">
+          <i class="bi bi-x-circle-fill me-2"></i>
+          Not available in any of our stores!
+        </div>
+        {{/if}}
+      </div>
+    </div>
+  </div>

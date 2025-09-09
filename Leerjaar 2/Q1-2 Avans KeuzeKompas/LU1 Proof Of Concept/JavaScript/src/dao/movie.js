@@ -95,7 +95,7 @@ export const getMovies = (filters, callback) => {
 
 export const getMoviesCount = (callback) => {
     const sql = `SELECT COUNT(*) as count FROM film`;
-
+    // TODO: When SELECTing it has to take the filters aswell!
     query(sql, [], (err, rows) => {
         if (typeof callback !== 'function') return;
         if (err) {
@@ -107,13 +107,14 @@ export const getMoviesCount = (callback) => {
 };
 
 export const getMovieById = (id, callback) => {
-    const sql = `SELECT f.film_id, f.title, f.description, f.release_year, f.language_id,
+    const sql = `SELECT f.film_id, f.title, f.description, f.release_year, l.name as language,
                    f.rental_duration, f.rental_rate, f.length, f.replacement_cost,
                    f.rating, f.special_features, f.last_update,
                    c.name as category, fc2.cover_url
             FROM film f
             JOIN film_category fc ON f.film_id = fc.film_id
             JOIN category c ON c.category_id = fc.category_id
+            JOIN language l ON l.language_id = f.language_id 
             LEFT JOIN film_cover fc2 ON fc2.film_id = f.film_id
             WHERE f.film_id = ?`;
 
@@ -124,5 +125,29 @@ export const getMovieById = (id, callback) => {
             return callback(err);
         }
         callback(null, rows[0]);
+    });
+};
+
+export const getMovieAvailability = (id, callback) => {
+    const sql = `
+        SELECT 
+            s.store_id,
+            s.name AS store_name,
+            COUNT(i.inventory_id) AS copies
+        FROM store s
+        JOIN inventory i ON i.store_id = s.store_id
+        JOIN film f ON f.film_id = i.film_id
+        WHERE f.film_id = ?
+        GROUP BY s.store_id, s.name
+        ORDER BY s.store_id;
+    `;
+
+    query(sql, [id], (err, rows) => {
+        if (typeof callback !== 'function') return;
+        if (err) {
+            logger.error('MySQL Error:', err);
+            return callback(err);
+        }
+        callback(null, rows);
     });
 };

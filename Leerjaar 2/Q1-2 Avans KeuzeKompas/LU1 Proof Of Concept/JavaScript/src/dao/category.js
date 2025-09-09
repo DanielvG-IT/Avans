@@ -7,6 +7,10 @@ export const getCategories = (callback) => {
         ORDER BY name
     `;
     query(sql, [], (err, rows) => {
+        if (err) {
+            logger.error('MySQL Error:', err);
+            return callback(err);
+        }
         callback(err, rows);
     });
 };
