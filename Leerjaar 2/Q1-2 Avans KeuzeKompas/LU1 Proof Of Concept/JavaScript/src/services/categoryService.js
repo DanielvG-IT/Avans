@@ -2,10 +2,10 @@ import { getCategories } from '../dao/category.js';
 import { logger } from '../util/logger.js';
 
 export const fetchCategories = (callback) => {
-    getCategories((err, categories) => {
-        if (err) {
-            logger.error('Category Error:', err);
-            return callback(err);
+    getCategories((error, categories) => {
+        if (error) {
+            logger.error('Category Error:', error);
+            callback(error);
         }
 
         callback(null, categories);
@@ -13,9 +13,10 @@ export const fetchCategories = (callback) => {
 };
 
 export const fetchCategoryNames = (callback) => {
-    fetchCategories((err, categories) => {
-        if (err) {
-            return callback(err);
+    fetchCategories((error, categories) => {
+        if (error) {
+            logger.error('Category Error:', error);
+            callback(error);
         }
 
         const names = categories.map((c) => c.name);

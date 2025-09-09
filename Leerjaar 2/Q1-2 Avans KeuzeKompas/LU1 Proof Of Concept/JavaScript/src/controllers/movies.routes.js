@@ -1,6 +1,6 @@
 import express from 'express';
 import { logger } from '../util/logger.js';
-import { fetchMovieCount, fetchMovies } from '../services/movieService.js';
+import { fetchMovieById, fetchMovieCount, fetchMovies } from '../services/movieService.js';
 import { fetchCategoryNames } from '../services/categoryService.js';
 
 const moviesRouter = express.Router();
@@ -44,7 +44,7 @@ moviesRouter.get('/', (req, res, next) => {
                 if (err) return next(err);
                 const totalPages = Math.max(Math.ceil(count / limit), 1);
 
-                logger.silly(
+                logger.debug(
                     `Movies page=${page} limit=${limit} search="${search}" category="${category}" sort=${sortField},${sortDir}`
                 );
 
@@ -62,6 +62,22 @@ moviesRouter.get('/', (req, res, next) => {
                 });
             });
         });
+    });
+});
+
+moviesRouter.get('/:id', (req, res, next) => {
+    const { id } = req.params;
+    if (!id) return next(new Error('Invalid movie id'));
+
+    const intId = parseInt(id);
+    if (intId < 0) return next(new Error('Invalid movie id'));
+
+    logger.debug(`Getting information for movie with ID: ${intId}`);
+
+    fetchMovieById(intId, (err, movie) => {
+        if (err) return next(err);
+
+        res.render('movie', { title: movie.title, movie });
     });
 });
 
