@@ -6,12 +6,12 @@ export const getActors = (callback) => {
         SELECT * FROM actor
         ORDER BY name
     `;
-    query(sql, [], (err, rows) => {
-        if (err) {
-            logger.error('MySQL Error:', err);
-            return callback(err);
+    query(sql, [], (error, rows) => {
+        if (error) {
+            logger.error('MySQL Error:', error);
+            return callback(error);
         }
-        callback(err, rows);
+        callback(null, rows);
     });
 };
 
@@ -22,11 +22,11 @@ export const getActorsInMovie = (movieId, callback) => {
         JOIN film f ON f.film_id = fa.film_id
         WHERE f.film_id = ?
     `;
-    query(sql, [movieId], (err, rows) => {
-        if (err) {
-            logger.error('MySQL Error:', err);
-            return callback(err);
+    query(sql, [movieId], (error, rows) => {
+        if (error) {
+            logger.error('MySQL Error:', error);
+            return callback(error);
         }
-        callback(err, rows);
+        callback(null, rows);
     });
 };

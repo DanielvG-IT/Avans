@@ -12,7 +12,7 @@ export const fetchPopularMovies = (limit, callback) => {
     getPopularMovies(limit, (error, movies) => {
         if (error) {
             logger.error('Movies Error:', error);
-            callback(error);
+            return callback(error);
         }
 
         const mapped = movies.map((f) => ({
@@ -31,7 +31,7 @@ export const fetchMovies = (filters, callback) => {
     getMovies(filters, (error, movies) => {
         if (error) {
             logger.error('Movies Error:', error);
-            callback(error);
+            return callback(error);
         }
 
         const mapped = movies.map((f) => ({
@@ -60,7 +60,7 @@ export const fetchMovieCount = (callback) => {
     getMoviesCount((error, count) => {
         if (error) {
             logger.error('Movie Count Error:', error);
-            callback(error);
+            return callback(error);
         }
         callback(null, count);
     });
@@ -70,13 +70,13 @@ export const fetchMovieById = (id, callback) => {
     getMovieById(id, (error, movie) => {
         if (error) {
             logger.error('Movie Error:', error);
-            callback(error);
+            return callback(error);
         }
 
         getActorsInMovie(id, (error, actors) => {
             if (error) {
                 logger.error('Movie Error:', error);
-                callback(error);
+                return callback(error);
             }
 
             const actorArray = actors.map((a) => {
@@ -89,7 +89,7 @@ export const fetchMovieById = (id, callback) => {
             getMovieAvailability(id, (error, stores) => {
                 if (error) {
                     logger.error('Movie Error:', error);
-                    callback(error);
+                    return callback(error);
                 }
 
                 const storeArray = stores.map((s) => {

@@ -6,11 +6,11 @@ export const getCategories = (callback) => {
         SELECT * FROM category
         ORDER BY name
     `;
-    query(sql, [], (err, rows) => {
-        if (err) {
-            logger.error('MySQL Error:', err);
-            return callback(err);
+    query(sql, [], (error, rows) => {
+        if (error) {
+            logger.error('MySQL Error:', error);
+            return callback(error);
         }
-        callback(err, rows);
+        callback(null, rows);
     });
 };
