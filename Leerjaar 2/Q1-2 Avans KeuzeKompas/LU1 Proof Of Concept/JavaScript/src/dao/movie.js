@@ -19,11 +19,11 @@ export const getPopularMovies = (limit, callback) => {
         ORDER BY rc.rental_count DESC;
     `;
 
-    query(sql, [limit], (err, rows) => {
+    query(sql, [limit], (error, rows) => {
         if (typeof callback !== 'function') return;
-        if (err) {
-            logger.error('MySQL Error:', err);
-            return callback(err);
+        if (error) {
+            logger.error('MySQL Error:', error);
+            return callback(error);
         }
         callback(null, rows);
     });
@@ -83,11 +83,11 @@ export const getMovies = (filters, callback) => {
 
     params.push(page * limit, limit);
 
-    query(sql, params, (err, rows) => {
+    query(sql, params, (error, rows) => {
         if (typeof callback !== 'function') return;
-        if (err) {
-            logger.error('MySQL Error:', err);
-            return callback(err);
+        if (error) {
+            logger.error('MySQL Error:', error);
+            return callback(error);
         }
         callback(null, rows);
     });
@@ -96,11 +96,11 @@ export const getMovies = (filters, callback) => {
 export const getMoviesCount = (callback) => {
     const sql = `SELECT COUNT(*) as count FROM film`;
     // TODO: When SELECTing it has to take the filters aswell!
-    query(sql, [], (err, rows) => {
+    query(sql, [], (error, rows) => {
         if (typeof callback !== 'function') return;
-        if (err) {
-            logger.error('MySQL Error:', err);
-            return callback(err);
+        if (error) {
+            logger.error('MySQL Error:', error);
+            return callback(error);
         }
         callback(null, rows[0].count);
     });
@@ -118,11 +118,11 @@ export const getMovieById = (id, callback) => {
             LEFT JOIN film_cover fc2 ON fc2.film_id = f.film_id
             WHERE f.film_id = ?`;
 
-    query(sql, [id], (err, rows) => {
+    query(sql, [id], (error, rows) => {
         if (typeof callback !== 'function') return;
         if (err) {
-            logger.error('MySQL Error:', err);
-            return callback(err);
+            logger.error('MySQL Error:', error);
+            return callback(error);
         }
         callback(null, rows[0]);
     });
@@ -142,11 +142,11 @@ export const getMovieAvailability = (id, callback) => {
         ORDER BY s.store_id;
     `;
 
-    query(sql, [id], (err, rows) => {
+    query(sql, [id], (error, rows) => {
         if (typeof callback !== 'function') return;
-        if (err) {
-            logger.error('MySQL Error:', err);
-            return callback(err);
+        if (error) {
+            logger.error('MySQL Error:', error);
+            return callback(error);
         }
         callback(null, rows);
     });
