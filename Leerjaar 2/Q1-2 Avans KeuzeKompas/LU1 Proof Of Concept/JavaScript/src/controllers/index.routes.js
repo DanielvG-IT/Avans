@@ -1,6 +1,10 @@
 import express from 'express';
 import { logger } from '../util/logger.js';
-import { fetchPopularMovies } from '../services/movieService.js';
+import {
+    fetchCheapestMovies,
+    fetchLongestMovies,
+    fetchPopularMovies,
+} from '../services/movieService.js';
 
 const indexRouter = express.Router();
 
@@ -9,11 +13,23 @@ const indexRouter = express.Router();
  */
 indexRouter.get('/', (req, res, next) => {
     logger.debug('GET / - Fetching popular movies');
-    fetchPopularMovies(12, (error, result) => {
+    fetchPopularMovies(12, (error, popularMovies) => {
         if (error) return next(error);
 
-        logger.debug('Fetched popular movies successfully');
-        res.render('index', { title: 'Homepage', model: { movies: result } });
+        fetchLongestMovies(12, (error, longestMovies) => {
+            if (error) return next(error);
+
+            fetchCheapestMovies(12, (error, cheapestMovies) => {
+                if (error) return next(error);
+
+                res.render('index', {
+                    title: 'Home',
+                    popularMovies,
+                    longestMovies,
+                    cheapestMovies,
+                });
+            });
+        });
     });
 });
 

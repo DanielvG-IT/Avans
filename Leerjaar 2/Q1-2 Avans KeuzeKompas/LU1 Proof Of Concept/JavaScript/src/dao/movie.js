@@ -29,6 +29,48 @@ export const getPopularMovies = (limit, callback) => {
     });
 };
 
+export const getLongestMovies = (limit, callback) => {
+    const sql = `
+        SELECT f.film_id, f.title, f.length, c.name AS category, fc2.cover_url
+        FROM film f
+        JOIN film_category fc ON fc.film_id = f.film_id
+        JOIN category c ON c.category_id = fc.category_id
+        LEFT JOIN film_cover fc2 ON fc2.film_id = f.film_id
+        ORDER BY f.length DESC
+        LIMIT ?;
+    `;
+
+    query(sql, [limit], (error, rows) => {
+        if (typeof callback !== 'function') return;
+        if (error) {
+            logger.error('MySQL Error:', error);
+            return callback(error);
+        }
+        callback(null, rows);
+    });
+};
+
+export const getCheapestMovies = (limit, callback) => {
+    const sql = `
+        SELECT f.film_id, f.title, f.rental_rate, c.name AS category, fc2.cover_url
+        FROM film f
+        JOIN film_category fc ON fc.film_id = f.film_id
+        JOIN category c ON c.category_id = fc.category_id
+        LEFT JOIN film_cover fc2 ON fc2.film_id = f.film_id
+        ORDER BY f.rental_rate ASC
+        LIMIT ?;
+    `;
+
+    query(sql, [limit], (error, rows) => {
+        if (typeof callback !== 'function') return;
+        if (error) {
+            logger.error('MySQL Error:', error);
+            return callback(error);
+        }
+        callback(null, rows);
+    });
+};
+
 export const getMovies = (filters, callback) => {
     let { page = 0, limit = 10, search = '', sortBy = { title: 'asc' }, category } = filters;
 
