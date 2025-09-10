@@ -22,14 +22,14 @@ const redirectUrl = '/auth/profile';
 /**
  * /login - login page
  */
-authRouter.get('/login', optionalCustomerAuthWeb, (req, res, next) => {
+authRouter.get('/login', (req, res, next) => {
     // If user is already authenticated, redirect to dashboard
     if (req.user) {
         return res.redirect(redirectUrl);
     }
     res.render('login', { title: 'Login' });
 });
-authRouter.post('/login', optionalCustomerAuthWeb, (req, res) => {
+authRouter.post('/login', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
@@ -62,13 +62,13 @@ authRouter.post('/login', optionalCustomerAuthWeb, (req, res) => {
 /**
  * /register - register page
  */
-authRouter.get('/register', optionalCustomerAuthWeb, (req, res, next) => {
+authRouter.get('/register', (req, res, next) => {
     if (req.user) {
         return res.redirect(redirectUrl);
     }
     res.render('register', { title: 'Register' });
 });
-authRouter.post('/register', optionalCustomerAuthWeb, (req, res) => {
+authRouter.post('/register', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
