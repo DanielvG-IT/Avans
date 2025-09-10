@@ -120,7 +120,7 @@ export const getMovieById = (id, callback) => {
 
     query(sql, [id], (error, rows) => {
         if (typeof callback !== 'function') return;
-        if (err) {
+        if (error) {
             logger.error('MySQL Error:', error);
             return callback(error);
         }
