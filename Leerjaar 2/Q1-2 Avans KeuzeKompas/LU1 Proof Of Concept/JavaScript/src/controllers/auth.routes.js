@@ -33,17 +33,29 @@ authRouter.post('/login', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
+    logger.debug(`Login attempt for email: ${email}`);
+
     if (!email || !password) {
+        logger.debug('Login failed: Email and password are required.');
         return res.status(400).json({ success: false, error: 'Email and password are required.' });
     }
 
     login(email, password, (error, user) => {
-        if (error) return res.status(400).json({ success: false, error: error.message });
+        if (error) {
+            logger.debug(`Login failed for email ${email}: ${error.message}`);
+            return res.status(400).json({ success: false, error: error.message });
+        }
 
         const accessToken = generateAccessToken(user);
         generateRefreshToken(user, (error, refreshToken) => {
-            if (error) return res.status(400).json({ success: false, error: error.message });
+            if (error) {
+                logger.debug(
+                    `Refresh token generation failed for email ${email}: ${error.message}`
+                );
+                return res.status(400).json({ success: false, error: error.message });
+            }
 
+            logger.debug(`Login successful for email: ${email}`);
             res.cookie('accessToken', accessToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development', // If development then not secure
@@ -71,6 +83,8 @@ authRouter.get('/register', (req, res, next) => {
 authRouter.post('/register', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
+
+    // TODO Collect more user info (for stalking)
 
     if (!email || !password) {
         return res.status(400).json({ success: false, error: 'Email and password are required.' });
@@ -100,7 +114,10 @@ authRouter.delete('/logout', requireCustomerAuthApi, (req, res) => {
     logOut(userId, (error, result) => {
         if (error) return res.status(400).json({ success: false, error: error.message });
 
-        console.log(result);
+        if (result.changedRows !== 1) {
+            logger.warn(`Logout: No rows updated for userId ${userId}`);
+        }
+
         res.clearCookie('accessToken');
         res.clearCookie('refreshToken');
         res.sendStatus(204);

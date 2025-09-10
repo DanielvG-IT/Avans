@@ -6,29 +6,27 @@
                     <h4>User Login</h4>
                 </div>
                 <div class='card-body'>
-                    <form>
+                    <form onsubmit="clientLogin(event)">
                         <!-- Email -->
                         <div class='mb-3'>
                             <label for='email' class='form-label'>Email Address</label>
-                            <input
-                                type='email'
-                                class='form-control'
-                                id='email'
-                                placeholder='janny@example.com'
-                                required
-                            />
+                            <input type='email' class='form-control' id='email' placeholder='janny@example.com'
+                                required />
                         </div>
 
                         <!-- Password -->
                         <div class='mb-3'>
                             <label for='password' class='form-label'>Password</label>
-                            <input
-                                type='password'
-                                class='form-control'
-                                id='password'
-                                placeholder='************'
-                                required
-                            />
+                            <input type='password' class='form-control' id='password' placeholder='************'
+                                required />
+                        </div>
+
+                        <div id="errorMessage" class="alert alert-danger d-none" role="alert">
+                            <p class="mb-0"></p>
+                        </div>
+
+                        <div id="successMessage" class="alert alert-success d-none" role="alert">
+                            <p class="mb-0"></p>
                         </div>
 
                         <!-- Submit Button -->
@@ -39,3 +37,44 @@
         </div>
     </div>
 </div>
+<script>
+    async function clientLogin(event) {
+        event.preventDefault();
+        try {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ email, password })
+            });
+
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+
+            // Hide both messages initially
+            errorMessage.classList.add('d-none');
+            successMessage.classList.add('d-none');
+
+            if (response.ok) {
+                successMessage.querySelector('p').textContent = 'Login successful! Redirecting...';
+                successMessage.classList.remove('d-none');
+                setTimeout(() => {
+                    window.location.replace("/auth/profile");
+                }, 1000);
+            } else {
+                const data = await response.json();
+                errorMessage.querySelector('p').textContent = data.message || 'Login failed. Try again.';
+                errorMessage.classList.remove('d-none');
+            }
+        } catch (err) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.querySelector('p').textContent = 'Network error. Try again.';
+            errorMessage.classList.remove('d-none');
+        }
+    }
+</script>
