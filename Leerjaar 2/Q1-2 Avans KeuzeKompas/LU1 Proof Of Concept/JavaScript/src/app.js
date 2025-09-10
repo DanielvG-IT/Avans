@@ -9,10 +9,13 @@ import cookieParser from 'cookie-parser';
 import { create } from 'express-handlebars';
 
 import { logger } from './util/logger.js';
+import { expressHelpers } from './util/helpers.js';
 import authRouter from './controllers/auth.routes.js';
 import indexRouter from './controllers/index.routes.js';
+import staffRouter from './controllers/staff.routes.js';
 import moviesRouter from './controllers/movies.routes.js';
-import { expressHelpers } from './util/helpers.js';
+import { optionalCustomerAuthWeb } from './middleware/auth.js';
+import customerRouter from './controllers/customer.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,15 +33,25 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Insert user
+app.use(optionalCustomerAuthWeb);
+app.use((req, res, next) => {
+    res.locals.user = req.user;
+    next();
+});
+
 // View engine
 app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views')); // absolute path
 
 // Import Routes
+
 app.use('/', indexRouter);
-app.use('/movies', moviesRouter);
 app.use('/auth', authRouter);
+app.use('/staff', staffRouter);
+app.use('/movies', moviesRouter);
+app.use('/customer', customerRouter);
 app.get('/about', (req, res) => res.render('about'));
 
 // 404 Not Found handler

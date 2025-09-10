@@ -1,8 +1,20 @@
 import express from 'express';
-import { logger } from '../util/logger';
-import { verifyToken } from '../services/authService';
-import { register, login, generateRefreshToken } from '../services/authService';
-import { readUserByRefreshToken, updateUserRefreshTokenByUserId } from '../dao/user';
+import jwt from 'jsonwebtoken';
+import { logger } from '../util/logger.js';
+import { updateUserRefreshTokenByUserId } from '../dao/user.js';
+import {
+    optionalCustomerAuthWeb,
+    requireCustomerAuthApi,
+    requireCustomerAuthWeb,
+} from '../middleware/auth.js';
+import {
+    register,
+    login,
+    generateRefreshToken,
+    generateAccessToken,
+    refreshAccessToken,
+    logOut,
+} from '../services/authService.js';
 
 const authRouter = express.Router();
 const redirectUrl = '/auth/profile';
@@ -10,30 +22,27 @@ const redirectUrl = '/auth/profile';
 /**
  * /login - login page
  */
-authRouter.get('/login', (req, res, next) => {
+authRouter.get('/login', optionalCustomerAuthWeb, (req, res, next) => {
     // If user is already authenticated, redirect to dashboard
     if (req.user) {
         return res.redirect(redirectUrl);
     }
     res.render('login', { title: 'Login' });
 });
-authRouter.post('/login', (req, res, next) => {
+authRouter.post('/login', optionalCustomerAuthWeb, (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
     if (!email || !password) {
-        // TODO Handle Error nicely!
-        return;
+        return res.status(400).json({ success: false, error: 'Email and password are required.' });
     }
 
     login(email, password, (error, user) => {
-        if (error) return next(error);
+        if (error) return res.status(400).json({ success: false, error: error.message });
 
         const accessToken = generateAccessToken(user);
         generateRefreshToken(user, (error, refreshToken) => {
-            if (error) return next(error);
-            console.log(accessToken);
-            console.log(refreshToken);
+            if (error) return res.status(400).json({ success: false, error: error.message });
 
             res.cookie('accessToken', accessToken, {
                 httpOnly: true,
@@ -45,7 +54,7 @@ authRouter.post('/login', (req, res, next) => {
                 secure: process.env.NODE_ENV !== 'development',
                 sameSite: 'strict',
             });
-            res.redirect(redirectUrl);
+            res.status(200).json({ success: true });
         });
     });
 });
@@ -53,48 +62,45 @@ authRouter.post('/login', (req, res, next) => {
 /**
  * /register - register page
  */
-authRouter.get('/register', (req, res, next) => {
+authRouter.get('/register', optionalCustomerAuthWeb, (req, res, next) => {
     if (req.user) {
         return res.redirect(redirectUrl);
     }
     res.render('register', { title: 'Register' });
 });
-authRouter.post('/register', (req, res, next) => {
+authRouter.post('/register', optionalCustomerAuthWeb, (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
     if (!email || !password) {
-        // TODO Handle Error!
-        return;
+        return res.status(400).json({ success: false, error: 'Email and password are required.' });
     }
 
     register(email, password, (error, result) => {
-        if (error) return next(error);
+        if (error) return res.status(400).json({ success: false, error: error.message });
 
-        // TODO Add success feedback to user
-        res.redirect('/auth/login');
+        res.status(201).json({ success: true });
     });
 });
 
 /**
  * /profile - profile page
  */
-authRouter.get('/profile', (req, res, next) => {
+authRouter.get('/profile', requireCustomerAuthWeb, (req, res, next) => {
     res.json({ error: 'Nein' });
 });
 
 /**
  * /logout - logout api endpoint
  */
-authRouter.delete('/logout', (req, res, next) => {
-    const userId = req.user.userId;
+authRouter.delete('/logout', requireCustomerAuthApi, (req, res) => {
+    const userId = req.user?.userId;
     if (!userId) return res.status(401).send({ error: 'User ID not found in request.' });
 
-    updateUserRefreshTokenByUserId(userId, null, (error, result) => {
-        if (error) return res.status(500).send({ error: error });
+    logOut(userId, (error, result) => {
+        if (error) return res.status(400).json({ success: false, error: error.message });
 
         console.log(result);
-
         res.clearCookie('accessToken');
         res.clearCookie('refreshToken');
         res.sendStatus(204);
@@ -104,21 +110,16 @@ authRouter.delete('/logout', (req, res, next) => {
 /**
  * /token - token api endpoint
  */
-authRouter.post('/token', (req, res, next) => {
+authRouter.post('/token', (req, res) => {
     const refreshToken = req.cookies?.refreshToken;
-    if (!refreshToken) return res.status(400).send({ error: 'Refresh token missing' });
+    if (!refreshToken)
+        return res.status(400).send({ success: false, error: 'Refresh token missing' });
 
-    readUserByRefreshToken(refreshToken, (error, user) => {
-        if (error) return res.status(500).send({ error });
-        if (!user) return res.status(401).send({ error: 'Invalid refresh token' });
+    refreshAccessToken(refreshToken, (error, accessToken) => {
+        if (error) return res.status(400).send({ error: error });
 
-        verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (error, jwtInfo) => {
-            if (error) return res.status(400).send({ error: error });
-
-            const accessToken = generateAccessToken(user);
-            res.cookie('accessToken', accessToken, { httpOnly: true, sameSite: 'strict' });
-            res.sendStatus(201);
-        });
+        res.cookie('accessToken', accessToken, { httpOnly: true, sameSite: 'strict' });
+        res.sendStatus(201);
     });
 });
 
