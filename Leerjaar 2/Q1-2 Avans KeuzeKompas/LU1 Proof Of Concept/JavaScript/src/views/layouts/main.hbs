@@ -110,7 +110,26 @@
                     <div class="d-lg-none text-center mt-3">
                         {{#if user}}
                         <!-- Logged-in view -->
-                        <a href="/profile" class="btn btn-outline-light btn-sm rounded-pill px-4">Profile</a>
+                        <div class="dropdown">
+                            <a href="#"
+                                class="d-flex align-items-center text-decoration-none dropdown-toggle btn btn-outline-light btn-sm rounded-pill px-4 w-100 justify-content-center"
+                                id="mobileProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                {{#if user.profileImage}}
+                                <img src="{{user.profileImage}}" alt="Profile" class="profile-img me-2" />
+                                {{else}}
+                                <i class="bi bi-person-circle me-2" style="font-size: 1.5rem;"></i>
+                                {{/if}}
+                                Profile
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end mt-2 w-100"
+                                aria-labelledby="mobileProfileDropdown">
+                                <li><a class="dropdown-item text-center" href="/auth/profile">My Profile</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item text-center" href="/auth/logout">Logout</a></li>
+                            </ul>
+                        </div>
                         {{else}}
                         <!-- Guest view -->
                         <a href="/auth/login" class="btn btn-outline-light btn-sm rounded-pill px-4">Login</a>
@@ -122,13 +141,32 @@
                 <div class="d-none d-lg-flex align-items-center ms-2">
                     {{#if user}}
                     <!-- Logged-in view -->
-                    <a href="/profile" class="btn btn-outline-light btn-sm rounded-pill px-4">Profile</a>
-                    {{else}}
-                    <!-- Guest view -->
-                    <a href="/auth/login" class="btn btn-outline-light btn-sm rounded-pill px-4">Login</a>
-                    <a href="/auth/register" class="btn btn-primary btn-sm rounded-pill px-4 ms-2">Register</a>
-                    {{/if}}
+                    <div class="dropdown">
+                        <a href="#"
+                            class="d-flex align-items-center text-decoration-none dropdown-toggle btn btn-outline-light btn-sm rounded-pill px-4"
+                            id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{#if user.profileImage}}
+                            <img src="{{user.profileImage}}" alt="Profile" class="profile-img me-2" />
+                            {{else}}
+                            <i class="bi bi-person-circle me-2" style="font-size: 1.5rem;"></i>
+                            {{/if}}
+                            Profile
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end mt-2" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="/auth/profile">My Profile</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><button class="dropdown-item" onclick=(clientLogOut())>Logout</button></li>
+                        </ul>
+                    </div>
                 </div>
+                {{else}}
+                <!-- Guest view -->
+                <a href="/auth/login" class="btn btn-outline-light btn-sm rounded-pill px-4">Login</a>
+                <a href="/auth/register" class="btn btn-primary btn-sm rounded-pill px-4 ms-2">Register</a>
+                {{/if}}
+            </div>
             </div>
         </nav>
     </header>
@@ -195,6 +233,27 @@
 
     <!-- Bootstrap JS + Icons -->
     <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js'></script>
+    <script>
+        async function clientLogOut() {
+            try {
+                const response = await fetch('/auth/logout', {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+
+                if (response.status === 204) {
+                    // Success → reload or redirect
+                    window.location.reload();
+                } else {
+                    console.error('Logout failed:', response.status);
+                    alert('Logout failed. Try again.');
+                }
+            } catch (err) {
+                console.error('Network error during logout:', err);
+                alert('Logout failed. Try again.');
+            }
+        }
+    </script>
 </body>
 
 </html>
