@@ -1,50 +1,35 @@
-<html lang='en'>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-    <meta charset='UTF-8' />
-    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{{title}}} - Eject!</title>
 
-    {{! Bootstrap CSS }}
-    <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css' rel='stylesheet'
-        integrity='sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB' crossorigin='anonymous' />
-    <link href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css' rel='stylesheet' />
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
     <style>
-        /* Custom Netflix-like styles */
         body {
             background-color: #141414;
             color: #fff;
+            padding-top: 56px;
         }
 
-        .navbar {
+        .navbar,
+        .dropdown-menu {
             background-color: #141414 !important;
-            padding: 0.5rem 2rem;
-        }
-
-        .navbar-brand img {
-            height: 35px;
         }
 
         .nav-link {
             color: #e5e5e5 !important;
             font-weight: 500;
-            margin: 0 0.5rem;
         }
 
         .nav-link:hover {
             color: #fff !important;
-        }
-
-        .icon-btn {
-            color: #e5e5e5;
-            font-size: 1.2rem;
-            margin-left:
-                1rem;
-            cursor: pointer;
-        }
-
-        .icon-btn:hover {
-            color: #fff;
         }
 
         .profile-img {
@@ -54,202 +39,156 @@
             object-fit: cover;
         }
 
-        .dropdown-menu {
-            background-color:
-                #141414;
-            border: none;
-        }
-
-        .dropdown-menu a {
-            color: #e5e5e5;
-        }
-
-        .dropdown-menu a:hover {
-            background-color: #333;
-            color: #fff;
-        }
-
-        body {
-            padding-top: 56px;
-        }
-
-        footer li:hover {
+        footer a:hover {
             color: #fff;
         }
     </style>
 </head>
 
 <body>
-    <header>
-        <!-- Eject! Navbar -->
-        <nav class='navbar navbar-expand-lg fixed-top shadow-sm'>
-            <div class='container-fluid'>
-                <!-- Logo -->
-                <a class='navbar-brand d-flex align-items-center' href='/'>
-                    <img src='/images/eject!-logo-text.png' width="120" height="32" alt='Eject! Logo' class="me-2" />
-                </a>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg container mx-auto fixed-top shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <img src="/images/eject!-logo-text.png" height="35" alt="Eject! Logo" />
+            </a>
 
-                <!-- Navbar Toggler for mobile -->
-                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                <!-- Nav Links -->
-                <div class='collapse navbar-collapse' id='navbarNav'>
-                    <ul class='navbar-nav ms-lg-3 mb-2 mb-lg-0 w-100'>
-                        <li class='nav-item'>
-                            <a class='nav-link active px-3 text-center' href='/'>Home</a>
-                        </li>
-                        <li class='nav-item'>
-                            <a class='nav-link px-3 text-center' href='/movies'>Movies</a>
-                        </li>
-                    </ul>
-                    <!-- Optional: Add a profile icon or login/register button for mobile -->
-                    <div class="d-lg-none text-center mt-3">
-                        {{#if user}}
-                        <!-- Logged-in view -->
-                        <div class="dropdown">
-                            <a href="#"
-                                class="d-flex align-items-center text-decoration-none dropdown-toggle btn btn-outline-light btn-sm rounded-pill px-4 w-100 justify-content-center"
-                                id="mobileProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                {{#if user.profileImage}}
-                                <img src="{{user.profileImage}}" alt="Profile" class="profile-img me-2" />
-                                {{else}}
-                                <i class="bi bi-person-circle me-2" style="font-size: 1.5rem;"></i>
-                                {{/if}}
-                                Profile
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end mt-2 w-100"
-                                aria-labelledby="mobileProfileDropdown">
-                                <li><a class="dropdown-item text-center" href="/auth/profile">My Profile</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item text-center" href="/auth/logout">Logout</a></li>
-                            </ul>
-                        </div>
-                        {{else}}
-                        <!-- Guest view -->
-                        <a href="/auth/login" class="btn btn-outline-light btn-sm rounded-pill px-4">Login</a>
-                        <a href="/auth/register" class="btn btn-primary btn-sm rounded-pill px-4 ms-2">Register</a>
-                        {{/if}}
-                    </div>
-                </div>
-                <!-- Desktop profile/login/register buttons (hidden on mobile) -->
-                <div class="d-none d-lg-flex align-items-center ms-2">
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/movies">Movies</a>
+                    </li>
+                </ul>
+
+                <!-- Desktop Login/Profile -->
+                <div class="d-none d-lg-flex align-items-center">
                     {{#if user}}
-                    <!-- Logged-in view -->
                     <div class="dropdown">
-                        <a href="#"
-                            class="d-flex align-items-center text-decoration-none dropdown-toggle btn btn-outline-light btn-sm rounded-pill px-4"
-                            id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a href="#" class="btn btn-outline-light btn-sm rounded-pill d-flex align-items-center"
+                            data-bs-toggle="dropdown">
                             {{#if user.profileImage}}
-                            <img src="{{user.profileImage}}" alt="Profile" class="profile-img me-2" />
+                            <img src="{{user.profileImage}}" class="profile-img me-2" alt="Profile" />
                             {{else}}
-                            <i class="bi bi-person-circle me-2" style="font-size: 1.5rem;"></i>
+                            <i class="bi bi-person-circle me-2 fs-5"></i>
                             {{/if}}
                             Profile
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end mt-2" aria-labelledby="profileDropdown">
+                        <ul class="dropdown-menu dropdown-menu-end mt-2">
                             <li><a class="dropdown-item" href="/auth/profile">My Profile</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><button class="dropdown-item" onclick=(clientLogOut())>Logout</button></li>
+                            <li><button class="dropdown-item" onclick="clientLogOut()">Logout</button></li>
                         </ul>
                     </div>
+                    {{else}}
+                    <a href="/auth/login" class="btn btn-outline-light btn-sm rounded-pill me-2">Login</a>
+                    <a href="/auth/register" class="btn btn-primary btn-sm rounded-pill">Register</a>
+                    {{/if}}
                 </div>
-                {{else}}
-                <!-- Guest view -->
-                <a href="/auth/login" class="btn btn-outline-light btn-sm rounded-pill px-4">Login</a>
-                <a href="/auth/register" class="btn btn-primary btn-sm rounded-pill px-4 ms-2">Register</a>
-                {{/if}}
+
+                <!-- Mobile Login/Profile -->
+                <div class="d-lg-none mt-3">
+                    {{#if user}}
+                    <div class="dropdown">
+                        <a href="#"
+                            class="btn btn-outline-light btn-sm w-100 rounded-pill d-flex align-items-center justify-content-center"
+                            data-bs-toggle="dropdown">
+                            {{#if user.profileImage}}
+                            <img src="{{user.profileImage}}" class="profile-img me-2" alt="Profile" />
+                            {{else}}
+                            <i class="bi bi-person-circle me-2 fs-5"></i>
+                            {{/if}}
+                            Profile
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end mt-2 w-100">
+                            <li><a class="dropdown-item text-center" href="/auth/profile">My Profile</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><button class="dropdown-item text-center" onclick="clientLogOut()">Logout</button></li>
+                        </ul>
+                    </div>
+                    {{else}}
+                    <a href="/auth/login" class="btn btn-outline-light btn-sm rounded-pill w-100 mb-2">Login</a>
+                    <a href="/auth/register" class="btn btn-primary btn-sm rounded-pill w-100">Register</a>
+                    {{/if}}
+                </div>
             </div>
-            </div>
-        </nav>
-    </header>
-    <main class='w-100'>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container-fluid px-3">
         {{{body}}}
     </main>
-    <!-- Eject! Footer -->
-    <footer class='bg-black text-secondary pt-5 pb-3 mt-5'>
-        <div class='container'>
-            <!-- Social Icons -->
-            <div class='mb-4'>
-                <a href='#' class='me-3 text-secondary'><i class='bi bi-facebook'></i></a>
-                <a href='#' class='me-3 text-secondary'><i class='bi bi-instagram'></i></a>
-                <a href='#' class='me-3 text-secondary'><i class='bi bi-twitter-x'></i></a>
-                <a href='#' class='text-secondary'><i class='bi bi-youtube'></i></a>
+
+    <!-- Footer -->
+    <footer class="bg-black text-secondary pt-5 pb-3 mt-5">
+        <div class="container">
+            <div class="mb-4">
+                <a href="#" class="me-3 text-secondary"><i class="bi bi-facebook"></i></a>
+                <a href="#" class="me-3 text-secondary"><i class="bi bi-instagram"></i></a>
+                <a href="#" class="me-3 text-secondary"><i class="bi bi-twitter-x"></i></a>
+                <a href="#" class="text-secondary"><i class="bi bi-youtube"></i></a>
             </div>
 
-            <!-- Links in 4 columns -->
-            <div class='row'>
-                <div class='col-6 col-md-3'>
-                    <ul class='list-unstyled'>
-                        <li><a href='#' class='text-secondary text-decoration-none'>Audio &
-                                Subtitles</a></li>
-                        <li><a href='#' class='text-secondary text-decoration-none'>Media Center</a></li>
-                        <li><a href='#' class='text-secondary text-decoration-none'>Privacy</a></li>
-                        <li><a href='#' class='text-secondary text-decoration-none'>Contact Us</a></li>
+            <div class="row row-cols-2 row-cols-md-4 g-3">
+                <div class="col">
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-secondary text-decoration-none">Audio & Subtitles</a></li>
+                        <li><a href="#" class="text-secondary text-decoration-none">Media Center</a></li>
+                        <li><a href="#" class="text-secondary text-decoration-none">Privacy</a></li>
+                        <li><a href="#" class="text-secondary text-decoration-none">Contact Us</a></li>
                     </ul>
                 </div>
-                <div class='col-6 col-md-3'>
-                    <ul class='list-unstyled'>
-                        <li><a href='#' class='text-secondary text-decoration-none'>Help Center</a></li>
-                        <li><a href='#' class='text-secondary text-decoration-none'>Jobs</a></li>
-                        <li><a href='#' class='text-secondary text-decoration-none'>Cookie
-                                Preferences</a></li>
+                <div class="col">
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-secondary text-decoration-none">Help Center</a></li>
+                        <li><a href="#" class="text-secondary text-decoration-none">Jobs</a></li>
+                        <li><a href="#" class="text-secondary text-decoration-none">Cookie Preferences</a></li>
                     </ul>
                 </div>
-                <div class='col-6 col-md-3'>
-                    <ul class='list-unstyled'>
-                        <li><a href='#' class='text-secondary text-decoration-none'>Gift Cards</a></li>
-                        <li><a href='#' class='text-secondary text-decoration-none'>Terms of Use</a></li>
-                        <li><a href='#' class='text-secondary text-decoration-none'>Corporate
-                                Info</a></li>
+                <div class="col">
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-secondary text-decoration-none">Gift Cards</a></li>
+                        <li><a href="#" class="text-secondary text-decoration-none">Terms of Use</a></li>
+                        <li><a href="#" class="text-secondary text-decoration-none">Corporate Info</a></li>
                     </ul>
                 </div>
-                <div class='col-6 col-md-3'>
-                    <ul class='list-unstyled'>
-                        <li><a href='#' class='text-secondary text-decoration-none'>Investor
-                                Relations</a></li>
-                        <li><a href='#' class='text-secondary text-decoration-none'>Legal
-                                Notices</a></li>
+                <div class="col">
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-secondary text-decoration-none">Investor Relations</a></li>
+                        <li><a href="#" class="text-secondary text-decoration-none">Legal Notices</a></li>
                     </ul>
                 </div>
             </div>
 
-            <!-- Service Code -->
-            <div class='my-4'>
-                <button class='btn btn-outline-secondary btn-sm'>Service Code</button>
+            <div class="my-4">
+                <button class="btn btn-outline-secondary btn-sm">Service Code</button>
             </div>
 
-            <!-- Copyright -->
-            <p class='small text-secondary'>© 2025 Eject!, All Rights Reserved</p>
+            <p class="small text-secondary">© 2025 Eject!, All Rights Reserved</p>
         </div>
     </footer>
 
-    <!-- Bootstrap JS + Icons -->
-    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js'></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         async function clientLogOut() {
             try {
-                const response = await fetch('/auth/logout', {
-                    method: 'DELETE',
-                    credentials: 'include'
-                });
-
-                if (response.status === 204) {
-                    // Success → reload or redirect
-                    window.location.reload();
-                } else {
-                    console.error('Logout failed:', response.status);
-                    alert('Logout failed. Try again.');
-                }
+                const response = await fetch('/auth/logout', { method: 'DELETE', credentials: 'include' });
+                if (response.status === 204) window.location.reload();
+                else alert('Logout failed. Try again.');
             } catch (err) {
-                console.error('Network error during logout:', err);
                 alert('Logout failed. Try again.');
             }
         }
