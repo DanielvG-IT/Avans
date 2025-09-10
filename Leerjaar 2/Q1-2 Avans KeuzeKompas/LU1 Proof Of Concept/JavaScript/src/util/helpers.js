@@ -1,3 +1,5 @@
+import { json } from 'stream/consumers';
+
 export const expressHelpers = {
     chunk: (arr, size) => {
         if (!Array.isArray(arr)) return [];
@@ -18,5 +20,8 @@ export const expressHelpers = {
     },
     add: (a, b) => {
         return a + b;
+    },
+    json: (value) => {
+        return JSON.stringify(value);
     },
 };

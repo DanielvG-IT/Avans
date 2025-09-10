@@ -9,7 +9,7 @@ const indexRouter = express.Router();
  */
 indexRouter.get('/', (req, res, next) => {
     logger.debug('GET / - Fetching popular movies');
-    fetchPopularMovies(14, (error, result) => {
+    fetchPopularMovies(12, (error, result) => {
         if (error) return next(error);
 
         logger.debug('Fetched popular movies successfully');

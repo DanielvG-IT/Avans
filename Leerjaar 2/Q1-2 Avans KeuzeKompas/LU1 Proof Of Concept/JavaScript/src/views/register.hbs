@@ -1,86 +1,97 @@
-<div class='container mt-5'>
-    <div class='row justify-content-center'>
-        <div class='col-md-6'>
-            <div class='card shadow-sm'>
-                <div class='card-header text-center bg-primary text-white'>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header text-center bg-primary text-white">
                     <h4>User Registration</h4>
                 </div>
-                <div class='card-body'>
-                    <form>
-                        <!-- Name -->
-                        <div class='mb-3'>
-                            <div class='row gx-2'>
-                                <div class='col-md-6'>
-                                    <label for='first-name' class='form-label'>First Name</label>
-                                    <input
-                                        type='text'
-                                        class='form-control'
-                                        id='first-name'
-                                        placeholder='Janny'
-                                        required
-                                    />
-                                </div>
-                                <div class='col-md-6'>
-                                    <label for='last-name' class='form-label'>Last Name</label>
-                                    <input
-                                        type='text'
-                                        class='form-control'
-                                        id='last-name'
-                                        placeholder='Doe'
-                                        required
-                                    />
-                                </div>
+                <div class="card-body">
+                    <form id="registerForm" onsubmit="clientRegister(event)">
+
+                        <!-- Name Fields -->
+                        <div class="row gx-2 mb-3">
+                            <div class="col-md-6">
+                                <label for="first-name" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="first-name" placeholder="Janny" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="last-name" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="last-name" placeholder="Doe" required>
                             </div>
                         </div>
 
                         <!-- Email -->
-                        <div class='mb-3'>
-                            <label for='email' class='form-label'>Email Address</label>
-                            <input
-                                type='email'
-                                class='form-control'
-                                id='email'
-                                placeholder='janny@example.com'
-                                required
-                            />
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" placeholder="janny@example.com"
+                                required>
                         </div>
 
                         <!-- Password -->
-                        <div class='mb-3'>
-                            <label for='password' class='form-label'>Password</label>
-                            <input
-                                type='password'
-                                class='form-control'
-                                id='password'
-                                placeholder='************'
-                                required
-                            />
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" placeholder="************"
+                                required>
                         </div>
 
                         <!-- Confirm Password -->
-                        <div class='mb-3'>
-                            <label for='confirm-password' class='form-label'>Confirm Password</label>
-                            <input
-                                type='password'
-                                class='form-control'
-                                id='confirm-password'
-                                placeholder='************'
-                                required
-                            />
+                        <div class="mb-3">
+                            <label for="confirm-password" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirm-password" placeholder="************"
+                                required>
                         </div>
 
-                        <!-- Terms and Conditions -->
-                        <div class='mb-3 form-check'>
-                            <input type='checkbox' class='form-check-input' id='terms' required />
-                            <label for='terms' class='form-check-label'>I agree to the Terms of
-                                Service</label>
+                        <!-- Terms -->
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="terms" required>
+                            <label for="terms" class="form-check-label">I agree to the Terms of Service</label>
                         </div>
 
-                        <!-- Submit Button -->
-                        <button type='submit' class='btn btn-primary w-100'>Register</button>
+                        <!-- Error & Success Alerts -->
+                        <div id="errorMessage" class="alert alert-danger d-none" role="alert"></div>
+                        <div id="successMessage" class="alert alert-success d-none" role="alert"></div>
+
+                        <!-- Submit -->
+                        <button type="submit" class="btn btn-primary w-100">Register</button>
+
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    function clientRegister(event) {
+        event.preventDefault();
+
+        const firstName = document.getElementById('first-name').value.trim();
+        const lastName = document.getElementById('last-name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        const terms = document.getElementById('terms').checked;
+
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+
+        errorMessage.classList.add('d-none');
+        successMessage.classList.add('d-none');
+
+        if (!terms) {
+            errorMessage.textContent = 'You must agree to the Terms of Service.';
+            errorMessage.classList.remove('d-none');
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            errorMessage.textContent = 'Passwords do not match.';
+            errorMessage.classList.remove('d-none');
+            return;
+        }
+
+        // Here you can add fetch() to /auth/register with POST, similar to login
+        successMessage.textContent = 'Registration successful! You can now login.';
+        successMessage.classList.remove('d-none');
+    }
+</script>
