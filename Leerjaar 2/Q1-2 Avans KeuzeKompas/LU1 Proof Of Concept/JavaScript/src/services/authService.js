@@ -1,4 +1,4 @@
-import { updateUserRefreshTokenByUserId } from '../dao/user.js';
+import { readUserByRefreshToken, updateUserRefreshTokenByUserId } from '../dao/user.js';
 import { createUser, readUserByEmail } from '../dao/user.js';
 import { compareSync, hashSync } from 'bcrypt';
 import { logger } from '../util/logger.js';
