@@ -1,6 +1,10 @@
 import jwt from 'jsonwebtoken';
 import { refreshAccessToken } from '../services/authService.js';
 
+/**
+ * Extracts access token from request cookies (if available).
+ * Returns `null` if not found.
+ */
 const extractAccessToken = (req) => {
     if (req.cookies && req.cookies.accessToken) {
         return req.cookies.accessToken;
@@ -8,6 +12,10 @@ const extractAccessToken = (req) => {
     return null;
 };
 
+/**
+ * Extracts refresh token from request cookies (if available).
+ * Returns `null` if not found.
+ */
 const extractRefreshToken = (req) => {
     if (req.cookies && req.cookies.refreshToken) {
         return req.cookies.refreshToken;
@@ -15,50 +23,63 @@ const extractRefreshToken = (req) => {
     return null;
 };
 
+/**
+ * Wrapper for jwt.verify to check access token validity.
+ * Calls the provided callback with `(error, decodedUser)`.
+ */
 const verifyAccessToken = (token, callback) => {
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, callback);
 };
 
 /**
- * Optionaly verify customer auth for web routes
- * - Sets user to null when not logged in
- * - Automatically refreshes access token if expired and refresh token is valid
+ * Middleware: Optionally attach authenticated customer info for web routes.
+ *
+ * Behavior:
+ * - If no access token → `req.user = null` (continue anonymously).
+ * - If access token is valid → attach decoded user to `req.user`.
+ * - If access token is expired but refresh token is valid → issue new access token,
+ *   set it in cookies, and attach decoded user to `req.user`.
+ * - If all checks fail → `req.user = null`.
+ *
+ * Note:
+ * - Never blocks the request. Caller must handle `req.user === null`.
  */
 export const optionalCustomerAuthWeb = (req, res, next) => {
     const accessToken = extractAccessToken(req);
     const refreshToken = extractRefreshToken(req);
 
-    // Access token invalid or expired
+    // No access token → treat as unauthenticated, but allow access
     if (!accessToken) {
         req.user = null;
         return next();
     }
 
+    // Validate current access token
     verifyAccessToken(accessToken, (error, user) => {
-        // If everything is valid
         if (!error) {
+            // Access token valid → attach user
             req.user = user;
             return next();
         }
 
-        // Refresh token invalid or expired
+        // Access token invalid/expired and no refresh token → unauthenticated
         if (!refreshToken) {
             req.user = null;
             return next();
         }
 
-        // Access Token expired, Refresh token vaild = Get new accessToken
+        // Try refreshing access token using refresh token
         refreshAccessToken(refreshToken, (error, newAccessToken) => {
-            // If refresh went wrong
             if (error || !newAccessToken) {
+                // Refresh failed → unauthenticated
                 req.user = null;
                 return next();
             }
 
-            // Save new token in cookies
+            // Store new access token in cookie (secure + strict)
             res.cookie('accessToken', newAccessToken, { httpOnly: true, sameSite: 'strict' });
 
-            // Verify the new access token to attach user info
+            // Verify the new token before trusting it
             verifyAccessToken(newAccessToken, (verifyErr, newUser) => {
                 req.user = verifyErr ? null : newUser;
                 return next();
@@ -68,20 +89,24 @@ export const optionalCustomerAuthWeb = (req, res, next) => {
 };
 
 /**
- * Require valid customer auth for web routes
- * - Redirects to /auth/login on failure
- * - Automatically refreshes access token if expired and refresh token is valid
+ * Middleware: Require valid customer authentication for web routes.
+ *
+ * Behavior:
+ * - If no/invalid access token → redirect to login page.
+ * - If access token is expired but refresh token is valid → issue new token,
+ *   set cookie, and attach user.
+ * - Otherwise → force login.
+ *
+ * TODO:
+ * - Add check to ensure user role = customer.
  */
 export const requireCustomerAuthWeb = (req, res, next) => {
     const accessToken = extractAccessToken(req);
     const refreshToken = extractRefreshToken(req);
 
-    // No access token at all → force login
     if (!accessToken) {
         return res.redirect('/auth/login');
     }
-
-    // TODO: Check if user is customer after verifying token
 
     verifyAccessToken(accessToken, (error, user) => {
         if (!error) {
@@ -89,7 +114,6 @@ export const requireCustomerAuthWeb = (req, res, next) => {
             return next();
         }
 
-        // Access token expired → check refresh
         if (!refreshToken) {
             return res.redirect('/auth/login');
         }
@@ -99,7 +123,6 @@ export const requireCustomerAuthWeb = (req, res, next) => {
                 return res.redirect('/auth/login');
             }
 
-            // Save new token
             res.cookie('accessToken', newAccessToken, { httpOnly: true, sameSite: 'strict' });
 
             verifyAccessToken(newAccessToken, (verifyErr, newUser) => {
@@ -114,20 +137,20 @@ export const requireCustomerAuthWeb = (req, res, next) => {
 };
 
 /**
- * Require valid staff auth for web routes
- * - Redirects to /auth/login on failure
- * - Automatically refreshes access token if expired and refresh token is valid
+ * Middleware: Require valid staff authentication for web routes.
+ *
+ * Same logic as `requireCustomerAuthWeb`, but intended for staff accounts.
+ *
+ * TODO:
+ * - Add role/permissions check to enforce staff-only access.
  */
 export const requireStaffAuthWeb = (req, res, next) => {
     const accessToken = extractAccessToken(req);
     const refreshToken = extractRefreshToken(req);
 
-    // No access token → login required
     if (!accessToken) {
         return res.redirect('/auth/login');
     }
-
-    // TODO: Check if user is staff after verifying token
 
     verifyAccessToken(accessToken, (error, user) => {
         if (!error) {
@@ -158,10 +181,16 @@ export const requireStaffAuthWeb = (req, res, next) => {
 };
 
 /**
- * Require valid customer auth for API routes
- * - Returns 400 if no token
- * - Returns 401 if token invalid/expired and refresh also fails
- * - Automatically refreshes access token if expired and refresh token is valid
+ * Middleware: Require valid customer authentication for API routes.
+ *
+ * Behavior:
+ * - If no access token → respond with 400 (bad request).
+ * - If access token is valid → attach user.
+ * - If access token expired but refresh is valid → issue new token and attach user.
+ * - If all checks fail → respond with 401 (unauthorized).
+ *
+ * TODO:
+ * - Add customer role check.
  */
 export const requireCustomerAuthApi = (req, res, next) => {
     const accessToken = extractAccessToken(req);
@@ -170,8 +199,6 @@ export const requireCustomerAuthApi = (req, res, next) => {
     if (!accessToken) {
         return res.status(400).send({ error: 'Authorization token is missing' });
     }
-
-    // TODO: Check if user is customer after verifying token
 
     verifyAccessToken(accessToken, (error, user) => {
         if (!error) {
@@ -202,10 +229,12 @@ export const requireCustomerAuthApi = (req, res, next) => {
 };
 
 /**
- * Require valid staff auth for API routes
- * - Returns 400 if no token
- * - Returns 401 if token invalid/expired and refresh also fails
- * - Automatically refreshes access token if expired and refresh token is valid
+ * Middleware: Require valid staff authentication for API routes.
+ *
+ * Same as `requireCustomerAuthApi`, but intended for staff accounts.
+ *
+ * TODO:
+ * - Enforce staff role check.
  */
 export const requireStaffAuthApi = (req, res, next) => {
     const accessToken = extractAccessToken(req);
@@ -214,8 +243,6 @@ export const requireStaffAuthApi = (req, res, next) => {
     if (!accessToken) {
         return res.status(400).send({ error: 'Authorization token is missing' });
     }
-
-    // TODO: Check if user is staff after verifying token
 
     verifyAccessToken(accessToken, (error, user) => {
         if (!error) {
