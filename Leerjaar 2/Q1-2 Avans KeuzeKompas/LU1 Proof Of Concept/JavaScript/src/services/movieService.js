@@ -1,12 +1,14 @@
+import { getActorsInMovie } from '../dao/actor.js';
+import { logger } from '../util/logger.js';
 import {
     getMovieAvailability,
     getMovieById,
     getMovies,
     getMoviesCount,
     getPopularMovies,
+    getCheapestMovies,
+    getLongestMovies,
 } from '../dao/movie.js';
-import { getActorsInMovie } from '../dao/actor.js';
-import { logger } from '../util/logger.js';
 
 export const fetchPopularMovies = (limit, callback) => {
     getPopularMovies(limit, (error, movies) => {
@@ -19,6 +21,43 @@ export const fetchPopularMovies = (limit, callback) => {
             filmId: f.film_id,
             title: f.title,
             rentalCount: f.rental_count,
+            category: f.category,
+            coverUrl: f.cover_url,
+        }));
+
+        callback(null, mapped);
+    });
+};
+export const fetchLongestMovies = (limit, callback) => {
+    getLongestMovies(limit, (error, movies) => {
+        if (error) {
+            logger.error('Movies Error:', error);
+            return callback(error);
+        }
+
+        const mapped = movies.map((f) => ({
+            filmId: f.film_id,
+            title: f.title,
+            length: f.length,
+            category: f.category,
+            coverUrl: f.cover_url,
+        }));
+
+        callback(null, mapped);
+    });
+};
+
+export const fetchCheapestMovies = (limit, callback) => {
+    getCheapestMovies(limit, (error, movies) => {
+        if (error) {
+            logger.error('Movies Error:', error);
+            return callback(error);
+        }
+
+        const mapped = movies.map((f) => ({
+            filmId: f.film_id,
+            title: f.title,
+            rentalRate: f.rental_rate,
             category: f.category,
             coverUrl: f.cover_url,
         }));

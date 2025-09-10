@@ -1,25 +1,17 @@
-<div class='container mt-4'>
+<div class="container mt-4">
     <h3>Popular Movies</h3>
-
-    <!-- Carousel -->
-    <div id='movieCarousel' class='carousel slide position-relative' data-bs-interval='false'
-        aria-label="Popular movies carousel">
-        <div class='carousel-inner' id='carouselInner' aria-live="polite"></div>
-
+    <div id="popularCarousel" class="carousel slide position-relative" data-bs-interval="false">
+        <div class="carousel-inner" id="popularInner"></div>
         <!-- Controls -->
-        <button class="carousel-control-prev btn-control" type="button" data-bs-target="#movieCarousel"
-            data-bs-slide="prev" aria-label="Previous"
-            style="pointer-events:auto; width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#e9ecef; border:1px solid rgba(0,0,0,0.08); box-shadow:0 4px 10px rgba(0,0,0,0.06); transition:background .12s ease;"
-            onmouseenter="this.style.background='#e0e0e0';" onmouseleave="this.style.background='#e9ecef';">
+        <button class="carousel-control-prev btn-control" type="button" data-bs-target="#popularCarousel"
+            data-bs-slide="prev" aria-label="Previous">
             <span class="visually-hidden">Previous</span>
             <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="color:#6c757d;">
                 <use xlink:href="/images/sprite.svg#icon-arrow-left"></use>
             </svg>
         </button>
-        <button class="carousel-control-next btn-control" type="button" data-bs-target="#movieCarousel"
-            data-bs-slide="next" aria-label="Next"
-            style="pointer-events:auto; width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#e9ecef; border:1px solid rgba(0,0,0,0.08); box-shadow:0 4px 10px rgba(0,0,0,0.06); transition:background .12s ease;"
-            onmouseenter="this.style.background='#e0e0e0';" onmouseleave="this.style.background='#e9ecef';">
+        <button class="carousel-control-next btn-control" type="button" data-bs-target="#popularCarousel"
+            data-bs-slide="next" aria-label="Next">
             <span class="visually-hidden">Next</span>
             <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="color:#6c757d;">
                 <use xlink:href="/images/sprite.svg#icon-arrow-right"></use>
@@ -28,21 +20,69 @@
     </div>
 </div>
 
-<script id="moviesJson" type="application/json">
-{{{json model.movies}}}
+<div class="container mt-4">
+    <h3>Longest Movies</h3>
+    <div id="longestCarousel" class="carousel slide position-relative" data-bs-interval="false">
+        <div class="carousel-inner" id="longestInner"></div>
+        <!-- Controls -->
+        <button class="carousel-control-prev btn-control" type="button" data-bs-target="#longestCarousel"
+            data-bs-slide="prev" aria-label="Previous">
+            <span class="visually-hidden">Previous</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="color:#6c757d;">
+                <use xlink:href="/images/sprite.svg#icon-arrow-left"></use>
+            </svg>
+        </button>
+        <button class="carousel-control-next btn-control" type="button" data-bs-target="#longestCarousel"
+            data-bs-slide="next" aria-label="Next">
+            <span class="visually-hidden">Next</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="color:#6c757d;">
+                <use xlink:href="/images/sprite.svg#icon-arrow-right"></use>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <h3>Cheapest Movies</h3>
+    <div id="cheapestCarousel" class="carousel slide position-relative" data-bs-interval="false">
+        <div class="carousel-inner" id="cheapestInner"></div>
+        <!-- Controls -->
+        <button class="carousel-control-prev btn-control" type="button" data-bs-target="#cheapestCarousel"
+            data-bs-slide="prev" aria-label="Previous">
+            <span class="visually-hidden">Previous</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="color:#6c757d;">
+                <use xlink:href="/images/sprite.svg#icon-arrow-left"></use>
+            </svg>
+        </button>
+        <button class="carousel-control-next btn-control" type="button" data-bs-target="#cheapestCarousel"
+            data-bs-slide="next" aria-label="Next">
+            <span class="visually-hidden">Next</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="color:#6c757d;">
+                <use xlink:href="/images/sprite.svg#icon-arrow-right"></use>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<!-- JSON Data -->
+<script id="popularMoviesJson" type="application/json">
+  {{{json popularMovies}}}
+</script>
+<script id="longestMoviesJson" type="application/json">
+  {{{json longestMovies}}}
+</script>
+<script id="cheapestMoviesJson" type="application/json">
+  {{{json cheapestMovies}}}
 </script>
 
 <script>
     (function () {
-        const movies = JSON.parse(document.getElementById('moviesJson').textContent || '[]');
-        const carouselInner = document.getElementById('carouselInner');
-
         function itemsPerSlide() {
             const w = window.innerWidth;
-            if (w < 576) return 2;          // mobile
-            if (w < 768) return 3;          // sm tablets
-            if (w < 1400) return 4;         // md + lg
-            return 6;                       // xl+
+            if (w < 576) return 2;
+            if (w < 768) return 3;
+            if (w < 1400) return 4;
+            return 6;
         }
 
         function buildSlide(items, isActive) {
@@ -54,52 +94,58 @@
                 const card = document.createElement('div');
                 card.className = 'movie-card';
                 card.innerHTML = `
-                <a href="/movies/${m.filmId}" class="movie-link" aria-label="${m.title}">
-                    <div class="card h-100 shadow-sm">
-                        ${m.coverUrl ? `
-                        <div class="poster">
-                            <img src="${m.coverUrl}" class="card-img-top" alt="${m.title}">
-                        </div>` : `
-                        <div class="poster placeholder" aria-hidden="true">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                                <rect width="24" height="24" rx="2" fill="#e0e0e0"></rect>
-                                <path d="M5 16L9 11l3 4 4-6 4 7H5z" fill="#cfcfcf"></path>
-                            </svg>
-                        </div>`}
-                        <div class="card-body p-2">
-                            <h6 class="card-title mb-0" title="${m.title}">${m.title}</h6>
-                            ${m.category ? `<span class="badge bg-primary mb-2">${m.category}</span>` : ''}
-                        </div>
-                    </div>
-                </a>
-            `;
+        <a href="/movies/${m.filmId}" class="movie-link" aria-label="${m.title}">
+          <div class="card h-100 shadow-sm">
+            ${m.coverUrl ? `
+              <div class="poster">
+                <img src="${m.coverUrl}" class="card-img-top" alt="${m.title}">
+              </div>` : `
+              <div class="poster placeholder" aria-hidden="true">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                  <rect width="24" height="24" rx="2" fill="#e0e0e0"></rect>
+                  <path d="M5 16L9 11l3 4 4-6 4 7H5z" fill="#cfcfcf"></path>
+                </svg>
+              </div>`}
+            <div class="card-body p-2">
+              <h6 class="card-title mb-0" title="${m.title}">${m.title}</h6>
+              ${m.category ? `<span class="badge bg-primary mb-2">${m.category}</span>` : ''}
+            </div>
+          </div>
+        </a>`;
                 row.appendChild(card);
             });
             div.appendChild(row);
             return div;
         }
 
-        let currentPerSlide = null;
+        function initCarousel(jsonId, innerId) {
+            const movies = JSON.parse(document.getElementById(jsonId).textContent || '[]');
+            const carouselInner = document.getElementById(innerId);
+            let currentPerSlide = null;
 
-        function rebuild() {
-            const per = itemsPerSlide();
-            if (per === currentPerSlide) return;
-            currentPerSlide = per;
+            function rebuild() {
+                const per = itemsPerSlide();
+                if (per === currentPerSlide) return;
+                currentPerSlide = per;
 
-            carouselInner.innerHTML = '';
-            for (let i = 0; i < movies.length; i += per) {
-                const slice = movies.slice(i, i + per);
-                carouselInner.appendChild(buildSlide(slice, i === 0));
+                carouselInner.innerHTML = '';
+                for (let i = 0; i < movies.length; i += per) {
+                    const slice = movies.slice(i, i + per);
+                    carouselInner.appendChild(buildSlide(slice, i === 0));
+                }
             }
+
+            window.addEventListener('resize', () => {
+                clearTimeout(carouselInner._resizeTimer);
+                carouselInner._resizeTimer = setTimeout(rebuild, 120);
+            });
+
+            rebuild();
         }
 
-        let resizeTimer;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(rebuild, 120);
-        });
-
-        rebuild();
+        initCarousel('popularMoviesJson', 'popularInner');
+        initCarousel('longestMoviesJson', 'longestInner');
+        initCarousel('cheapestMoviesJson', 'cheapestInner');
     })();
 </script>
 
@@ -110,7 +156,6 @@
     }
 
     .slide-grid {
-        /* center nicely */
         padding-top: 4px;
     }
 
@@ -190,12 +235,11 @@
         display: block;
     }
 
-    /* Center carousel controls vertically */
+    /* Controls */
     .carousel-control-prev.btn-control,
     .carousel-control-next.btn-control {
         position: absolute;
         top: 50%;
-        bottom: auto;
         transform: translateY(-50%);
         width: 44px;
         height: 44px;
