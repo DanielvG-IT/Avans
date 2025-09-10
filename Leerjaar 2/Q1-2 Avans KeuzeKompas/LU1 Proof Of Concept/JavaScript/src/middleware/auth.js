@@ -57,7 +57,13 @@ export const optionalCustomerAuthWeb = (req, res, next) => {
     // Validate current access token
     verifyAccessToken(accessToken, (error, user) => {
         if (!error) {
-            // Access token valid → attach user
+            const role = user?.role;
+            if (role !== 'CUSTOMER') {
+                return res.status(403).send({
+                    error: 'Access denied: insufficient permissions or invalid user role.',
+                });
+            }
+
             req.user = user;
             return next();
         }
@@ -96,9 +102,6 @@ export const optionalCustomerAuthWeb = (req, res, next) => {
  * - If access token is expired but refresh token is valid → issue new token,
  *   set cookie, and attach user.
  * - Otherwise → force login.
- *
- * TODO:
- * - Add check to ensure user role = customer.
  */
 export const requireCustomerAuthWeb = (req, res, next) => {
     const accessToken = extractAccessToken(req);
@@ -110,6 +113,13 @@ export const requireCustomerAuthWeb = (req, res, next) => {
 
     verifyAccessToken(accessToken, (error, user) => {
         if (!error) {
+            const role = user?.role;
+            if (role !== 'CUSTOMER') {
+                return res.status(403).send({
+                    error: 'Access denied: insufficient permissions or invalid user role.',
+                });
+            }
+
             req.user = user;
             return next();
         }
@@ -140,9 +150,6 @@ export const requireCustomerAuthWeb = (req, res, next) => {
  * Middleware: Require valid staff authentication for web routes.
  *
  * Same logic as `requireCustomerAuthWeb`, but intended for staff accounts.
- *
- * TODO:
- * - Add role/permissions check to enforce staff-only access.
  */
 export const requireStaffAuthWeb = (req, res, next) => {
     const accessToken = extractAccessToken(req);
@@ -154,6 +161,13 @@ export const requireStaffAuthWeb = (req, res, next) => {
 
     verifyAccessToken(accessToken, (error, user) => {
         if (!error) {
+            const role = user?.role;
+            if (role !== 'STAFF') {
+                return res.status(403).send({
+                    error: 'Access denied: insufficient permissions or invalid user role.',
+                });
+            }
+
             req.user = user;
             return next();
         }
@@ -188,9 +202,6 @@ export const requireStaffAuthWeb = (req, res, next) => {
  * - If access token is valid → attach user.
  * - If access token expired but refresh is valid → issue new token and attach user.
  * - If all checks fail → respond with 401 (unauthorized).
- *
- * TODO:
- * - Add customer role check.
  */
 export const requireCustomerAuthApi = (req, res, next) => {
     const accessToken = extractAccessToken(req);
@@ -202,6 +213,13 @@ export const requireCustomerAuthApi = (req, res, next) => {
 
     verifyAccessToken(accessToken, (error, user) => {
         if (!error) {
+            const role = user?.role;
+            if (role !== 'CUSTOMER') {
+                return res.status(403).send({
+                    error: 'Access denied: insufficient permissions or invalid user role.',
+                });
+            }
+
             req.user = user;
             return next();
         }
@@ -232,9 +250,6 @@ export const requireCustomerAuthApi = (req, res, next) => {
  * Middleware: Require valid staff authentication for API routes.
  *
  * Same as `requireCustomerAuthApi`, but intended for staff accounts.
- *
- * TODO:
- * - Enforce staff role check.
  */
 export const requireStaffAuthApi = (req, res, next) => {
     const accessToken = extractAccessToken(req);
@@ -246,6 +261,13 @@ export const requireStaffAuthApi = (req, res, next) => {
 
     verifyAccessToken(accessToken, (error, user) => {
         if (!error) {
+            const role = user?.role;
+            if (role !== 'STAFF') {
+                return res.status(403).send({
+                    error: 'Access denied: insufficient permissions or invalid user role.',
+                });
+            }
+
             req.user = user;
             return next();
         }
