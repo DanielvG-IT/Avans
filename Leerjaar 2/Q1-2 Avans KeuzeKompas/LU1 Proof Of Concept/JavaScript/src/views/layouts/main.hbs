@@ -46,85 +46,7 @@
 </head>
 
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg container mx-auto fixed-top shadow-sm">
-        <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="/">
-                <img src="/images/eject!-logo-text.png" height="35" alt="Eject! Logo" />
-            </a>
-
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/movies">Movies</a>
-                    </li>
-                </ul>
-
-                <!-- Desktop Login/Profile -->
-                <div class="d-none d-lg-flex align-items-center">
-                    {{#if user}}
-                    <div class="dropdown">
-                        <a href="#" class="btn btn-outline-light btn-sm rounded-pill d-flex align-items-center"
-                            data-bs-toggle="dropdown">
-                            {{#if user.profileImage}}
-                            <img src="{{user.profileImage}}" class="profile-img me-2" alt="Profile" />
-                            {{else}}
-                            <i class="bi bi-person-circle me-2 fs-5"></i>
-                            {{/if}}
-                            Profile
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end mt-2">
-                            <li><a class="dropdown-item" href="/auth/profile">My Profile</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><button class="dropdown-item" onclick="clientLogOut()">Logout</button></li>
-                        </ul>
-                    </div>
-                    {{else}}
-                    <a href="/auth/login" class="btn btn-outline-light btn-sm rounded-pill me-2">Login</a>
-                    <a href="/auth/register" class="btn btn-primary btn-sm rounded-pill">Register</a>
-                    {{/if}}
-                </div>
-
-                <!-- Mobile Login/Profile -->
-                <div class="d-lg-none mt-3">
-                    {{#if user}}
-                    <div class="dropdown">
-                        <a href="#"
-                            class="btn btn-outline-light btn-sm w-100 rounded-pill d-flex align-items-center justify-content-center"
-                            data-bs-toggle="dropdown">
-                            {{#if user.profileImage}}
-                            <img src="{{user.profileImage}}" class="profile-img me-2" alt="Profile" />
-                            {{else}}
-                            <i class="bi bi-person-circle me-2 fs-5"></i>
-                            {{/if}}
-                            Profile
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end mt-2 w-100">
-                            <li><a class="dropdown-item text-center" href="/auth/profile">My Profile</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><button class="dropdown-item text-center" onclick="clientLogOut()">Logout</button></li>
-                        </ul>
-                    </div>
-                    {{else}}
-                    <a href="/auth/login" class="btn btn-outline-light btn-sm rounded-pill w-100 mb-2">Login</a>
-                    <a href="/auth/register" class="btn btn-primary btn-sm rounded-pill w-100">Register</a>
-                    {{/if}}
-                </div>
-            </div>
-        </div>
-    </nav>
+    {{> header}}
 
     <!-- Main Content -->
     <main class="container-fluid px-3">
@@ -132,53 +54,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-black text-secondary pt-5 pb-3 mt-5">
-        <div class="container">
-            <div class="mb-4">
-                <a href="#" class="me-3 text-secondary"><i class="bi bi-facebook"></i></a>
-                <a href="#" class="me-3 text-secondary"><i class="bi bi-instagram"></i></a>
-                <a href="#" class="me-3 text-secondary"><i class="bi bi-twitter-x"></i></a>
-                <a href="#" class="text-secondary"><i class="bi bi-youtube"></i></a>
-            </div>
-
-            <div class="row row-cols-2 row-cols-md-4 g-3">
-                <div class="col">
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-secondary text-decoration-none">Audio & Subtitles</a></li>
-                        <li><a href="#" class="text-secondary text-decoration-none">Media Center</a></li>
-                        <li><a href="#" class="text-secondary text-decoration-none">Privacy</a></li>
-                        <li><a href="#" class="text-secondary text-decoration-none">Contact Us</a></li>
-                    </ul>
-                </div>
-                <div class="col">
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-secondary text-decoration-none">Help Center</a></li>
-                        <li><a href="#" class="text-secondary text-decoration-none">Jobs</a></li>
-                        <li><a href="#" class="text-secondary text-decoration-none">Cookie Preferences</a></li>
-                    </ul>
-                </div>
-                <div class="col">
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-secondary text-decoration-none">Gift Cards</a></li>
-                        <li><a href="#" class="text-secondary text-decoration-none">Terms of Use</a></li>
-                        <li><a href="#" class="text-secondary text-decoration-none">Corporate Info</a></li>
-                    </ul>
-                </div>
-                <div class="col">
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-secondary text-decoration-none">Investor Relations</a></li>
-                        <li><a href="#" class="text-secondary text-decoration-none">Legal Notices</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="my-4">
-                <button class="btn btn-outline-secondary btn-sm">Service Code</button>
-            </div>
-
-            <p class="small text-secondary">© 2025 Eject!, All Rights Reserved</p>
-        </div>
-    </footer>
+    {{> footer}}
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

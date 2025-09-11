@@ -1,0 +1,82 @@
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg container mx-auto fixed-top shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <img src="/images/eject!-logo-text.png" height="35" alt="Eject! Logo" />
+    </a>
+
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/movies">Movies</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/about">About</a>
+        </li>
+      </ul>
+
+      <!-- Desktop Login/Profile -->
+      <div class="d-none d-lg-flex align-items-center">
+        {{#if user}}
+        <div class="dropdown">
+          <a href="#" class="btn btn-outline-light btn-sm rounded-pill d-flex align-items-center"
+            data-bs-toggle="dropdown">
+            {{#if user.profileImage}}
+            <img src="{{user.profileImage}}" class="profile-img me-2" alt="Profile" />
+            {{else}}
+            <i class="bi bi-person-circle me-2 fs-5"></i>
+            {{/if}}
+            Profile
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end mt-2">
+            <li><a class="dropdown-item" href="/auth/profile">My Profile</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><button class="dropdown-item" onclick="clientLogOut()">Logout</button></li>
+          </ul>
+        </div>
+        {{else}}
+        <a href="/auth/login" class="btn btn-outline-light btn-sm rounded-pill me-2">Login</a>
+        <a href="/auth/register" class="btn btn-primary btn-sm rounded-pill">Register</a>
+        {{/if}}
+      </div>
+
+      <!-- Mobile Login/Profile -->
+      <div class="d-lg-none mt-3">
+        {{#if user}}
+        <div class="dropdown">
+          <a href="#"
+            class="btn btn-outline-light btn-sm w-100 rounded-pill d-flex align-items-center justify-content-center"
+            data-bs-toggle="dropdown">
+            {{#if user.profileImage}}
+            <img src="{{user.profileImage}}" class="profile-img me-2" alt="Profile" />
+            {{else}}
+            <i class="bi bi-person-circle me-2 fs-5"></i>
+            {{/if}}
+            Profile
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end mt-2 w-100">
+            <li><a class="dropdown-item text-center" href="/auth/profile">My Profile</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><button class="dropdown-item text-center" onclick="clientLogOut()">Logout</button></li>
+          </ul>
+        </div>
+        {{else}}
+        <a href="/auth/login" class="btn btn-outline-light btn-sm rounded-pill w-100 mb-2">Login</a>
+        <a href="/auth/register" class="btn btn-primary btn-sm rounded-pill w-100">Register</a>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</nav>
