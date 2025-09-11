@@ -109,6 +109,9 @@
             <div class="card-body p-2">
               <h6 class="card-title mb-0" title="${m.title}">${m.title}</h6>
               ${m.category ? `<span class="badge bg-primary mb-2">${m.category}</span>` : ''}
+              ${m.rentalRate != null ? `<span class="badge bg-warning text-dark mb-2">€${typeof m.rentalRate === 'number' ? m.rentalRate.toFixed(2) : m.rentalRate}</span>` : ''}
+              ${m.rentalCount != null ? `<span class="badge bg-success mb-2">Rented ${m.rentalCount}</span>` : ''}
+              ${m.length != null ? `<span class="badge bg-secondary mb-2">${m.length} min</span>` : ''}
             </div>
           </div>
         </a>`;
