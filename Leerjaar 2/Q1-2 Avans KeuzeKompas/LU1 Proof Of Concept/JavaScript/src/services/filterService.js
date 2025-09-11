@@ -26,6 +26,10 @@ export const fetchCategoryNames = (callback) => {
             logger.error('Category Error:', error);
             return safeCallback(error);
         }
+        if (!categories) {
+            logger.error('Category Error:', error);
+            return safeCallback(new Error('Categories not found.'));
+        }
 
         const names = categories.map((c) => c.name);
         safeCallback(null, names);
@@ -38,6 +42,10 @@ export const fetchRatingNames = (callback) => {
         if (error) {
             logger.error('Rating Error:', error);
             return safeCallback(error);
+        }
+        if (!ratings) {
+            logger.error('Rating Error:', error);
+            return safeCallback(new Error('Ratings not found.'));
         }
 
         const names = ratings.map((r) => r.name);
