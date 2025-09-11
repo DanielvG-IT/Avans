@@ -39,6 +39,11 @@ export const fetchPopularMovies = (limit = 10, callback) => {
                 return cb(error);
             }
 
+            if (!movies) {
+                logger.error('fetchPopularMovies - no movies found');
+                return cb(new Error('No movies found.'));
+            }
+
             const mapped = (movies || []).map((f) => ({
                 filmId: f.film_id,
                 title: f.title,
@@ -62,6 +67,10 @@ export const fetchLongestMovies = (limit = 10, callback) => {
             if (error) {
                 logger.error('fetchLongestMovies - dao error:', error);
                 return cb(error);
+            }
+            if (!movies) {
+                logger.error('fetchLongestMovies - no movies found');
+                return cb(new Error('No movies found.'));
             }
 
             const mapped = (movies || []).map((f) => ({
@@ -87,6 +96,11 @@ export const fetchCheapestMovies = (limit = 10, callback) => {
             if (error) {
                 logger.error('fetchCheapestMovies - dao error:', error);
                 return cb(error);
+            }
+
+            if (!movies) {
+                logger.error('fetchCheapestMovies - no movies found');
+                return cb(new Error('No movies found.'));
             }
 
             const mapped = (movies || []).map((f) => ({
@@ -117,6 +131,11 @@ export const fetchMovies = (filters = {}, callback) => {
             if (error) {
                 logger.error('fetchMovies - dao error:', error);
                 return cb(error);
+            }
+
+            if (!result) {
+                logger.error('fetchMovies - no movies found');
+                return cb(new Error('No movies found.'));
             }
 
             // Support both shapes: { movies, total } or legacy array
@@ -173,8 +192,8 @@ export const fetchMovieById = (id, callback) => {
             }
 
             if (!movie) {
-                // Not found — caller can decide how to handle 404
-                return cb(null, null);
+                logger.error('fetchMovieById - no movie found');
+                return cb(new Error('No movie found.'));
             }
 
             // Traditional callback stack: fetch actors, then availability
@@ -183,6 +202,11 @@ export const fetchMovieById = (id, callback) => {
                     if (errA) {
                         logger.error('fetchMovieById - actors dao error:', errA);
                         return cb(errA);
+                    }
+
+                    if (!actors) {
+                        logger.error('fetchMovieById - no actors found');
+                        return cb(new Error('No actors found.'));
                     }
 
                     const actorArray = (actors || []).map((a) => ({
@@ -195,6 +219,11 @@ export const fetchMovieById = (id, callback) => {
                             if (errS) {
                                 logger.error('fetchMovieById - availability dao error:', errS);
                                 return cb(errS);
+                            }
+
+                            if (!stores) {
+                                logger.error('fetchMovieById - no stores found');
+                                return cb(new Error('No stores found.'));
                             }
 
                             const storeArray = (stores || []).map((s) => ({
