@@ -25,15 +25,18 @@ const PORT = process.env.PORT || 3000;
 const hbs = create({
     extname: '.hbs', // or '.handlebars'
     helpers: expressHelpers,
+    layoutsDir: path.join(__dirname, 'views', 'layouts'),
+    partialsDir: path.join(__dirname, 'views', 'partials'),
+    defaultLayout: 'main',
 });
 
-// Middleware
+// General Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Insert user
+// Authentication Middleware
 app.use(optionalCustomerAuthWeb);
 app.use((req, res, next) => {
     res.locals.user = req.user;
@@ -46,7 +49,6 @@ app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views')); // absolute path
 
 // Import Routes
-
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
 app.use('/staff', staffRouter);
