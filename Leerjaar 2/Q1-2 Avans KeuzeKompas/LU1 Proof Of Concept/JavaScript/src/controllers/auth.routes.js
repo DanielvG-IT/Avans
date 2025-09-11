@@ -23,7 +23,7 @@ authRouter.get('/login', (req, res, next) => {
     if (req.user) {
         return res.redirect(redirectUrl);
     }
-    res.render('login', { title: 'Login' });
+    res.render('auth/login', { title: 'Login' });
 });
 authRouter.post('/login', (req, res) => {
     const email = req.body.email;
@@ -74,7 +74,7 @@ authRouter.get('/register', (req, res, next) => {
     if (req.user) {
         return res.redirect(redirectUrl);
     }
-    res.render('register', { title: 'Register' });
+    res.render('auth/register', { title: 'Register' });
 });
 authRouter.post('/register', (req, res) => {
     const email = req.body.email;
@@ -99,7 +99,7 @@ authRouter.post('/register', (req, res) => {
 authRouter.get('/profile', requireCustomerAuthWeb, (req, res, next) => {
     fetchCustomer(req.user?.userId, (error, { user, customer }) => {
         if (error) return next(error);
-        res.render('profile', { title: 'Profile', user, customer });
+        res.render('auth/profile', { title: 'Profile', user, customer });
     });
 });
 
