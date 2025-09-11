@@ -1,0 +1,126 @@
+<div class="container py-5">
+  <div class="row justify-content-center gx-4">
+    <!-- Two identical profile cards centered (each 1/3 width on md+) -->
+    <div class="col-12 col-md-4">
+      <div class="">
+        <div class="card shadow-sm mb-4">
+          <div class="card-body text-center">
+            {{#if user.avatarUrl}}
+            <img src="{{user.avatarUrl}}" alt="{{user.name}} avatar" class="rounded-circle mb-3"
+              style="width:120px; height:120px; object-fit:cover;" loading="lazy">
+            {{else}}
+            <div
+              class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center mb-3"
+              style="width:120px; height:120px; font-size:36px; font-weight:600;" aria-hidden="true">
+              {{#if user.name}}{{user.name}}{{else}}U{{/if}}
+            </div>
+            {{/if}}
+
+            <h4 class="card-title mb-1">{{user.name}}</h4>
+            <div class="text-muted mb-2" aria-label="username">{{user.email}}</div>
+
+            {{#if user.role}}
+            <div class="mb-2">
+              <span class="badge bg-primary" aria-label="role">{{user.role}}</span>
+            </div>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+
+      <div class="">
+        <div class="card shadow-sm mb-4">
+          <div class="card-body text-center">
+            <h5 class="card-title mb-3">Password Reset</h5>
+            <div class="alert alert-success w-100 d-none" id="successMessage" role="status">
+              <p></p>
+            </div>
+            <form onsubmit=clientPasswordReset(event) class="text-start w-100" aria-label="password reset form">
+              <div class="mb-3">
+                <label for="newPassword" class="form-label visually-hidden">New Password</label>
+                <input type="password" id="newPassword" name="newPassword" class="form-control"
+                  placeholder="Enter new password" value="{{newPassword}}" required>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Send password reset</button>
+            </form>
+            <div class="small text-danger mt-2 d-none" id="errorMessage" role="alert">
+              <p>
+
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+      <div class="card shadow-sm mb-4">
+        <div class="card-body text-center">
+          <h5 class="card-title mb-3">Account Details</h5>
+          <div class="text-start">
+            <p class="mb-2"><strong>User ID:</strong> {{user.userId}}</p>
+            <p class="mb-2"><strong>Customer ID:</strong> {{customer.customer_id}}</p>
+            <p class="mb-2"><strong>Email:</strong> {{user.email}}</p>
+            {{#if customer.address}}
+            <p class="mb-2"><strong>Address:</strong>
+              {{customer.address}}{{#if customer.city}}, {{customer.city}}{{/if}}{{#if customer.postal_code}}
+              {{customer.postal_code}}{{/if}}{{#if customer.country}}, {{customer.country}}{{/if}}
+            </p>
+            {{/if}}
+
+            {{#if customer.phone}}
+            <p class="mb-2"><strong>Phone:</strong> <a href="tel:{{customer.phone}}"
+                aria-label="customer phone">{{customer.phone}}</a></p>
+            {{/if}}
+
+            <p class="mb-2"><strong>Account Status:</strong>
+              {{#if customer.active}}<span class="text-success">Active</span>{{else}}<span
+                class="text-muted">Inactive</span>{{/if}}
+            </p>
+
+            {{#if user.role}}
+            <p class="mb-2"><strong>Role:</strong> {{user.role}}</p>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  async function clientPasswordReset(event) {
+    event.preventDefault();
+
+    const newPassword = document.getElementById('newPassword').value;
+    const errorMessage = document.getElementById('errorMessage');
+    const successMessage = document.getElementById('successMessage');
+
+    errorMessage.classList.add('d-none');
+    successMessage.classList.add('d-none');
+
+    try {
+      const response = await fetch('/auth/reset-password', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ newPassword })
+      });
+
+      if (response.ok) {
+        successMessage.querySelector('p').textContent = 'Password reset successful!';
+        successMessage.classList.remove('d-none');
+        setTimeout(() => {
+          successMessage.classList.add('d-none');
+        }, 2500);
+      } else {
+        const data = await response.json();
+        errorMessage.querySelector('p').textContent = data.message || 'Password reset failed. Try again.';
+        errorMessage.classList.remove('d-none');
+      }
+    } catch (err) {
+      errorMessage.querySelector('p').textContent = 'Network error. Try again.';
+      errorMessage.classList.remove('d-none');
+    }
+  }
+</script>
