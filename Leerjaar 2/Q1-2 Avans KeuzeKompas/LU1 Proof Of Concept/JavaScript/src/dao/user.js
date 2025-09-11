@@ -17,7 +17,7 @@ export const createUser = (userId, email, hashedPassword, role, callback) => {
 };
 
 export const readUserById = (userId, callback) => {
-    const sql = `SELECT userId, email, passwordHash, role FROM users WHERE userId = ? LIMIT 1`;
+    const sql = `SELECT userId, email, passwordHash, role, avatarUrl FROM users WHERE userId = ? LIMIT 1`;
 
     query(sql, [userId], (error, rows) => {
         if (typeof callback !== 'function') return;
@@ -30,7 +30,7 @@ export const readUserById = (userId, callback) => {
 };
 
 export const readUserByEmail = (email, callback) => {
-    const sql = `SELECT userId, email, passwordHash, role FROM users WHERE email = ? LIMIT 1`;
+    const sql = `SELECT userId, email, passwordHash, role, avatarUrl FROM users WHERE email = ? LIMIT 1`;
 
     query(sql, [email], (error, rows) => {
         if (typeof callback !== 'function') return;
@@ -44,7 +44,7 @@ export const readUserByEmail = (email, callback) => {
 
 // Refresh Tokens
 export const readUserByRefreshToken = (refreshToken, callback) => {
-    const sql = `SELECT userId, email, passwordHash, role FROM users WHERE refreshToken = ? LIMIT 1`;
+    const sql = `SELECT userId, email, passwordHash, role, avatarUrl FROM users WHERE refreshToken = ? LIMIT 1`;
 
     query(sql, [refreshToken], (error, rows) => {
         if (typeof callback !== 'function') return;
@@ -60,6 +60,19 @@ export const updateUserRefreshTokenByUserId = (userId, refreshToken, callback) =
     const sql = `UPDATE users SET refreshToken = ? WHERE userId = ?`;
 
     query(sql, [refreshToken, userId], (error, rows) => {
+        if (typeof callback !== 'function') return;
+        if (error) {
+            logger.error('MySQL Error:', error);
+            return callback(error);
+        }
+        callback(null, rows);
+    });
+};
+
+export const updateUserPasswordById = (userId, newPasswordHash, callback) => {
+    const sql = `UPDATE users SET passwordHash = ? WHERE userId = ?`;
+
+    query(sql, [newPasswordHash, userId], (error, rows) => {
         if (typeof callback !== 'function') return;
         if (error) {
             logger.error('MySQL Error:', error);

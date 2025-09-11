@@ -1,12 +1,6 @@
 import express from 'express';
-import jwt from 'jsonwebtoken';
 import { logger } from '../util/logger.js';
-import { updateUserRefreshTokenByUserId } from '../dao/user.js';
-import {
-    optionalCustomerAuthWeb,
-    requireCustomerAuthApi,
-    requireCustomerAuthWeb,
-} from '../middleware/auth.js';
+import { requireCustomerAuthApi, requireCustomerAuthWeb } from '../middleware/auth.js';
 import {
     register,
     login,
@@ -14,6 +8,8 @@ import {
     generateAccessToken,
     refreshAccessToken,
     logOut,
+    fetchCustomer,
+    resetPassword,
 } from '../services/authService.js';
 
 const authRouter = express.Router();
@@ -101,7 +97,31 @@ authRouter.post('/register', (req, res) => {
  * /profile - profile page
  */
 authRouter.get('/profile', requireCustomerAuthWeb, (req, res, next) => {
-    res.json({ error: 'Nein' });
+    fetchCustomer(req.user?.userId, (error, { user, customer }) => {
+        if (error) return next(error);
+        res.render('profile', { title: 'Profile', user, customer });
+    });
+});
+
+authRouter.put('/reset-password', requireCustomerAuthApi, (req, res) => {
+    const userId = req.user?.userId;
+    const newPassword = req.body.newPassword;
+    // const oldPassword = req.body.oldPassword;
+
+    if (!newPassword || !userId) {
+        return res.status(400).json({
+            success: false,
+            error: 'User ID and new password are required.',
+        });
+    }
+
+    // Call the password reset service
+    resetPassword(userId, newPassword, (error, result) => {
+        if (error) {
+            return res.status(400).json({ success: false, error: error.message });
+        }
+        res.status(200).json({ success: true });
+    });
 });
 
 /**

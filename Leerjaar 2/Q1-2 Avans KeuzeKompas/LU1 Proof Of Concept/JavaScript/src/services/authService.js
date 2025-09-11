@@ -1,9 +1,14 @@
-import { readUserByRefreshToken, updateUserRefreshTokenByUserId } from '../dao/user.js';
-import { createUser, readUserByEmail } from '../dao/user.js';
+import { createUser, readUserByEmail, updateUserPasswordById } from '../dao/user.js';
+import { readCustomerByUserId } from '../dao/customer.js';
 import { compareSync, hashSync } from 'bcrypt';
 import { logger } from '../util/logger.js';
 import { v4 as uuid } from 'uuid';
 import jwt from 'jsonwebtoken';
+import {
+    readUserById,
+    readUserByRefreshToken,
+    updateUserRefreshTokenByUserId,
+} from '../dao/user.js';
 
 export const login = (email, password, callback) => {
     if (!email || !password) {
@@ -34,8 +39,7 @@ export const register = (email, password, callback) => {
         return callback(new Error('Invalid input.'));
     }
 
-    // Minimal requirements: at least 6 characters, one letter, one number
-    // At least 6 characters, one letter, one number, one special character
+    // Minimal requirements: At least 6 characters, one letter, one number, one special character
     const passwordRequirements =
         /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{6,}$/;
     if (!passwordRequirements.test(password)) {
@@ -70,6 +74,50 @@ export const logOut = (userId, callback) => {
     });
 };
 
+export const fetchCustomer = (userId, callback) => {
+    readUserById(userId, (error, user) => {
+        if (error) return callback(error);
+        if (!user) return callback(new Error('User not found.'));
+
+        readCustomerByUserId(userId, (error, customer) => {
+            if (error) return callback(error);
+            if (!customer) return callback(new Error('Customer not found.'));
+            return callback(null, { user, customer });
+        });
+    });
+};
+
+// export const fetchStaff = (userId, callback) => {
+//     readUserById(userId, (error, user) => {
+//         if (error) return callback(error);
+//         if (!user) return callback(new Error('User not found.'));
+
+//         readStaffByUserId(userId, (error, staff) => {
+//             if (error) return callback(error);
+//             return callback(null, staff);
+//         });
+//     });
+// };
+
+export const resetPassword = (userId, newPassword, callback) => {
+    if (!userId || !newPassword) {
+        return callback(new Error('User ID and new password are required.'));
+    }
+
+    // const passwordsMatch = compareSync(oldPassword, user.passwordHash);
+    const passwordHash = hashSync(newPassword, 10);
+    updateUserPasswordById(userId, passwordHash, (error, result) => {
+        if (error) return callback(error);
+        if (result.affectedRows === 0) {
+            logger.warn(`No rows updated for userId ${userId}`);
+            return callback(new Error('Password update failed.'));
+        }
+
+        logger.info(`Password updated for userId ${userId}`);
+        return callback(null, result);
+    });
+};
+
 // JWT Functions
 export const generateAccessToken = (user) => {
     const payload = { userId: user.userId, role: user.role };
@@ -84,7 +132,11 @@ export const generateRefreshToken = (user, callback) => {
             logger.error('MySQL Error:', error);
             return callback(error);
         }
-        // TODO Check what is in result
+
+        if (result.affectedRows === 0) {
+            logger.warn(`No rows updated for userId ${user.userId}`);
+        }
+
         return callback(null, refreshToken);
     });
 };
