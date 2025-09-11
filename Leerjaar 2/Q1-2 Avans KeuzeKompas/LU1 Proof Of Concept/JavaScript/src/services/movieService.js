@@ -1,161 +1,240 @@
 import { getActorsInMovie } from '../dao/actor.js';
 import { logger } from '../util/logger.js';
 import {
-    getMovieAvailability,
-    getMovieById,
     getMovies,
-    getMoviesCount,
+    getMovieById,
     getPopularMovies,
-    getCheapestMovies,
     getLongestMovies,
+    getCheapestMovies,
+    getMovieAvailability,
 } from '../dao/movie.js';
 
-export const fetchPopularMovies = (limit, callback) => {
-    getPopularMovies(limit, (error, movies) => {
-        if (error) {
-            logger.error('Movies Error:', error);
-            return callback(error);
+/**
+ * Ensure a callback is only invoked once.
+ */
+const onceCallback = (cb) => {
+    let called = false;
+    return (err, res) => {
+        if (called) return;
+        called = true;
+        try {
+            if (typeof cb === 'function') cb(err, res);
+        } catch (e) {
+            // Guard against exceptions thrown by the caller's callback
+            logger.error('Service callback threw an error:', e);
         }
-
-        const mapped = movies.map((f) => ({
-            filmId: f.film_id,
-            title: f.title,
-            rentalCount: f.rental_count,
-            category: f.category,
-            coverUrl: f.cover_url,
-        }));
-
-        callback(null, mapped);
-    });
-};
-export const fetchLongestMovies = (limit, callback) => {
-    getLongestMovies(limit, (error, movies) => {
-        if (error) {
-            logger.error('Movies Error:', error);
-            return callback(error);
-        }
-
-        const mapped = movies.map((f) => ({
-            filmId: f.film_id,
-            title: f.title,
-            length: f.length,
-            category: f.category,
-            coverUrl: f.cover_url,
-        }));
-
-        callback(null, mapped);
-    });
+    };
 };
 
-export const fetchCheapestMovies = (limit, callback) => {
-    getCheapestMovies(limit, (error, movies) => {
-        if (error) {
-            logger.error('Movies Error:', error);
-            return callback(error);
-        }
+/* ---------------------------
+   Thin service functions
+   --------------------------- */
 
-        const mapped = movies.map((f) => ({
-            filmId: f.film_id,
-            title: f.title,
-            rentalRate: f.rental_rate,
-            category: f.category,
-            coverUrl: f.cover_url,
-        }));
-
-        callback(null, mapped);
-    });
-};
-
-export const fetchMovies = (filters, callback) => {
-    getMovies(filters, (error, movies) => {
-        if (error) {
-            logger.error('Movies Error:', error);
-            return callback(error);
-        }
-
-        const mapped = movies.map((f) => ({
-            filmId: f.film_id,
-            title: f.title,
-            description: f.description,
-            releaseYear: f.release_year,
-            languageId: f.language_id,
-            originalLanguage: f.original_language,
-            rentalDuration: f.rental_duration,
-            rentalRate: f.rental_rate,
-            length: f.length,
-            replacementCost: f.replacement_cost,
-            rating: f.rating,
-            specialFeatures: f.special_features,
-            lastUpdate: f.last_update,
-            category: f.category,
-            coverUrl: f.cover_url,
-        }));
-
-        callback(null, mapped);
-    });
-};
-
-export const fetchMovieCount = (callback) => {
-    getMoviesCount((error, count) => {
-        if (error) {
-            logger.error('Movie Count Error:', error);
-            return callback(error);
-        }
-        callback(null, count);
-    });
-};
-
-export const fetchMovieById = (id, callback) => {
-    getMovieById(id, (error, movie) => {
-        if (error) {
-            logger.error('Movie Error:', error);
-            return callback(error);
-        }
-
-        getActorsInMovie(id, (error, actors) => {
+export const fetchPopularMovies = (limit = 10, callback) => {
+    const cb = onceCallback(callback);
+    try {
+        getPopularMovies(limit, (error, movies) => {
             if (error) {
-                logger.error('Movie Error:', error);
-                return callback(error);
+                logger.error('fetchPopularMovies - dao error:', error);
+                return cb(error);
             }
 
-            const actorArray = actors.map((a) => {
-                return {
-                    firstName: a.first_name,
-                    lastName: a.last_name,
-                };
-            });
+            const mapped = (movies || []).map((f) => ({
+                filmId: f.film_id,
+                title: f.title,
+                rentalCount: f.rental_count,
+                category: f.category,
+                coverUrl: f.cover_url,
+            }));
 
-            getMovieAvailability(id, (error, stores) => {
-                if (error) {
-                    logger.error('Movie Error:', error);
-                    return callback(error);
-                }
-
-                const storeArray = stores.map((s) => {
-                    return { storeName: s.store_name, copies: s.copies };
-                });
-
-                const mapped = {
-                    filmId: movie.film_id,
-                    title: movie.title,
-                    description: movie.description,
-                    releaseYear: movie.release_year,
-                    language: movie.language,
-                    rentalDuration: movie.rental_duration,
-                    rentalRate: movie.rental_rate,
-                    length: movie.length,
-                    replacementCost: movie.replacement_cost,
-                    rating: movie.rating,
-                    specialFeatures: movie.special_features,
-                    lastUpdate: movie.last_update,
-                    category: movie.category,
-                    coverUrl: movie.cover_url,
-                    actors: actorArray,
-                    availability: storeArray,
-                };
-
-                callback(null, mapped);
-            });
+            cb(null, mapped);
         });
-    });
+    } catch (err) {
+        logger.error('fetchPopularMovies sync error:', err);
+        cb(err);
+    }
+};
+
+export const fetchLongestMovies = (limit = 10, callback) => {
+    const cb = onceCallback(callback);
+    try {
+        getLongestMovies(limit, (error, movies) => {
+            if (error) {
+                logger.error('fetchLongestMovies - dao error:', error);
+                return cb(error);
+            }
+
+            const mapped = (movies || []).map((f) => ({
+                filmId: f.film_id,
+                title: f.title,
+                length: f.length,
+                category: f.category,
+                coverUrl: f.cover_url,
+            }));
+
+            cb(null, mapped);
+        });
+    } catch (err) {
+        logger.error('fetchLongestMovies sync error:', err);
+        cb(err);
+    }
+};
+
+export const fetchCheapestMovies = (limit = 10, callback) => {
+    const cb = onceCallback(callback);
+    try {
+        getCheapestMovies(limit, (error, movies) => {
+            if (error) {
+                logger.error('fetchCheapestMovies - dao error:', error);
+                return cb(error);
+            }
+
+            const mapped = (movies || []).map((f) => ({
+                filmId: f.film_id,
+                title: f.title,
+                rentalRate: f.rental_rate,
+                category: f.category,
+                coverUrl: f.cover_url,
+            }));
+
+            cb(null, mapped);
+        });
+    } catch (err) {
+        logger.error('fetchCheapestMovies sync error:', err);
+        cb(err);
+    }
+};
+
+/**
+ * fetchMovies: supports the DAO change where getMovies returns:
+ * { movies: [...], total: N } OR old-style array (backwards compat).
+ * Returns { movies: mappedArray, total }.
+ */
+export const fetchMovies = (filters = {}, callback) => {
+    const cb = onceCallback(callback);
+    try {
+        getMovies(filters, (error, result) => {
+            if (error) {
+                logger.error('fetchMovies - dao error:', error);
+                return cb(error);
+            }
+
+            // Support both shapes: { movies, total } or legacy array
+            let rows = [];
+            let total = 0;
+            if (result == null) {
+                rows = [];
+                total = 0;
+            } else if (Array.isArray(result)) {
+                rows = result;
+                total = result.length;
+            } else if (typeof result === 'object') {
+                rows = result.movies || [];
+                total = typeof result.total === 'number' ? result.total : rows.length || 0;
+            }
+
+            const mapped = (rows || []).map((f) => ({
+                filmId: f.film_id,
+                title: f.title,
+                description: f.description,
+                releaseYear: f.release_year,
+                languageId: f.language_id,
+                originalLanguage: f.original_language,
+                rentalDuration: f.rental_duration,
+                rentalRate: f.rental_rate,
+                length: f.length,
+                replacementCost: f.replacement_cost,
+                rating: f.rating,
+                specialFeatures: f.special_features,
+                lastUpdate: f.last_update,
+                category: f.category,
+                coverUrl: f.cover_url,
+            }));
+
+            cb(null, { movies: mapped, total });
+        });
+    } catch (err) {
+        logger.error('fetchMovies sync error:', err);
+        cb(err);
+    }
+};
+
+/**
+ * fetchMovieById: parallelize actors and availability to reduce latency.
+ * Returns mapped movie object or null if not found.
+ */
+export const fetchMovieById = (id, callback) => {
+    const cb = onceCallback(callback);
+    try {
+        getMovieById(id, (error, movie) => {
+            if (error) {
+                logger.error('fetchMovieById - dao error:', error);
+                return cb(error);
+            }
+
+            if (!movie) {
+                // Not found — caller can decide how to handle 404
+                return cb(null, null);
+            }
+
+            // Traditional callback stack: fetch actors, then availability
+            try {
+                getActorsInMovie(id, (errA, actors) => {
+                    if (errA) {
+                        logger.error('fetchMovieById - actors dao error:', errA);
+                        return cb(errA);
+                    }
+
+                    const actorArray = (actors || []).map((a) => ({
+                        firstName: a.first_name,
+                        lastName: a.last_name,
+                    }));
+
+                    try {
+                        getMovieAvailability(id, (errS, stores) => {
+                            if (errS) {
+                                logger.error('fetchMovieById - availability dao error:', errS);
+                                return cb(errS);
+                            }
+
+                            const storeArray = (stores || []).map((s) => ({
+                                storeName: s.store_name,
+                                copies: s.copies,
+                            }));
+
+                            const mapped = {
+                                filmId: movie.film_id,
+                                title: movie.title,
+                                description: movie.description,
+                                releaseYear: movie.release_year,
+                                language: movie.language,
+                                rentalDuration: movie.rental_duration,
+                                rentalRate: movie.rental_rate,
+                                length: movie.length,
+                                replacementCost: movie.replacement_cost,
+                                rating: movie.rating,
+                                specialFeatures: movie.special_features,
+                                lastUpdate: movie.last_update,
+                                category: movie.category,
+                                coverUrl: movie.cover_url,
+                                actors: actorArray,
+                                availability: storeArray,
+                            };
+
+                            cb(null, mapped);
+                        });
+                    } catch (e) {
+                        logger.error('fetchMovieById - getMovieAvailability sync error:', e);
+                        cb(e);
+                    }
+                });
+            } catch (e) {
+                logger.error('fetchMovieById - getActorsInMovie sync error:', e);
+                cb(e);
+            }
+        });
+    } catch (err) {
+        logger.error('fetchMovieById sync error:', err);
+        cb(err);
+    }
 };
