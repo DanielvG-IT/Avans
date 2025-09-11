@@ -21,6 +21,20 @@
         <li class="nav-item">
           <a class="nav-link" href="/about">About</a>
         </li>
+        {{#if user}}
+        {{#if user.role}}
+        {{#if (eq user.role 'CUSTOMER')}}
+        <li class="nav-item">
+          <a class="nav-link" href="/customer">Dashboard</a>
+        </li>
+        {{/if}}
+        {{#if (eq user.role 'STAFF')}}
+        <li class="nav-item">
+          <a class="nav-link" href="/staff">Dashboard</a>
+        </li>
+        {{/if}}
+        {{/if}}
+        {{/if}}
       </ul>
 
       <!-- Desktop Login/Profile -->
