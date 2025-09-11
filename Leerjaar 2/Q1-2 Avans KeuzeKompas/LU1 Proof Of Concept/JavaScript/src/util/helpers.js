@@ -24,4 +24,7 @@ export const expressHelpers = {
     json: (value) => {
         return JSON.stringify(value);
     },
+    eq: (a, b) => {
+        return a === b;
+    },
 };

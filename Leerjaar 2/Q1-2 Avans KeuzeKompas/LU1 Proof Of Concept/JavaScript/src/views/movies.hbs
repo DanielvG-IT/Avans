@@ -3,42 +3,64 @@
   <!-- Page Title -->
   <h2 class="mb-4">Movies</h2>
 
-  <!-- Filters / Search / Sorting -->
-  <form method="GET" class="row g-2 mb-3 align-items-center">
-    <!-- Search -->
-    <div class="col-12 col-sm-6 col-md-4">
-      <input type="text" name="search" value="{{search}}" class="form-control" placeholder="Search by title...">
-    </div>
+  <!-- Movie Filters / Search / Sorting -->
+  <form method="GET" class="mb-3">
+    <div class="row g-2 align-items-center">
 
-    <!-- Category -->
-    <div class="col-6 col-sm-3 col-md-2">
-      <select name="category" class="form-select">
-        <option value="">All Categories</option>
-        {{#each categories}}
-        <option value="{{this}}" {{#ifEquals ../category this}}selected{{/ifEquals}}>{{this}}</option>
-        {{/each}}
-      </select>
-    </div>
+      <!-- Search Box -->
+      <div class="col-12 col-md-4">
+        <label for="search" class="form-label visually-hidden">Search by title</label>
+        <input type="text" id="search" name="search" value="{{search}}" class="form-control"
+          placeholder="Search by title..." aria-label="Search movies by title">
+      </div>
 
-    <!-- Sort -->
-    <div class="col-6 col-sm-3 col-md-2">
-      <select name="sort" class="form-select">
-        <option value="title,asc" {{#ifEquals sort "title,asc" }}selected{{/ifEquals}}>Title A–Z</option>
-        <option value="title,desc" {{#ifEquals sort "title,desc" }}selected{{/ifEquals}}>Title Z–A</option>
-        <option value="year,asc" {{#ifEquals sort "year,asc" }}selected{{/ifEquals}}>Release Year (Old → New)</option>
-        <option value="year,desc" {{#ifEquals sort "year,desc" }}selected{{/ifEquals}}>Release Year (New → Old)</option>
-        <option value="length,asc" {{#ifEquals sort "length,asc" }}selected{{/ifEquals}}>Length (Shortest → Longest)
-        </option>
-        <option value="length,desc" {{#ifEquals sort "length,desc" }}selected{{/ifEquals}}>Length (Longest → Shortest)
-        </option>
-        <option value="rate,asc" {{#ifEquals sort "rate,asc" }}selected{{/ifEquals}}>Rental Rate (Low → High)</option>
-        <option value="rate,desc" {{#ifEquals sort "rate,desc" }}selected{{/ifEquals}}>Rental Rate (High → Low)</option>
-      </select>
-    </div>
+      <!-- Category Filter -->
+      <div class="col-6 col-md-3">
+        <label for="category" class="form-label visually-hidden">Filter by category</label>
+        <select id="category" name="category" class="form-select" aria-label="Filter by category">
+          <option value="">All Categories</option>
+          {{#each categories}}
+          <option value="{{this}}" {{#ifEquals ../category this}}selected{{/ifEquals}}>{{this}}</option>
+          {{/each}}
+        </select>
+      </div>
 
-    <!-- Submit -->
-    <div class="col-12 col-md-auto">
-      <button type="submit" class="btn btn-primary w-100">Apply</button>
+      <!-- Rating Filter -->
+      <div class="col-6 col-md-2">
+        <label for="rating" class="form-label visually-hidden">Filter by rating</label>
+        <select id="rating" name="rating" class="form-select" aria-label="Filter by rating">
+          <option value="">All Ratings</option>
+          {{#each ratings}}
+          <option value="{{this}}" {{#ifEquals ../rating this}}selected{{/ifEquals}}>{{this}}</option>
+          {{/each}}
+        </select>
+      </div>
+
+      <!-- Sort Dropdown -->
+      <div class="col-6 col-md-2">
+        <label for="sort" class="form-label visually-hidden">Sort movies</label>
+        <select id="sort" name="sort" class="form-select" aria-label="Sort movies">
+          <option value="title,asc" {{#ifEquals sort "title,asc" }}selected{{/ifEquals}}>Title A–Z</option>
+          <option value="title,desc" {{#ifEquals sort "title,desc" }}selected{{/ifEquals}}>Title Z–A</option>
+          <option value="year,asc" {{#ifEquals sort "year,asc" }}selected{{/ifEquals}}>Release Year (Old → New)</option>
+          <option value="year,desc" {{#ifEquals sort "year,desc" }}selected{{/ifEquals}}>Release Year (New → Old)
+          </option>
+          <option value="length,asc" {{#ifEquals sort "length,asc" }}selected{{/ifEquals}}>Length (Shortest → Longest)
+          </option>
+          <option value="length,desc" {{#ifEquals sort "length,desc" }}selected{{/ifEquals}}>Length (Longest → Shortest)
+          </option>
+          <option value="rate,asc" {{#ifEquals sort "rate,asc" }}selected{{/ifEquals}}>Rental Rate (Low → High)</option>
+          <option value="rate,desc" {{#ifEquals sort "rate,desc" }}selected{{/ifEquals}}>Rental Rate (High → Low)
+          </option>
+        </select>
+      </div>
+
+      <!-- Apply / Clear Buttons -->
+      <div class="col-6 col-md-auto d-flex gap-2">
+        <button type="submit" class="btn btn-primary flex-grow-1">Apply</button>
+        <a href="/movies" class="btn btn-secondary flex-grow-1">Clear</a>
+      </div>
+
     </div>
   </form>
 
@@ -54,43 +76,95 @@
           <img src="{{coverUrl}}" alt="{{title}}" class="card-img-top" style="object-fit: cover; aspect-ratio: 2/3;">
           {{else}}
           <div class="bg-secondary d-flex align-items-center justify-content-center" style="aspect-ratio: 2/3;">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 96" role="img" aria-label="No image available"
-              class="w-50 h-auto">
-              <rect x="2" y="6" width="60" height="84" rx="4" fill="#f0f0f0" stroke="#d1d1d1" />
-              <g fill="#d6d6d6">
-                <rect x="6" y="12" width="6" height="8" rx="1" />
-                <rect x="6" y="28" width="6" height="8" rx="1" />
-                <rect x="6" y="44" width="6" height="8" rx="1" />
-                <rect x="6" y="60" width="6" height="8" rx="1" />
-                <rect x="52" y="12" width="6" height="8" rx="1" />
-                <rect x="52" y="28" width="6" height="8" rx="1" />
-                <rect x="52" y="44" width="6" height="8" rx="1" />
-                <rect x="52" y="60" width="6" height="8" rx="1" />
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 96" role="img" aria-labelledby="no-image-title"
+              class="w-50 h-auto" focusable="false">
+              <title id="no-image-title">No image available</title>
+
+              <!-- card background -->
+              <rect x="2" y="6" width="60" height="84" rx="4" fill="#f5f5f7" stroke="#dcdcdc"></rect>
+
+              <!-- film strip header (clapper style) -->
+              <g transform="translate(6,10)">
+                <rect x="0" y="0" width="52" height="14" rx="2" fill="#e9eef6"></rect>
+                <g fill="#c4d0e9">
+                  <rect x="2" y="2" width="6" height="10" rx="1"></rect>
+                  <rect x="12" y="2" width="6" height="10" rx="1"></rect>
+                  <rect x="22" y="2" width="6" height="10" rx="1"></rect>
+                  <rect x="32" y="2" width="6" height="10" rx="1"></rect>
+                  <rect x="42" y="2" width="6" height="10" rx="1"></rect>
+                </g>
               </g>
-              <rect x="14" y="16" width="36" height="64" rx="2" fill="#ffffff" />
-              <g transform="translate(14,16)">
-                <circle cx="28" cy="12" r="6" fill="#ffd166" />
-                <path d="M4 56 L20 26 L34 46 L50 20 L60 56 Z" fill="#d0d0d0" />
+
+              <!-- film window -->
+              <rect x="10" y="28" width="44" height="52" rx="2" fill="#ffffff"></rect>
+              <g transform="translate(10,28)">
+                <!-- left sprocket holes -->
+                <g fill="#e6e6e6">
+                  <rect x="-6" y="6" width="6" height="6" rx="1"></rect>
+                  <rect x="-6" y="22" width="6" height="6" rx="1"></rect>
+                  <rect x="-6" y="38" width="6" height="6" rx="1"></rect>
+                </g>
+
+                <!-- right sprocket holes -->
+                <g transform="translate(44,0)" fill="#e6e6e6">
+                  <rect x="6" y="6" width="6" height="6" rx="1"></rect>
+                  <rect x="6" y="22" width="6" height="6" rx="1"></rect>
+                  <rect x="6" y="38" width="6" height="6" rx="1"></rect>
+                </g>
+
+                <!-- simple artwork: mountain + sun -->
+                <g transform="translate(4,6)">
+                  <polygon points="8,36 20,8 32,36" fill="#d0d7ef"></polygon>
+                  <circle cx="26" cy="14" r="6" fill="#ffd580"></circle>
+                  <rect x="0" y="36" width="44" height="6" fill="#f0f2fa"></rect>
+                </g>
+
+                <!-- play button to indicate media -->
+                <g transform="translate(12,16)">
+                  <circle cx="10" cy="10" r="10" fill="#d9e3ff" opacity="0.95"></circle>
+                  <polygon points="14,10 8,14 8,6" fill="#6b7aa6"></polygon>
+                </g>
               </g>
-              <polygon points="28,36 40,44 28,52" fill="#ffffff" opacity="0.9" />
+
+              <!-- label -->
+              <text x="32" y="88" font-family="Helvetica, Arial, sans-serif" font-size="8" fill="#6c757d"
+                text-anchor="middle">
+                No image
+              </text>
             </svg>
           </div>
           {{/if}}
 
           <!-- Card Body -->
-          <div class="card-body p-2">
-            <h6 class="card-title mb-1 text-truncate" title="{{title}}">{{title}}</h6>
-            <div class="d-flex justify-content-between align-items-center">
-              <div class="d-flex flex-wrap gap-1 align-items-center flex-grow-1 min-w-0">
-                {{#if category}}
-                <span class="badge category-{{category}} small text-truncate">{{category}}</span>
-                {{/if}}
-                <span class="badge rating-{{rating}} small">{{#if rating}}{{rating}}{{else}}PG18{{/if}}</span>
+          <div class="card-body p-3 d-flex flex-column" style="min-height:110px;">
+            <h6 class="card-title mb-2 text-truncate" title="{{title}}">{{title}}</h6>
+
+            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap w-100">
+              {{#if category}}
+              <span class="badge bg-info text-dark small text-truncate" style="max-width:8rem;">{{category}}</span>
+              {{/if}}
+
+              <span class="badge small
+                {{#if (eq rating " G")}}bg-success {{else if (eq rating "PG" )}}bg-warning text-dark {{else if (eq
+                rating "PG-13" )}}bg-orange text-dark {{else if (eq rating "R" )}}bg-danger {{else if (eq rating "NC-17"
+                )}}bg-dark {{else}}bg-secondary{{/if}}">
+                {{#if rating}}{{rating}}{{else}}PG-18{{/if}}
+              </span>
+
+
+              <div class="ms-auto text-end">
+                <small class="text-muted d-block">{{releaseYear}}</small>
               </div>
-              <div class="d-flex flex-column align-items-end">
-                <small class="text-muted">{{releaseYear}}</small>
-                {{#if length}}<small class="text-muted text-nowrap">{{length}} min</small>{{/if}}
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+              <div class="d-flex gap-2 align-items-center">
+                {{#if length}}<small class="text-muted">{{length}} min</small>{{else}}<small
+                  class="text-muted">—</small>{{/if}}
               </div>
+
+              <!-- Outer anchor wraps the whole card, keep this as a visual action -->
+              <span class="btn btn-sm btn-outline-primary">View</span>
             </div>
           </div>
 
@@ -128,3 +202,8 @@
     </ul>
   </nav>
 </div>
+<style>
+  .bg-orange {
+    background-color: #fd7e14;
+  }
+</style>
