@@ -1,4 +1,9 @@
-import { createUser, readUserByEmail, updateUserPasswordById } from '../dao/user.js';
+import {
+    createUser,
+    readUserByEmail,
+    updateUserAvatarById,
+    updateUserPasswordById,
+} from '../dao/user.js';
 import { readCustomerByUserId } from '../dao/customer.js';
 import { compareSync, hashSync } from 'bcrypt';
 import { logger } from '../util/logger.js';
@@ -78,11 +83,14 @@ export const fetchCustomer = (userId, callback) => {
     readUserById(userId, (error, user) => {
         if (error) return callback(error);
         if (!user) return callback(new Error('User not found.'));
+        if (user.role !== 'CUSTOMER') return callback(new Error('User is not a customer.'));
 
         readCustomerByUserId(userId, (error, customer) => {
             if (error) return callback(error);
             if (!customer) return callback(new Error('Customer not found.'));
-            return callback(null, { user, customer });
+
+            const result = { user, customer };
+            return callback(null, result);
         });
     });
 };
@@ -91,6 +99,7 @@ export const fetchCustomer = (userId, callback) => {
 //     readUserById(userId, (error, user) => {
 //         if (error) return callback(error);
 //         if (!user) return callback(new Error('User not found.'));
+//         if (user.role !== 'STAFF') return callback(new Error('User is not staff.'));
 
 //         readStaffByUserId(userId, (error, staff) => {
 //             if (error) return callback(error);
@@ -99,7 +108,21 @@ export const fetchCustomer = (userId, callback) => {
 //     });
 // };
 
-export const resetPassword = (userId, newPassword, callback) => {
+export const updateAvatar = (userId, avatarBase64, avatarFormat, callback) => {
+    if (!userId || !avatarBase64 || !avatarFormat) {
+        return callback(new Error('User ID, avatar image and format are required.'));
+    }
+    updateUserAvatarById(userId, avatarBase64, avatarFormat, (error, result) => {
+        if (error) return callback(error);
+        if (result.affectedRows === 0) {
+            logger.warn(`No rows updated for userId ${userId} when updating avatar`);
+            return callback(new Error('Avatar update failed.'));
+        }
+        return callback(null, result);
+    });
+};
+
+export const changePassword = (userId, newPassword, callback) => {
     if (!userId || !newPassword) {
         return callback(new Error('User ID and new password are required.'));
     }
@@ -109,7 +132,7 @@ export const resetPassword = (userId, newPassword, callback) => {
     updateUserPasswordById(userId, passwordHash, (error, result) => {
         if (error) return callback(error);
         if (result.affectedRows === 0) {
-            logger.warn(`No rows updated for userId ${userId}`);
+            logger.warn(`No rows updated for userId ${userId} when changing password`);
             return callback(new Error('Password update failed.'));
         }
 
@@ -134,7 +157,7 @@ export const generateRefreshToken = (user, callback) => {
         }
 
         if (result.affectedRows === 0) {
-            logger.warn(`No rows updated for userId ${user.userId}`);
+            logger.warn(`No rows updated for userId ${user.userId} when setting refresh token`);
         }
 
         return callback(null, refreshToken);
