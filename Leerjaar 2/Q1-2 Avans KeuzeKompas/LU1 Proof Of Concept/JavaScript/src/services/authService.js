@@ -51,13 +51,27 @@ export const register = (
     district,
     postalCode,
     storeId,
+    phone,
+    countryName,
+    cityName,
     callback
 ) => {
-    if (!email || !password) return callback(new Error('Invalid input.'));
+    logger.debug(
+        `register() called with email=${email}, firstName=${firstName}, lastName=${lastName}, storeId=${storeId}`
+    );
+
+    // --------------------------
+    // 1. Validate input
+    // --------------------------
+    if (!email || !password) {
+        logger.debug('register() invalid input: missing email or password');
+        return callback(new Error('Invalid input.'));
+    }
 
     const passwordRequirements =
         /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{6,}$/;
     if (!passwordRequirements.test(password)) {
+        logger.debug('register() password does not meet minimal requirements');
         return callback(new Error('Password does not meet minimal requirements.'));
     }
 
@@ -65,69 +79,231 @@ export const register = (
     const userId = uuid();
     const passwordHash = hashSync(password, 10);
 
-    // 1. Check email table
-    readEmail(normalizedEmail, (err, emailRow) => {
-        if (err) return callback(err);
+    logger.debug(`register() normalizedEmail=${normalizedEmail}, generated userId=${userId}`);
 
-        if (!emailRow) {
-            // Email does not exist → create one
-            createEmail(normalizedEmail, (err2, newEmailRow) => {
-                if (err2) return callback(err2);
-                attachUser(newEmailRow.email_id);
-            });
-        } else {
-            attachUser(emailRow.email_id);
+    // --------------------------
+    // 2. Check if user already exists
+    // --------------------------
+    readUserByEmail(normalizedEmail, (readUserError, existingUser) => {
+        if (readUserError) {
+            logger.debug(
+                `register() readUserByEmail error for ${normalizedEmail}: ${
+                    readUserError.message || readUserError
+                }`
+            );
+            return callback(readUserError);
         }
-    });
 
-    function attachUser(emailId) {
-        // 2. Check if customer already exists with this email
-        readCustomerByEmailId(emailId, (err, customer) => {
-            if (err) return callback(err);
+        if (existingUser) {
+            logger.debug(
+                `register() user already exists for email ${normalizedEmail}, will check for customer`
+            );
 
-            if (customer) {
-                if (customer.userId) {
-                    return callback(new Error('Account already exists for this customer.'));
+            // User exists → check if customer exists
+            readCustomerByUserId(existingUser.userId, (customerError, customer) => {
+                if (customerError) {
+                    logger.debug(
+                        `register() readCustomerByUserId error for userId=${existingUser.userId}: ${
+                            customerError.message || customerError
+                        }`
+                    );
+                    return callback(customerError);
                 }
 
-                // Customer exists but no user → create user and link
-                createUser(userId, emailId, passwordHash, 'CUSTOMER', null, null, (err2) => {
-                    if (err2) return callback(err2);
+                if (customer) {
+                    logger.debug(
+                        `register() customer already exists for userId=${existingUser.userId}`
+                    );
+                    return callback(new Error('Account already exists for this email.'));
+                }
 
-                    linkCustomerToUser(customer.customer_id, userId, (err3) => {
-                        if (err3) return callback(err3);
-                        logger.info(
-                            `Linked existing customer ${customer.customer_id} to new user ${userId}`
-                        );
-                        return callback(null, { userId, email: normalizedEmail });
-                    });
-                });
-            } else {
-                // No customer → create new customer + user
-                createUser(userId, emailId, passwordHash, 'CUSTOMER', null, null, (err2) => {
-                    if (err2) return callback(err2);
+                // User exists but no customer → create customer
+                logger.debug(
+                    `register() user exists without customer, creating customer for userId=${existingUser.userId}`
+                );
 
-                    makeAddress(address, district, postalCode, (err3, addressId) => {
-                        if (err3) return callback(err3);
+                makeAddress(
+                    address,
+                    district,
+                    postalCode,
+                    phone,
+                    countryName,
+                    cityName,
+                    (addressError, addressId) => {
+                        if (addressError) {
+                            logger.debug(
+                                `register() makeAddress error for userId=${existingUser.userId}: ${
+                                    addressError.message || addressError
+                                }`
+                            );
+                            return callback(addressError);
+                        }
 
                         createCustomer(
                             firstName,
                             lastName,
                             addressId,
-                            userId,
-                            emailId,
+                            existingUser.userId,
+                            existingUser.emailId,
                             storeId,
-                            (err4) => {
-                                if (err4) return callback(err4);
-                                logger.info(`Created new customer + user ${userId}`);
-                                return callback(null, { userId, email: normalizedEmail });
+                            (customerCreateError) => {
+                                if (customerCreateError) {
+                                    logger.debug(
+                                        `register() createCustomer error for userId=${
+                                            existingUser.userId
+                                        }: ${customerCreateError.message || customerCreateError}`
+                                    );
+                                    return callback(customerCreateError);
+                                }
+
+                                logger.info(
+                                    `Created customer for existing user ${existingUser.userId}`
+                                );
+                                return callback(null, {
+                                    userId: existingUser.userId,
+                                    email: normalizedEmail,
+                                });
                             }
                         );
-                    });
+                    }
+                );
+            });
+
+            return;
+        }
+
+        // --------------------------
+        // 3. User does not exist → check email table
+        // --------------------------
+        readEmail(normalizedEmail, (readEmailError, rawEmailRows) => {
+            if (readEmailError) {
+                logger.debug(
+                    `register() readEmail error for ${normalizedEmail}: ${
+                        readEmailError.message || readEmailError
+                    }`
+                );
+                return callback(readEmailError);
+            }
+
+            let emailRow = rawEmailRows && rawEmailRows.length > 0 ? rawEmailRows[0] : null;
+
+            if (!emailRow) {
+                logger.debug(
+                    `register() email not found, creating new email row for ${normalizedEmail}`
+                );
+                createEmail(normalizedEmail, (err2, result) => {
+                    if (err2) {
+                        logger.debug(
+                            `register() createEmail error for ${normalizedEmail}: ${
+                                err2.message || err2
+                            }`
+                        );
+                        return callback(err2);
+                    }
+                    const emailId = result.insertId;
+                    logger.debug(
+                        `register() created email row for ${normalizedEmail}: emailId=${emailId}`
+                    );
+                    attachUser(emailId);
                 });
+            } else {
+                attachUser(emailRow.email_id);
             }
         });
-    }
+
+        // --------------------------
+        // 4. Attach user to email / customer
+        // --------------------------
+        function attachUser(emailId) {
+            logger.debug(`attachUser() called with emailId=${emailId} for userId=${userId}`);
+
+            // Check if customer exists with this email
+            readCustomerByEmailId(emailId, (readCustomerError, customer) => {
+                if (readCustomerError) {
+                    logger.debug(
+                        `attachUser() readCustomerByEmailId error for emailId=${emailId}: ${
+                            readCustomerError.message || readCustomerError
+                        }`
+                    );
+                    return callback(readCustomerError);
+                }
+
+                if (customer && customer.userId) {
+                    logger.debug(
+                        `attachUser() customer already linked to userId=${customer.userId}`
+                    );
+                    return callback(new Error('Account already exists for this customer.'));
+                }
+
+                // Create user if it doesn't exist
+                createUser(
+                    userId,
+                    emailId,
+                    passwordHash,
+                    'CUSTOMER',
+                    null,
+                    null,
+                    (createUserError) => {
+                        if (createUserError) {
+                            logger.debug(
+                                `attachUser() createUser error for userId=${userId}: ${
+                                    createUserError.message || createUserError
+                                }`
+                            );
+                            return callback(createUserError);
+                        }
+
+                        logger.debug(
+                            `attachUser() created user ${userId}, proceeding with customer creation`
+                        );
+
+                        // Create address and customer
+                        makeAddress(
+                            address,
+                            district,
+                            postalCode,
+                            phone,
+                            countryName,
+                            cityName,
+                            (addressError, { country, city, address }) => {
+                                if (addressError) {
+                                    logger.debug(
+                                        `attachUser() makeAddress error for userId=${userId}: ${
+                                            addressError.message || addressError
+                                        }`
+                                    );
+                                    return callback(addressError);
+                                }
+
+                                createCustomer(
+                                    firstName,
+                                    lastName,
+                                    address.address_id,
+                                    userId,
+                                    emailId,
+                                    storeId,
+                                    (customerCreateError) => {
+                                        if (customerCreateError) {
+                                            logger.debug(
+                                                `attachUser() createCustomer error for userId=${userId}: ${
+                                                    customerCreateError.message ||
+                                                    customerCreateError
+                                                }`
+                                            );
+                                            return callback(customerCreateError);
+                                        }
+
+                                        logger.info(`Created new customer + user ${userId}`);
+                                        return callback(null, { userId, email: normalizedEmail });
+                                    }
+                                );
+                            }
+                        );
+                    }
+                );
+            });
+        }
+    });
 };
 
 export const refreshAccessToken = (refreshToken, callback) => {

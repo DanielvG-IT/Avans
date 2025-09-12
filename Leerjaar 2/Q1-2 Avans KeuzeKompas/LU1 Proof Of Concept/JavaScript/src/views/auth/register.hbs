@@ -47,16 +47,38 @@
                             <input type="text" class="form-control" id="address" placeholder="Main Street 123" required>
                         </div>
 
-                        <!-- District + Postal -->
                         <div class="row gx-2 mb-3">
-                            <div class="col-md-6">
-                                <label for="district" class="form-label">District</label>
-                                <input type="text" class="form-control" id="district" placeholder="North Side" required>
-                            </div>
+                            <!-- Postal Code -->
                             <div class="col-md-6">
                                 <label for="postal-code" class="form-label">Postal Code</label>
                                 <input type="text" class="form-control" id="postal-code" placeholder="12345" required>
                             </div>
+                            <!-- City -->
+                            <div class="col-md-6">
+                                <label for="location" class="form-label">City</label>
+                                <input type="text" class="form-control" id="location" placeholder="Amsterdam" required>
+                            </div>
+
+                        </div>
+                        <div class="row gx-2 mb-3">
+                            <!-- State / Province -->
+                            <div class="col-md-6">
+                                <label for="province" class="form-label">Province/State</label>
+                                <input type="text" class="form-control" id="province" placeholder="North Holland"
+                                    required>
+                            </div>
+                            <!-- Country -->
+                            <div class="col-md-6">
+                                <label for="country-name" class="form-label">Country</label>
+                                <input type="text" class="form-control" id="country-name" placeholder="Netherlands"
+                                    required>
+                            </div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="phone" placeholder="+31 6 12345678">
                         </div>
 
                         <!-- Store -->
@@ -92,33 +114,51 @@
     async function clientRegister(event) {
         event.preventDefault();
 
+        const form = document.getElementById('registerForm');
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Registering...';
+
+        // hide alerts
+        errorMessage.classList.add('d-none');
+        successMessage.classList.add('d-none');
+
+        // helper to get trimmed value
+        const val = (id) => { return (document.getElementById(id) ? document.getElementById(id).value.trim() : ''); }
+
         const data = {
-            firstName: document.getElementById('first-name').value.trim(),
-            lastName: document.getElementById('last-name').value.trim(),
-            email: document.getElementById('email').value.trim(),
+            firstName: val('first-name'),
+            lastName: val('last-name'),
+            email: val('email'),
             password: document.getElementById('password').value,
             confirmPassword: document.getElementById('confirm-password').value,
-            address: document.getElementById('address').value.trim(),
-            district: document.getElementById('district').value.trim(),
-            postalCode: document.getElementById('postal-code').value.trim(),
+            address: val('address'),
+            postalCode: val('postal-code'),
+            city: val('location'),
+            province: val('province'),
+            countryName: val('country-name'),
+            phone: val('phone'),
             storeId: document.getElementById('store-id').value,
             terms: document.getElementById('terms').checked
         };
 
-        const errorMessage = document.getElementById('errorMessage');
-        const successMessage = document.getElementById('successMessage');
-        errorMessage.classList.add('d-none');
-        successMessage.classList.add('d-none');
-
+        // basic client-side validation
         if (!data.terms) {
             errorMessage.textContent = 'You must agree to the Terms of Service.';
             errorMessage.classList.remove('d-none');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Register';
             return;
         }
 
         if (data.password !== data.confirmPassword) {
             errorMessage.textContent = 'Passwords do not match.';
             errorMessage.classList.remove('d-none');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Register';
             return;
         }
 
@@ -129,17 +169,36 @@
                 body: JSON.stringify(data)
             });
 
-            const result = await res.json();
-            if (!result.success) {
-                throw new Error(result.error || 'Registration failed.');
+            // attempt to parse JSON response safely
+            let result;
+            try {
+                result = await res.json();
+            } catch {
+                result = null;
             }
 
-            successMessage.textContent = 'Registration successful! You can now login.';
+            if (!res.ok || result === null) {
+                const msg = (result && (result.error || result.message)) || `Registration failed (${res.status}).`;
+                throw new Error(msg);
+            }
+
+            // prefer explicit success flag if provided
+            if (result && result.success === false) {
+                throw new Error(result.error || result.message || 'Registration failed.');
+            }
+            successMessage.textContent = (result && result.message) || 'Registration successful! You can now login.';
             successMessage.classList.remove('d-none');
-            document.getElementById('registerForm').reset();
+            form.reset();
+            setTimeout(() => {
+                window.location.replace('/auth/login');
+            }, 3000);
         } catch (err) {
-            errorMessage.textContent = err.message;
+            errorMessage.textContent = err.message || 'An unexpected error occurred.';
             errorMessage.classList.remove('d-none');
+
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Register';
         }
     }
 </script>

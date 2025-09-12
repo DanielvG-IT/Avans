@@ -40,25 +40,44 @@ export const createUser = (
         INSERT INTO user (userId, emailId, passwordHash, role, avatar, avatarFormat) VALUES (?,?,?,?,?,?);
     `;
 
-    query(
-        sql,
-        [
-            normalizeUserId(userId),
-            normalizeId(emailId),
-            hashedPassword,
-            normalizeRole(role),
-            avatar ? normalizeBase64(avatar) : null,
-            avatar ? normalizeFormat(avatarFormat) : null,
-        ],
-        (error, rows) => {
-            if (typeof callback !== 'function') return;
-            if (error) {
-                logger.error('MySQL Error:', error);
-                return callback(error);
-            }
-            callback(null, rows);
+    const params = [
+        normalizeUserId(userId),
+        normalizeId(emailId),
+        hashedPassword,
+        normalizeRole(role),
+        avatar ? normalizeBase64(avatar) : null,
+        avatar ? normalizeFormat(avatarFormat) : null,
+    ];
+
+    // Prepare a safe version of params for debugging (don't log sensitive values)
+    const safeParams = [
+        params[0],
+        params[1],
+        params[2] ? '[REDACTED]' : null,
+        params[3],
+        params[4] ? '[REDACTED]' : null,
+        params[5],
+    ];
+
+    logger.debug('createUser called', { sql: sql.trim(), params: safeParams });
+
+    query(sql, params, (error, rows) => {
+        if (typeof callback !== 'function') return;
+        if (error) {
+            logger.error('User MySQL Error:', error);
+            logger.debug('createUser failed', {
+                error: error.message,
+                sql: sql.trim(),
+                params: safeParams,
+            });
+            return callback(error);
         }
-    );
+        logger.debug('createUser succeeded', {
+            userId: params[0],
+            affectedRows: rows?.affectedRows ?? null,
+        });
+        callback(null, rows);
+    });
 };
 
 export const readUserById = (userId, callback) => {
@@ -72,7 +91,7 @@ export const readUserById = (userId, callback) => {
     query(sql, [normalizeUserId(userId)], (error, rows) => {
         if (typeof callback !== 'function') return;
         if (error) {
-            logger.error('MySQL Error:', error);
+            logger.error('User MySQL Error:', error);
             return callback(error);
         }
         const user = rows[0];
@@ -92,7 +111,7 @@ export const readUserByEmail = (email, callback) => {
     query(sql, [normalizeEmail(email)], (error, rows) => {
         if (typeof callback !== 'function') return;
         if (error) {
-            logger.error('MySQL Error:', error);
+            logger.error('User MySQL Error:', error);
             return callback(error);
         }
         const user = rows[0];
@@ -112,7 +131,7 @@ export const readUserByRefreshToken = (refreshToken, callback) => {
     query(sql, [refreshToken], (error, rows) => {
         if (typeof callback !== 'function') return;
         if (error) {
-            logger.error('MySQL Error:', error);
+            logger.error('User MySQL Error:', error);
             return callback(error);
         }
         const user = rows[0];
@@ -127,7 +146,7 @@ export const updateUserRefreshTokenById = (userId, refreshToken, callback) => {
     query(sql, [refreshToken, normalizeUserId(userId)], (error, rows) => {
         if (typeof callback !== 'function') return;
         if (error) {
-            logger.error('MySQL Error:', error);
+            logger.error('User MySQL Error:', error);
             return callback(error);
         }
         callback(null, rows);
@@ -140,7 +159,7 @@ export const updateUserPasswordById = (userId, newPasswordHash, callback) => {
     query(sql, [newPasswordHash, normalizeUserId(userId)], (error, rows) => {
         if (typeof callback !== 'function') return;
         if (error) {
-            logger.error('MySQL Error:', error);
+            logger.error('User MySQL Error:', error);
             return callback(error);
         }
         callback(null, rows);
@@ -155,7 +174,7 @@ export const updateUserAvatarById = (userId, avatarBase64, avatarFormat, callbac
         [normalizeBase64(avatarBase64), normalizeFormat(avatarFormat), normalizeUserId(userId)],
         (error, result) => {
             if (error) {
-                logger.error('MySQL Error:', error);
+                logger.error('User MySQL Error:', error);
                 return callback(error);
             }
             callback(null, result);
