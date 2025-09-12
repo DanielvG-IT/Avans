@@ -64,7 +64,7 @@
                 setTimeout(() => window.location.replace("/auth/profile"), 1000);
             } else {
                 const data = await response.json();
-                errorMessage.querySelector('p').textContent = data.message || 'Login failed. Try again.';
+                errorMessage.querySelector('p').textContent = data.error || 'Login failed. Try again.';
                 errorMessage.classList.remove('d-none');
             }
         } catch (err) {
