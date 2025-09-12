@@ -37,7 +37,7 @@ export const createUser = (
     callback
 ) => {
     const sql = `
-        INSERT INTO users (userId, emailId, passwordHash, role, avatar, avatarFormat) VALUES (?,?,?,?,?,?);
+        INSERT INTO user (userId, emailId, passwordHash, role, avatar, avatarFormat) VALUES (?,?,?,?,?,?);
     `;
 
     query(
