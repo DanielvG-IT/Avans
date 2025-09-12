@@ -19,6 +19,17 @@ const onceCallback = (cb) => {
     };
 };
 
+export const createCustomer = (callback) => {
+    const cb = onceCallback(callback);
+    try {
+        logger.warn('createCustomer is not implemented yet.');
+        cb(null, null);
+    } catch (err) {
+        logger.error('createCustomer MySql error:', err);
+        cb(err);
+    }
+};
+
 export const readCustomerById = (customerId, callback) => {
     const cb = onceCallback(callback);
     try {
@@ -84,6 +95,27 @@ export const readCustomerByUserId = (userId, callback) => {
         });
     } catch (err) {
         logger.error('getCustomerByUserId sync error:', err);
+        cb(err);
+    }
+};
+
+export const updateCustomer = (callback) => {
+    logger.warn('updateCustomer is not implemented yet.');
+};
+
+export const deleteCustomer = (customerId, callback) => {
+    const cb = onceCallback(callback);
+    try {
+        const sql = `UPDATE customer SET active = 0 WHERE customer_id = ?`;
+        query(sql, [customerId], (error, result) => {
+            if (error) {
+                logger.error('deleteCustomer MySQL Error:', error);
+                return cb(error);
+            }
+            cb(null, result);
+        });
+    } catch (err) {
+        logger.error('deleteCustomer sync error:', err);
         cb(err);
     }
 };
