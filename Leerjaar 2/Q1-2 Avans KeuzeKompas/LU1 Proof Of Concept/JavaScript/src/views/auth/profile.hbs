@@ -46,7 +46,7 @@
               <button onclick="saveAvatar()" id="saveAvatarBtn" class="btn btn-sm btn-success d-none mb-1">
                 Save Avatar
               </button>
-              <div id="avatarFeedback" class="text-center" style="font-size:0.875rem; min-height:1.2em;"></div>
+              <div id="avatarFeedback" class="text-center d-none" style="font-size:0.875rem; min-height:1.2em;"></div>
             </div>
           </div>
 
@@ -232,9 +232,11 @@
 
     if (!file) return;
 
-    // Reset feedback
-    feedbackEl.textContent = '';
-    feedbackEl.classList.remove('text-success', 'text-danger');
+    // Reset feedback and ensure feedback is visible when needed
+    if (feedbackEl) {
+      feedbackEl.textContent = '';
+      feedbackEl.classList.remove('text-success', 'text-danger', 'd-none');
+    }
 
     const form = new FormData();
     form.append('avatar', file);
@@ -249,21 +251,32 @@
       const data = await response.json().catch(() => ({}));
 
       if (response.ok) {
-        feedbackEl.textContent = data.message || 'Avatar saved successfully!';
-        feedbackEl.classList.add('text-success');
-        // Hide save button
-        document.getElementById('saveAvatarBtn').classList.add('d-none');
-        setTimeout(() => {
-          feedbackEl.classList.add('d-none');
-        }, 2500);
+        // Hide save button if present
+        const saveBtn = document.getElementById('saveAvatarBtn');
+        if (saveBtn) saveBtn.classList.add('d-none');
+
+        if (feedbackEl) {
+          feedbackEl.classList.remove('d-none', 'text-danger');
+          feedbackEl.classList.add('text-success');
+          feedbackEl.textContent = data.message || 'Avatar saved successfully!';
+          setTimeout(() => {
+            feedbackEl.classList.add('d-none');
+          }, 2500);
+        }
       } else {
-        feedbackEl.textContent = data.error || data.message || 'Failed to save avatar.';
-        feedbackEl.classList.add('text-danger');
+        if (feedbackEl) {
+          feedbackEl.classList.remove('d-none', 'text-success');
+          feedbackEl.classList.add('text-danger');
+          feedbackEl.textContent = data.error || data.message || 'Failed to save avatar.';
+        }
       }
     } catch (err) {
       console.error(err);
-      feedbackEl.textContent = 'Network error. Try again.';
-      feedbackEl.classList.add('text-danger');
+      if (feedbackEl) {
+        feedbackEl.classList.remove('d-none', 'text-success');
+        feedbackEl.classList.add('text-danger');
+        feedbackEl.textContent = 'Network error. Try again.';
+      }
     }
   }
 </script>

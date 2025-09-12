@@ -31,7 +31,7 @@ const hbs = create({
 });
 
 // General Middleware
-app.use(express.json({ limit: '10mb' })); // to support large image payloads
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
