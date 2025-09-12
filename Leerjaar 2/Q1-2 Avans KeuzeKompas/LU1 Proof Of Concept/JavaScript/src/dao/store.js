@@ -37,11 +37,11 @@ export const createStore = (name, addressId, managerStaffId, callback) => {
     }
 };
 
-export const readStores = (email, callback) => {
+export const readStores = (callback) => {
     const cb = onceCallback(callback);
     try {
         const sql = `SELECT * FROM store`;
-        query(sql, [email], (error, rows) => {
+        query(sql, null, (error, rows) => {
             if (error) {
                 logger.error('readStores MySQL Error:', error);
                 return cb(error);

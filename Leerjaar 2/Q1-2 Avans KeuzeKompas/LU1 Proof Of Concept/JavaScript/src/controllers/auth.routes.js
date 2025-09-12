@@ -1,9 +1,9 @@
-import express from 'express';
-import { logger } from '../util/logger.js';
-import { updateUserAvatarById } from '../dao/user.js';
-import { uploadAvatar } from '../middleware/images.js';
-import { getBase64, getFormatFromMime } from '../util/image.js';
 import { requireCustomerAuthApi, requireUserAuthWeb } from '../middleware/auth.js';
+import { getBase64, getFormatFromMime } from '../util/image.js';
+import { fetchAllStores } from '../services/storeService.js';
+import { uploadAvatar } from '../middleware/images.js';
+import { updateUserAvatarById } from '../dao/user.js';
+import { logger } from '../util/logger.js';
 import {
     generateRefreshToken,
     generateAccessToken,
@@ -14,7 +14,7 @@ import {
     logOut,
     login,
 } from '../services/authService.js';
-import { readStores } from '../dao/store.js';
+import express from 'express';
 
 const authRouter = express.Router();
 const redirectUrl = '/auth/profile';
@@ -78,11 +78,13 @@ authRouter.get('/register', (req, res, next) => {
     if (req.user) {
         return res.redirect(redirectUrl);
     }
-    readStores((err, stores) => {
+    logger.debug('Rendering registration page, fetching stores...');
+    fetchAllStores((err, stores) => {
         if (err) return next(err);
         if (!stores || stores.length === 0) {
             return next(new Error('No stores found. Cannot register without a store.'));
         }
+        logger.debug(`Fetched ${stores.length} stores for registration page.`);
         res.render('auth/register', { title: 'Register', stores: stores });
     });
 });

@@ -1,12 +1,9 @@
-// services/addressService.js
 import {
     getOrCreateCountry,
     getOrCreateCity,
     readAddress,
     createAddress,
     readAddressById,
-    updateAddress,
-    deleteAddress,
 } from '../dao/address.js';
 import { logger } from '../util/logger.js';
 
