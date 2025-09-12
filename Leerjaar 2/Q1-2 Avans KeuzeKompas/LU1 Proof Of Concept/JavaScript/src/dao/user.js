@@ -8,44 +8,66 @@ const mimeMap = {
     WEBP: 'image/webp',
 };
 
+// --- Normalizers ---
+const normalizeEmail = (email) =>
+    String(email || '')
+        .trim()
+        .toLowerCase();
+const normalizeRole = (role) =>
+    String(role || '')
+        .trim()
+        .toUpperCase();
+const normalizeFormat = (format) =>
+    String(format || '')
+        .trim()
+        .toUpperCase();
+const normalizeUserId = (id) => String(id || '').trim();
+const normalizeBase64 = (input) =>
+    String(input || '')
+        .replace(/^data:[^;]+;base64,/, '')
+        .trim();
+
 const makeDataUrl = (avatar, format) => {
     if (!avatar || !format) return null;
-    // if it's already a data URI, return as-is
     if (typeof avatar === 'string' && avatar.startsWith('data:')) return avatar;
 
-    const mime = mimeMap[(format || '').toUpperCase()] || 'application/octet-stream';
-
-    // avatar may be stored as a Buffer or as a base64 string
-    let base64;
-    if (Buffer.isBuffer(avatar)) {
-        base64 = avatar.toString('base64');
-    } else {
-        // strip any accidental data URI prefix if present and ensure it's a string
-        base64 = String(avatar).replace(/^data:[^;]+;base64,/, '');
-    }
+    const mime = mimeMap[normalizeFormat(format)] || 'application/octet-stream';
+    const base64 = Buffer.isBuffer(avatar) ? avatar.toString('base64') : normalizeBase64(avatar);
 
     return `data:${mime};base64,${base64}`;
 };
 
+// --- Queries ---
 export const createUser = (userId, email, hashedPassword, role, avatar, avatarFormat, callback) => {
     const sql = `
         INSERT INTO users (userId, email, passwordHash, role, avatar, avatarFormat) VALUES (?,?,?,?,?,?);
     `;
 
-    query(sql, [userId, email, hashedPassword, role, avatar, avatarFormat], (error, rows) => {
-        if (typeof callback !== 'function') return;
-        if (error) {
-            logger.error('MySQL Error:', error);
-            return callback(error);
+    query(
+        sql,
+        [
+            normalizeUserId(userId),
+            normalizeEmail(email),
+            hashedPassword,
+            normalizeRole(role),
+            avatar ? normalizeBase64(avatar) : null,
+            avatar ? normalizeFormat(avatarFormat) : null,
+        ],
+        (error, rows) => {
+            if (typeof callback !== 'function') return;
+            if (error) {
+                logger.error('MySQL Error:', error);
+                return callback(error);
+            }
+            callback(null, rows);
         }
-        callback(null, rows);
-    });
+    );
 };
 
 export const readUserById = (userId, callback) => {
     const sql = `SELECT userId, email, passwordHash, role, avatar, avatarFormat FROM users WHERE userId = ? LIMIT 1`;
 
-    query(sql, [userId], (error, rows) => {
+    query(sql, [normalizeUserId(userId)], (error, rows) => {
         if (typeof callback !== 'function') return;
         if (error) {
             logger.error('MySQL Error:', error);
@@ -60,7 +82,7 @@ export const readUserById = (userId, callback) => {
 export const readUserByEmail = (email, callback) => {
     const sql = `SELECT userId, email, passwordHash, role, avatar, avatarFormat FROM users WHERE email = ? LIMIT 1`;
 
-    query(sql, [email], (error, rows) => {
+    query(sql, [normalizeEmail(email)], (error, rows) => {
         if (typeof callback !== 'function') return;
         if (error) {
             logger.error('MySQL Error:', error);
@@ -88,10 +110,10 @@ export const readUserByRefreshToken = (refreshToken, callback) => {
     });
 };
 
-export const updateUserRefreshTokenByUserId = (userId, refreshToken, callback) => {
+export const updateUserRefreshTokenById = (userId, refreshToken, callback) => {
     const sql = `UPDATE users SET refreshToken = ? WHERE userId = ?`;
 
-    query(sql, [refreshToken, userId], (error, rows) => {
+    query(sql, [refreshToken, normalizeUserId(userId)], (error, rows) => {
         if (typeof callback !== 'function') return;
         if (error) {
             logger.error('MySQL Error:', error);
@@ -104,7 +126,7 @@ export const updateUserRefreshTokenByUserId = (userId, refreshToken, callback) =
 export const updateUserPasswordById = (userId, newPasswordHash, callback) => {
     const sql = `UPDATE users SET passwordHash = ? WHERE userId = ?`;
 
-    query(sql, [newPasswordHash, userId], (error, rows) => {
+    query(sql, [newPasswordHash, normalizeUserId(userId)], (error, rows) => {
         if (typeof callback !== 'function') return;
         if (error) {
             logger.error('MySQL Error:', error);
@@ -117,11 +139,20 @@ export const updateUserPasswordById = (userId, newPasswordHash, callback) => {
 export const updateUserAvatarById = (userId, avatarBase64, avatarFormat, callback) => {
     const sql = `UPDATE users SET avatar = ?, avatarFormat = ? WHERE userId = ?`;
 
-    query(sql, [avatarBase64, avatarFormat, userId], (error, result) => {
-        if (error) {
-            logger.error('MySQL Error:', error);
-            return callback(error);
+    query(
+        sql,
+        [normalizeBase64(avatarBase64), normalizeFormat(avatarFormat), normalizeUserId(userId)],
+        (error, result) => {
+            if (error) {
+                logger.error('MySQL Error:', error);
+                return callback(error);
+            }
+            callback(null, result);
         }
-        callback(null, result);
-    });
+    );
+};
+
+export const deleteUserById = (userId, callback) => {
+    logger.warn;
+    ('deleteUserById is not implemented yet.');
 };

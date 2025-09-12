@@ -9,11 +9,7 @@ import { compareSync, hashSync } from 'bcrypt';
 import { logger } from '../util/logger.js';
 import { v4 as uuid } from 'uuid';
 import jwt from 'jsonwebtoken';
-import {
-    readUserById,
-    readUserByRefreshToken,
-    updateUserRefreshTokenByUserId,
-} from '../dao/user.js';
+import { readUserById, readUserByRefreshToken, updateUserRefreshTokenById } from '../dao/user.js';
 
 export const login = (email, password, callback) => {
     if (!email || !password) {
@@ -73,7 +69,7 @@ export const refreshAccessToken = (refreshToken, callback) => {
 };
 
 export const logOut = (userId, callback) => {
-    updateUserRefreshTokenByUserId(userId, null, (error, result) => {
+    updateUserRefreshTokenById(userId, null, (error, result) => {
         if (error) return callback(error);
         else return callback(null, result);
     });
