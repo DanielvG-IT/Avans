@@ -47,8 +47,14 @@ export const createAddress = (address, district, cityId, postalCode, phone, loca
 export const readAddressById = (addressId, callback) => {
     const cb = onceCallback(callback);
     try {
-        logger.warn('readAddressById is not implemented yet.');
-        cb(null, null);
+        const sql = `SELECT * FROM address WHERE address_id = ? LIMIT 1`;
+        query(sql, [addressId], (err, rows) => {
+            if (err) {
+                logger.error('readAddressById MySQL Error:', err);
+                return cb(err);
+            }
+            cb(null, rows[0]);
+        });
     } catch (err) {
         logger.error('readAddressById MySql error:', err);
         cb(err);
@@ -58,34 +64,41 @@ export const readAddressById = (addressId, callback) => {
 export const readAddress = (address, callback) => {
     const cb = onceCallback(callback);
     try {
-        logger.warn('readAddressById is not implemented yet.');
-        cb(null, null);
+        const sql = `SELECT * FROM address WHERE address = ? LIMIT 1`;
+        query(sql, [address], (err, rows) => {
+            if (err) {
+                logger.error('readAddress MySQL Error:', err);
+                return cb(err);
+            }
+            cb(null, rows[0]);
+        });
     } catch (err) {
-        logger.error('readAddressById MySql error:', err);
-        cb(err);
-    }
-};
-export const updateAddress = (addressId, addressData, callback) => {
-    const cb = onceCallback(callback);
-    try {
-        logger.warn('updateAddress is not implemented yet.');
-        cb(null, null);
-    } catch (err) {
-        logger.error('updateAddress MySql error:', err);
+        logger.error('readAddress MySql error:', err);
         cb(err);
     }
 };
 
-export const deleteAddress = (addressId, callback) => {
-    const cb = onceCallback(callback);
-    try {
-        logger.warn('deleteAddress is not implemented yet.');
-        cb(null, null);
-    } catch (err) {
-        logger.error('deleteAddress MySql error:', err);
-        cb(err);
-    }
-};
+// export const updateAddress = (addressId, addressData, callback) => {
+//     const cb = onceCallback(callback);
+//     try {
+//         logger.warn('updateAddress is not implemented yet.');
+//         cb(null, null);
+//     } catch (err) {
+//         logger.error('updateAddress MySql error:', err);
+//         cb(err);
+//     }
+// };
+
+// export const deleteAddress = (addressId, callback) => {
+//     const cb = onceCallback(callback);
+//     try {
+//         logger.warn('deleteAddress is not implemented yet.');
+//         cb(null, null);
+//     } catch (err) {
+//         logger.error('deleteAddress MySql error:', err);
+//         cb(err);
+//     }
+// };
 
 export const getOrCreateCountry = (countryName, callback) => {
     const sql = `

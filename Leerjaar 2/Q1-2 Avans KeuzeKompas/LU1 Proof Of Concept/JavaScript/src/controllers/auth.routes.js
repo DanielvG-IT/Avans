@@ -91,12 +91,22 @@ authRouter.get('/register', (req, res, next) => {
 authRouter.post('/register', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
+    const confirmPassword = req.body.confirmPassword;
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
     const address = req.body.address;
-    const district = req.body.district;
+    // Accept either 'district' or 'province' from the client
+    const district = req.body.district || req.body.province;
     const postalCode = req.body.postalCode;
     const storeId = req.body.storeId ? Number(req.body.storeId) : null;
+    const phone = req.body.phone;
+    const countryName = req.body.countryName;
+    // Accept either 'city' or 'cityName'
+    const cityName = req.body.city || req.body.cityName;
+    const termsAccepted = req.body.terms === true || req.body.terms === 'true';
+    // const location = req.body.location; --- IGNORE ---
+
+    logger.debug(`Registration attempt for email: ${email}`);
 
     if (
         !email ||
@@ -106,7 +116,11 @@ authRouter.post('/register', (req, res) => {
         !address ||
         !district ||
         !postalCode ||
-        !storeId
+        !storeId ||
+        !phone ||
+        !countryName ||
+        !cityName ||
+        !termsAccepted
     ) {
         return res.status(400).json({ success: false, error: 'All fields are required.' });
     }
@@ -120,6 +134,9 @@ authRouter.post('/register', (req, res) => {
         district,
         postalCode,
         storeId,
+        phone,
+        countryName,
+        cityName,
         (error, result) => {
             if (error) return res.status(400).json({ success: false, error: error.message });
 
