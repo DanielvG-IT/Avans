@@ -108,6 +108,7 @@ export const readUserByEmail = (email, callback) => {
         WHERE e.email = ? 
         LIMIT 1
     `;
+    logger.debug('readUserByEmail called', { sql: sql.trim(), params: [normalizeEmail(email)] });
     query(sql, [normalizeEmail(email)], (error, rows) => {
         if (typeof callback !== 'function') return;
         if (error) {
