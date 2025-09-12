@@ -1,15 +1,18 @@
 import express from 'express';
 import { logger } from '../util/logger.js';
-import { requireCustomerAuthApi, requireCustomerAuthWeb } from '../middleware/auth.js';
+import { updateUserAvatarById } from '../dao/user.js';
+import { uploadAvatar } from '../middleware/images.js';
+import { getBase64, getFormatFromMime } from '../util/image.js';
+import { requireCustomerAuthApi, requireUserAuthWeb } from '../middleware/auth.js';
 import {
-    register,
-    login,
     generateRefreshToken,
     generateAccessToken,
     refreshAccessToken,
-    logOut,
+    changePassword,
     fetchCustomer,
-    resetPassword,
+    register,
+    logOut,
+    login,
 } from '../services/authService.js';
 
 const authRouter = express.Router();
@@ -96,12 +99,40 @@ authRouter.post('/register', (req, res) => {
 /**
  * /profile - profile page
  */
-authRouter.get('/profile', requireCustomerAuthWeb, (req, res, next) => {
-    fetchCustomer(req.user?.userId, (error, { user, customer }) => {
-        if (error) return next(error);
-        res.render('auth/profile', { title: 'Profile', user, customer });
-    });
+authRouter.get('/profile', requireUserAuthWeb, (req, res, next) => {
+    if (req.user.role === 'CUSTOMER') {
+        fetchCustomer(req.user?.userId, (error, result) => {
+            if (error) return next(error);
+            res.render('auth/profile', {
+                title: 'Profile',
+                user: result.user,
+                customer: result.customer,
+            });
+        });
+    } else if (req.user.role === 'STAFF') {
+        res.render('auth/profile', { title: 'Profile', user: req.user });
+    } else {
+        return next(new Error('Unauthorized: Unknown user role.'));
+    }
 });
+
+authRouter.post(
+    '/profile/avatar',
+    requireUserAuthWeb,
+    uploadAvatar.single('avatar'),
+    (req, res) => {
+        if (!req.file) return res.status(400).send({ error: 'No file uploaded.' });
+
+        const base64 = getBase64(req.file.buffer);
+        const format = getFormatFromMime(req.file.mimetype);
+
+        updateUserAvatarById(req.user.userId, base64, format, (err, result) => {
+            if (err) return res.status(500).send({ error: 'Failed to update avatar.' });
+
+            return res.status(200).send({ message: 'Avatar updated successfully.' });
+        });
+    }
+);
 
 authRouter.put('/reset-password', requireCustomerAuthApi, (req, res) => {
     const userId = req.user?.userId;
@@ -116,7 +147,7 @@ authRouter.put('/reset-password', requireCustomerAuthApi, (req, res) => {
     }
 
     // Call the password reset service
-    resetPassword(userId, newPassword, (error, result) => {
+    changePassword(userId, newPassword, (error, result) => {
         if (error) {
             return res.status(400).json({ success: false, error: error.message });
         }

@@ -2,52 +2,85 @@
   <div class="row justify-content-center gx-4">
     <!-- Two identical profile cards centered (each 1/3 width on md+) -->
     <div class="col-12 col-md-4">
-      <div class="">
-        <div class="card shadow-sm mb-4">
-          <div class="card-body text-center">
-            {{#if user.avatarUrl}}
-            <img src="{{user.avatarUrl}}" alt="{{user.name}} avatar" class="rounded-circle mb-3"
-              style="width:120px; height:120px; object-fit:cover;" loading="lazy">
-            {{else}}
-            <div
-              class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center mb-3"
-              style="width:120px; height:120px; font-size:36px; font-weight:600;" aria-hidden="true">
-              {{#if user.name}}{{user.name}}{{else}}U{{/if}}
-            </div>
-            {{/if}}
+      <div class="card shadow-sm mb-4">
+        <div class="card-body text-center">
+          <!-- Avatar container -->
+          <div class="position-relative d-inline-block mb-3" style="width:120px; height:120px;">
+            <div id="avatarDrop" role="button" tabindex="0"
+              class="rounded-circle bg-transparent d-inline-flex align-items-center justify-content-center"
+              style="width:100%; height:100%; overflow:hidden; position:relative; cursor:pointer;"
+              ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
 
-            <h4 class="card-title mb-1">{{user.name}}</h4>
-            <div class="text-muted mb-2" aria-label="username">{{user.email}}</div>
+              {{#if user.avatar}}
+              <img id="profileAvatar" src="{{user.avatar}}" alt="{{user.name}} avatar" class="rounded-circle"
+                style="width:100%; height:100%; object-fit:cover; display:block; border:2px solid rgba(255,255,255,0.6); box-shadow:0 4px 10px rgba(0,0,0,0.12);"
+                loading="lazy">
+              {{else}}
+              <div id="profileAvatar"
+                class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center"
+                style="width:100%; height:100%; font-size:36px; font-weight:600; border:2px solid rgba(255,255,255,0.6); box-shadow:0 4px 10px rgba(0,0,0,0.12);"
+                aria-hidden="true">
+                {{#if customer.first_name}}{{customer.first_name}}{{else}}U{{/if}}
+              </div>
+              {{/if}}
 
-            {{#if user.role}}
-            <div class="mb-2">
-              <span class="badge bg-primary" aria-label="role">{{user.role}}</span>
+              <!-- Circular overlay button -->
+              <label for="avatarInput" class="position-absolute"
+                style="bottom:6px; right:6px; cursor:pointer; z-index:2;">
+                <span class="d-inline-flex align-items-center justify-content-center"
+                  style="width:40px; height:40px; border-radius:50%; background:rgba(0,0,0,0.6); color:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.3); transition:transform .12s ease, background .12s ease;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"
+                    aria-hidden="true" focusable="false">
+                    <path
+                      d="M10.5 2h-5l-.7 1H2.5A1.5 1.5 0 0 0 1 4.5v7A1.5 1.5 0 0 0 2.5 13h11A1.5 1.5 0 0 0 15 11.5v-7A1.5 1.5 0 0 0 13.5 3h-2.3l-.7-1zM8 5.5a3 3 0 1 1 0 6 3 3 0 0 1 0-6z" />
+                  </svg>
+                </span>
+                <span class="visually-hidden">Change avatar</span>
+              </label>
+              <input type="file" id="avatarInput" class="d-none" accept=".jpg,.jpeg,.png,.webp"
+                onchange="previewAvatar(event)">
             </div>
-            {{/if}}
+
+            <!-- Save button & feedback messages -->
+            <div class="mt-3 d-flex flex-column align-items-center">
+              <button onclick="saveAvatar()" id="saveAvatarBtn" class="btn btn-sm btn-success d-none mb-1">
+                Save Avatar
+              </button>
+              <div id="avatarFeedback" class="text-center" style="font-size:0.875rem; min-height:1.2em;"></div>
+            </div>
           </div>
+
+          <!-- User Info -->
+          <h4 class="card-title mt-3 mb-1">{{customer.first_name}} {{customer.last_name}}</h4>
+          <div class="text-muted mb-2" aria-label="username">{{user.email}}</div>
+
+          {{#if user.role}}
+          <div class="mb-2">
+            <span class="badge bg-primary" aria-label="role">{{user.role}}</span>
+          </div>
+          {{/if}}
         </div>
       </div>
 
-      <div class="">
-        <div class="card shadow-sm mb-4">
-          <div class="card-body text-center">
-            <h5 class="card-title mb-3">Password Reset</h5>
-            <div class="alert alert-success w-100 d-none" id="successMessage" role="status">
-              <p></p>
+      <!-- Password Reset Card -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-body text-center">
+          <h5 class="card-title mb-3">Password Reset</h5>
+          <div class="alert alert-success w-100 d-none" id="successMessage" role="status">
+            <p></p>
+          </div>
+          <form onsubmit=clientPasswordReset(event) class="text-start w-100" aria-label="password reset form">
+            <div class="mb-3">
+              <label for="newPassword" class="form-label visually-hidden">New Password</label>
+              <input type="password" id="newPassword" name="newPassword" class="form-control"
+                placeholder="Enter new password" value="{{newPassword}}" required>
             </div>
-            <form onsubmit=clientPasswordReset(event) class="text-start w-100" aria-label="password reset form">
-              <div class="mb-3">
-                <label for="newPassword" class="form-label visually-hidden">New Password</label>
-                <input type="password" id="newPassword" name="newPassword" class="form-control"
-                  placeholder="Enter new password" value="{{newPassword}}" required>
-              </div>
-              <button type="submit" class="btn btn-primary w-100">Send password reset</button>
-            </form>
-            <div class="small text-danger mt-2 d-none" id="errorMessage" role="alert">
-              <p>
+            <button type="submit" class="btn btn-primary w-100">Send password reset</button>
+          </form>
+          <div class="small text-danger mt-2 d-none" id="errorMessage" role="alert">
+            <p>
 
-              </p>
-            </div>
+            </p>
           </div>
         </div>
       </div>
@@ -121,6 +154,116 @@
     } catch (err) {
       errorMessage.querySelector('p').textContent = 'Network error. Try again.';
       errorMessage.classList.remove('d-none');
+    }
+  }
+
+  function previewAvatar(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    const avatarEl = document.getElementById('profileAvatar');
+    const url = URL.createObjectURL(file);
+
+    if (avatarEl.tagName === 'IMG') {
+      avatarEl.src = url;
+    } else {
+      const img = document.createElement('img');
+      img.id = 'profileAvatar';
+      img.alt = '{{user.name}} avatar';
+      img.src = url;
+      img.className = 'rounded-circle';
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      img.style.display = 'block';
+      img.style.border = '2px solid rgba(255,255,255,0.6)';
+      img.style.boxShadow = '0 4px 10px rgba(0,0,0,0.12)';
+      avatarEl.replaceWith(img);
+    }
+
+    // Show Save button
+    document.getElementById('saveAvatarBtn').classList.remove('d-none');
+    document.getElementById('avatarFeedback').textContent = '';
+  }
+
+  // Drag & drop handlers
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const el = document.getElementById('avatarDrop');
+    el.style.boxShadow = '0 0 0 4px rgba(0,123,255,0.15)';
+    el.style.transform = 'scale(1.02)';
+  }
+
+  function handleDragLeave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const el = document.getElementById('avatarDrop');
+    el.style.boxShadow = '';
+    el.style.transform = '';
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const el = document.getElementById('avatarDrop');
+    el.style.boxShadow = '';
+    el.style.transform = '';
+
+    const file = e.dataTransfer?.files?.[0];
+    if (!file) return;
+
+    // Trigger preview
+    previewAvatar({ target: { files: [file] } });
+
+    // Populate hidden input for later upload
+    try {
+      const input = document.getElementById('avatarInput');
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      input.files = dt.files;
+    } catch (err) { /* ignore if not supported */ }
+  }
+
+  async function saveAvatar() {
+    const input = document.getElementById('avatarInput');
+    const file = input && input.files && input.files[0];
+    const feedbackEl = document.getElementById('avatarFeedback');
+
+    if (!file) return;
+
+    // Reset feedback
+    feedbackEl.textContent = '';
+    feedbackEl.classList.remove('text-success', 'text-danger');
+
+    const form = new FormData();
+    form.append('avatar', file);
+
+    try {
+      const response = await fetch('/auth/profile/avatar', {
+        method: 'POST',
+        credentials: 'include', // keep cookies if used for auth
+        body: form // let browser set Content-Type for multipart/form-data
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (response.ok) {
+        feedbackEl.textContent = data.message || 'Avatar saved successfully!';
+        feedbackEl.classList.add('text-success');
+        // Hide save button
+        document.getElementById('saveAvatarBtn').classList.add('d-none');
+        setTimeout(() => {
+          feedbackEl.classList.add('d-none');
+        }, 2500);
+      } else {
+        feedbackEl.textContent = data.error || data.message || 'Failed to save avatar.';
+        feedbackEl.classList.add('text-danger');
+      }
+    } catch (err) {
+      console.error(err);
+      feedbackEl.textContent = 'Network error. Try again.';
+      feedbackEl.classList.add('text-danger');
     }
   }
 </script>

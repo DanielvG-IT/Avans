@@ -293,3 +293,53 @@ export const requireStaffAuthApi = (req, res, next) => {
         });
     });
 };
+
+/**
+ * Middleware: Require either customer or staff for web routes.
+ *
+ * Behavior:
+ * - If no/invalid access token → redirect to login
+ * - If access token valid → attach decoded user to req.user
+ * - If expired but refresh token valid → issue new access token, attach user
+ * - Roles allowed: CUSTOMER or STAFF
+ */
+export const requireUserAuthWeb = (req, res, next) => {
+    const accessToken = extractAccessToken(req);
+    const refreshToken = extractRefreshToken(req);
+
+    if (!accessToken) {
+        return res.redirect('/auth/login');
+    }
+
+    verifyAccessToken(accessToken, (error, user) => {
+        if (!error) {
+            if (user.role !== 'CUSTOMER' && user.role !== 'STAFF') {
+                return res.status(403).send({
+                    error: 'Access denied: invalid user role.',
+                });
+            }
+            req.user = user;
+            return next();
+        }
+
+        if (!refreshToken) {
+            return res.redirect('/auth/login');
+        }
+
+        refreshAccessToken(refreshToken, (err, newAccessToken) => {
+            if (err || !newAccessToken) {
+                return res.redirect('/auth/login');
+            }
+
+            res.cookie('accessToken', newAccessToken, { httpOnly: true, sameSite: 'strict' });
+
+            verifyAccessToken(newAccessToken, (verifyErr, newUser) => {
+                if (verifyErr || (newUser.role !== 'CUSTOMER' && newUser.role !== 'STAFF')) {
+                    return res.redirect('/auth/login');
+                }
+                req.user = newUser;
+                return next();
+            });
+        });
+    });
+};
