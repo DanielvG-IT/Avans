@@ -1,15 +1,22 @@
-import {
-    createUser,
-    readUserByEmail,
-    updateUserAvatarById,
-    updateUserPasswordById,
-} from '../dao/user.js';
-import { readCustomerByUserId } from '../dao/customer.js';
+import { readUserById, readUserByRefreshToken, updateUserRefreshTokenById } from '../dao/user.js';
+import { createEmail, readEmail } from '../dao/email.js';
 import { compareSync, hashSync } from 'bcrypt';
 import { logger } from '../util/logger.js';
 import { v4 as uuid } from 'uuid';
 import jwt from 'jsonwebtoken';
-import { readUserById, readUserByRefreshToken, updateUserRefreshTokenById } from '../dao/user.js';
+import {
+    readCustomerByEmailId,
+    readCustomerByUserId,
+    linkCustomerToUser,
+    createCustomer,
+} from '../dao/customer.js';
+import {
+    updateUserPasswordById,
+    updateUserAvatarById,
+    readUserByEmail,
+    createUser,
+} from '../dao/user.js';
+import { makeAddress } from './addressService.js';
 
 export const login = (email, password, callback) => {
     if (!email || !password) {
@@ -35,23 +42,92 @@ export const login = (email, password, callback) => {
     });
 };
 
-export const register = (email, password, callback) => {
-    if (!email || !password) {
-        return callback(new Error('Invalid input.'));
-    }
+export const register = (
+    email,
+    password,
+    firstName,
+    lastName,
+    address,
+    district,
+    postalCode,
+    storeId,
+    callback
+) => {
+    if (!email || !password) return callback(new Error('Invalid input.'));
 
-    // Minimal requirements: At least 6 characters, one letter, one number, one special character
     const passwordRequirements =
         /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{6,}$/;
     if (!passwordRequirements.test(password)) {
-        // ERROR: Password does not meet minimal requirements
         return callback(new Error('Password does not meet minimal requirements.'));
     }
 
+    const normalizedEmail = email.toLowerCase().trim();
     const userId = uuid();
     const passwordHash = hashSync(password, 10);
 
-    createUser(userId, email, passwordHash, 'CUSTOMER', callback);
+    // 1. Check email table
+    readEmail(normalizedEmail, (err, emailRow) => {
+        if (err) return callback(err);
+
+        if (!emailRow) {
+            // Email does not exist → create one
+            createEmail(normalizedEmail, (err2, newEmailRow) => {
+                if (err2) return callback(err2);
+                attachUser(newEmailRow.email_id);
+            });
+        } else {
+            attachUser(emailRow.email_id);
+        }
+    });
+
+    function attachUser(emailId) {
+        // 2. Check if customer already exists with this email
+        readCustomerByEmailId(emailId, (err, customer) => {
+            if (err) return callback(err);
+
+            if (customer) {
+                if (customer.userId) {
+                    return callback(new Error('Account already exists for this customer.'));
+                }
+
+                // Customer exists but no user → create user and link
+                createUser(userId, emailId, passwordHash, 'CUSTOMER', null, null, (err2) => {
+                    if (err2) return callback(err2);
+
+                    linkCustomerToUser(customer.customer_id, userId, (err3) => {
+                        if (err3) return callback(err3);
+                        logger.info(
+                            `Linked existing customer ${customer.customer_id} to new user ${userId}`
+                        );
+                        return callback(null, { userId, email: normalizedEmail });
+                    });
+                });
+            } else {
+                // No customer → create new customer + user
+                createUser(userId, emailId, passwordHash, 'CUSTOMER', null, null, (err2) => {
+                    if (err2) return callback(err2);
+
+                    makeAddress(address, district, postalCode, (err3, addressId) => {
+                        if (err3) return callback(err3);
+
+                        createCustomer(
+                            firstName,
+                            lastName,
+                            addressId,
+                            userId,
+                            emailId,
+                            storeId,
+                            (err4) => {
+                                if (err4) return callback(err4);
+                                logger.info(`Created new customer + user ${userId}`);
+                                return callback(null, { userId, email: normalizedEmail });
+                            }
+                        );
+                    });
+                });
+            }
+        });
+    }
 };
 
 export const refreshAccessToken = (refreshToken, callback) => {

@@ -1,5 +1,6 @@
 import { query } from '../data/db.js';
 import { logger } from '../util/logger.js';
+import { normalizeId, normalizeUserId, normalizeName } from '../util/normalize.js';
 
 /**
  * Helper to ensure a callback is only called once.
@@ -19,11 +20,39 @@ const onceCallback = (cb) => {
     };
 };
 
-export const createCustomer = (callback) => {
+export const createCustomer = (
+    firstName,
+    lastName,
+    addressId,
+    userId,
+    emailId,
+    storeId,
+    callback
+) => {
     const cb = onceCallback(callback);
     try {
-        logger.warn('createCustomer is not implemented yet.');
-        cb(null, null);
+        const sql = `
+            INSERT INTO customer (store_id, first_name, last_name, address_id, create_date, userId, email_id) VALUES (?,?,?,?,?,?,?)    
+        `;
+        query(
+            sql,
+            [
+                normalizeId(storeId),
+                normalizeName(firstName),
+                normalizeName(lastName),
+                normalizeId(addressId),
+                new Date(),
+                normalizeUserId(userId),
+                normalizeId(emailId),
+            ],
+            (error, result) => {
+                if (error) {
+                    logger.error('createCustomer MySQL Error:', error);
+                    return cb(error);
+                }
+                cb(null, result);
+            }
+        );
     } catch (err) {
         logger.error('createCustomer MySql error:', err);
         cb(err);
@@ -51,7 +80,7 @@ export const readCustomerById = (customerId, callback) => {
           JOIN country co ON ci.country_id = co.country_id
           WHERE c.customer_id = ?
       `;
-        query(sql, [customerId], (error, rows) => {
+        query(sql, [normalizeId(customerId)], (error, rows) => {
             if (error) {
                 logger.error('getCustomerById MySQL Error:', error);
                 return cb(error);
@@ -62,6 +91,21 @@ export const readCustomerById = (customerId, callback) => {
         logger.error('getCustomerById sync error:', err);
         cb(err);
     }
+};
+
+export const readCustomerByEmailId = (emailId, callback) => {
+    const sql = `
+        SELECT * FROM customer
+        WHERE email_id = ? LIMIT 1
+    `;
+    query(sql, [normalizeId(emailId)], (error, rows) => {
+        if (typeof callback !== 'function') return;
+        if (error) {
+            logger.error('readCustomerByEmailId MySQL Error:', error);
+            return callback(error);
+        }
+        callback(null, rows[0] || null);
+    });
 };
 
 export const readCustomerByUserId = (userId, callback) => {
@@ -86,7 +130,7 @@ export const readCustomerByUserId = (userId, callback) => {
           WHERE c.userId = ?
       `;
 
-        query(sql, [userId], (error, rows) => {
+        query(sql, [normalizeUserId(userId)], (error, rows) => {
             if (error) {
                 logger.error('getCustomerByUserId MySQL Error:', error);
                 return cb(error);
@@ -99,15 +143,28 @@ export const readCustomerByUserId = (userId, callback) => {
     }
 };
 
-export const updateCustomer = (callback) => {
-    logger.warn('updateCustomer is not implemented yet.');
+export const updateCustomer = (customerId, callback) => {
+    const cb = onceCallback(callback);
+    try {
+        const sql = ``;
+        query(sql, [normalizeId(customerId)], (error, result) => {
+            if (error) {
+                logger.error('updateCustomer MySQL Error:', error);
+                return cb(error);
+            }
+            cb(null, result);
+        });
+    } catch (err) {
+        logger.error('updateCustomer sync error:', err);
+        cb(err);
+    }
 };
 
-export const deleteCustomer = (customerId, callback) => {
+export const softDeleteCustomer = (customerId, callback) => {
     const cb = onceCallback(callback);
     try {
         const sql = `UPDATE customer SET active = 0 WHERE customer_id = ?`;
-        query(sql, [customerId], (error, result) => {
+        query(sql, [normalizeId(customerId)], (error, result) => {
             if (error) {
                 logger.error('deleteCustomer MySQL Error:', error);
                 return cb(error);
@@ -118,4 +175,28 @@ export const deleteCustomer = (customerId, callback) => {
         logger.error('deleteCustomer sync error:', err);
         cb(err);
     }
+};
+
+export const unlinkCustomerFromUser = (customerId, callback) => {
+    const sql = `UPDATE customer SET userId = NULL WHERE customer_id = ?`;
+    query(sql, [normalizeId(customerId)], (error, result) => {
+        if (typeof callback !== 'function') return;
+        if (error) {
+            logger.error('unlinkCustomerFromUser MySQL Error:', error);
+            return callback(error);
+        }
+        callback(null, result);
+    });
+};
+
+export const linkCustomerToUser = (customerId, userId, callback) => {
+    const sql = `UPDATE customer SET userId = ? WHERE customer_id = ?`;
+    query(sql, [normalizeUserId(userId), normalizeId(customerId)], (error, result) => {
+        if (typeof callback !== 'function') return;
+        if (error) {
+            logger.error('linkCustomerToUser MySQL Error:', error);
+            return callback(error);
+        }
+        callback(null, result);
+    });
 };

@@ -1,5 +1,13 @@
 import { query } from '../data/db.js';
 import { logger } from '../util/logger.js';
+import {
+    normalizeId,
+    normalizeEmail,
+    normalizeRole,
+    normalizeFormat,
+    normalizeUserId,
+    normalizeBase64,
+} from '../util/normalize.js';
 
 const mimeMap = {
     JPG: 'image/jpeg',
@@ -7,25 +15,6 @@ const mimeMap = {
     PNG: 'image/png',
     WEBP: 'image/webp',
 };
-
-// --- Normalizers ---
-const normalizeEmail = (email) =>
-    String(email || '')
-        .trim()
-        .toLowerCase();
-const normalizeRole = (role) =>
-    String(role || '')
-        .trim()
-        .toUpperCase();
-const normalizeFormat = (format) =>
-    String(format || '')
-        .trim()
-        .toUpperCase();
-const normalizeUserId = (id) => String(id || '').trim();
-const normalizeBase64 = (input) =>
-    String(input || '')
-        .replace(/^data:[^;]+;base64,/, '')
-        .trim();
 
 const makeDataUrl = (avatar, format) => {
     if (!avatar || !format) return null;
@@ -38,16 +27,24 @@ const makeDataUrl = (avatar, format) => {
 };
 
 // --- Queries ---
-export const createUser = (userId, email, hashedPassword, role, avatar, avatarFormat, callback) => {
+export const createUser = (
+    userId,
+    emailId,
+    hashedPassword,
+    role,
+    avatar,
+    avatarFormat,
+    callback
+) => {
     const sql = `
-        INSERT INTO users (userId, email, passwordHash, role, avatar, avatarFormat) VALUES (?,?,?,?,?,?);
+        INSERT INTO users (userId, emailId, passwordHash, role, avatar, avatarFormat) VALUES (?,?,?,?,?,?);
     `;
 
     query(
         sql,
         [
             normalizeUserId(userId),
-            normalizeEmail(email),
+            normalizeId(emailId),
             hashedPassword,
             normalizeRole(role),
             avatar ? normalizeBase64(avatar) : null,
@@ -65,8 +62,13 @@ export const createUser = (userId, email, hashedPassword, role, avatar, avatarFo
 };
 
 export const readUserById = (userId, callback) => {
-    const sql = `SELECT userId, email, passwordHash, role, avatar, avatarFormat FROM users WHERE userId = ? LIMIT 1`;
-
+    const sql = `
+        SELECT u.userId, e.email, u.passwordHash, u.role, u.avatar, u.avatarFormat 
+        FROM user u 
+        JOIN email e ON e.email_id = u.emailId
+        WHERE u.userId = ? 
+        LIMIT 1
+    `;
     query(sql, [normalizeUserId(userId)], (error, rows) => {
         if (typeof callback !== 'function') return;
         if (error) {
@@ -80,8 +82,13 @@ export const readUserById = (userId, callback) => {
 };
 
 export const readUserByEmail = (email, callback) => {
-    const sql = `SELECT userId, email, passwordHash, role, avatar, avatarFormat FROM users WHERE email = ? LIMIT 1`;
-
+    const sql = `
+        SELECT u.userId, e.email, u.passwordHash, u.role, u.avatar, u.avatarFormat 
+        FROM user u 
+        JOIN email e ON e.email_id = u.emailId
+        WHERE e.email = ? 
+        LIMIT 1
+    `;
     query(sql, [normalizeEmail(email)], (error, rows) => {
         if (typeof callback !== 'function') return;
         if (error) {
@@ -96,8 +103,12 @@ export const readUserByEmail = (email, callback) => {
 
 // Refresh Tokens
 export const readUserByRefreshToken = (refreshToken, callback) => {
-    const sql = `SELECT userId, email, passwordHash, role, avatar, avatarFormat FROM users WHERE refreshToken = ? LIMIT 1`;
-
+    const sql = `
+        SELECT u.userId, e.email, u.passwordHash, u.role, u.avatar, u.avatarFormat
+        FROM user u
+        JOIN email e ON e.email_id = u.emailId
+        WHERE u.refreshToken = ? LIMIT 1
+    `;
     query(sql, [refreshToken], (error, rows) => {
         if (typeof callback !== 'function') return;
         if (error) {
@@ -111,7 +122,7 @@ export const readUserByRefreshToken = (refreshToken, callback) => {
 };
 
 export const updateUserRefreshTokenById = (userId, refreshToken, callback) => {
-    const sql = `UPDATE users SET refreshToken = ? WHERE userId = ?`;
+    const sql = `UPDATE user SET refreshToken = ? WHERE userId = ?`;
 
     query(sql, [refreshToken, normalizeUserId(userId)], (error, rows) => {
         if (typeof callback !== 'function') return;
@@ -124,7 +135,7 @@ export const updateUserRefreshTokenById = (userId, refreshToken, callback) => {
 };
 
 export const updateUserPasswordById = (userId, newPasswordHash, callback) => {
-    const sql = `UPDATE users SET passwordHash = ? WHERE userId = ?`;
+    const sql = `UPDATE user SET passwordHash = ? WHERE userId = ?`;
 
     query(sql, [newPasswordHash, normalizeUserId(userId)], (error, rows) => {
         if (typeof callback !== 'function') return;
@@ -137,7 +148,7 @@ export const updateUserPasswordById = (userId, newPasswordHash, callback) => {
 };
 
 export const updateUserAvatarById = (userId, avatarBase64, avatarFormat, callback) => {
-    const sql = `UPDATE users SET avatar = ?, avatarFormat = ? WHERE userId = ?`;
+    const sql = `UPDATE user SET avatar = ?, avatarFormat = ? WHERE userId = ?`;
 
     query(
         sql,
