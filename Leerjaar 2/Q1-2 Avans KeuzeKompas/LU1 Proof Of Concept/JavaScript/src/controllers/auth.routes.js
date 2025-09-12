@@ -45,6 +45,12 @@ authRouter.post('/login', (req, res) => {
             logger.debug(`Login failed for email ${email}: ${error.message}`);
             return res.status(400).json({ success: false, error: error.message });
         }
+        if (!user) {
+            logger.debug(`Login failed: No user found for email ${email}`);
+            return res.status(400).json({ success: false, error: 'Invalid credentials.' });
+        }
+
+        logger.debug(`User ${email} authenticated successfully.`);
 
         const accessToken = generateAccessToken(user);
         generateRefreshToken(user, (error, refreshToken) => {
@@ -66,6 +72,7 @@ authRouter.post('/login', (req, res) => {
                 secure: process.env.NODE_ENV !== 'development',
                 sameSite: 'strict',
             });
+            logger.debug(`Set cookies for email: ${email}`);
             res.status(200).json({ success: true });
         });
     });

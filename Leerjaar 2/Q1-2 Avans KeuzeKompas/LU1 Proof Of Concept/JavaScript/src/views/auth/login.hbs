@@ -30,7 +30,7 @@
                         </div>
 
                         <!-- Submit -->
-                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                        <button type="submit" id="loginButton" class="btn btn-primary w-100">Login</button>
                     </form>
                 </div>
             </div>
@@ -46,6 +46,10 @@
         const password = document.getElementById('password').value;
         const errorMessage = document.getElementById('errorMessage');
         const successMessage = document.getElementById('successMessage');
+        const loginButton = document.getElementById('loginButton');
+
+        loginButton.disabled = true;
+        loginButton.textContent = 'Logging in...';
 
         errorMessage.classList.add('d-none');
         successMessage.classList.add('d-none');
@@ -70,6 +74,10 @@
         } catch (err) {
             errorMessage.querySelector('p').textContent = 'Network error. Try again.';
             errorMessage.classList.remove('d-none');
+        }
+        finally {
+            loginButton.disabled = false;
+            loginButton.textContent = 'Login';
         }
     }
 </script>

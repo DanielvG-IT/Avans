@@ -1,28 +1,24 @@
 import { readUserById, readUserByRefreshToken, updateUserRefreshTokenById } from '../dao/user.js';
 import { createEmail, readEmail } from '../dao/email.js';
+import { makeAddress } from './addressService.js';
 import { compareSync, hashSync } from 'bcrypt';
 import { logger } from '../util/logger.js';
 import { v4 as uuid } from 'uuid';
 import jwt from 'jsonwebtoken';
-import {
-    readCustomerByEmailId,
-    readCustomerByUserId,
-    linkCustomerToUser,
-    createCustomer,
-} from '../dao/customer.js';
+import { readCustomerByEmailId, readCustomerByUserId, createCustomer } from '../dao/customer.js';
 import {
     updateUserPasswordById,
     updateUserAvatarById,
     readUserByEmail,
     createUser,
 } from '../dao/user.js';
-import { makeAddress } from './addressService.js';
 
 export const login = (email, password, callback) => {
     if (!email || !password) {
         return callback(new Error('Invalid input.'));
     }
 
+    logger.debug(`login() called with email=${email}`);
     readUserByEmail(email, (error, user) => {
         if (error) {
             logger.error('Category Error:', error);
@@ -398,7 +394,7 @@ export const generateAccessToken = (user) => {
 export const generateRefreshToken = (user, callback) => {
     const payload = { userId: user.userId, role: user.role };
     const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET);
-    updateUserRefreshTokenByUserId(user.userId, refreshToken, (error, result) => {
+    updateUserRefreshTokenById(user.userId, refreshToken, (error, result) => {
         if (error) {
             logger.error('MySQL Error:', error);
             return callback(error);
