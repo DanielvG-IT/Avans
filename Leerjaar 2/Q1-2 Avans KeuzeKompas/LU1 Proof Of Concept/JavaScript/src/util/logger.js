@@ -1,7 +1,9 @@
 import fs from 'fs';
 import path from 'path';
+import dotenv from 'dotenv';
 import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
+dotenv.config({ debug: process.env.NODE_ENV === 'development' });
 
 const { combine, timestamp, printf, colorize, align, json } = winston.format;
 
@@ -23,6 +25,8 @@ const devFormat = combine(
         return `[${timestamp}] ${level}: ${message} ${metaStr}`;
     })
 );
+
+console.log(`Logger initialized. Level: ${process.env.LOG_LEVEL || 'info'}`);
 
 // Common JSON format for files
 const fileFormat = combine(timestamp({ format: 'YYYY-MM-DDTHH:mm:ss.SSSZ' }), json());

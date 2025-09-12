@@ -1,6 +1,3 @@
-import dotenv from 'dotenv';
-dotenv.config({ debug: process.env.NODE_ENV === 'development' });
-
 import mysql from 'mysql2';
 
 if (!process.env.DB_HOST || !process.env.DB_USER || !process.env.DB_PASS || !process.env.DB_NAME) {
