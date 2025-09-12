@@ -14,6 +14,7 @@ import {
     logOut,
     login,
 } from '../services/authService.js';
+import { readStores } from '../dao/store.js';
 
 const authRouter = express.Router();
 const redirectUrl = '/auth/profile';
@@ -77,16 +78,35 @@ authRouter.get('/register', (req, res, next) => {
     if (req.user) {
         return res.redirect(redirectUrl);
     }
-    res.render('auth/register', { title: 'Register' });
+    readStores((err, stores) => {
+        if (err) return next(err);
+        if (!stores || stores.length === 0) {
+            return next(new Error('No stores found. Cannot register without a store.'));
+        }
+        res.render('auth/register', { title: 'Register', stores: stores });
+    });
 });
 authRouter.post('/register', (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const address = req.body.address;
+    const district = req.body.district;
+    const postalCode = req.body.postalCode;
+    const storeId = req.body.storeId ? Number(req.body.storeId) : null;
 
-    // TODO Collect more user info (for stalking)
-
-    if (!email || !password) {
-        return res.status(400).json({ success: false, error: 'Email and password are required.' });
+    if (
+        !email ||
+        !password ||
+        !firstName ||
+        !lastName ||
+        !address ||
+        !district ||
+        !postalCode ||
+        !storeId
+    ) {
+        return res.status(400).json({ success: false, error: 'All fields are required.' });
     }
 
     register(email, password, (error, result) => {

@@ -1,6 +1,6 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <div class="col-md-8">
             <div class="card shadow-sm">
                 <div class="card-header text-center bg-primary text-white">
                     <h4>User Registration</h4>
@@ -41,6 +41,34 @@
                                 required>
                         </div>
 
+                        <!-- Address -->
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="address" placeholder="Main Street 123" required>
+                        </div>
+
+                        <!-- District + Postal -->
+                        <div class="row gx-2 mb-3">
+                            <div class="col-md-6">
+                                <label for="district" class="form-label">District</label>
+                                <input type="text" class="form-control" id="district" placeholder="North Side" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="postal-code" class="form-label">Postal Code</label>
+                                <input type="text" class="form-control" id="postal-code" placeholder="12345" required>
+                            </div>
+                        </div>
+
+                        <!-- Store -->
+                        <div class="mb-3">
+                            <label for="store-id" class="form-label">Select Store</label>
+                            <select id="store-id" class="form-select" required>
+                                {{#each stores}}
+                                <option value="{{this.store_id}}">{{this.store_name}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+
                         <!-- Terms -->
                         <div class="mb-3 form-check">
                             <input type="checkbox" class="form-check-input" id="terms" required>
@@ -60,38 +88,58 @@
         </div>
     </div>
 </div>
-
 <script>
-    function clientRegister(event) {
+    async function clientRegister(event) {
         event.preventDefault();
 
-        const firstName = document.getElementById('first-name').value.trim();
-        const lastName = document.getElementById('last-name').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirm-password').value;
-        const terms = document.getElementById('terms').checked;
+        const data = {
+            firstName: document.getElementById('first-name').value.trim(),
+            lastName: document.getElementById('last-name').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            password: document.getElementById('password').value,
+            confirmPassword: document.getElementById('confirm-password').value,
+            address: document.getElementById('address').value.trim(),
+            district: document.getElementById('district').value.trim(),
+            postalCode: document.getElementById('postal-code').value.trim(),
+            storeId: document.getElementById('store-id').value,
+            terms: document.getElementById('terms').checked
+        };
 
         const errorMessage = document.getElementById('errorMessage');
         const successMessage = document.getElementById('successMessage');
-
         errorMessage.classList.add('d-none');
         successMessage.classList.add('d-none');
 
-        if (!terms) {
+        if (!data.terms) {
             errorMessage.textContent = 'You must agree to the Terms of Service.';
             errorMessage.classList.remove('d-none');
             return;
         }
 
-        if (password !== confirmPassword) {
+        if (data.password !== data.confirmPassword) {
             errorMessage.textContent = 'Passwords do not match.';
             errorMessage.classList.remove('d-none');
             return;
         }
 
-        // Here you can add fetch() to /auth/register with POST, similar to login
-        successMessage.textContent = 'Registration successful! You can now login.';
-        successMessage.classList.remove('d-none');
+        try {
+            const res = await fetch('/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await res.json();
+            if (!result.success) {
+                throw new Error(result.error || 'Registration failed.');
+            }
+
+            successMessage.textContent = 'Registration successful! You can now login.';
+            successMessage.classList.remove('d-none');
+            document.getElementById('registerForm').reset();
+        } catch (err) {
+            errorMessage.textContent = err.message;
+            errorMessage.classList.remove('d-none');
+        }
     }
 </script>
