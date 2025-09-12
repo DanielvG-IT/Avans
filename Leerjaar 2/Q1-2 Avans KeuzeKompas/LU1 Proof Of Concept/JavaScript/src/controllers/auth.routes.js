@@ -111,11 +111,21 @@ authRouter.post('/register', (req, res) => {
         return res.status(400).json({ success: false, error: 'All fields are required.' });
     }
 
-    register(email, password, (error, result) => {
-        if (error) return res.status(400).json({ success: false, error: error.message });
+    register(
+        email,
+        password,
+        firstName,
+        lastName,
+        address,
+        district,
+        postalCode,
+        storeId,
+        (error, result) => {
+            if (error) return res.status(400).json({ success: false, error: error.message });
 
-        res.status(201).json({ success: true });
-    });
+            res.status(201).json({ success: true });
+        }
+    );
 });
 
 /**
