@@ -58,7 +58,7 @@ export const optionalCustomerAuthWeb = (req, res, next) => {
     verifyAccessToken(accessToken, (error, user) => {
         if (!error) {
             const role = user?.role;
-            if (role !== 'CUSTOMER') {
+            if (role !== 'CUSTOMER' && role !== 'STAFF') {
                 return res.status(403).send({
                     error: 'Access denied: insufficient permissions or invalid user role.',
                 });
