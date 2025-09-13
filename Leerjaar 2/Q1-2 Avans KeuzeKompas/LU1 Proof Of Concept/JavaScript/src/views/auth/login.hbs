@@ -63,9 +63,13 @@
             });
 
             if (response.ok) {
+                const data = await response.json();
+
                 successMessage.querySelector('p').textContent = 'Login successful! Redirecting...';
                 successMessage.classList.remove('d-none');
-                setTimeout(() => window.location.replace("/auth/profile"), 1000);
+
+                const redirectPath = data.redirectPath || '/auth/profile';
+                setTimeout(() => window.location.replace(redirectPath), 1000);
             } else {
                 const data = await response.json();
                 errorMessage.querySelector('p').textContent = data.error || 'Login failed. Try again.';

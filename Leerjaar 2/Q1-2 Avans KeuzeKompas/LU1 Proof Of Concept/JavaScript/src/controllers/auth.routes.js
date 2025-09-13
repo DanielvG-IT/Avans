@@ -73,7 +73,17 @@ authRouter.post('/login', (req, res) => {
                 sameSite: 'strict',
             });
             logger.debug(`Set cookies for email: ${email}`);
-            res.status(200).json({ success: true });
+
+            let redirectPath = '/';
+            if (user.role === 'CUSTOMER') {
+                redirectPath = '/customer';
+            } else if (user.role === 'STAFF') {
+                redirectPath = '/staff';
+            } else {
+                logger.warn(`Unknown role for user ${email}: ${user.role}`);
+            }
+            logger.debug(`Redirecting user ${email} to ${redirectPath}`);
+            res.status(200).json({ success: true, redirectPath: redirectPath });
         });
     });
 });
