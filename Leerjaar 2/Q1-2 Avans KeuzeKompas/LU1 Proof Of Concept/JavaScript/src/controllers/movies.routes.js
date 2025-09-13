@@ -1,6 +1,7 @@
-import express from 'express';
 import { fetchCategoryNames, fetchRatingNames } from '../services/filterService.js';
+import { requireStaffAuthApi, requireStaffAuthWeb } from '../middleware/auth.js';
 import { fetchMovieById, fetchMovies } from '../services/movieService.js';
+import express from 'express';
 
 const moviesRouter = express.Router();
 
@@ -79,6 +80,15 @@ moviesRouter.get('/', (req, res, next) => {
     });
 });
 
+// Placeholder for creating a new movie (not implemented)
+moviesRouter.get('/new', requireStaffAuthWeb, (req, res, next) => {
+    res.render('movies/createOrEdit', { title: 'Add New Movie' });
+});
+moviesRouter.post('/new', requireStaffAuthApi, (req, res, next) => {
+    res.json({ success: false, error: 'Not implemented' });
+});
+
+// Movie details
 moviesRouter.get('/:id', (req, res, next) => {
     const id = parseInt(req.params.id, 10);
     if (!Number.isInteger(id) || id <= 0) {
@@ -90,6 +100,19 @@ moviesRouter.get('/:id', (req, res, next) => {
 
         res.render('movies/movie', { title: movie.title, movie });
     });
+});
+
+// Placeholder for editing a movie (not implemented)
+moviesRouter.get('/:id/edit', requireStaffAuthWeb, (req, res, next) => {
+    const movieId = parseInt(req.params.id, 10);
+    if (!Number.isInteger(movieId) || movieId <= 0) {
+        logger.warn('Edit movie: invalid movie id', { movieId });
+        return next(new Error('Invalid movie id'));
+    }
+    res.render('movies/createOrEdit', { title: 'Edit Movie' });
+});
+moviesRouter.post('/:id/edit', requireStaffAuthApi, (req, res, next) => {
+    res.json({ success: false, error: 'Not implemented' });
 });
 
 export default moviesRouter;
