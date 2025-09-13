@@ -8,14 +8,14 @@
     <div class="row g-3 align-items-center">
 
       <!-- Search Box -->
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-md-6 col-lg-4">
         <label for="search" class="form-label visually-hidden">Search by name or email</label>
         <input type="text" id="search" name="search" value="{{filters.search}}" class="form-control"
           placeholder="Search customers..." aria-label="Search customers by name or email">
       </div>
 
       <!-- Active Status Filter -->
-      <div class="col-6 col-md-3">
+      <div class="col-6 col-md-3 col-lg-2">
         <label for="active" class="form-label visually-hidden">Filter by status</label>
         <select id="active" name="active" class="form-select" aria-label="Filter by active status">
           <option value="">All Statuses</option>
@@ -25,7 +25,7 @@
       </div>
 
       <!-- Store Filter -->
-      <div class="col-6 col-md-3">
+      <div class="col-6 col-md-3 col-lg-2">
         <label for="storeId" class="form-label visually-hidden">Filter by store</label>
         <select id="storeId" name="storeId" class="form-select" aria-label="Filter by store">
           <option value="">All Stores</option>
@@ -38,7 +38,7 @@
       </div>
 
       <!-- Sort Dropdown -->
-      <div class="col-12 col-md-2">
+      <div class="col-12 col-md-6 col-lg-4 col-xl-3">
         <label for="sort" class="form-label visually-hidden">Sort customers</label>
         <select id="sort" name="sort" class="form-select" aria-label="Sort customers">
           <option value="lastName,asc" {{#ifEquals filters.sort "lastName,asc" }}selected{{/ifEquals}}>Last Name A–Z
@@ -76,7 +76,7 @@
   </form>
 
   <!-- Customers Grid -->
-  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4 align-items-stretch">
     {{#each customers}}
     <div class="col">
       <div class="card h-100 shadow-sm border-0">
