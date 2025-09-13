@@ -1,7 +1,7 @@
 import { query } from '../data/db.js';
 import { logger } from '../util/logger.js';
 
-export const getCategories = (callback) => {
+export const readCategories = (callback) => {
     const sql = `
         SELECT * FROM category
         ORDER BY name

@@ -1,12 +1,12 @@
 import { getActorsInMovie } from '../dao/actor.js';
 import { logger } from '../util/logger.js';
 import {
-    getMovies,
-    getMovieById,
-    getPopularMovies,
-    getLongestMovies,
-    getCheapestMovies,
-    getMovieAvailability,
+    readMovies,
+    readMovieById,
+    readPopularMovies,
+    readLongestMovies,
+    readCheapestMovies,
+    readMovieAvailability,
 } from '../dao/movie.js';
 
 /**
@@ -33,7 +33,7 @@ const onceCallback = (cb) => {
 export const fetchPopularMovies = (limit = 10, callback) => {
     const cb = onceCallback(callback);
     try {
-        getPopularMovies(limit, (error, movies) => {
+        readPopularMovies(limit, (error, movies) => {
             if (error) {
                 logger.error('fetchPopularMovies - dao error:', error);
                 return cb(error);
@@ -63,7 +63,7 @@ export const fetchPopularMovies = (limit = 10, callback) => {
 export const fetchLongestMovies = (limit = 10, callback) => {
     const cb = onceCallback(callback);
     try {
-        getLongestMovies(limit, (error, movies) => {
+        readLongestMovies(limit, (error, movies) => {
             if (error) {
                 logger.error('fetchLongestMovies - dao error:', error);
                 return cb(error);
@@ -92,7 +92,7 @@ export const fetchLongestMovies = (limit = 10, callback) => {
 export const fetchCheapestMovies = (limit = 10, callback) => {
     const cb = onceCallback(callback);
     try {
-        getCheapestMovies(limit, (error, movies) => {
+        readCheapestMovies(limit, (error, movies) => {
             if (error) {
                 logger.error('fetchCheapestMovies - dao error:', error);
                 return cb(error);
@@ -120,14 +120,14 @@ export const fetchCheapestMovies = (limit = 10, callback) => {
 };
 
 /**
- * fetchMovies: supports the DAO change where getMovies returns:
+ * fetchMovies: supports the DAO change where readMovies returns:
  * { movies: [...], total: N } OR old-style array (backwards compat).
  * Returns { movies: mappedArray, total }.
  */
 export const fetchMovies = (filters = {}, callback) => {
     const cb = onceCallback(callback);
     try {
-        getMovies(filters, (error, result) => {
+        readMovies(filters, (error, result) => {
             if (error) {
                 logger.error('fetchMovies - dao error:', error);
                 return cb(error);
@@ -185,7 +185,7 @@ export const fetchMovies = (filters = {}, callback) => {
 export const fetchMovieById = (id, callback) => {
     const cb = onceCallback(callback);
     try {
-        getMovieById(id, (error, movie) => {
+        readMovieById(id, (error, movie) => {
             if (error) {
                 logger.error('fetchMovieById - dao error:', error);
                 return cb(error);
@@ -215,7 +215,7 @@ export const fetchMovieById = (id, callback) => {
                     }));
 
                     try {
-                        getMovieAvailability(id, (errS, stores) => {
+                        readMovieAvailability(id, (errS, stores) => {
                             if (errS) {
                                 logger.error('fetchMovieById - availability dao error:', errS);
                                 return cb(errS);
@@ -253,7 +253,7 @@ export const fetchMovieById = (id, callback) => {
                             cb(null, mapped);
                         });
                     } catch (e) {
-                        logger.error('fetchMovieById - getMovieAvailability sync error:', e);
+                        logger.error('fetchMovieById - readMovieAvailability sync error:', e);
                         cb(e);
                     }
                 });

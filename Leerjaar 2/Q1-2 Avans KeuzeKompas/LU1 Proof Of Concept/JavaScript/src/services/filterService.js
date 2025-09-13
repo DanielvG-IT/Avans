@@ -1,5 +1,5 @@
-import { getCategories } from '../dao/category.js';
-import { getRatings } from '../dao/movie.js';
+import { readCategories } from '../dao/category.js';
+import { readRatings } from '../dao/movie.js';
 import { logger } from '../util/logger.js';
 
 /**
@@ -21,7 +21,7 @@ const onceCallback = (cb) => {
 
 export const fetchCategoryNames = (callback) => {
     const safeCallback = onceCallback(callback);
-    getCategories((error, categories) => {
+    readCategories((error, categories) => {
         if (error) {
             logger.error('Category Error:', error);
             return safeCallback(error);
@@ -38,7 +38,7 @@ export const fetchCategoryNames = (callback) => {
 
 export const fetchRatingNames = (callback) => {
     const safeCallback = onceCallback(callback);
-    getRatings((error, ratings) => {
+    readRatings((error, ratings) => {
         if (error) {
             logger.error('Rating Error:', error);
             return safeCallback(error);

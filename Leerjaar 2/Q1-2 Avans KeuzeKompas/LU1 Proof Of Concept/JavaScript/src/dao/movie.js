@@ -27,7 +27,7 @@ const toArray = (v) => {
     return Array.isArray(v) ? v : [v];
 };
 
-export const getPopularMovies = (limit = 10, callback) => {
+export const readPopularMovies = (limit = 10, callback) => {
     const cb = onceCallback(callback);
     try {
         limit = Number(limit) || 10;
@@ -60,7 +60,7 @@ export const getPopularMovies = (limit = 10, callback) => {
     }
 };
 
-export const getLongestMovies = (limit = 10, callback) => {
+export const readLongestMovies = (limit = 10, callback) => {
     const cb = onceCallback(callback);
     try {
         limit = Number(limit) || 10;
@@ -86,7 +86,7 @@ export const getLongestMovies = (limit = 10, callback) => {
     }
 };
 
-export const getCheapestMovies = (limit = 10, callback) => {
+export const readCheapestMovies = (limit = 10, callback) => {
     const cb = onceCallback(callback);
     try {
         limit = Number(limit) || 10;
@@ -112,7 +112,7 @@ export const getCheapestMovies = (limit = 10, callback) => {
     }
 };
 
-export const getMovies = (filters = {}, callback) => {
+export const readMovies = (filters = {}, callback) => {
     const cb = onceCallback(callback);
     try {
         let {
@@ -225,7 +225,7 @@ export const getMovies = (filters = {}, callback) => {
     }
 };
 
-export const getMovieById = (id, callback) => {
+export const readMovieById = (id, callback) => {
     const cb = onceCallback(callback);
     try {
         const sql = `SELECT f.film_id, f.title, f.description, f.release_year, l.name as language,
@@ -252,7 +252,7 @@ export const getMovieById = (id, callback) => {
     }
 };
 
-export const getMovieAvailability = (id, callback) => {
+export const readMovieAvailability = (id, callback) => {
     const cb = onceCallback(callback);
     try {
         const sql = `
@@ -281,7 +281,7 @@ export const getMovieAvailability = (id, callback) => {
     }
 };
 
-export const getRatings = (callback) => {
+export const readRatings = (callback) => {
     const cb = onceCallback(callback);
     try {
         const sql = `SELECT DISTINCT rating FROM film`;
