@@ -1,4 +1,9 @@
-import { readCustomers } from '../dao/customer.js';
+import {
+    readCustomerById,
+    readCustomers,
+    softDeleteCustomer,
+    updateCustomer,
+} from '../dao/customer.js';
 import { logger } from '../util/logger.js';
 
 /**
@@ -20,10 +25,12 @@ const onceCallback = (cb) => {
 
 export const fetchCustomers = (params = {}, callback) => {
     const cb = onceCallback(callback);
-    const { search = '', active = '1', storeId = null, sort = 'createDate,asc' } = params || {};
-    const filters = { search, active, storeId, sort };
-
-    readCustomers(filters, (error, result) => {
+    if (typeof params !== 'object' || params === null) {
+        logger.warn('fetchCustomers called with invalid params:', params);
+        return cb(new Error('Invalid parameters'));
+    }
+    const { search, active, storeId, sort, page, limit } = params;
+    readCustomers({ search, active, storeId, sort, page, pageSize: limit }, (error, result) => {
         if (error) {
             logger.error('Customer Error:', error);
             return cb(error);
@@ -61,5 +68,86 @@ export const fetchCustomers = (params = {}, callback) => {
               })
             : [];
         cb(null, { total, page, pageSize, totalPages, customers: mapped });
+    });
+};
+
+export const fetchCustomerById = (customerId, callback) => {
+    const cb = onceCallback(callback);
+    if (
+        customerId === null ||
+        customerId === undefined ||
+        isNaN(Number(customerId)) ||
+        Number(customerId) <= 0
+    ) {
+        logger.warn('fetchCustomerById called with invalid customerId:', customerId);
+        return cb(new Error('Invalid customerId'));
+    }
+
+    readCustomerById({ customerId: Number(customerId) }, (error, result) => {
+        if (error) {
+            logger.error('Customer Error:', error);
+            return cb(error);
+        }
+        const { customers } = result || {};
+        cb(null, Array.isArray(customers) && customers.length ? customers[0] : null);
+    });
+};
+
+export const updateCustomerById = (customerId, data, callback) => {
+    const cb = onceCallback(callback);
+    if (
+        customerId === null ||
+        customerId === undefined ||
+        isNaN(Number(customerId)) ||
+        Number(customerId) <= 0
+    ) {
+        logger.warn('updateCustomerById called with invalid customerId:', customerId);
+        return cb(new Error('Invalid customerId'));
+    }
+
+    // Validate and sanitize input data
+    const { firstName, lastName, email, address, postalCode, phone, city, country, active } =
+        data || {};
+    const updateData = {
+        firstName: String(firstName).trim(),
+        lastName: String(lastName).trim(),
+        email: String(email).trim(),
+        address: String(address).trim(),
+        postalCode: String(postalCode).trim(),
+        phone: String(phone).trim(),
+        city: String(city).trim(),
+        country: String(country).trim(),
+        active: Boolean(active),
+    };
+
+    // Call the data access layer to update the customer
+    updateCustomer(customerId, updateData, (error, result) => {
+        if (error) {
+            logger.error('Customer Update Error:', error);
+            return cb(error);
+        }
+        cb(null, result);
+    });
+};
+
+export const deleteCustomerById = (customerId, callback) => {
+    const cb = onceCallback(callback);
+    if (
+        customerId === null ||
+        customerId === undefined ||
+        isNaN(Number(customerId)) ||
+        Number(customerId) <= 0
+    ) {
+        logger.warn('deleteCustomerById called with invalid customerId:', customerId);
+        return cb(new Error('Invalid customerId'));
+    }
+
+    softDeleteCustomer(Number(customerId), (error, result) => {
+        if (error) {
+            logger.error('Customer Deletion Error:', error);
+            return cb(error);
+        }
+        cb(null, result);
+        logger.info('deleteCustomerById is not implemented. CustomerId:', customerId);
     });
 };
