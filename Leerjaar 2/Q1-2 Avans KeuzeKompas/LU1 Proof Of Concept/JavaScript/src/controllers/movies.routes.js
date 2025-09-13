@@ -162,7 +162,6 @@ moviesRouter.get('/:id', (req, res, next) => {
 
     fetchMovieById(id, (err, movie) => {
         if (err) return next(err);
-        console.log(movie);
         res.render('movies/movie', { title: movie.title, movie });
     });
 });
