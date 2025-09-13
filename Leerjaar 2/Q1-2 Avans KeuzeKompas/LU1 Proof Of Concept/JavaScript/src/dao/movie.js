@@ -1,5 +1,6 @@
 import { query } from '../data/db.js';
 import { logger } from '../util/logger.js';
+import { normalizeId, normalizeName } from '../util/normalize.js';
 
 /**
  * Helper to ensure a callback is only called once.
@@ -25,6 +26,50 @@ const onceCallback = (cb) => {
 const toArray = (v) => {
     if (v == null) return [];
     return Array.isArray(v) ? v : [v];
+};
+
+export const createMovie = (
+    title,
+    description,
+    releaseYear,
+    languageId,
+    rentalDuration,
+    rentalRate,
+    length,
+    replacementCost,
+    rating,
+    specialFeatures,
+    callback
+) => {
+    const cb = onceCallback(callback);
+    try {
+        const sql = `INSERT INTO film (title, description, release_year, language_id, rental_duration, rental_rate, length, replacement_cost, rating, special_features) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        query(
+            sql,
+            [
+                normalizeName(title),
+                description,
+                releaseYear,
+                normalizeId(languageId),
+                rentalDuration,
+                rentalRate,
+                length,
+                replacementCost,
+                rating,
+                specialFeatures,
+            ],
+            (error, result) => {
+                if (error) {
+                    logger.error('createMovie MySQL Error:', error);
+                    return cb(error);
+                }
+                cb(null, result);
+            }
+        );
+    } catch (err) {
+        logger.error('createMovie sync error:', err);
+        cb(err);
+    }
 };
 
 export const readPopularMovies = (limit = 10, callback) => {

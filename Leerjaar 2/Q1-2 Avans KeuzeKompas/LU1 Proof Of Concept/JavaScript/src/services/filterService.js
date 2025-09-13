@@ -20,35 +20,34 @@ const onceCallback = (cb) => {
 };
 
 export const fetchCategoryNames = (callback) => {
-    const safeCallback = onceCallback(callback);
+    const cb = onceCallback(callback);
     readCategories((error, categories) => {
         if (error) {
             logger.error('Category Error:', error);
-            return safeCallback(error);
+            return cb(error);
         }
         if (!categories) {
             logger.error('Category Error:', error);
-            return safeCallback(new Error('Categories not found.'));
+            return cb(new Error('Categories not found.'));
         }
 
         const names = categories.map((c) => c.name);
-        safeCallback(null, names);
+        cb(null, names);
     });
 };
 
 export const fetchRatingNames = (callback) => {
-    const safeCallback = onceCallback(callback);
+    const cb = onceCallback(callback);
     readRatings((error, ratings) => {
         if (error) {
             logger.error('Rating Error:', error);
-            return safeCallback(error);
+            return cb(error);
         }
         if (!ratings) {
             logger.error('Rating Error:', error);
-            return safeCallback(new Error('Ratings not found.'));
+            return cb(new Error('Ratings not found.'));
         }
-
-        const names = ratings.map((r) => r.name);
-        safeCallback(null, names);
+        const names = ratings.map((r) => r.rating);
+        cb(null, names);
     });
 };
