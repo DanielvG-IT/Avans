@@ -30,6 +30,58 @@ const onceCallback = (cb) => {
    Thin service functions
    --------------------------- */
 
+export const addMovie = (
+    title,
+    description,
+    releaseYear,
+    languageId,
+    rentalDuration,
+    rentalRate,
+    length,
+    replacementCost,
+    rating,
+    specialFeatures,
+    callback
+) => {
+    const cb = onceCallback(callback);
+    try {
+        // Basic validation
+        if (!title || !description || !languageId) {
+            const err = new Error('Title, description, and languageId are required.');
+            logger.error('addMovie - validation error:', err);
+            return cb(err);
+        }
+
+        // Call DAO to create movie
+        createMovie(
+            title,
+            description,
+            releaseYear,
+            languageId,
+            rentalDuration,
+            rentalRate,
+            length,
+            replacementCost,
+            rating,
+            specialFeatures,
+            (error, result) => {
+                if (error) {
+                    logger.error('addMovie - dao error:', error);
+                    return cb(error);
+                }
+                if (!result || result.insertedId === undefined || result.affectedRows !== 1) {
+                    logger.error('addMovie - unexpected result:', result);
+                    return cb(new Error('Failed to add movie.'));
+                }
+                cb(null, result);
+            }
+        );
+    } catch (err) {
+        logger.error('addMovie sync error:', err);
+        cb(err);
+    }
+};
+
 export const fetchPopularMovies = (limit = 10, callback) => {
     const cb = onceCallback(callback);
     try {
