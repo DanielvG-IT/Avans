@@ -184,6 +184,12 @@ export const updateUserAvatarById = (userId, avatarBase64, avatarFormat, callbac
 };
 
 export const deleteUserById = (userId, callback) => {
-    logger.warn;
-    ('deleteUserById is not implemented yet.');
+    const sql = `DELETE FROM user WHERE userId = ?`;
+    query(sql, [normalizeUserId(userId)], (error, result) => {
+        if (error) {
+            logger.error('User MySQL Error:', error);
+            return callback(error);
+        }
+        callback(null, result);
+    });
 };

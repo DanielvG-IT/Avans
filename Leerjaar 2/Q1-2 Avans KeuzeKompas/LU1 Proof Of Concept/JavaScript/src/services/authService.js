@@ -1,16 +1,27 @@
-import { readUserById, readUserByRefreshToken, updateUserRefreshTokenById } from '../dao/user.js';
+import {
+    readCustomerByEmailId,
+    readCustomerByUserId,
+    createCustomer,
+    softDeleteCustomer,
+    unlinkCustomerFromUser,
+} from '../dao/customer.js';
 import { createEmail, readEmail } from '../dao/email.js';
 import { makeAddress } from './addressService.js';
 import { compareSync, hashSync } from 'bcrypt';
 import { logger } from '../util/logger.js';
 import { v4 as uuid } from 'uuid';
 import jwt from 'jsonwebtoken';
-import { readCustomerByEmailId, readCustomerByUserId, createCustomer } from '../dao/customer.js';
 import {
     updateUserPasswordById,
     updateUserAvatarById,
     readUserByEmail,
     createUser,
+} from '../dao/user.js';
+import {
+    updateUserRefreshTokenById,
+    readUserByRefreshToken,
+    deleteUserById,
+    readUserById,
 } from '../dao/user.js';
 
 export const login = (email, password, callback) => {
@@ -382,6 +393,54 @@ export const changePassword = (userId, newPassword, callback) => {
 
         logger.info(`Password updated for userId ${userId}`);
         return callback(null, result);
+    });
+};
+
+export const deleteAccount = (userId, callback) => {
+    if (!userId) {
+        return callback(new Error('User ID is required.'));
+    }
+
+    readUserById(userId, (error, user) => {
+        if (error) return callback(error);
+        if (!user) return callback(new Error('User not found.'));
+        if (user.role !== 'CUSTOMER')
+            return callback(new Error('Only customers can delete accounts.'));
+
+        readCustomerByUserId(userId, (customerError, customer) => {
+            if (customerError) return callback(customerError);
+            if (!customer) return callback(new Error('Customer not found.'));
+
+            unlinkCustomerFromUser(customer.customer_id, (unlinkError, result) => {
+                if (unlinkError || result.affectedRows === 0) {
+                    logger.error('Error occurred while unlinking customer from user:', unlinkError);
+                }
+
+                // Perform the hard delete of the user
+                deleteUserById(userId, (error, result) => {
+                    if (error) return callback(error);
+                    if (result.affectedRows === 0) {
+                        logger.warn(`No rows deleted for userId ${userId} when deleting account`);
+                        return callback(new Error('Account deletion failed.'));
+                    }
+
+                    softDeleteCustomer(userId, (softDeleteError, result) => {
+                        if (softDeleteError) {
+                            logger.error(
+                                'Error occurred while soft deleting customer:',
+                                softDeleteError
+                            );
+                        }
+                        if (result.affectedRows === 0) {
+                            logger.warn(
+                                `No customer rows soft deleted for userId ${userId} when deleting account`
+                            );
+                            return callback(null, result);
+                        }
+                    });
+                });
+            });
+        });
     });
 };
 
