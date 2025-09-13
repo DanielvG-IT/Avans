@@ -5,7 +5,7 @@ import { requireStaffAuthWeb } from '../middleware/auth.js';
 const staffRouter = express.Router();
 
 staffRouter.get('/', requireStaffAuthWeb, (req, res, next) => {
-    res.json({ test: 'true' });
+    res.render('staff/overview', { title: 'Staff Overview' });
 });
 
 export default staffRouter;

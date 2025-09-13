@@ -1,0 +1,123 @@
+{{!-- views/staff/overview.hbs --}}
+<div class="container my-5" style="max-width: 1000px;">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h2 class="mb-1 text-light">
+        <i class="bi bi-briefcase-fill me-2"></i> Staff Actions
+      </h2>
+      <p class="mb-0 text-gray">Quick actions for store staff.</p>
+    </div>
+  </div>
+
+  <style>
+    /* Small, self-contained enhancements */
+    .action-card {
+      transition: transform .12s ease, box-shadow .12s ease;
+      border: none;
+    }
+
+    .action-card:focus,
+    .action-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, .18);
+      text-decoration: none;
+    }
+
+    .action-icon {
+      width: 56px;
+      height: 56px;
+      font-size: 1.25rem;
+      flex: 0 0 56px;
+    }
+
+    .action-desc {
+      font-size: .95rem;
+    }
+
+    .accessible-focus {
+      outline: 3px solid rgba(13, 110, 253, .18);
+      outline-offset: 4px;
+      border-radius: .375rem;
+    }
+
+    @media (max-width: 575.98px) {
+      .action-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1rem;
+      }
+    }
+  </style>
+
+  <div class="row row-cols-1 row-cols-md-2 g-3">
+    {{!-- Dashboard --}}
+    <div class="col">
+      <a href="/staff/dashboard"
+        class="card action-card p-3 text-decoration-none text-reset d-flex align-items-center gap-3" role="button"
+        tabindex="0" aria-label="View Store Dashboard">
+        <div class="bg-success text-white rounded action-icon d-flex align-items-center justify-content-center">
+          <i class="bi bi-graph-up-arrow"></i>
+        </div>
+        <div class="flex-grow-1">
+          <div class="d-flex align-items-start justify-content-between">
+            <div class="fw-semibold text-dark">View Store Dashboard</div>
+            <span class="badge bg-light text-dark align-self-start" aria-hidden="true">Metrics</span>
+          </div>
+          <div class="action-desc text-muted">See key store metrics, sales trends and staff KPIs.</div>
+        </div>
+      </a>
+    </div>
+
+    {{!-- Purchase --}}
+    <div class="col">
+      <a href="/purchase/new"
+        class="card action-card p-3 text-decoration-none text-reset d-flex align-items-center gap-3" role="button"
+        tabindex="0" aria-label="Create New Purchase">
+        <div class="bg-primary text-white rounded action-icon d-flex align-items-center justify-content-center">
+          <i class="bi bi-cart-plus-fill"></i>
+        </div>
+        <div class="flex-grow-1">
+          <div class="d-flex align-items-start justify-content-between">
+            <div class="fw-semibold text-dark">Create New Purchase</div>
+            <span class="badge bg-primary bg-opacity-10 text-primary">Quick</span>
+          </div>
+          <div class="action-desc text-muted">Link purchase to a customer and process payments quickly.</div>
+        </div>
+      </a>
+    </div>
+
+    {{!-- Movie Creation --}}
+    <div class="col">
+      <a href="/movies" class="card action-card p-3 text-decoration-none text-reset d-flex align-items-center gap-3"
+        role="button" tabindex="0" aria-label="Add New Movie">
+        <div class="bg-warning text-dark rounded action-icon d-flex align-items-center justify-content-center">
+          <i class="bi bi-film"></i>
+        </div>
+        <div class="flex-grow-1">
+          <div class="d-flex align-items-start justify-content-between">
+            <div class="fw-semibold text-dark">Manage Movies</div>
+            <span class="badge bg-warning bg-opacity-10 text-warning">Catalog</span>
+          </div>
+          <div class="action-desc text-muted">Browse movie entries in the catalog with metadata.</div>
+        </div>
+      </a>
+    </div>
+
+    {{!-- Example extra action to show scalability --}}
+    <div class="col">
+      <a href="/staff/crm" class="card action-card p-3 text-decoration-none text-reset d-flex align-items-center gap-3"
+        role="button" tabindex="0" aria-label="Manage Customers">
+        <div class="bg-secondary text-white rounded action-icon d-flex align-items-center justify-content-center">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <div class="flex-grow-1">
+          <div class="d-flex align-items-start justify-content-between">
+            <div class="fw-semibold text-dark">Manage Customers</div>
+            <span class="badge bg-secondary bg-opacity-10 text-secondary">CRM</span>
+          </div>
+          <div class="action-desc text-muted">Search or edit customer profiles, view purchase history.</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
