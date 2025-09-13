@@ -47,47 +47,46 @@
         font-size: 1rem;
       }
     }
+
+    /* Local overlay styles for Coming Soon cards */
+    .coming-soon-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+      color: #6c757d;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: .85rem;
+      letter-spacing: .06em;
+      background:
+        repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.03) 0 8px, transparent 8px 16px),
+        rgba(248, 249, 250, 0.85);
+      border-radius: .375rem;
+    }
+
+    .card.action-card.coming-soon {
+      position: relative;
+      filter: grayscale(.05);
+    }
+
+    /* Ensure the non-clickable card doesn't accept pointer events */
+    .card.action-card.coming-soon>* {
+      pointer-events: none;
+    }
   </style>
 
-  <div class="row row-cols-1 row-cols-md-2 g-3">
-    <style>
-      /* Local overlay styles for Coming Soon cards */
-      .coming-soon-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 20;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        pointer-events: auto;
-        color: #6c757d;
-        font-weight: 700;
-        text-transform: uppercase;
-        font-size: .85rem;
-        letter-spacing: .06em;
-        background:
-          repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.03) 0 8px, transparent 8px 16px),
-          rgba(248, 249, 250, 0.85);
-        border-radius: .375rem;
-      }
-
-      .card.action-card.coming-soon {
-        position: relative;
-        filter: grayscale(.05);
-      }
-
-      /* Ensure the non-clickable card doesn't accept pointer events */
-      .card.action-card.coming-soon>* {
-        pointer-events: none;
-      }
-    </style>
-
-    {{!-- Dashboard (Coming Soon overlay + non-clickable) --}}
-    <div class="col">
-      <div class="card action-card coming-soon p-3 text-decoration-none text-reset d-flex align-items-center gap-3"
+  <div class="row g-3">
+    {{!-- Left: Single Coming Soon action card --}}
+    <div class="col-12 col-md-6 d-flex">
+      <div
+        class="card action-card coming-soon p-3 text-decoration-none text-reset d-flex align-items-center gap-3 w-100 h-100"
         role="group" aria-disabled="true" tabindex="-1" aria-label="Store Dashboard - Coming Soon">
         <div class="bg-success text-white rounded action-icon d-flex align-items-center justify-content-center">
           <i class="bi bi-graph-up-arrow"></i>
@@ -104,29 +103,11 @@
       </div>
     </div>
 
-    {{!-- InStore Rental (Coming Soon overlay + non-clickable) --}}
-    <div class="col">
-      <div class="card action-card coming-soon p-3 text-decoration-none text-reset d-flex align-items-center gap-3"
-        role="group" aria-disabled="true" tabindex="-1" aria-label="Create New Rental - Coming Soon">
-        <div class="bg-primary text-white rounded action-icon d-flex align-items-center justify-content-center">
-          <i class="bi bi-cart-plus-fill"></i>
-        </div>
-        <div class="flex-grow-1">
-          <div class="d-flex align-items-start justify-content-between">
-            <div class="fw-semibold text-dark">Create New Rental</div>
-            <span class="badge bg-primary bg-opacity-10 text-primary">Quick</span>
-          </div>
-          <div class="action-desc text-muted">Link rental to a customer and process payments quickly.</div>
-        </div>
-
-        <div class="coming-soon-overlay" aria-hidden="true">Coming Soon</div>
-      </div>
-    </div>
-
-    {{!-- Movie Management --}}
-    <div class="col">
-      <a href="/movies" class="card action-card p-3 text-decoration-none text-reset d-flex align-items-center gap-3"
-        role="button" tabindex="0" aria-label="Add New Movie">
+    {{!-- Right: Two stacked action cards --}}
+    <div class="col-12 col-md-6 d-flex flex-column gap-3">
+      <a href="/movies"
+        class="card action-card p-3 text-decoration-none text-reset d-flex align-items-center gap-3 h-100" role="button"
+        tabindex="0" aria-label="Add New Movie">
         <div class="bg-warning text-dark rounded action-icon d-flex align-items-center justify-content-center">
           <i class="bi bi-film"></i>
         </div>
@@ -138,12 +119,10 @@
           <div class="action-desc text-muted">Browse movie entries in the catalog with metadata.</div>
         </div>
       </a>
-    </div>
 
-    {{!-- Customer Management --}}
-    <div class="col">
-      <a href="/staff/crm" class="card action-card p-3 text-decoration-none text-reset d-flex align-items-center gap-3"
-        role="button" tabindex="0" aria-label="Manage Customers">
+      <a href="/staff/crm"
+        class="card action-card p-3 text-decoration-none text-reset d-flex align-items-center gap-3 h-100" role="button"
+        tabindex="0" aria-label="Manage Customers">
         <div class="bg-secondary text-white rounded action-icon d-flex align-items-center justify-content-center">
           <i class="bi bi-people-fill"></i>
         </div>
