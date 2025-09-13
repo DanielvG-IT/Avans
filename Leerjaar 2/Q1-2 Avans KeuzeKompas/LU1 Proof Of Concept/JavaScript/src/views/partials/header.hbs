@@ -1,6 +1,6 @@
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg container mx-auto fixed-top shadow-sm">
-  <div class="container-fluid">
+<nav class="navbar navbar-expand-lg w-full fixed-top shadow-sm">
+  <div class="container">
     <a class="navbar-brand d-flex align-items-center" href="/">
       <img src="/images/eject!-logo-text.png" height="35" alt="Eject! Logo" />
     </a>
@@ -25,12 +25,12 @@
         {{#if user.role}}
         {{#if (eq user.role 'CUSTOMER')}}
         <li class="nav-item">
-          <a class="nav-link" href="/customer">Dashboard</a>
+          <a class="nav-link" href="/customer">MyEject!</a>
         </li>
         {{/if}}
         {{#if (eq user.role 'STAFF')}}
         <li class="nav-item">
-          <a class="nav-link" href="/staff">Dashboard</a>
+          <a class="nav-link" href="/staff">Staff</a>
         </li>
         {{/if}}
         {{/if}}
