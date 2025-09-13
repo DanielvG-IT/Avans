@@ -214,17 +214,18 @@ authRouter.put('/reset-password', requireCustomerAuthApi, (req, res) => {
 /**
  * /logout - logout api endpoint
  */
-authRouter.delete('/logout', requireCustomerAuthApi, (req, res) => {
+authRouter.delete('/logout', requireUserAuthWeb, (req, res) => {
     const userId = req.user?.userId;
-    if (!userId) return res.status(401).send({ error: 'User ID not found in request.' });
-
+    if (!userId) {
+        logger.warn('Logout attempt without user ID in request.');
+        return res.status(401).send({ error: 'User ID not found in request.' });
+    }
     logOut(userId, (error, result) => {
         if (error) return res.status(400).json({ success: false, error: error.message });
 
-        if (result.changedRows !== 1) {
-            logger.warn(`Logout: No rows updated for userId ${userId}`);
-        }
+        if (result.changedRows !== 1) logger.warn(`Logout: No rows updated for userId ${userId}`);
 
+        logger.debug(`User ${userId} logged out successfully.`);
         res.clearCookie('accessToken');
         res.clearCookie('refreshToken');
         res.sendStatus(204);
