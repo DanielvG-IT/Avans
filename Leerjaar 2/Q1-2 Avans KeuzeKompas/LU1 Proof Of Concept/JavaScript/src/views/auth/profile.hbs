@@ -20,67 +20,41 @@
                 class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center"
                 style="width:100%; height:100%; font-size:36px; font-weight:600; border:2px solid rgba(255,255,255,0.6); box-shadow:0 4px 10px rgba(0,0,0,0.12);"
                 aria-hidden="true">
-                {{#if customer.first_name}}{{customer.first_name}}{{else}}U{{/if}}
+                <span class="placeholder-avatar">U</span>
               </div>
               {{/if}}
-
-              <!-- Circular overlay button -->
-              <label for="avatarInput" class="position-absolute"
-                style="bottom:6px; right:6px; cursor:pointer; z-index:2;">
-                <span class="d-inline-flex align-items-center justify-content-center"
-                  style="width:40px; height:40px; border-radius:50%; background:rgba(0,0,0,0.6); color:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.3); transition:transform .12s ease, background .12s ease;">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"
-                    aria-hidden="true" focusable="false">
-                    <path
-                      d="M10.5 2h-5l-.7 1H2.5A1.5 1.5 0 0 0 1 4.5v7A1.5 1.5 0 0 0 2.5 13h11A1.5 1.5 0 0 0 15 11.5v-7A1.5 1.5 0 0 0 13.5 3h-2.3l-.7-1zM8 5.5a3 3 0 1 1 0 6 3 3 0 0 1 0-6z" />
-                  </svg>
-                </span>
-                <span class="visually-hidden">Change avatar</span>
-              </label>
-              <input type="file" id="avatarInput" class="d-none" accept=".jpg,.jpeg,.png,.webp"
-                onchange="previewAvatar(event)">
             </div>
+          </div>
 
-            <!-- Save button & feedback messages -->
-            <div class="mt-3 d-flex flex-column align-items-center">
-              <button onclick="saveAvatar()" id="saveAvatarBtn" class="btn btn-sm btn-success d-none mb-1">
-                Save Avatar
-              </button>
-              <div id="avatarFeedback" class="text-center d-none" style="font-size:0.875rem; min-height:1.2em;"></div>
-            </div>
+          <!-- Action buttons below avatar -->
+          <div class="d-flex justify-content-center gap-2">
+            <!-- Change avatar -->
+            <label for="avatarInput" class="btn btn-sm btn-outline-secondary" style="cursor:pointer;">
+              <i class="bi bi-camera"></i>
+              <span class="visually-hidden">Change avatar</span>
+            </label>
+            <input type="file" id="avatarInput" class="d-none" accept=".jpg,.jpeg,.png,.webp"
+              onchange="previewAvatar(event)">
+
+            <!-- Remove avatar -->
+            <button type="button" onclick="removeAvatar()" class="btn btn-sm btn-outline-danger">
+              <i class="bi bi-trash"></i>
+              <span class="visually-hidden">Remove avatar</span>
+            </button>
+          </div>
+
+          <!-- Save button & feedback -->
+          <div class="mt-3 d-flex flex-column align-items-center">
+            <button onclick="saveAvatar()" id="saveAvatarBtn" class="btn btn-sm btn-success d-none mb-1">
+              Save Avatar
+            </button>
+            <div id="avatarFeedback" class="alert d-none w-100 mt-2" role="alert"></div>
           </div>
 
           <!-- User Info -->
-          <h4 class="card-title mt-3 mb-1">{{customer.first_name}} {{customer.last_name}}</h4>
           <div class="text-muted mb-2" aria-label="username">{{user.email}}</div>
-
-          {{#if user.role}}
           <div class="mb-2">
             <span class="badge bg-primary" aria-label="role">{{user.role}}</span>
-          </div>
-          {{/if}}
-        </div>
-      </div>
-
-      <!-- Password Reset Card -->
-      <div class="card shadow-sm mb-4">
-        <div class="card-body text-center">
-          <h5 class="card-title mb-3">Password Reset</h5>
-          <div class="alert alert-success w-100 d-none" id="successMessage" role="status">
-            <p></p>
-          </div>
-          <form onsubmit=clientPasswordReset(event) class="text-start w-100" aria-label="password reset form">
-            <div class="mb-3">
-              <label for="newPassword" class="form-label visually-hidden">New Password</label>
-              <input type="password" id="newPassword" name="newPassword" class="form-control"
-                placeholder="Enter new password" value="{{newPassword}}" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Send password reset</button>
-          </form>
-          <div class="small text-danger mt-2 d-none" id="errorMessage" role="alert">
-            <p>
-
-            </p>
           </div>
         </div>
       </div>
@@ -92,28 +66,29 @@
           <h5 class="card-title mb-3">Account Details</h5>
           <div class="text-start">
             <p class="mb-2"><strong>User ID:</strong> {{user.userId}}</p>
-            <p class="mb-2"><strong>Customer ID:</strong> {{customer.customer_id}}</p>
             <p class="mb-2"><strong>Email:</strong> {{user.email}}</p>
-            {{#if customer.address}}
-            <p class="mb-2"><strong>Address:</strong>
-              {{customer.address}}{{#if customer.city}}, {{customer.city}}{{/if}}{{#if customer.postal_code}}
-              {{customer.postal_code}}{{/if}}{{#if customer.country}}, {{customer.country}}{{/if}}
-            </p>
-            {{/if}}
-
-            {{#if customer.phone}}
-            <p class="mb-2"><strong>Phone:</strong> <a href="tel:{{customer.phone}}"
-                aria-label="customer phone">{{customer.phone}}</a></p>
-            {{/if}}
-
-            <p class="mb-2"><strong>Account Status:</strong>
-              {{#if customer.active}}<span class="text-success">Active</span>{{else}}<span
-                class="text-muted">Inactive</span>{{/if}}
-            </p>
-
             {{#if user.role}}
             <p class="mb-2"><strong>Role:</strong> {{user.role}}</p>
             {{/if}}
+            {{#if user.avatarFormat}}
+            <p class="mb-2"><strong>Avatar Format:</strong> {{user.avatarFormat}}</p>
+            {{/if}}
+          </div>
+          <hr class="my-3">
+          <h5 class="card-title mb-3 mt-3">Password Reset</h5>
+          <form onsubmit=clientPasswordReset(event) class="text-start w-100" aria-label="password reset form">
+            <div class="mb-3">
+              <label for="newPassword" class="form-label visually-hidden">New Password</label>
+              <input type="password" id="newPassword" name="newPassword" class="form-control"
+                placeholder="Enter new password" value="{{newPassword}}" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Send password reset</button>
+          </form>
+          <div class="small text-danger mt-2 d-none" id="errorMessage" role="alert">
+            <p></p>
+          </div>
+          <div class="alert alert-success w-100 d-none" id="successMessage" role="status">
+            <p></p>
           </div>
         </div>
       </div>
@@ -251,25 +226,15 @@
       const data = await response.json().catch(() => ({}));
 
       if (response.ok) {
-        // Hide save button if present
-        const saveBtn = document.getElementById('saveAvatarBtn');
-        if (saveBtn) saveBtn.classList.add('d-none');
-
-        if (feedbackEl) {
-          feedbackEl.classList.remove('d-none', 'text-danger');
-          feedbackEl.classList.add('text-success');
-          feedbackEl.textContent = data.message || 'Avatar saved successfully!';
-          setTimeout(() => {
-            feedbackEl.classList.add('d-none');
-          }, 2500);
-        }
+        feedbackEl.className = "alert alert-success w-100 mt-2";
+        feedbackEl.textContent = data.message || "Avatar saved successfully!";
+        document.getElementById('saveAvatarBtn').classList.add('d-none');
+        setTimeout(() => feedbackEl.classList.add("d-none"), 2500);
       } else {
-        if (feedbackEl) {
-          feedbackEl.classList.remove('d-none', 'text-success');
-          feedbackEl.classList.add('text-danger');
-          feedbackEl.textContent = data.error || data.message || 'Failed to save avatar.';
-        }
+        feedbackEl.className = "alert alert-danger w-100 mt-2";
+        feedbackEl.textContent = data.error || data.message || "Failed to save avatar.";
       }
+
     } catch (err) {
       console.error(err);
       if (feedbackEl) {
@@ -279,4 +244,44 @@
       }
     }
   }
+  async function removeAvatar() {
+    const feedbackEl = document.getElementById('avatarFeedback');
+
+    try {
+      const response = await fetch('/auth/profile/avatar', {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (response.ok) {
+        // Reset to initial letter avatar
+        const drop = document.getElementById('avatarDrop');
+        const fallback = document.createElement('div');
+        fallback.id = 'profileAvatar';
+        fallback.className = 'rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center';
+        fallback.style.cssText = 'width:100%; height:100%; font-size:36px; font-weight:600;';
+        fallback.textContent = "U";
+
+        const currentAvatar = document.getElementById('profileAvatar');
+        currentAvatar.replaceWith(fallback);
+
+        feedbackEl.className = "alert alert-success w-100 mt-2";
+        feedbackEl.textContent = data.message || "Avatar removed.";
+        feedbackEl.classList.remove("d-none");
+
+        setTimeout(() => feedbackEl.classList.add("d-none"), 2500);
+      } else {
+        feedbackEl.className = "alert alert-danger w-100 mt-2";
+        feedbackEl.textContent = data.error || data.message || "Failed to remove avatar.";
+        feedbackEl.classList.remove("d-none");
+      }
+    } catch (err) {
+      feedbackEl.className = "alert alert-danger w-100 mt-2";
+      feedbackEl.textContent = "Network error. Try again.";
+      feedbackEl.classList.remove("d-none");
+    }
+  }
+
 </script>

@@ -13,6 +13,7 @@ import {
     register,
     logOut,
     login,
+    fetchUser,
 } from '../services/authService.js';
 import express from 'express';
 
@@ -166,20 +167,10 @@ authRouter.post('/register', (req, res) => {
  * /profile - profile page
  */
 authRouter.get('/profile', requireUserAuthWeb, (req, res, next) => {
-    if (req.user.role === 'CUSTOMER') {
-        fetchCustomer(req.user?.userId, (error, result) => {
-            if (error) return next(error);
-            res.render('auth/profile', {
-                title: 'Profile',
-                user: result.user,
-                customer: result.customer,
-            });
-        });
-    } else if (req.user.role === 'STAFF') {
-        res.render('auth/profile', { title: 'Profile', user: req.user });
-    } else {
-        return next(new Error('Unauthorized: Unknown user role.'));
-    }
+    fetchUser(req.user.userId, (error, user) => {
+        if (error) return next(error);
+        res.render('auth/profile', { title: 'Profile', user: user });
+    });
 });
 
 authRouter.post(
@@ -199,10 +190,18 @@ authRouter.post(
         });
     }
 );
+authRouter.delete('/profile/avatar', requireUserAuthWeb, (req, res) => {
+    updateUserAvatarById(req.user.userId, null, null, (err, result) => {
+        if (err) return res.status(500).send({ error: 'Failed to delete avatar.' });
+        return res.status(200).send({ message: 'Avatar deleted successfully.' });
+    });
+});
 
 authRouter.put('/reset-password', requireCustomerAuthApi, (req, res) => {
     const userId = req.user?.userId;
     const newPassword = req.body.newPassword;
+
+    // TODO: Implement old password verification if needed
     // const oldPassword = req.body.oldPassword;
 
     if (!newPassword || !userId) {
