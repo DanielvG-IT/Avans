@@ -57,4 +57,15 @@ export const expressHelpers = {
     gt: (a, b) => a > b,
     lt: (a, b) => a < b,
     last: (arr) => (Array.isArray(arr) ? arr[arr.length - 1] : undefined),
+    formatCurrency: (value) => {
+        if (typeof value !== 'number') return value;
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+        }).format(value);
+    },
+    formatDate: (date) => {
+        if (!(date instanceof Date)) return date;
+        return date.toISOString().split('T')[0];
+    },
 };

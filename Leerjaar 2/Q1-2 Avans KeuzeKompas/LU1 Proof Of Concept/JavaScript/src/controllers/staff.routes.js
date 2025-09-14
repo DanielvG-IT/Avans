@@ -1,13 +1,14 @@
-import { readStores } from '../dao/store.js';
 import { requireStaffAuthApi, requireStaffAuthWeb } from '../middleware/auth.js';
-import {
-    addCustomer,
-    fetchCustomerById,
-    fetchCustomers,
-    updateCustomerById,
-} from '../services/customerService.js';
+import { readStores } from '../dao/store.js';
 import { logger } from '../util/logger.js';
 import express from 'express';
+import {
+    fetchRentalsByCustomerId,
+    updateCustomerById,
+    fetchCustomerById,
+    fetchCustomers,
+    addCustomer,
+} from '../services/customerService.js';
 
 const staffRouter = express.Router();
 
@@ -290,7 +291,108 @@ staffRouter.post('/crm/new', requireStaffAuthApi, (req, res, next) => {
 });
 
 staffRouter.get('/crm/:customerId', requireStaffAuthWeb, (req, res, next) => {
-    res.json({ success: false, error: 'Not implemented' });
+    // TODO: Implement customer detail view if needed (possibly displaying orders, rentals, etc.)
+    // TODO: Implement rental history retrieval and display
+
+    const customerId = parsePositiveInt(req.params.customerId, null);
+
+    fetchCustomerById(customerId, (error, customer) => {
+        if (error) {
+            logger.error('Customer Error:', error);
+            return next(error);
+        }
+        if (!customer) {
+            logger.warn('Customer not found:', { customerId });
+            return next(new Error('Customer not found'));
+        }
+
+        fetchRentalsByCustomerId(customerId, (rentalError, rentals) => {
+            if (rentalError) {
+                logger.error('Rental Retrieval Error:', rentalError);
+                return next(rentalError);
+            }
+
+            // Robust categorization and improved metrics (single-pass, defensive)
+            const now = new Date();
+            const parseDate = (d) => {
+                if (!d) return null;
+                const dd = new Date(d);
+                return isNaN(dd.getTime()) ? null : dd;
+            };
+            const addDays = (date, days) => new Date(date.getTime() + days * 24 * 60 * 60 * 1000);
+
+            const rentalsList = Array.isArray(rentals) ? rentals : [];
+
+            const activeRentals = [];
+            const futureRentals = [];
+            const pastRentals = [];
+            let overdueCount = 0;
+
+            for (let i = 0; i < rentalsList.length; i++) {
+                const r = rentalsList[i];
+
+                const rentalDate = parseDate(r.rental_date);
+                const returnDate = parseDate(r.return_date);
+
+                // Normalize duration once
+                const durationDays = Number(r.rental_duration) || 0;
+                const normalizedDuration = durationDays > 0 ? Math.floor(durationDays) : 0;
+                r.rental_duration = normalizedDuration;
+
+                // Normalize numeric/monetary fields
+                r.amount =
+                    r.amount !== undefined
+                        ? Number(r.amount)
+                        : r.rental_rate
+                        ? Number(r.rental_rate)
+                        : 0;
+                r.rental_rate = r.rental_rate !== undefined ? Number(r.rental_rate) : 0;
+
+                r.due_date = rentalDate ? addDays(rentalDate, normalizedDuration) : null;
+                r.isReturned = !!returnDate;
+                r.isOverdue = !r.isReturned && r.due_date ? now > r.due_date : false;
+
+                // Skip invalid rental_date entries
+                if (!rentalDate) continue;
+
+                // Categorize
+                if (r.rental_status === 'Future' || (rentalDate && rentalDate > now)) {
+                    r.rental_status = 'Future';
+                    futureRentals.push(r);
+                } else if (r.rental_status === 'Past' || (returnDate && returnDate <= now)) {
+                    pastRentals.push(r);
+                } else {
+                    // started and not returned, or return in future
+                    activeRentals.push(r);
+                }
+
+                if (r.isOverdue) overdueCount++;
+            }
+
+            // Aggregate metrics
+            const metrics = {
+                totalRentals: rentalsList.length,
+                activeRentalsCount: activeRentals.length,
+                overdueRentalsCount: overdueCount,
+            };
+
+            console.log(customer);
+            console.log(metrics);
+            console.log(activeRentals);
+            console.log(futureRentals);
+            console.log(pastRentals);
+
+            res.render('staff/viewCustomer', {
+                title: 'Customer Details',
+                customer,
+                metrics,
+                activeRentals,
+                futureRentals,
+                pastRentals,
+                returnUrl: '/staff/crm',
+            });
+        });
+    });
 });
 
 staffRouter.get('/crm/:customerId/edit', requireStaffAuthWeb, (req, res, next) => {
@@ -423,6 +525,15 @@ staffRouter.put('/crm/:customerId/edit', requireStaffAuthWeb, (req, res, next) =
             return res.redirect('/staff/crm/' + customerId);
         }
     });
+});
+
+staffRouter.get('/crm/:customerId/rent', requireStaffAuthWeb, (req, res, next) => {
+    const customerId = parsePositiveInt(req.params.customerId, null);
+    if (!customerId) {
+        return res.status(400).send('Invalid customer ID');
+    }
+
+    res.json({ success: false, error: 'Not implemented' });
 });
 
 export default staffRouter;
