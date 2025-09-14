@@ -3,6 +3,7 @@ import {
     readAddressById,
     getOrCreateCity,
     createAddress,
+    readAddress,
 } from '../dao/address.js';
 import { logger } from '../util/logger.js';
 
@@ -105,41 +106,66 @@ export const makeAddress = (
                     phone,
                     location: typeof location !== 'undefined' ? location : null,
                 });
-                createAddress(
-                    address,
-                    district,
-                    cityRow.city_id,
-                    postalCode,
-                    phone,
-                    typeof location !== 'undefined' ? location : undefined,
-                    (err3, created) => {
-                        if (err3) {
-                            logger.error('createAddress.createAddress error:', err3);
-                            return cb(err3);
-                        }
-
-                        logger.debug('createAddress.createAddress result', { created });
-
-                        // If created is an insertId number
-                        if (typeof created.insertId === 'number') {
-                            logger.debug('createAddress returned insert id, reading by id', {
-                                id: created.insertId,
-                            });
-                            return readAddressById(created.insertId, (err5, fullRow) => {
-                                if (err5) {
-                                    logger.error('readAddressById error:', err5);
-                                    return cb(err5);
-                                }
-                                logger.debug('readAddressById returned fullRow', { fullRow });
-                                return cb(null, {
-                                    country: countryRow,
-                                    city: cityRow,
-                                    address: fullRow,
-                                });
-                            });
-                        }
+                readAddress(address, (err, addressRow) => {
+                    if (err) {
+                        logger.error('readAddress error:', err);
+                        return cb(err);
                     }
-                );
+                    if (addressRow) {
+                        logger.debug('Address already exists, returning existing row', {
+                            addressRow,
+                        });
+                        return cb(null, {
+                            country: countryRow,
+                            city: cityRow,
+                            address: addressRow,
+                        });
+                    }
+                    logger.debug('Address does not exist, creating new address row', {
+                        address,
+                        district,
+                        cityId,
+                        postalCode,
+                        phone,
+                        location: typeof location !== 'undefined' ? location : null,
+                    });
+
+                    createAddress(
+                        address,
+                        district,
+                        cityRow.city_id,
+                        postalCode,
+                        phone,
+                        typeof location !== 'undefined' ? location : undefined,
+                        (err3, created) => {
+                            if (err3) {
+                                logger.error('createAddress.createAddress error:', err3);
+                                return cb(err3);
+                            }
+
+                            logger.debug('createAddress.createAddress result', { created });
+
+                            // If created is an insertId number
+                            if (typeof created.insertId === 'number') {
+                                logger.debug('createAddress returned insert id, reading by id', {
+                                    id: created.insertId,
+                                });
+                                return readAddressById(created.insertId, (err5, fullRow) => {
+                                    if (err5) {
+                                        logger.error('readAddressById error:', err5);
+                                        return cb(err5);
+                                    }
+                                    logger.debug('readAddressById returned fullRow', { fullRow });
+                                    return cb(null, {
+                                        country: countryRow,
+                                        city: cityRow,
+                                        address: fullRow,
+                                    });
+                                });
+                            }
+                        }
+                    );
+                });
             });
         });
     } catch (ex) {
