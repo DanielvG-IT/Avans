@@ -45,7 +45,7 @@ export const readEmail = (email, callback) => {
                 logger.error('readEmail MySQL Error:', error);
                 return cb(error);
             }
-            cb(null, rows);
+            cb(null, rows[0] || null);
         });
     } catch (err) {
         logger.error('readEmail sync error:', err);
