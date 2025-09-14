@@ -102,7 +102,7 @@ export const addCustomer = (data, callback) => {
                             logger.error('Email Creation Error:', emailErr);
                             return cb(emailErr);
                         }
-                        proceedWithCustomerCreation(newEmailRow.email_id);
+                        proceedWithCustomerCreation(newEmailRow.insertId);
                     });
                 } else {
                     proceedWithCustomerCreation(emailId);
