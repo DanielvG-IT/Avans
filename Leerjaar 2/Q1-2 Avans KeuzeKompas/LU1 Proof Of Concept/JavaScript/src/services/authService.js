@@ -25,6 +25,20 @@ import {
     createCustomer,
 } from '../dao/customer.js';
 
+// TODO : move to util
+const onceCallback = (cb) => {
+    let called = false;
+    return (err, res) => {
+        if (called) return;
+        called = true;
+        try {
+            if (typeof cb === 'function') cb(err, res);
+        } catch (e) {
+            logger.error('Callback threw an error:', e);
+        }
+    };
+};
+
 export const login = (email, password, callback) => {
     if (!email || !password) {
         return callback(new Error('Invalid input.'));
@@ -219,8 +233,16 @@ export const logOut = (userId, callback) => {
     });
 };
 
-export const fetchCustomer = (userId, callback) => {
+export const fetchUser = (userId, callback) => {
     readUserById(userId, (error, user) => {
+        if (error) return callback(error);
+        if (!user) return callback(new Error('User not found.'));
+        return callback(null, user);
+    });
+};
+
+export const fetchCustomer = (userId, callback) => {
+    fetchUser(userId, (error, user) => {
         if (error) return callback(error);
         if (!user) return callback(new Error('User not found.'));
         if (user.role !== 'CUSTOMER') return callback(new Error('User is not a customer.'));
@@ -235,18 +257,18 @@ export const fetchCustomer = (userId, callback) => {
     });
 };
 
-// export const fetchStaff = (userId, callback) => {
-//     readUserById(userId, (error, user) => {
-//         if (error) return callback(error);
-//         if (!user) return callback(new Error('User not found.'));
-//         if (user.role !== 'STAFF') return callback(new Error('User is not staff.'));
+export const fetchStaff = (userId, callback) => {
+    fetchUser(userId, (error, user) => {
+        if (error) return callback(error);
+        if (!user) return callback(new Error('User not found.'));
+        if (user.role !== 'STAFF') return callback(new Error('User is not staff.'));
 
-//         readStaffByUserId(userId, (error, staff) => {
-//             if (error) return callback(error);
-//             return callback(null, staff);
-//         });
-//     });
-// };
+        readStaffByUserId(userId, (error, staff) => {
+            if (error) return callback(error);
+            return callback(null, staff);
+        });
+    });
+};
 
 export const updateAvatar = (userId, avatarBase64, avatarFormat, callback) => {
     if (!userId || !avatarBase64 || !avatarFormat) {

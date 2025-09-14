@@ -170,17 +170,18 @@ export const updateUserPasswordById = (userId, newPasswordHash, callback) => {
 export const updateUserAvatarById = (userId, avatarBase64, avatarFormat, callback) => {
     const sql = `UPDATE user SET avatar = ?, avatarFormat = ? WHERE userId = ?`;
 
-    query(
-        sql,
-        [normalizeBase64(avatarBase64), normalizeFormat(avatarFormat), normalizeUserId(userId)],
-        (error, result) => {
-            if (error) {
-                logger.error('User MySQL Error:', error);
-                return callback(error);
-            }
-            callback(null, result);
+    const avatar = avatarBase64 ? normalizeBase64(avatarBase64) : null;
+    const format = avatarFormat ? normalizeFormat(avatarFormat) : null;
+    const userIdNorm = normalizeUserId(userId);
+
+    query(sql, [avatar, format, userIdNorm], (error, result) => {
+        if (typeof callback !== 'function') return;
+        if (error) {
+            logger.error('User MySQL Error:', error);
+            return callback(error);
         }
-    );
+        callback(null, result);
+    });
 };
 
 export const deleteUserById = (userId, callback) => {
