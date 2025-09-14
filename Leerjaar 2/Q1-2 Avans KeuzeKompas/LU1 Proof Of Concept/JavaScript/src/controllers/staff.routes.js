@@ -1,6 +1,11 @@
 import { readStores } from '../dao/store.js';
-import { requireStaffAuthWeb } from '../middleware/auth.js';
-import { fetchCustomers } from '../services/customerService.js';
+import { requireStaffAuthApi, requireStaffAuthWeb } from '../middleware/auth.js';
+import {
+    addCustomer,
+    fetchCustomerById,
+    fetchCustomers,
+    updateCustomerById,
+} from '../services/customerService.js';
 import { logger } from '../util/logger.js';
 import express from 'express';
 
@@ -109,7 +114,7 @@ staffRouter.get('/crm', requireStaffAuthWeb, (req, res, next) => {
                 return pages;
             };
 
-            const pagesToShow = buildPagesToShow(currentPage, totalPages, 7);
+            const pagesToShow = buildPagesToShow(currentPage, totalPages, 6);
             const prevPage = currentPage > 1 ? currentPage - 1 : null;
             const nextPage = currentPage < totalPages ? currentPage + 1 : null;
 
@@ -151,6 +156,272 @@ staffRouter.get('/crm', requireStaffAuthWeb, (req, res, next) => {
                 pageQueryPrefix,
             });
         });
+    });
+});
+
+staffRouter.get('/crm/new', requireStaffAuthWeb, (req, res, next) => {
+    readStores((storeError, stores) => {
+        if (storeError) {
+            logger.error('Store Error:', storeError);
+            return next(storeError);
+        }
+        res.render('staff/addOrEditCustomer', {
+            title: 'New Customer',
+            customer: {},
+            stores,
+            isEdit: false,
+            actionUrl: '/staff/crm/new',
+            actionMethod: 'POST',
+            returnUrl: '/staff/crm',
+        });
+    });
+});
+staffRouter.post('/crm/new', requireStaffAuthApi, (req, res, next) => {
+    const {
+        firstName,
+        lastName,
+        email,
+        address,
+        province,
+        postalCode,
+        phone,
+        city,
+        country,
+        active = 1,
+        storeId = 1, // Default storeId if not provided
+    } = req.body;
+
+    // Basic validation
+    if (
+        !firstName ||
+        !lastName ||
+        !email ||
+        !address ||
+        !city ||
+        !country ||
+        !postalCode ||
+        !phone ||
+        !province ||
+        !storeId
+    ) {
+        readStores((storeError, stores) => {
+            if (storeError) {
+                logger.error('Store Error:', storeError);
+                return next(storeError);
+            }
+            return res.render('staff/addOrEditCustomer', {
+                title: 'New Customer',
+                customer: {
+                    firstName,
+                    lastName,
+                    email,
+                    address,
+                    city,
+                    country,
+                    postalCode,
+                    phone,
+                    province,
+                    active,
+                    storeId,
+                },
+                stores,
+                isEdit: false,
+                actionUrl: '/staff/crm/new',
+                actionMethod: 'POST',
+                returnUrl: '/staff/crm',
+                errorMessage: 'All fields are required.',
+            });
+        });
+    }
+
+    const customerData = {
+        firstName,
+        lastName,
+        email,
+        address,
+        city,
+        country,
+        postalCode,
+        phone,
+        province,
+        active: active ? 1 : 0,
+        storeId: parsePositiveInt(storeId, 1),
+    };
+
+    addCustomer(customerData, (error, customerId) => {
+        if (error) {
+            logger.error('Add Customer Error:', error);
+            readStores((storeError, stores) => {
+                if (storeError) {
+                    logger.error('Store Error:', storeError);
+                    return next(storeError);
+                }
+                // Determine a user-friendly error message, specially handling duplicate email errors.
+                let renderErrorMessage =
+                    error && error.message
+                        ? error.message
+                        : 'An error occurred while adding the customer.';
+                if (
+                    error &&
+                    (error.code === 'ER_DUP_ENTRY' ||
+                        (typeof error.message === 'string' &&
+                            /Duplicate entry .* for key ['"]?customer\.email_id['"]?/.test(
+                                error.message
+                            )))
+                ) {
+                    renderErrorMessage = 'Email already in use.';
+                }
+
+                return res.render('staff/addOrEditCustomer', {
+                    title: 'New Customer',
+                    customer: customerData,
+                    stores,
+                    isEdit: false,
+                    actionUrl: '/staff/crm/new',
+                    actionMethod: 'POST',
+                    returnUrl: '/staff/crm',
+                    errorMessage: renderErrorMessage,
+                });
+            });
+        } else {
+            return res.redirect('/staff/crm/' + customerId);
+        }
+    });
+});
+
+staffRouter.get('/crm/:customerId', requireStaffAuthWeb, (req, res, next) => {
+    res.json({ success: false, error: 'Not implemented' });
+});
+
+staffRouter.get('/crm/:customerId/edit', requireStaffAuthWeb, (req, res, next) => {
+    const customerId = parsePositiveInt(req.params.customerId, null);
+    fetchCustomerById(customerId, (error, customer) => {
+        if (error) {
+            logger.error('Customer Error:', error);
+            return next(error);
+        }
+
+        res.render('staff/addOrEditCustomer', {
+            title: 'Edit Customer',
+            customer: customer,
+            isEdit: true,
+            actionUrl: '/crm/' + customerId + '/edit',
+            actionMethod: 'PUT',
+            returnUrl: '/staff/crm',
+        });
+    });
+});
+staffRouter.put('/crm/:customerId/edit', requireStaffAuthWeb, (req, res, next) => {
+    const customerId = parsePositiveInt(req.params.customerId, null);
+    const {
+        firstName,
+        lastName,
+        email,
+        address,
+        province,
+        postalCode,
+        phone,
+        city,
+        country,
+        active = 1,
+        storeId = 1, // Default storeId if not provided
+    } = req.body;
+
+    // Basic validation
+    if (
+        !firstName ||
+        !lastName ||
+        !email ||
+        !address ||
+        !city ||
+        !country ||
+        !postalCode ||
+        !phone ||
+        !province ||
+        !storeId
+    ) {
+        readStores((storeError, stores) => {
+            if (storeError) {
+                logger.error('Store Error:', storeError);
+                return next(storeError);
+            }
+            return res.render('staff/addOrEditCustomer', {
+                title: 'New Customer',
+                customer: {
+                    firstName,
+                    lastName,
+                    email,
+                    address,
+                    city,
+                    country,
+                    postalCode,
+                    phone,
+                    province,
+                    active,
+                    storeId,
+                },
+                stores,
+                isEdit: false,
+                actionUrl: '/staff/crm/' + customerId + '/edit',
+                actionMethod: 'POST',
+                returnUrl: '/staff/crm',
+                errorMessage: 'All fields are required.',
+            });
+        });
+    }
+
+    const customerData = {
+        firstName,
+        lastName,
+        email,
+        address,
+        city,
+        country,
+        postalCode,
+        phone,
+        province,
+        active: active ? 1 : 0,
+        storeId: parsePositiveInt(storeId, 1),
+    };
+
+    updateCustomerById(customerId, customerData, (error, success) => {
+        if (error) {
+            logger.error('Add Customer Error:', error);
+            readStores((storeError, stores) => {
+                if (storeError) {
+                    logger.error('Store Error:', storeError);
+                    return next(storeError);
+                }
+                // Determine a user-friendly error message, specially handling duplicate email errors.
+                let renderErrorMessage =
+                    error && error.message
+                        ? error.message
+                        : 'An error occurred while adding the customer.';
+                if (
+                    error &&
+                    (error.code === 'ER_DUP_ENTRY' ||
+                        (typeof error.message === 'string' &&
+                            /Duplicate entry .* for key ['"]?customer\.email_id['"]?/.test(
+                                error.message
+                            )))
+                ) {
+                    renderErrorMessage = 'Email already in use.';
+                }
+
+                return res.render('staff/addOrEditCustomer', {
+                    title: 'New Customer',
+                    customer: customerData,
+                    stores,
+                    isEdit: false,
+                    actionUrl: '/staff/crm/new',
+                    actionMethod: 'POST',
+                    returnUrl: '/staff/crm',
+                    errorMessage: renderErrorMessage,
+                });
+            });
+        } else {
+            return res.redirect('/staff/crm/' + customerId);
+        }
     });
 });
 

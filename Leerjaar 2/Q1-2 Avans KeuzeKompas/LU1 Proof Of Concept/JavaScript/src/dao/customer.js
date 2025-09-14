@@ -31,28 +31,51 @@ export const createCustomer = (
 ) => {
     const cb = onceCallback(callback);
     try {
-        const sql = `
-            INSERT INTO customer (store_id, first_name, last_name, address_id, create_date, userId, email_id) VALUES (?,?,?,?,?,?,?)    
-        `;
-        query(
-            sql,
-            [
-                normalizeId(storeId),
-                normalizeName(firstName),
-                normalizeName(lastName),
-                normalizeId(addressId),
-                new Date(),
-                normalizeUserId(userId),
-                normalizeId(emailId),
-            ],
-            (error, result) => {
-                if (error) {
-                    logger.error('createCustomer MySQL Error:', error);
-                    return cb(error);
-                }
-                cb(null, result);
+        const email = normalizeId(emailId);
+        if (!email) {
+            const err = new Error('Invalid emailId');
+            logger.error('createCustomer validation error:', err);
+            return cb(err);
+        }
+
+        // Prevent creating a customer when the email_id is already linked to another customer
+        const checkSql = `SELECT customer_id FROM customer WHERE email_id = ? LIMIT 1`;
+        query(checkSql, [email], (checkError, checkRows) => {
+            if (checkError) {
+                logger.error('createCustomer MySQL Error (check):', checkError);
+                return cb(checkError);
             }
-        );
+            if (Array.isArray(checkRows) && checkRows[0]) {
+                const dupErr = new Error('Email is already associated with another customer');
+                dupErr.code = 'ER_DUP_ENTRY_EMAIL';
+                logger.error('createCustomer Error: Email already in use for email_id:', email);
+                return cb(dupErr);
+            }
+
+            const sql = `
+                INSERT INTO customer (store_id, first_name, last_name, address_id, create_date, userId, email_id) VALUES (?,?,?,?,?,?,?)    
+            `;
+            const normalizedUserId = normalizeUserId(userId) || null;
+            query(
+                sql,
+                [
+                    normalizeId(storeId),
+                    normalizeName(firstName),
+                    normalizeName(lastName),
+                    normalizeId(addressId),
+                    new Date(),
+                    normalizedUserId,
+                    email,
+                ],
+                (error, result) => {
+                    if (error) {
+                        logger.error('createCustomer MySQL Error:', error);
+                        return cb(error);
+                    }
+                    cb(null, result);
+                }
+            );
+        });
     } catch (err) {
         logger.error('createCustomer MySql error:', err);
         cb(err);
@@ -132,7 +155,7 @@ export const readCustomers = (filterParams, callback) => {
         const dataSql = `
             SELECT 
                 c.customer_id, s.name AS store_name, c.first_name, c.last_name, 
-                e.email, a.address, a.postal_code, a.phone, ci.city, co.country, 
+                e.email, a.address, a.district, a.postal_code, a.phone, ci.city, co.country, 
                 c.active, c.create_date, c.last_update, c.userId
             ${baseSql}
             ORDER BY ${sortColumn} ${sortDir}
@@ -177,9 +200,11 @@ export const readCustomerById = (customerId, callback) => {
         const sql = `
           SELECT
               c.customer_id,
+              e.email,
               c.first_name,
               c.last_name,
               a.address,
+              a.district,
               a.postal_code,
               a.phone,
               ci.city,
@@ -190,6 +215,7 @@ export const readCustomerById = (customerId, callback) => {
           JOIN address a ON c.address_id = a.address_id
           JOIN city ci ON a.city_id = ci.city_id
           JOIN country co ON ci.country_id = co.country_id
+          JOIN email e ON c.email_id = e.email_id
           WHERE c.customer_id = ?
       `;
         query(sql, [normalizeId(customerId)], (error, rows) => {
@@ -226,9 +252,11 @@ export const readCustomerByUserId = (userId, callback) => {
         const sql = `
           SELECT
               c.customer_id,
+              e.email,
               c.first_name,
               c.last_name,
               a.address,
+              a.district,
               a.postal_code,
               a.phone,
               ci.city,
@@ -237,6 +265,7 @@ export const readCustomerByUserId = (userId, callback) => {
               c.store_id
           FROM customer c
           JOIN address a ON c.address_id = a.address_id
+          JOIN email e ON c.email_id = e.email_id
           JOIN city ci ON a.city_id = ci.city_id
           JOIN country co ON ci.country_id = co.country_id
           WHERE c.userId = ?
@@ -255,17 +284,22 @@ export const readCustomerByUserId = (userId, callback) => {
     }
 };
 
-export const updateCustomer = (customerId, callback) => {
+export const updateCustomer = (customerId, customerData, callback) => {
     const cb = onceCallback(callback);
+    const { firstName, lastName, addressId, active = 1, emailId } = customerData || {};
     try {
-        const sql = ``;
-        query(sql, [normalizeId(customerId)], (error, result) => {
-            if (error) {
-                logger.error('updateCustomer MySQL Error:', error);
-                return cb(error);
+        const sql = `UPDATE customer SET (first_name, last_name, address_id, active, emailId) = (?,?,?,?,?) WHERE customer_id = ?`;
+        query(
+            sql,
+            [firstName, lastName, addressId, active, emailId, normalizeId(customerId)],
+            (error, result) => {
+                if (error) {
+                    logger.error('updateCustomer MySQL Error:', error);
+                    return cb(error);
+                }
+                cb(null, result);
             }
-            cb(null, result);
-        });
+        );
     } catch (err) {
         logger.error('updateCustomer sync error:', err);
         cb(err);
