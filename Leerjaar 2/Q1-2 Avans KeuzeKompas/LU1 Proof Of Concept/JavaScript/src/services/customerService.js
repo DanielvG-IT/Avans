@@ -1,5 +1,8 @@
-import { logger } from '../util/logger.js';
+import { readCustomerRentalHistory } from '../dao/rental.js';
+import { createEmail, readEmail } from '../dao/email.js';
 import { makeAddress } from './addressService.js';
+import { readAddress } from '../dao/address.js';
+import { logger } from '../util/logger.js';
 import {
     softDeleteCustomer,
     readCustomerById,
@@ -7,8 +10,6 @@ import {
     createCustomer,
     readCustomers,
 } from '../dao/customer.js';
-import { createEmail, readEmail } from '../dao/email.js';
-import { readAddress } from '../dao/address.js';
 
 /**
  * Ensure a callback is only invoked once.
@@ -310,5 +311,26 @@ export const deleteCustomerById = (customerId, callback) => {
         }
         cb(null, result);
         logger.info('deleteCustomerById is not implemented. CustomerId:', customerId);
+    });
+};
+
+export const fetchRentalsByCustomerId = (customerId, callback) => {
+    const cb = onceCallback(callback);
+    if (
+        customerId === null ||
+        customerId === undefined ||
+        isNaN(Number(customerId)) ||
+        Number(customerId) <= 0
+    ) {
+        logger.warn('fetchRentalsByCustomerId called with invalid customerId:', customerId);
+        return cb(new Error('Invalid customerId'));
+    }
+
+    readCustomerRentalHistory(customerId, (error, rentals) => {
+        if (error) {
+            logger.error('Rental Retrieval Error:', error);
+            return cb(error);
+        }
+        cb(null, rentals || []);
     });
 };

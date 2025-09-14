@@ -298,6 +298,7 @@ export const readMovieById = (id, callback) => {
 };
 
 export const readMovieAvailability = (id, callback) => {
+    // TODO Add if not rented out right now!
     const cb = onceCallback(callback);
     try {
         const sql = `
