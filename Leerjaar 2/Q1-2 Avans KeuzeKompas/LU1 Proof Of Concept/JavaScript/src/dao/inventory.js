@@ -53,36 +53,19 @@ export const readInventoryById = (id, callback) => {
     }
 };
 
-export const readInventoryByFilmId = (filmId, callback) => {
+export const readInventoryByFilmIdAtStore = (filmId, storeId, callback) => {
     const cb = onceCallback(callback);
     try {
-        const sql = `SELECT * FROM inventory WHERE film_id = ?`;
-        query(sql, [filmId], (error, rows) => {
+        const sql = `SELECT * FROM inventory WHERE film_id = ? AND store_id = ?`;
+        query(sql, [filmId, storeId], (error, rows) => {
             if (error) {
                 logger.error('readInventoryByFilmId MySQL Error:', error);
-                return cb(error);
-            }
-            cb(null, rows[0]);
-        });
-    } catch (err) {
-        logger.error('readInventoryByFilmId sync error:', err);
-        cb(err);
-    }
-};
-
-export const readInventoryByStoreId = (storeId, callback) => {
-    const cb = onceCallback(callback);
-    try {
-        const sql = `SELECT * FROM inventory WHERE store_id = ?`;
-        query(sql, [storeId], (error, rows) => {
-            if (error) {
-                logger.error('readInventoryByStoreId MySQL Error:', error);
                 return cb(error);
             }
             cb(null, rows);
         });
     } catch (err) {
-        logger.error('readInventoryByStoreId sync error:', err);
+        logger.error('readInventoryByFilmId sync error:', err);
         cb(err);
     }
 };
