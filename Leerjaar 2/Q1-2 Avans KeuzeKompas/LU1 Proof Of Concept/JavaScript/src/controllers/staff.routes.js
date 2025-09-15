@@ -530,10 +530,12 @@ staffRouter.put('/crm/:customerId/edit', requireStaffAuthWeb, (req, res, next) =
 staffRouter.get('/crm/:customerId/rent', requireStaffAuthWeb, (req, res, next) => {
     const customerId = parsePositiveInt(req.params.customerId, null);
     if (!customerId) {
-        return res.status(400).send('Invalid customer ID');
+        return next(new Error('Invalid customer ID'));
     }
 
-    res.json({ success: false, error: 'Not implemented' });
+    res.render('staff/rentMovie', {
+        title: 'Rent Movie',
+    });
 });
 
 export default staffRouter;
