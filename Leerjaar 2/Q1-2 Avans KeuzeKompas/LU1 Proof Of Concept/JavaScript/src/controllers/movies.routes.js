@@ -170,19 +170,21 @@ moviesRouter.get('/search', requireStaffAuthApi, (req, res) => {
         rating,
     };
 
-    fetchMovies(filters, (err, rows) => {
+    fetchMovies(filters, (err, result) => {
         if (err) {
             logger.error('Movie search error:', err);
             return res.status(500).json([]);
         }
-        // return compact objects for the UI
+        // Support both shapes from service: array or { movies, total }
+        const rows = Array.isArray(result) ? result : (result && result.movies) || [];
+        // return compact objects for the UI (snake_case expected by the client)
         const out = rows.map((f) => ({
-            film_id: f.film_id,
+            film_id: f.film_id ?? f.filmId,
             title: f.title,
-            release_year: f.release_year,
+            release_year: f.release_year ?? f.releaseYear,
             rating: f.rating,
-            rental_rate: f.rental_rate,
-            rental_duration: f.rental_duration,
+            rental_rate: f.rental_rate ?? f.rentalRate,
+            rental_duration: f.rental_duration ?? f.rentalDuration,
             length: f.length,
             description: f.description,
         }));
@@ -224,7 +226,8 @@ moviesRouter.post('/:id/edit', requireStaffAuthApi, (req, res, next) => {
     res.json({ success: false, error: 'Not implemented' });
 });
 
-staffRouter.get('/movies/:id/rent', requireStaffAuthWeb, (req, res, next) => {
+// Staff-only: rent a movie page (mounted under /movies)
+moviesRouter.get('/:id/rent', requireStaffAuthWeb, (req, res, next) => {
     const movieId = parsePositiveInt(req.params.id, null);
     if (!movieId) return next(new Error('Invalid movie ID'));
 
