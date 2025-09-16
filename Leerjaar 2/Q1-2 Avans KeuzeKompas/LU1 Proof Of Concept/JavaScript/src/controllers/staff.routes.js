@@ -160,6 +160,35 @@ staffRouter.get('/crm', requireStaffAuthWeb, (req, res, next) => {
     });
 });
 
+staffRouter.get('/crm/search', requireStaffAuthApi, (req, res) => {
+    const q = (req.query.q || '').trim();
+    if (!q) return res.json([]);
+    const params = {
+        search: q,
+        active: null,
+        storeId: null,
+        sort: 'title,asc',
+        page: 1,
+        limit: 12,
+    };
+    fetchCustomers(params, (err, result) => {
+        if (err) {
+            logger.error('Customer search error:', err);
+            return res.status(500).json([]);
+        }
+        const rows = result && result.customers ? result.customers : [];
+        // map to compact shape for client
+        const out = rows.map((r) => ({
+            customer_id: r.customerId ?? r.customer_id,
+            first_name: r.firstName ?? r.first_name,
+            last_name: r.lastName ?? r.last_name,
+            email: r.email,
+            phone: r.phone,
+        }));
+        res.json(out);
+    });
+});
+
 staffRouter.get('/crm/new', requireStaffAuthWeb, (req, res, next) => {
     readStores((storeError, stores) => {
         if (storeError) {
@@ -291,9 +320,6 @@ staffRouter.post('/crm/new', requireStaffAuthApi, (req, res, next) => {
 });
 
 staffRouter.get('/crm/:customerId', requireStaffAuthWeb, (req, res, next) => {
-    // TODO: Implement customer detail view if needed (possibly displaying orders, rentals, etc.)
-    // TODO: Implement rental history retrieval and display
-
     const customerId = parsePositiveInt(req.params.customerId, null);
 
     fetchCustomerById(customerId, (error, customer) => {
@@ -394,7 +420,6 @@ staffRouter.get('/crm/:customerId', requireStaffAuthWeb, (req, res, next) => {
         });
     });
 });
-
 staffRouter.get('/crm/:customerId/edit', requireStaffAuthWeb, (req, res, next) => {
     const customerId = parsePositiveInt(req.params.customerId, null);
     fetchCustomerById(customerId, (error, customer) => {
@@ -529,12 +554,53 @@ staffRouter.put('/crm/:customerId/edit', requireStaffAuthWeb, (req, res, next) =
 
 staffRouter.get('/crm/:customerId/rent', requireStaffAuthWeb, (req, res, next) => {
     const customerId = parsePositiveInt(req.params.customerId, null);
-    if (!customerId) {
-        return next(new Error('Invalid customer ID'));
-    }
+    if (!customerId) return next(new Error('Invalid customer ID'));
 
-    res.render('staff/rentMovie', {
-        title: 'Rent Movie',
+    // get stores (for staff to pick store if needed) and customer
+    readStores((storeError, stores) => {
+        if (storeError) {
+            logger.error('Store Error:', storeError);
+            return next(storeError);
+        }
+
+        fetchCustomerById(customerId, (err, customer) => {
+            if (err) {
+                logger.error('Customer fetch error for rent page:', err);
+                return next(err);
+            }
+            if (!customer) {
+                return next(new Error('Customer not found'));
+            }
+
+            // compute nice ISO defaults for start/expectedReturn
+            const now = new Date();
+            now.setMinutes(Math.ceil(now.getMinutes() / 5) * 5);
+            const isoStart = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+                .toISOString()
+                .slice(0, 16);
+            const then = new Date(now.getTime() + 7 * 24 * 3600 * 1000);
+            const isoReturn = new Date(then.getTime() - then.getTimezoneOffset() * 60000)
+                .toISOString()
+                .slice(0, 16);
+
+            res.render('staff/rentMovie', {
+                title: 'Rent Movie',
+                preselectedCustomer: {
+                    customer_id: customer.customer_id ?? customer.customerId,
+                    first_name: customer.first_name ?? customer.firstName,
+                    last_name: customer.last_name ?? customer.lastName,
+                    email: customer.email,
+                    phone: customer.phone,
+                    address: customer.address,
+                },
+                preselectedMovie: null,
+                stores,
+                defaults: {
+                    startDate: isoStart,
+                    expectedReturn: isoReturn,
+                },
+            });
+        });
     });
 });
 

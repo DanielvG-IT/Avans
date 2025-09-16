@@ -1,0 +1,563 @@
+<div class="container py-4">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h1 class="h4 mb-0">Create Rental</h1>
+    <small class="text-muted">Staff: {{user.name}}</small>
+  </div>
+
+  <form id="rentalForm" class="needs-validation" novalidate>
+    <div class="row g-3">
+
+      <!-- LEFT: selectors -->
+      <div class="col-12 col-xl-7">
+        <div class="card mb-3">
+          <div class="card-body">
+            <h2 class="h6">Customer</h2>
+            <div class="mb-2 position-relative">
+              <label for="customerSearch" class="form-label visually-hidden">Search customer</label>
+              <input id="customerSearch" class="form-control" placeholder="Search customer by name / email / phone"
+                aria-label="Search customer" autocomplete="off">
+              <input type="hidden" id="customerId" name="customerId">
+              <div class="list-group position-absolute w-100 shadow-sm d-none" id="customerDropdown" role="listbox"
+                aria-label="Customer suggestions"></div>
+            </div>
+
+            <div id="selectedCustomer" class="mb-3 d-none">
+              <div class="small text-muted">Selected</div>
+              <div class="d-flex align-items-center gap-3">
+                <div class="fw-semibold" id="selectedCustomerName"></div>
+                <div class="text-muted small" id="selectedCustomerMeta"></div>
+                <button type="button" id="clearCustomer" class="btn btn-sm btn-outline-secondary ms-auto">Clear</button>
+              </div>
+            </div>
+
+            <hr>
+
+            <h2 class="h6">Find a movie</h2>
+            <div class="mb-2 position-relative">
+              <label for="movieSearch" class="form-label visually-hidden">Search movies</label>
+              <input id="movieSearch" class="form-control" placeholder="Type to search movies (title, year, rating)..."
+                aria-label="Search movies" autocomplete="off">
+              <div class="list-group position-absolute w-100 shadow-sm d-none" id="movieDropdown" role="listbox"
+                aria-label="Movie suggestions"></div>
+            </div>
+
+            <div id="movieHint" class="text-muted small mb-3">Tip: press <kbd>Enter</kbd> to add highlighted movie.
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+              <button type="button" id="openAdvancedSearch" class="btn btn-outline-secondary btn-sm">Advanced
+                search</button>
+              <button type="button" id="openMovieModal" class="btn btn-outline-primary btn-sm d-none"
+                data-bs-toggle="modal" data-bs-target="#movieDetailModal">View movie</button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Cart -->
+        <div class="card mb-3">
+          <div class="card-body">
+            <h2 class="h6">Rental Cart</h2>
+
+            <div class="table-responsive">
+              <table class="table table-sm align-middle mb-0" id="cartTable" aria-live="polite">
+                <thead class="table-light">
+                  <tr>
+                    <th>Item</th>
+                    <th style="width:110px">Duration (days)</th>
+                    <th style="width:120px" class="text-end">Rate</th>
+                    <th style="width:120px" class="text-end">Subtotal</th>
+                    <th style="width:60px"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- rows injected -->
+                </tbody>
+              </table>
+            </div>
+
+            <div id="emptyCart" class="text-muted small mt-2">No movies added yet.</div>
+          </div>
+        </div>
+
+        <!-- Extra rental options -->
+        <div class="card mb-3">
+          <div class="card-body">
+            <h2 class="h6">Rental Dates & Options</h2>
+
+            <div class="row g-2">
+              <div class="col-12 col-md-6">
+                <label for="startDate" class="form-label">Start date</label>
+                <input id="startDate" name="startDate" type="datetime-local" class="form-control" required
+                  value="{{defaults.startDate}}">
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="expectedReturn" class="form-label">Expected return</label>
+                <input id="expectedReturn" name="expectedReturn" type="datetime-local" class="form-control" required
+                  value="{{defaults.expectedReturn}}">
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="staffSearch" class="form-label">Staff (processing)</label>
+                <input id="staffSearch" class="form-control" placeholder="Search staff by name..." autocomplete="off">
+                <input type="hidden" id="staffId" name="staffId">
+                <div class="list-group position-absolute w-100 shadow-sm d-none" id="staffDropdown" role="listbox">
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="storeId" class="form-label">Store</label>
+                <select id="storeId" name="storeId" class="form-select">
+                  {{#each stores}}
+                  <option value="{{this.store_id}}">{{this.name}}</option>
+                  {{/each}}
+                </select>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="paymentMethod" class="form-label">Payment method</label>
+                <select id="paymentMethod" name="paymentMethod" class="form-select" required>
+                  <option value="cash">Cash</option>
+                  <option value="card">Card</option>
+                  <option value="account">Account</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: summary & confirm -->
+      <div class="col-12 col-xl-5">
+        <div class="card mb-3 sticky-top" style="top:1rem;">
+          <div class="card-body">
+            <h2 class="h6">Summary</h2>
+
+            <dl class="row">
+              <dt class="col-6 small text-muted">Items</dt>
+              <dd class="col-6 text-end" id="summaryItems">0</dd>
+              <dt class="col-6 small text-muted">Subtotal</dt>
+              <dd class="col-6 text-end" id="summarySubtotal">€0.00</dd>
+              <dt class="col-6 small text-muted">Tax (0%)</dt>
+              <dd class="col-6 text-end" id="summaryTax">€0.00</dd>
+              <dt class="col-6 small text-muted">Total</dt>
+              <dd class="col-6 text-end h5 fw-bold" id="summaryTotal">€0.00</dd>
+            </dl>
+
+            <div class="mb-3">
+              <label for="paymentAmount" class="form-label">Amount received</label>
+              <input id="paymentAmount" name="paymentAmount" type="number" min="0" step="0.01" class="form-control"
+                placeholder="Enter received amount">
+            </div>
+
+            <div class="d-grid gap-2">
+              <button id="confirmBtn" type="button" class="btn btn-primary" disabled>Confirm Rental</button>
+              <a href="/staff/crm" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+
+            <div id="formFeedback" class="mt-3" role="status" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <h2 class="h6">Quick actions</h2>
+            <div class="d-grid gap-2">
+              <button type="button" id="clearCartBtn" class="btn btn-sm btn-outline-danger">Clear cart</button>
+              <button type="button" id="prefillDurationBtn" class="btn btn-sm btn-outline-secondary">Set default
+                durations</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- movie detail modal -->
+<div class="modal fade" id="movieDetailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="movieModalTitle">Movie</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="movieModalBody">
+        <!-- injected -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .list-group.position-absolute {
+    z-index: 1200;
+    max-height: 360px;
+    overflow: auto;
+  }
+
+  .avatar-placeholder {
+    width: 72px;
+    height: 72px;
+  }
+
+  @media (max-width: 1199px) {
+    .sticky-top {
+      position: static !important;
+      top: auto !important;
+    }
+  }
+</style>
+
+<script>
+  // debounce, fmtMoney, escapeHtml same as before
+  const debounce = (fn, wait = 250) => { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); }; };
+  const fmtMoney = (n) => '€' + Number(n || 0).toFixed(2);
+  function escapeHtml(s) { if (s === null || s === undefined) return ''; return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])); }
+
+  // state
+  let cart = [];
+
+  // Generic typeahead (unchanged, but URL usage updated below)
+  function attachTypeahead(inputEl, dropdownEl, fetchUrl, onSelect, renderItem) {
+    inputEl.addEventListener('input', debounce((ev) => {
+      const q = ev.target.value.trim();
+      if (!q) { hideDropdown(); return; }
+      fetch(fetchUrl + encodeURIComponent(q))
+        .then(res => res.json())
+        .then(list => {
+          if (!Array.isArray(list) || list.length === 0) { hideDropdown(); return; }
+          dropdownEl.innerHTML = '';
+          list.forEach((item, idx) => {
+            const el = document.createElement('button');
+            el.type = 'button';
+            el.className = 'list-group-item list-group-item-action';
+            el.setAttribute('role', 'option');
+            el.dataset.index = idx;
+            el.innerHTML = renderItem(item);
+            el.addEventListener('click', () => { onSelect(item); hideDropdown(); });
+            dropdownEl.appendChild(el);
+          });
+          dropdownEl.classList.remove('d-none');
+        })
+        .catch(err => { console.error(err); hideDropdown(); });
+    }, 200));
+
+    inputEl.addEventListener('keydown', (ev) => {
+      const visible = !dropdownEl.classList.contains('d-none'); if (!visible) return;
+      const active = dropdownEl.querySelector('.active');
+      if (ev.key === 'ArrowDown') {
+        ev.preventDefault();
+        if (!active) { dropdownEl.firstElementChild?.classList.add('active'); return; }
+        const next = active.nextElementSibling || dropdownEl.firstElementChild;
+        active.classList.remove('active'); next.classList.add('active');
+      } else if (ev.key === 'ArrowUp') {
+        ev.preventDefault();
+        if (!active) { dropdownEl.lastElementChild?.classList.add('active'); return; }
+        const prev = active.previousElementSibling || dropdownEl.lastElementChild;
+        active.classList.remove('active'); prev.classList.add('active');
+      } else if (ev.key === 'Enter') {
+        ev.preventDefault();
+        const toSel = active || dropdownEl.firstElementChild; toSel?.click();
+      } else if (ev.key === 'Escape') hideDropdown();
+    });
+
+    const hideDropdown = () => { dropdownEl.classList.add('d-none'); dropdownEl.innerHTML = ''; };
+    document.addEventListener('click', (e) => { if (!dropdownEl.contains(e.target) && e.target !== inputEl) hideDropdown(); });
+    return { hideDropdown };
+  }
+
+  // --- Typeaheads: use the endpoints your router provides ---
+  // movies -> /movies/search?q=
+  const movieInput = document.getElementById('movieSearch');
+  const movieDropdown = document.getElementById('movieDropdown');
+  let lastSelectedMovie = null;
+  attachTypeahead(movieInput, movieDropdown, '/movies/search?q=', (movie) => {
+    lastSelectedMovie = movie;
+    document.getElementById('openMovieModal').classList.remove('d-none');
+    document.getElementById('openMovieModal').dataset.filmId = movie.film_id;
+    // add immediately when staff presses "Enter" on highlighted (handled by attachTypeahead)
+  }, (m) => `<div><strong>${escapeHtml(m.title)}</strong> <small class="text-muted">(${m.release_year})</small></div>
+               <div class="small text-muted">${escapeHtml(m.rating)} · ${m.length ?? '-'} min · ${fmtMoney(m.rental_rate)}</div>`);
+
+  // customers -> /staff/crm/search?q=
+  const customerInput = document.getElementById('customerSearch');
+  const customerDropdown = document.getElementById('customerDropdown');
+  const selectedCustomerPanel = document.getElementById('selectedCustomer');
+  const selectedCustomerName = document.getElementById('selectedCustomerName');
+  const selectedCustomerMeta = document.getElementById('selectedCustomerMeta');
+  const customerIdInput = document.getElementById('customerId');
+  const clearCustomerBtn = document.getElementById('clearCustomer');
+
+  attachTypeahead(customerInput, customerDropdown, '/staff/crm/search?q=', (c) => {
+    customerIdInput.value = c.customer_id;
+    selectedCustomerPanel.classList.remove('d-none');
+    selectedCustomerName.textContent = `${c.first_name} ${c.last_name}`;
+    selectedCustomerMeta.textContent = `${c.email || ''} ${c.phone ? '· ' + c.phone : ''}`;
+    customerInput.value = '';
+  }, (c) => `<div><strong>${escapeHtml(c.first_name)} ${escapeHtml(c.last_name)}</strong></div><div class="small text-muted">${escapeHtml(c.email || '')} ${c.phone ? '· ' + escapeHtml(c.phone) : ''}</div>`);
+
+  clearCustomerBtn?.addEventListener('click', () => {
+    customerIdInput.value = '';
+    selectedCustomerPanel.classList.add('d-none');
+  });
+
+  // staff typeahead - try server endpoint /staff/search?q= (adjust if your project mounts it elsewhere)
+  const staffInput = document.getElementById('staffSearch');
+  const staffDropdown = document.getElementById('staffDropdown');
+  // helper that tries multiple urls until one works
+  function attachStaffTypeahead(inputEl, dropdownEl, urls, onSelect, renderItem) {
+    inputEl.addEventListener('input', debounce((ev) => {
+      const q = ev.target.value.trim();
+      if (!q) { dropdownEl.classList.add('d-none'); return; }
+      // try first url, fallback to second if 500/404
+      fetch(urls[0] + encodeURIComponent(q))
+        .then(r => { if (!r.ok) throw r; return r.json(); })
+        .catch(() => fetch(urls[1] + encodeURIComponent(q)).then(r => r.json()))
+        .then(list => {
+          if (!Array.isArray(list) || list.length === 0) { dropdownEl.classList.add('d-none'); dropdownEl.innerHTML = ''; return; }
+          dropdownEl.innerHTML = '';
+          list.forEach((item) => {
+            const el = document.createElement('button');
+            el.type = 'button'; el.className = 'list-group-item list-group-item-action';
+            el.innerHTML = renderItem(item);
+            el.addEventListener('click', () => { onSelect(item); dropdownEl.classList.add('d-none'); dropdownEl.innerHTML = ''; });
+            dropdownEl.appendChild(el);
+          });
+          dropdownEl.classList.remove('d-none');
+        }).catch(err => { console.error(err); dropdownEl.classList.add('d-none'); dropdownEl.innerHTML = ''; });
+    }, 200));
+    // reuse keyboard handler from attachTypeahead? (omitted for brevity)
+  }
+
+  attachStaffTypeahead(staffInput, staffDropdown, ['/staff/search?q=', '/api/staff/search?q='], (s) => {
+    document.getElementById('staffId').value = s.staff_id;
+    staffInput.value = s.first_name + ' ' + s.last_name;
+  }, (s) => `<div><strong>${escapeHtml(s.first_name)} ${escapeHtml(s.last_name)}</strong></div>`);
+
+  // Movie modal (unchanged)
+  const movieModal = document.getElementById('movieDetailModal');
+  movieModal.addEventListener('show.bs.modal', (ev) => {
+    const btn = ev.relatedTarget;
+    const filmId = btn?.dataset?.filmid || btn?.dataset?.filmId || (lastSelectedMovie && lastSelectedMovie.film_id);
+    if (!filmId) return;
+    const movie = lastSelectedMovie && String(lastSelectedMovie.film_id) === String(filmId) ? lastSelectedMovie : null;
+    if (movie) renderMovieModal(movie);
+    else fetch('/movies/' + encodeURIComponent(filmId)).then(r => r.json()).then(renderMovieModal);
+  });
+
+  function renderMovieModal(movie) {
+    document.getElementById('movieModalTitle').textContent = movie.title + ' — ' + (movie.release_year || '');
+    document.getElementById('movieModalBody').innerHTML = `
+      <p class="mb-2 small text-muted">${escapeHtml(movie.rating)} · ${movie.length ?? '-'} min · ${fmtMoney(movie.rental_rate)} (per ${movie.rental_duration ?? 'day'})</p>
+      <p>${escapeHtml(movie.description || '')}</p>
+      <div class="d-flex gap-2 mt-3">
+        <button id="addMovieModalBtn" class="btn btn-primary">Add to cart</button>
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+      </div>`;
+    document.getElementById('addMovieModalBtn').onclick = () => {
+      addToCart({
+        film_id: movie.film_id,
+        title: movie.title,
+        rental_duration: movie.rental_duration || 1,
+        rental_rate: Number(movie.rental_rate || 0),
+        length: movie.length
+      });
+      const bs = bootstrap.Modal.getInstance(movieModal);
+      bs.hide();
+    };
+  }
+
+  // CART functions (unchanged behaviour)
+  const cartTbody = document.querySelector('#cartTable tbody');
+  const emptyCartEl = document.getElementById('emptyCart');
+  const summaryItems = document.getElementById('summaryItems');
+  const summarySubtotal = document.getElementById('summarySubtotal');
+  const summaryTax = document.getElementById('summaryTax');
+  const summaryTotal = document.getElementById('summaryTotal');
+  const confirmBtn = document.getElementById('confirmBtn');
+  const paymentAmount = document.getElementById('paymentAmount');
+
+  function addToCart(item) {
+    const idx = cart.findIndex(c => String(c.film_id) === String(item.film_id));
+    if (idx >= 0) {
+      cart[idx].qty += 1;
+      cart[idx].subtotal = +(cart[idx].qty * cart[idx].rental_rate).toFixed(2);
+    } else {
+      cart.push({
+        film_id: item.film_id,
+        title: item.title,
+        rental_duration: Number(item.rental_duration) || 1,
+        rental_rate: Number(item.rental_rate) || 0,
+        qty: 1,
+        subtotal: Number(item.rental_rate || 0)
+      });
+    }
+    renderCart();
+  }
+
+  function renderCart() {
+    cartTbody.innerHTML = '';
+    if (cart.length === 0) {
+      emptyCartEl.classList.remove('d-none');
+      confirmBtn.disabled = true;
+    } else {
+      emptyCartEl.classList.add('d-none');
+      confirmBtn.disabled = false;
+      cart.forEach((row, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <div class="fw-semibold">${escapeHtml(row.title)}</div>
+            <div class="small text-muted">x${row.qty} · ${row.rental_duration}d</div>
+          </td>
+          <td><input type="number" min="1" value="${row.rental_duration}" data-idx="${i}" class="form-control form-control-sm durationInput"></td>
+          <td class="text-end">${fmtMoney(row.rental_rate)}</td>
+          <td class="text-end">${fmtMoney(row.subtotal)}</td>
+          <td class="text-end"><button type="button" class="btn btn-sm btn-outline-danger removeBtn" data-idx="${i}" title="Remove">×</button></td>
+        `;
+        cartTbody.appendChild(tr);
+      });
+    }
+    attachCartListeners();
+    updateSummary();
+  }
+
+  function attachCartListeners() {
+    document.querySelectorAll('.removeBtn').forEach(btn => {
+      btn.onclick = () => {
+        const idx = Number(btn.dataset.idx);
+        cart.splice(idx, 1);
+        renderCart();
+      };
+    });
+    document.querySelectorAll('.durationInput').forEach(input => {
+      input.onchange = () => {
+        const idx = Number(input.dataset.idx);
+        const v = Math.max(1, Number(input.value) || 1);
+        cart[idx].rental_duration = v;
+        cart[idx].subtotal = +(cart[idx].qty * cart[idx].rental_rate).toFixed(2);
+        renderCart();
+      };
+    });
+  }
+
+  function updateSummary() {
+    const items = cart.reduce((s, r) => s + r.qty, 0);
+    const subtotal = cart.reduce((s, r) => s + (r.subtotal || 0), 0);
+    const tax = 0;
+    const total = subtotal + tax;
+    summaryItems.textContent = items;
+    summarySubtotal.textContent = fmtMoney(subtotal);
+    summaryTax.textContent = fmtMoney(tax);
+    summaryTotal.textContent = fmtMoney(total);
+  }
+
+  // quick actions
+  document.getElementById('clearCartBtn').addEventListener('click', () => { cart = []; renderCart(); });
+  document.getElementById('prefillDurationBtn').addEventListener('click', () => { cart.forEach(c => c.rental_duration = Math.max(1, c.rental_duration || 1)); renderCart(); });
+
+  // SUBMIT: send POST(s) to the endpoint your router provides: POST /rentals/new
+  confirmBtn.addEventListener('click', async () => {
+    const customerId = document.getElementById('customerId').value;
+    const startDate = document.getElementById('startDate').value;
+    const expectedReturn = document.getElementById('expectedReturn').value;
+    const staffId = document.getElementById('staffId').value;
+    const storeId = document.getElementById('storeId').value;
+    const paymentAmt = Number(paymentAmount.value || 0);
+
+    if (!customerId) return showFeedback('Please select a customer.', 'danger');
+    if (!cart.length) return showFeedback('Please add at least one movie to the cart.', 'danger');
+    if (!startDate || !expectedReturn) return showFeedback('Please set start and expected return dates.', 'danger');
+
+    confirmBtn.disabled = true;
+    showFeedback('Submitting rental(s)...', 'info');
+
+    // Because your router currently expects a single movie per POST, submit one request per cart item.
+    // If you later extend the backend to accept an array of items, replace with a single call.
+    const results = [];
+    for (const item of cart) {
+      const payload = {
+        movieId: item.film_id,
+        customerId: Number(customerId),
+        staffId: staffId ? Number(staffId) : null,
+        storeId: storeId ? Number(storeId) : null,
+        // optional extras you might choose to pass:
+        startDate, expectedReturn, rental_duration: item.rental_duration, rental_rate: item.rental_rate, paymentAmount: paymentAmt
+      };
+      try {
+        const res = await fetch('/rentals/new', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json().catch(() => ({ success: res.ok }));
+        results.push({ ok: res.ok, data });
+        if (!res.ok) { console.error('Rental creation failed for', item, data); }
+      } catch (err) {
+        console.error('Network error while creating rental for', item, err);
+        results.push({ ok: false, error: err });
+      }
+    }
+
+    // Evaluate results: success if any created (take first rentalId if returned)
+    const successResult = results.find(r => r.ok && r.data && (r.data.rentalId || r.data.rental_id || r.data.id));
+    if (results.every(r => r.ok)) {
+      showFeedback('All rentals created successfully', 'success');
+      const firstId = successResult && (successResult.data.rentalId || successResult.data.rental_id || successResult.data.id);
+      setTimeout(() => { if (firstId) window.location.href = '/staff/rentals/' + firstId; else window.location.href = '/staff/crm/' + customerId; }, 700);
+    } else if (results.some(r => r.ok)) {
+      showFeedback('Some rentals succeeded. Check server logs or customer page.', 'warning');
+      const firstId = successResult && (successResult.data.rentalId || successResult.data.rental_id || successResult.data.id);
+      setTimeout(() => { if (firstId) window.location.href = '/staff/rentals/' + firstId; else window.location.href = '/staff/crm/' + customerId; }, 900);
+    } else {
+      showFeedback('Failed to create rentals. See console for details.', 'danger');
+      confirmBtn.disabled = false;
+    }
+  });
+
+  function showFeedback(msg, level = 'info') {
+    const el = document.getElementById('formFeedback');
+    el.innerHTML = `<div class="alert alert-${level}">${escapeHtml(msg)}</div>`;
+  }
+
+  // auto prefill from server variables (if present)
+  document.addEventListener('DOMContentLoaded', () => {
+    renderCart();
+
+    // If server provided a preselected customer, fill UI:
+    { { #if preselectedCustomer } }
+    (function () {
+      const c = {
+        id: '{{preselectedCustomer.customer_id}}',
+        fn: '{{preselectedCustomer.first_name}}',
+        ln: '{{preselectedCustomer.last_name}}',
+        email: '{{preselectedCustomer.email}}',
+        phone: '{{preselectedCustomer.phone}}'
+      };
+      document.getElementById('customerId').value = c.id;
+      document.getElementById('selectedCustomerName').textContent = c.fn + ' ' + c.ln;
+      document.getElementById('selectedCustomerMeta').textContent = (c.email || '') + (c.phone ? ' · ' + c.phone : '');
+      document.getElementById('selectedCustomer').classList.remove('d-none');
+    })();
+    { {/if } }
+
+    // If server provided a preselected movie, add it to the cart automatically
+    { { #if preselectedMovie } }
+    (function () {
+      addToCart({
+        film_id: '{{preselectedMovie.film_id}}',
+        title: '{{preselectedMovie.title}}',
+        rental_duration: {{ preselectedMovie.rental_duration }},
+      rental_rate: { { preselectedMovie.rental_rate } },
+    length: { { #if preselectedMovie.length } } { { preselectedMovie.length } } { {else } } null{ {/if } }
+  });
+  // focus cart so staff can see it
+  document.getElementById('cartTable').scrollIntoView({ behavior: 'smooth' });
+    }) ();
+  { {/if } }
+  });
+</script>

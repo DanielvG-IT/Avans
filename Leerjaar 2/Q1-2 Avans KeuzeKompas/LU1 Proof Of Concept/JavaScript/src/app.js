@@ -11,8 +11,9 @@ import authRouter from './controllers/auth.routes.js';
 import indexRouter from './controllers/index.routes.js';
 import staffRouter from './controllers/staff.routes.js';
 import moviesRouter from './controllers/movies.routes.js';
-import { optionalCustomerAuthWeb } from './middleware/auth.js';
+import rentalRouter from './controllers/rental.routes.js';
 import customerRouter from './controllers/customer.routes.js';
+import { optionalCustomerAuthWeb } from './middleware/auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -50,6 +51,7 @@ app.use('/', indexRouter);
 app.use('/auth', authRouter);
 app.use('/staff', staffRouter);
 app.use('/movies', moviesRouter);
+app.use('/rentals', rentalRouter);
 app.use('/customer', customerRouter);
 app.get('/about', (req, res) => res.render('about'));
 

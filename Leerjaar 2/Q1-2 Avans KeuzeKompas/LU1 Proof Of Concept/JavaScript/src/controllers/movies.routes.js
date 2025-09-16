@@ -1,6 +1,8 @@
 import { fetchCategoryNames, fetchRatingNames } from '../services/filterService.js';
 import { requireStaffAuthApi, requireStaffAuthWeb } from '../middleware/auth.js';
 import { fetchMovieById, fetchMovies } from '../services/movieService.js';
+import { readMovieById } from '../dao/movie.js';
+import { readStores } from '../dao/store.js';
 import { logger } from '../util/logger.js';
 import express from 'express';
 
@@ -145,7 +147,50 @@ moviesRouter.get('/', (req, res, next) => {
     });
 });
 
-// Placeholder for creating a new movie (not implemented)
+moviesRouter.get('/search', requireStaffAuthApi, (req, res) => {
+    const q = (req.query.q || '').trim();
+    const page = parsePositiveInt(req.query.page, 0);
+    const limit = parsePositiveInt(req.query.limit, 10);
+    const sort = req.query.sort || 'title,asc';
+    let [sortField, sortDir] = sort.split(',');
+    sortField = (sortField || 'title').trim();
+    sortDir = (sortDir || 'asc').toLowerCase() === 'desc' ? 'desc' : 'asc';
+    const category = normalizeMulti(req.query.category);
+    const rating = normalizeMulti(req.query.rating);
+
+    if (!q) return res.json([]);
+
+    // Build filters object for fetchMovies
+    const filters = {
+        page,
+        limit,
+        search: q,
+        sortBy: { [sortField]: sortDir },
+        category,
+        rating,
+    };
+
+    fetchMovies(filters, (err, rows) => {
+        if (err) {
+            logger.error('Movie search error:', err);
+            return res.status(500).json([]);
+        }
+        // return compact objects for the UI
+        const out = rows.map((f) => ({
+            film_id: f.film_id,
+            title: f.title,
+            release_year: f.release_year,
+            rating: f.rating,
+            rental_rate: f.rental_rate,
+            rental_duration: f.rental_duration,
+            length: f.length,
+            description: f.description,
+        }));
+        res.json(out);
+    });
+});
+
+// TODO Implement creating a new movie (not implemented)
 moviesRouter.get('/new', requireStaffAuthWeb, (req, res, next) => {
     res.render('movies/createOrEdit', { title: 'Add New Movie' });
 });
@@ -177,6 +222,58 @@ moviesRouter.get('/:id/edit', requireStaffAuthWeb, (req, res, next) => {
 });
 moviesRouter.post('/:id/edit', requireStaffAuthApi, (req, res, next) => {
     res.json({ success: false, error: 'Not implemented' });
+});
+
+staffRouter.get('/movies/:id/rent', requireStaffAuthWeb, (req, res, next) => {
+    const movieId = parsePositiveInt(req.params.id, null);
+    if (!movieId) return next(new Error('Invalid movie ID'));
+
+    readStores((storeError, stores) => {
+        if (storeError) {
+            logger.error('Store Error:', storeError);
+            return next(storeError);
+        }
+
+        // readFilmById should return a single film row (see suggested dao below)
+        readMovieById(movieId, (filmErr, film) => {
+            if (filmErr) {
+                logger.error('Film fetch error for rent page:', filmErr);
+                return next(filmErr);
+            }
+            if (!film) {
+                return next(new Error('Movie not found'));
+            }
+
+            // same date defaults as above
+            const now = new Date();
+            now.setMinutes(Math.ceil(now.getMinutes() / 5) * 5);
+            const isoStart = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+                .toISOString()
+                .slice(0, 16);
+            const then = new Date(now.getTime() + 7 * 24 * 3600 * 1000);
+            const isoReturn = new Date(then.getTime() - then.getTimezoneOffset() * 60000)
+                .toISOString()
+                .slice(0, 16);
+
+            res.render('staff/rentMovie', {
+                title: 'Rent Movie',
+                preselectedCustomer: null,
+                preselectedMovie: {
+                    film_id: film.film_id ?? film.filmId,
+                    title: film.title,
+                    release_year: film.release_year ?? film.releaseYear,
+                    rental_rate: film.rental_rate ?? film.rentalRate,
+                    rental_duration: film.rental_duration ?? film.rentalDuration,
+                    length: film.length,
+                },
+                stores,
+                defaults: {
+                    startDate: isoStart,
+                    expectedReturn: isoReturn,
+                },
+            });
+        });
+    });
 });
 
 export default moviesRouter;
