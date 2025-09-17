@@ -9,7 +9,8 @@ import {
     readMovieAvailability,
     updateMovie as updateMovieDAO,
     createMovie,
-    updateMovie, // added
+    updateMovie,
+    addMovieToCategory, // added
 } from '../dao/movie.js';
 
 /**
@@ -38,6 +39,7 @@ export const addMovie = (
     description,
     releaseYear,
     languageId,
+    categoryId,
     rentalDuration,
     rentalRate,
     length,
@@ -48,11 +50,38 @@ export const addMovie = (
 ) => {
     const cb = onceCallback(callback);
     try {
-        // Basic validation
-        if (!title || !description || !languageId) {
-            const err = new Error('Title, description, and languageId are required.');
-            logger.error('addMovie - validation error:', err);
+        // Basic validation (keep minimal and let DB enforce detailed constraints)
+        if (!title) {
+            const err = new Error('Title is required.');
+            logger.warn('addMovie - validation error: missing title');
             return cb(err);
+        }
+        if (!languageId) {
+            const err = new Error('Language is required.');
+            logger.warn('addMovie - validation error: missing languageId');
+            return cb(err);
+        }
+        if (!rating) {
+            const err = new Error('Rating is required.');
+            logger.warn('addMovie - validation error: missing rating');
+            return cb(err);
+        }
+
+        // Sanitize special_features to match Sakila's SET values
+        const allowedFeatures = new Set([
+            'Trailers',
+            'Commentaries',
+            'Deleted Scenes',
+            'Behind the Scenes',
+        ]);
+        let sanitizedSpecialFeatures = '';
+        if (typeof specialFeatures === 'string' && specialFeatures.trim().length > 0) {
+            sanitizedSpecialFeatures = specialFeatures
+                .split(',')
+                .map((s) => s.trim())
+                .filter(Boolean)
+                .filter((s) => allowedFeatures.has(s))
+                .join(',');
         }
 
         // Call DAO to create movie
@@ -66,17 +95,40 @@ export const addMovie = (
             length,
             replacementCost,
             rating,
-            specialFeatures,
+            sanitizedSpecialFeatures,
             (error, result) => {
                 if (error) {
+                    // Translate MySQL truncation into a friendly validation message
+                    if (error && (error.code === 'WARN_DATA_TRUNCATED' || error.errno === 1265)) {
+                        const friendly = new Error(
+                            'Invalid special features. Allowed: Trailers, Commentaries, Deleted Scenes, Behind the Scenes.'
+                        );
+                        friendly.statusCode = 400;
+                        logger.warn('addMovie - invalid special_features provided');
+                        return cb(friendly);
+                    }
                     logger.error('addMovie - dao error:', error);
                     return cb(error);
                 }
-                if (!result || result.insertedId === undefined || result.affectedRows !== 1) {
+                if (!result || result.insertId === undefined || result.affectedRows !== 1) {
                     logger.error('addMovie - unexpected result:', result);
                     return cb(new Error('Failed to add movie.'));
                 }
-                cb(null, result);
+
+                // Add the movie to a category
+                addMovieToCategory(result.insertId, categoryId, (catError, catResult) => {
+                    if (catError) {
+                        logger.error('addMovie - addMovieToCategory error:', catError);
+                        return cb(catError);
+                    }
+                    if (!catResult || catResult.affectedRows !== 1) {
+                        logger.error('addMovie - addMovieToCategory unexpected result:', catResult);
+                        return cb(new Error('Failed to add movie to category.'));
+                    }
+
+                    // Success - return the new movie id
+                    cb(null, result.insertId);
+                });
             }
         );
     } catch (err) {

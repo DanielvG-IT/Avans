@@ -224,8 +224,8 @@ export const readMovies = (filters = {}, callback) => {
              f.rating, f.special_features, f.last_update,
              c.name as category, fc2.cover_url
       FROM film f
-      JOIN film_category fc ON f.film_id = fc.film_id
-      JOIN category c ON c.category_id = fc.category_id
+      LEFT JOIN film_category fc ON f.film_id = fc.film_id
+      LEFT JOIN category c ON c.category_id = fc.category_id
       LEFT JOIN film_cover fc2 ON fc2.film_id = f.film_id
       ${whereSql}
       ORDER BY ${orderBy} ${sortDir}
@@ -278,9 +278,9 @@ export const readMovieById = (id, callback) => {
                    f.rating, f.special_features, f.last_update,
                    c.name as category, fc2.cover_url
             FROM film f
-            JOIN film_category fc ON f.film_id = fc.film_id
-            JOIN category c ON c.category_id = fc.category_id
-            JOIN language l ON l.language_id = f.language_id 
+            LEFT JOIN film_category fc ON f.film_id = fc.film_id
+            LEFT JOIN category c ON c.category_id = fc.category_id
+            LEFT JOIN language l ON l.language_id = f.language_id 
             LEFT JOIN film_cover fc2 ON fc2.film_id = f.film_id
             WHERE f.film_id = ?`;
 
@@ -289,7 +289,8 @@ export const readMovieById = (id, callback) => {
                 logger.error('getMovieById MySQL Error:', error);
                 return cb(error);
             }
-            cb(null, rows && rows[0] ? rows[0] : null);
+            console.log(rows);
+            cb(null, rows[0]);
         });
     } catch (err) {
         logger.error('getMovieById sync error:', err);
@@ -307,8 +308,8 @@ export const readMovieAvailability = (id, callback) => {
           s.name AS store_name,
           COUNT(i.inventory_id) AS copies
       FROM store s
-      JOIN inventory i ON i.store_id = s.store_id
-      JOIN film f ON f.film_id = i.film_id
+      LEFT JOIN inventory i ON i.store_id = s.store_id
+      LEFT JOIN film f ON f.film_id = i.film_id
       WHERE f.film_id = ?
       GROUP BY s.store_id, s.name
       ORDER BY s.store_id;
@@ -404,6 +405,27 @@ export const updateMovie = (
         });
     } catch (err) {
         logger.error('updateMovie sync error:', err);
+        cb(err);
+    }
+};
+
+export const addMovieToCategory = (movieId, categoryId, callback) => {
+    const cb = onceCallback(callback);
+    try {
+        const sql = `
+      INSERT INTO film_category (film_id, category_id)
+      VALUES (?, ?)
+    `;
+
+        query(sql, [movieId, categoryId], (error, result) => {
+            if (error) {
+                logger.error('addMovieToCategory MySQL Error:', error);
+                return cb(error);
+            }
+            cb(null, result);
+        });
+    } catch (err) {
+        logger.error('addMovieToCategory sync error:', err);
         cb(err);
     }
 };
