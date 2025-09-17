@@ -1,4 +1,4 @@
-import { readRentalById, readRentalsByInventoryId, createRental } from '../dao/rental.js';
+import { readRentalById, readActiveRentalByInventoryId, createRental } from '../dao/rental.js';
 import { readInventoryByFilmIdAtStore } from '../dao/inventory.js';
 import { readMovieById } from '../dao/movie.js';
 import { logger } from '../util/logger.js';
@@ -23,74 +23,110 @@ const onceCallback = (cb) => {
 export const addRental = (movieId, customerId, staffId, storeId, callback) => {
     const cb = onceCallback(callback);
     try {
+        logger.debug('addRental called with:', { movieId, customerId, staffId, storeId });
+
         readMovieById(movieId, (error, movie) => {
             if (error) {
-                logger.error('fetchRentalById - dao error:', error);
-                return cb(error);
+                logger.error('addRental - error reading movie:', error);
+                return cb(new Error('Failed to read movie data.'));
             }
+            logger.debug('Movie retrieved:', movie);
+
             if (!movie) {
-                logger.error('');
-                return cb('nah movie mate');
+                logger.error('addRental - movie not found for id:', movieId);
+                return cb(new Error('Movie not found.'));
             }
 
             readInventoryByFilmIdAtStore(movie.film_id, storeId, (error, inventory) => {
                 if (error) {
-                    logger.error('fetchRentalById - dao error:', error);
-                    return cb(error);
+                    logger.error('addRental - error reading inventory:', error);
+                    return cb(new Error('Failed to read inventory data.'));
                 }
-                if (!inventory) {
-                    logger.error('');
-                    return cb('nah inventory mate');
+                logger.debug('Inventory retrieved for film and store:', {
+                    filmId: movie.film_id,
+                    storeId,
+                    inventory,
+                });
+
+                if (!inventory || inventory.length === 0) {
+                    logger.error(`No inventory found for "${movie.title}" at store ${storeId}`);
+                    return cb(
+                        new Error(
+                            `No inventory available for "${movie.title}" at the selected store.`
+                        )
+                    );
                 }
 
-                let firstAvailableCopy;
-                // So for example 4 copies mean 4 rows of inventory
+                let foundAvailable = false;
+                let pending = inventory.length;
+                logger.debug(
+                    'Checking availability for each inventory item, total items:',
+                    pending
+                );
+
                 for (const item of inventory) {
-                    readRentalsByInventoryId(item.inventory_id, (error, rentals) => {
+                    logger.debug('Checking inventory item:', item.inventory_id);
+
+                    readActiveRentalByInventoryId(item.inventory_id, (error, activeRental) => {
+                        if (foundAvailable) return;
                         if (error) {
-                            logger.error('fetchRentalById - dao error:', error);
-                            return cb(error);
-                        }
-                        if (rentals && rentals.length > 0) {
-                            // This copy is rented out, try the next one
-                            return;
+                            logger.error(
+                                'addRental - error reading rentals for inventory:',
+                                item.inventory_id,
+                                error
+                            );
+                            foundAvailable = true;
+                            return cb(new Error('Failed to check rental status for inventory.'));
                         }
 
-                        // Found an available copy
-                        firstAvailableCopy = item;
+                        logger.debug(
+                            'Active rental for inventory',
+                            item.inventory_id,
+                            activeRental
+                        );
+
+                        if (!activeRental) {
+                            // ✅ This copy is available
+                            logger.debug('Found available copy:', item.inventory_id);
+                            foundAvailable = true;
+                            const rentalDate = new Date();
+
+                            createRental(
+                                rentalDate,
+                                item.inventory_id,
+                                customerId,
+                                null,
+                                staffId,
+                                (error, rental) => {
+                                    if (error) {
+                                        logger.error('addRental - error creating rental:', error);
+                                        return cb(new Error('Failed to create rental.'));
+                                    }
+                                    logger.debug('Rental created successfully:', rental);
+                                    cb(null, rental);
+                                }
+                            );
+                        } else {
+                            pending--;
+                            logger.debug('Inventory item rented, pending:', pending);
+                            if (pending === 0 && !foundAvailable) {
+                                logger.error(
+                                    `No available copies of "${movie.title}" at store ${storeId}`
+                                );
+                                cb(
+                                    new Error(
+                                        `No available copies of "${movie.title}" at the selected store.`
+                                    )
+                                );
+                            }
+                        }
                     });
                 }
-
-                if (!firstAvailableCopy) {
-                    logger.error('');
-                    return cb('nah no copies mate');
-                }
-
-                // All good, create the rental
-                const rentalDate = new Date();
-                const inventoryId = firstAvailableCopy.inventory_id;
-                const returnDate = null; // Not returned yet
-
-                // Create the rental in the database
-                createRental(
-                    rentalDate,
-                    inventoryId,
-                    customerId,
-                    returnDate,
-                    staffId,
-                    (error, rental) => {
-                        if (error) {
-                            logger.error('addRental - dao error:', error);
-                            return cb(error);
-                        }
-                        cb(null, rental);
-                    }
-                );
             });
         });
     } catch (err) {
         logger.error('addRental - unexpected error:', err);
-        cb(err);
+        cb(new Error('Unexpected error occurred while adding rental.'));
     }
 };
 

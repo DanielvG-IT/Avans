@@ -84,7 +84,6 @@ export const addCustomer = (data, callback) => {
                             logger.error('Customer Creation Error:', error);
                             return cb(error);
                         }
-                        console.log('Customer created with ID:', result);
                         cb(null, result.insertId);
                     }
                 );

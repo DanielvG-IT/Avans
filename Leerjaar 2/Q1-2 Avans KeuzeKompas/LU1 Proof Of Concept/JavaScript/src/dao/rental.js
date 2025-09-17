@@ -77,19 +77,24 @@ export const readRentalsByCustomerId = (customerId, callback) => {
     }
 };
 
-export const readRentalsByInventoryId = (inventoryId, callback) => {
+export const readActiveRentalByInventoryId = (inventoryId, callback) => {
     const cb = onceCallback(callback);
     try {
-        const sql = `SELECT * FROM rental WHERE inventory_id = ?`;
+        const sql = `
+            SELECT * FROM rental 
+            WHERE inventory_id = ? 
+              AND return_date IS NULL
+            LIMIT 1
+        `;
         query(sql, [inventoryId], (error, rows) => {
             if (error) {
-                logger.error('readRentalsByInventoryId MySQL Error:', error);
+                logger.error('readActiveRentalByInventoryId MySQL Error:', error);
                 return cb(error);
             }
-            cb(null, rows);
+            cb(null, rows[0]); // null if no active rental = available
         });
     } catch (err) {
-        logger.error('readRentalsByInventoryId sync error:', err);
+        logger.error('readActiveRentalByInventoryId sync error:', err);
         cb(err);
     }
 };

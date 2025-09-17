@@ -24,6 +24,7 @@ import {
     softDeleteCustomer,
     createCustomer,
 } from '../dao/customer.js';
+import { readStaffByUserId } from '../dao/staff.js';
 
 // TODO : move to util
 const onceCallback = (cb) => {
@@ -262,6 +263,8 @@ export const fetchStaff = (userId, callback) => {
         if (error) return callback(error);
         if (!user) return callback(new Error('User not found.'));
         if (user.role !== 'STAFF') return callback(new Error('User is not staff.'));
+
+        logger.debug('Fetching staff for userId:', userId);
 
         readStaffByUserId(userId, (error, staff) => {
             if (error) return callback(error);

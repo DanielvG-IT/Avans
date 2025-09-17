@@ -9,6 +9,7 @@ import {
     fetchCustomers,
     addCustomer,
 } from '../services/customerService.js';
+import { fetchStaff } from '../services/authService.js';
 
 const staffRouter = express.Router();
 
@@ -402,12 +403,6 @@ staffRouter.get('/crm/:customerId', requireStaffAuthWeb, (req, res, next) => {
                 overdueRentalsCount: overdueCount,
             };
 
-            console.log(customer);
-            console.log(metrics);
-            console.log(activeRentals);
-            console.log(futureRentals);
-            console.log(pastRentals);
-
             res.render('staff/viewCustomer', {
                 title: 'Customer Details',
                 customer,
@@ -556,49 +551,61 @@ staffRouter.get('/crm/:customerId/rent', requireStaffAuthWeb, (req, res, next) =
     const customerId = parsePositiveInt(req.params.customerId, null);
     if (!customerId) return next(new Error('Invalid customer ID'));
 
-    // get stores (for staff to pick store if needed) and customer
     readStores((storeError, stores) => {
         if (storeError) {
             logger.error('Store Error:', storeError);
             return next(storeError);
         }
+        if (!stores || stores.length === 0) {
+            logger.error('No stores found for rent page');
+            return next(new Error('No stores available'));
+        }
 
-        fetchCustomerById(customerId, (err, customer) => {
-            if (err) {
-                logger.error('Customer fetch error for rent page:', err);
-                return next(err);
+        const staffUserId = req.user?.id ?? req.user?.userId ?? req.user?.staff_id;
+
+        fetchStaff(staffUserId, (staffError, staff) => {
+            if (staffError) {
+                logger.warn(
+                    'Staff fetch error for rent page; proceeding with req.user fallback',
+                    staffError
+                );
             }
-            if (!customer) {
-                return next(new Error('Customer not found'));
-            }
+            // proceed even if staff is null; template falls back to user.id
+            fetchCustomerById(customerId, (err, customer) => {
+                if (err) {
+                    logger.error('Customer fetch error for rent page:', err);
+                    return next(err);
+                }
+                if (!customer) {
+                    return next(new Error('Customer not found'));
+                }
 
-            // compute nice ISO defaults for start/expectedReturn
-            const now = new Date();
-            now.setMinutes(Math.ceil(now.getMinutes() / 5) * 5);
-            const isoStart = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-                .toISOString()
-                .slice(0, 16);
-            const then = new Date(now.getTime() + 7 * 24 * 3600 * 1000);
-            const isoReturn = new Date(then.getTime() - then.getTimezoneOffset() * 60000)
-                .toISOString()
-                .slice(0, 16);
-
-            res.render('staff/rentMovie', {
-                title: 'Rent Movie',
-                preselectedCustomer: {
+                const preselectedCustomer = {
                     customer_id: customer.customer_id ?? customer.customerId,
                     first_name: customer.first_name ?? customer.firstName,
                     last_name: customer.last_name ?? customer.lastName,
                     email: customer.email,
                     phone: customer.phone,
                     address: customer.address,
-                },
-                preselectedMovie: null,
-                stores,
-                defaults: {
-                    startDate: isoStart,
-                    expectedReturn: isoReturn,
-                },
+                };
+                const preselectedCustomerB64 = Buffer.from(
+                    JSON.stringify(preselectedCustomer)
+                ).toString('base64');
+
+                res.render('staff/rentMovie', {
+                    title: 'Rent Movie',
+                    preselectedCustomer,
+                    preselectedMovie: null,
+                    // NEW: safe bootstrap values (no Handlebars in script tags)
+                    preselectedCustomerB64,
+                    preselectedMovieB64: '',
+                    actionUrl: '/rentals/new',
+                    actionMethod: 'POST',
+                    returnUrl: '/staff/crm/' + customerId,
+                    stores,
+                    staff: staff || null,
+                    user: req.user || null,
+                });
             });
         });
     });

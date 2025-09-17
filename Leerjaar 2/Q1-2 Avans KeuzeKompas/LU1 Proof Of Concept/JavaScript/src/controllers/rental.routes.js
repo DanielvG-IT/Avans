@@ -14,9 +14,14 @@ rentalRouter.post('/new', requireStaffAuthApi, (req, res, next) => {
     addRental(movieId, customerId, staffId, storeId, (err, rental) => {
         if (err) {
             logger.error('Error adding rental:', err);
-            return res.status(500).send('Error adding rental');
+            return res
+                .status(500)
+                .json({ success: false, error: err.message || 'Internal server error' });
         }
-        res.status(201).send(rental);
+        if (!rental) {
+            return res.status(400).json({ success: false, error: 'Could not create rental' });
+        }
+        return res.status(201).json({ success: true, rental });
     });
 });
 
