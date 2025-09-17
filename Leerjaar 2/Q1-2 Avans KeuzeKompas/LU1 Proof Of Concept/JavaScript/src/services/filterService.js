@@ -1,4 +1,5 @@
 import { readCategories } from '../dao/category.js';
+import { readLanguages } from '../dao/language.js';
 import { readRatings } from '../dao/movie.js';
 import { logger } from '../util/logger.js';
 
@@ -48,6 +49,23 @@ export const fetchRatingNames = (callback) => {
             return cb(new Error('Ratings not found.'));
         }
         const names = ratings.map((r) => r.rating);
+        cb(null, names);
+    });
+};
+
+export const fetchLanguageNames = (callback) => {
+    const cb = onceCallback(callback);
+    readLanguages((error, languages) => {
+        if (error) {
+            logger.error('Language Error:', error);
+            return cb(error);
+        }
+        if (!languages) {
+            logger.error('Language Error:', error);
+            return cb(new Error('Languages not found.'));
+        }
+
+        const names = languages.map((l) => ({ id: l.language_id, name: l.name }));
         cb(null, names);
     });
 };
