@@ -1,5 +1,4 @@
 import { requireStaffAuthApi, requireStaffAuthWeb } from '../middleware/auth.js';
-import { fetchMovieById, fetchMovies, updateMovieById } from '../services/movieService.js';
 import { fetchStaff } from '../services/authService.js';
 import { readMovieById } from '../dao/movie.js';
 import { readStores } from '../dao/store.js';
@@ -10,6 +9,12 @@ import {
     fetchLanguageNames,
     fetchRatingNames,
 } from '../services/filterService.js';
+import {
+    updateMovieById,
+    fetchMovieById,
+    fetchMovies,
+    addMovie,
+} from '../services/movieService.js';
 
 const moviesRouter = express.Router();
 
@@ -198,12 +203,121 @@ moviesRouter.get('/search', requireStaffAuthApi, (req, res) => {
     });
 });
 
-// TODO Implement creating a new movie (not implemented)
+// Create new movie (same render page & similar logic as edit)
 moviesRouter.get('/new', requireStaffAuthWeb, (req, res, next) => {
-    res.render('movies/createOrEdit', { title: 'Add New Movie' });
+    fetchRatingNames((ratingErr, ratings) => {
+        if (ratingErr) {
+            logger.error('New movie: fetchRatingNames error', { ratingErr });
+            return next(ratingErr);
+        }
+        fetchLanguageNames((langErr, languages) => {
+            if (langErr) {
+                logger.error('New movie: fetchLanguageNames error', { langErr });
+                return next(langErr);
+            }
+            fetchCategoryNames((catErr, categories) => {
+                if (catErr) {
+                    logger.error('New movie: fetchCategoryNames error', { catErr });
+                    return next(catErr);
+                }
+
+                // Render empty form for creating a movie
+                res.render('movies/createOrEdit', {
+                    title: 'Add New Movie',
+                    movie: {}, // empty movie for the form
+                    languages,
+                    ratings,
+                    categories,
+                    formMethod: 'POST',
+                    cancelUrl: '/movies',
+                });
+            });
+        });
+    });
 });
+
 moviesRouter.post('/new', requireStaffAuthApi, (req, res, next) => {
-    res.json({ success: false, error: 'Not implemented' });
+    console.log('[DEBUG] Entering POST /movies/new', { body: req.body });
+
+    // Collect submitted fields (same names as edit)
+    const moviePayload = {
+        title: req.body.title,
+        description: req.body.description,
+        release_year: req.body.release_year,
+        language_id: req.body.language_id,
+        rental_duration: req.body.rental_duration,
+        rental_rate: req.body.rental_rate,
+        length: req.body.length,
+        replacement_cost: req.body.replacement_cost,
+        rating: req.body.rating,
+        category: req.body.category,
+        special_features: req.body.special_features,
+    };
+
+    addMovie(
+        moviePayload.title,
+        moviePayload.description,
+        moviePayload.release_year,
+        moviePayload.language_id,
+        moviePayload.category,
+        moviePayload.rental_duration,
+        moviePayload.rental_rate,
+        moviePayload.length,
+        moviePayload.replacement_cost,
+        moviePayload.rating,
+        moviePayload.special_features,
+        (err, newMovieId) => {
+            if (err) {
+                logger.error('Create movie: addMovie error', { err });
+                // Re-fetch select lists and render the form with the submitted data and an error message
+                fetchRatingNames((ratingErr, ratings) => {
+                    if (ratingErr) return next(ratingErr);
+                    fetchLanguageNames((langErr, languages) => {
+                        if (langErr) return next(langErr);
+                        fetchCategoryNames((catErr, categories) => {
+                            if (catErr) return next(catErr);
+
+                            // Map posted payload to view model shape expected by template
+                            const movie = {
+                                filmId: undefined,
+                                title: moviePayload.title,
+                                description: moviePayload.description,
+                                releaseYear: moviePayload.release_year,
+                                language: (
+                                    languages.find(
+                                        (l) => String(l.id) === String(moviePayload.language_id)
+                                    ) || {}
+                                ).name,
+                                rentalDuration: moviePayload.rental_duration,
+                                rentalRate: moviePayload.rental_rate,
+                                length: moviePayload.length,
+                                replacementCost: moviePayload.replacement_cost,
+                                rating: moviePayload.rating,
+                                category: moviePayload.category,
+                                specialFeatures: moviePayload.special_features,
+                            };
+
+                            return res.status(err.statusCode || 400).render('movies/createOrEdit', {
+                                title: 'Add New Movie',
+                                movie,
+                                languages,
+                                ratings,
+                                categories,
+                                cancelUrl: '/movies',
+                                formMethod: 'POST',
+                                errorMessage:
+                                    err.message ||
+                                    'Could not create the movie. Please correct the errors and try again.',
+                            });
+                        });
+                    });
+                });
+                return; // prevent fallthrough
+            }
+            logger.info('Create movie: success', { newMovieId });
+            return res.redirect(`/movies/${newMovieId}`);
+        }
+    );
 });
 
 // Movie details
@@ -282,7 +396,7 @@ moviesRouter.get('/:id/edit', requireStaffAuthWeb, (req, res, next) => {
                         languages,
                         ratings,
                         categories,
-                        formMethode: 'POST',
+                        cancelUrl: '/movies/' + movieId,
                     });
                 });
             });

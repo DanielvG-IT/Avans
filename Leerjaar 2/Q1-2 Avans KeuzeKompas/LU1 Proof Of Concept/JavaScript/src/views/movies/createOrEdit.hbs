@@ -14,7 +14,9 @@
       </div>
       {{/if}}
 
-      <form id="movieForm" method="{{formMethode}}" class="needs-validation" novalidate>
+      <form id="movieForm" method="post"
+        action="{{#if movie.filmId}}/movies/{{movie.filmId}}/edit{{else}}/movies/new{{/if}}" class="needs-validation"
+        novalidate>
         {{#if movie.filmId}}
         <input type="hidden" name="film_id" value="{{movie.filmId}}">
         {{/if}}
