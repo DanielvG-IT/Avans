@@ -7,6 +7,9 @@ import {
     readLongestMovies,
     readCheapestMovies,
     readMovieAvailability,
+    updateMovie as updateMovieDAO,
+    createMovie,
+    updateMovie, // added
 } from '../dao/movie.js';
 
 /**
@@ -318,4 +321,46 @@ export const fetchMovieById = (id, callback) => {
         logger.error('fetchMovieById sync error:', err);
         cb(err);
     }
+};
+
+export const updateMovieById = (
+    id,
+    title,
+    description,
+    releaseYear,
+    languageId,
+    rentalDuration,
+    rentalRate,
+    length,
+    replacementCost,
+    rating,
+    specialFeatures,
+    callback
+) => {
+    const cb = onceCallback(callback);
+    updateMovie(
+        id,
+        title,
+        description,
+        releaseYear,
+        languageId,
+        rentalDuration,
+        rentalRate,
+        length,
+        replacementCost,
+        rating,
+        specialFeatures,
+        (error, result) => {
+            if (error) {
+                logger.error('updateMovieById - dao error:', error);
+                return cb(error);
+            }
+            if (!result || result.affectedRows !== 1) {
+                logger.error('updateMovieById - unexpected result:', result);
+                return cb(new Error('Failed to update movie.'));
+            }
+            // Success
+            cb(null, result);
+        }
+    );
 };

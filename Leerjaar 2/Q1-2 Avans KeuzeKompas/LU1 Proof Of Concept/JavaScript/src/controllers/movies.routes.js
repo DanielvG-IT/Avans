@@ -1,11 +1,15 @@
-import { fetchCategoryNames, fetchRatingNames } from '../services/filterService.js';
 import { requireStaffAuthApi, requireStaffAuthWeb } from '../middleware/auth.js';
-import { fetchMovieById, fetchMovies } from '../services/movieService.js';
+import { fetchMovieById, fetchMovies, updateMovieById } from '../services/movieService.js';
+import { fetchStaff } from '../services/authService.js';
 import { readMovieById } from '../dao/movie.js';
 import { readStores } from '../dao/store.js';
 import { logger } from '../util/logger.js';
 import express from 'express';
-import { fetchStaff } from '../services/authService.js';
+import {
+    fetchCategoryNames,
+    fetchLanguageNames,
+    fetchRatingNames,
+} from '../services/filterService.js';
 
 const moviesRouter = express.Router();
 
@@ -138,7 +142,8 @@ moviesRouter.get('/', (req, res, next) => {
 
                         // pagination helpers for the template:
                         pagesToShow,
-                        pageQueryPrefix, // use: href="{{pageQueryPrefix}}{{this.page}}"
+                        // use: href="{{pageQueryPrefix}}{{this.page}}"
+                        pageQueryPrefix,
                         prevPage,
                         nextPage,
                     });
@@ -234,17 +239,175 @@ moviesRouter.get('/:id', (req, res, next) => {
     });
 });
 
-// Placeholder for editing a movie (not implemented)
 moviesRouter.get('/:id/edit', requireStaffAuthWeb, (req, res, next) => {
     const movieId = parseInt(req.params.id, 10);
     if (!Number.isInteger(movieId) || movieId <= 0) {
         logger.warn('Edit movie: invalid movie id', { movieId });
         return next(new Error('Invalid movie id'));
     }
-    res.render('movies/createOrEdit', { title: 'Edit Movie' });
+
+    fetchMovieById(movieId, (err, movie) => {
+        if (err) {
+            logger.error('Edit movie: fetchMovieById error', { movieId, err });
+            return next(err);
+        }
+        if (!movie) {
+            logger.warn('Edit movie: movie not found', { movieId });
+            return next(new Error('Movie not found'));
+        }
+
+        fetchRatingNames((ratingErr, ratings) => {
+            if (ratingErr) {
+                logger.error('Edit movie: fetchRatingNames error', { movieId, ratingErr });
+                return next(ratingErr);
+            }
+            fetchLanguageNames((langErr, languages) => {
+                if (langErr) {
+                    logger.error('Edit movie: fetchLanguageNames error', { movieId, langErr });
+                    return next(langErr);
+                }
+
+                fetchCategoryNames((catErr, categories) => {
+                    if (catErr) {
+                        logger.error('Edit movie: fetchCategoryNames error', {
+                            movieId,
+                            catErr,
+                        });
+                        return next(catErr);
+                    }
+
+                    res.render('movies/createOrEdit', {
+                        title: 'Edit Movie',
+                        movie,
+                        languages,
+                        ratings,
+                        categories,
+                        formMethode: 'POST',
+                    });
+                });
+            });
+        });
+    });
 });
 moviesRouter.post('/:id/edit', requireStaffAuthApi, (req, res, next) => {
-    res.json({ success: false, error: 'Not implemented' });
+    const movieId = parsePositiveInt(req.params.id, null);
+    console.log('[DEBUG] Entering POST /movies/:id/edit', {
+        paramsId: req.params.id,
+        movieId,
+        body: req.body,
+    });
+    if (!movieId) {
+        console.log('[DEBUG] Invalid movie id in POST /movies/:id/edit', {
+            paramsId: req.params.id,
+        });
+        logger.warn('Edit movie: invalid movie id', { movieId: req.params.id });
+        return next(new Error('Invalid movie id'));
+    }
+
+    console.log(req.body);
+
+    const title = req.body.title;
+    const description = req.body.description;
+    const releaseYear = req.body.release_year;
+    const languageId = req.body.language_id;
+    const rentalDuration = req.body.rental_duration;
+    const rentalRate = req.body.rental_rate;
+    const length = req.body.length;
+    const replacementCost = req.body.replacement_cost;
+    const rating = req.body.rating;
+    const specialFeatures = req.body.special_features;
+
+    console.log('[DEBUG] Calling updateMovieById', { movieId });
+    updateMovieById(
+        movieId,
+        title,
+        description,
+        releaseYear,
+        languageId,
+        rentalDuration,
+        rentalRate,
+        length,
+        replacementCost,
+        rating,
+        specialFeatures,
+        (err) => {
+            if (err) {
+                console.log('[DEBUG] updateMovieById returned error', err);
+                logger.error('Edit movie: updateMovie error', { movieId, err });
+
+                let errorMessage;
+                fetchMovieById(movieId, (fetchErr, movie) => {
+                    console.log('[DEBUG] fetchMovieById callback', { fetchErr, movie });
+                    if (fetchErr) {
+                        console.log('[DEBUG] fetchMovieById error', fetchErr);
+                        logger.error('Edit movie: fetchMovieById error', { movieId, fetchErr });
+                        errorMessage = fetchErr;
+                    }
+                    if (!movie) {
+                        console.log('[DEBUG] fetchMovieById returned no movie', { movieId });
+                        logger.warn('Edit movie: movie not found', { movieId });
+                        errorMessage = 'Movie not found';
+                    }
+
+                    fetchRatingNames((ratingErr, ratings) => {
+                        console.log('[DEBUG] fetchRatingNames callback', { ratingErr, ratings });
+                        if (ratingErr) {
+                            console.log('[DEBUG] fetchRatingNames error', ratingErr);
+                            logger.error('Edit movie: fetchRatingNames error', {
+                                movieId,
+                                ratingErr,
+                            });
+                            errorMessage = ratingErr;
+                        }
+                        fetchLanguageNames((langErr, languages) => {
+                            console.log('[DEBUG] fetchLanguageNames callback', {
+                                langErr,
+                                languages,
+                            });
+                            if (langErr) {
+                                console.log('[DEBUG] fetchLanguageNames error', langErr);
+                                logger.error('Edit movie: fetchLanguageNames error', {
+                                    movieId,
+                                    langErr,
+                                });
+                                errorMessage = langErr;
+                            }
+                            fetchCategoryNames((catErr, categories) => {
+                                console.log('[DEBUG] fetchCategoryNames callback', {
+                                    catErr,
+                                    categories,
+                                });
+                                if (catErr) {
+                                    console.log('[DEBUG] fetchCategoryNames error', catErr);
+                                    logger.error('Edit movie: fetchCategoryNames error', {
+                                        movieId,
+                                        catErr,
+                                    });
+                                    errorMessage = catErr;
+                                }
+                                console.log('[DEBUG] Rendering createOrEdit with errorMessage', {
+                                    errorMessage,
+                                });
+                                return res.render('movies/createOrEdit', {
+                                    title: 'Edit Movie',
+                                    movie,
+                                    languages,
+                                    ratings,
+                                    categories,
+                                    errorMessage,
+                                    cancelUrl: '/movies/' + movieId,
+                                    formMethod: 'POST',
+                                });
+                            });
+                        });
+                    });
+                });
+                return;
+            }
+            console.log('[DEBUG] updateMovieById callback complete - redirecting', { movieId });
+            return res.redirect('/movies/' + movieId);
+        }
+    );
 });
 
 // Staff-only: rent a movie page (mounted under /movies)

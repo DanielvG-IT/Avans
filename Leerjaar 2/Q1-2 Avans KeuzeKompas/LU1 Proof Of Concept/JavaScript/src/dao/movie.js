@@ -343,3 +343,67 @@ export const readRatings = (callback) => {
         cb(err);
     }
 };
+
+export const updateMovie = (
+    id,
+    title,
+    description,
+    releaseYear,
+    languageId,
+    rentalDuration,
+    rentalRate,
+    length,
+    replacementCost,
+    rating,
+    specialFeatures,
+    callback
+) => {
+    const cb = onceCallback(callback);
+    try {
+        if (id == null) {
+            return cb(new Error('Movie id is required.'));
+        }
+
+        const params = [
+            title != null ? normalizeName(title) : null,
+            description != null ? description : null,
+            releaseYear != null ? releaseYear : null,
+            languageId != null ? normalizeId(languageId) : null,
+            rentalDuration != null ? rentalDuration : null,
+            rentalRate != null ? rentalRate : null,
+            length != null ? length : null,
+            replacementCost != null ? replacementCost : null,
+            rating != null ? rating : null,
+            specialFeatures != null ? specialFeatures : null,
+        ];
+
+        params.push(id);
+
+        const sql = `
+            UPDATE film
+            SET
+              title = ?,
+              description = ?,
+              release_year = ?,
+              language_id = ?,
+              rental_duration = ?,
+              rental_rate = ?,
+              length = ?,
+              replacement_cost = ?,
+              rating = ?,
+              special_features = ?
+            WHERE film_id = ?;
+        `;
+
+        query(sql, params, (error, result) => {
+            if (error) {
+                logger.error('updateMovie MySQL Error:', error);
+                return cb(error);
+            }
+            cb(null, result);
+        });
+    } catch (err) {
+        logger.error('updateMovie sync error:', err);
+        cb(err);
+    }
+};
