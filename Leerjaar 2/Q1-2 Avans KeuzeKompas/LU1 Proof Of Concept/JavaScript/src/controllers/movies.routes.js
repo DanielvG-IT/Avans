@@ -5,6 +5,7 @@ import { readMovieById } from '../dao/movie.js';
 import { readStores } from '../dao/store.js';
 import { logger } from '../util/logger.js';
 import express from 'express';
+import { fetchStaff } from '../services/authService.js';
 
 const moviesRouter = express.Router();
 
@@ -209,6 +210,26 @@ moviesRouter.get('/:id', (req, res, next) => {
 
     fetchMovieById(id, (err, movie) => {
         if (err) return next(err);
+
+        // NEW: return JSON when requested so the client modal can fetch details
+        const wantsJson =
+            req.xhr ||
+            (req.get && /application\/json/.test(req.get('accept') || '')) ||
+            String(req.query.format || '').toLowerCase() === 'json';
+
+        if (wantsJson) {
+            return res.json({
+                film_id: movie.film_id ?? movie.filmId,
+                title: movie.title,
+                release_year: movie.release_year ?? movie.releaseYear,
+                rating: movie.rating,
+                rental_rate: movie.rental_rate ?? movie.rentalRate,
+                rental_duration: movie.rental_duration ?? movie.rentalDuration,
+                length: movie.length,
+                description: movie.description,
+            });
+        }
+
         res.render('movies/movie', { title: movie.title, movie });
     });
 });
@@ -237,43 +258,56 @@ moviesRouter.get('/:id/rent', requireStaffAuthWeb, (req, res, next) => {
             return next(storeError);
         }
 
-        // readFilmById should return a single film row (see suggested dao below)
-        readMovieById(movieId, (filmErr, film) => {
-            if (filmErr) {
-                logger.error('Film fetch error for rent page:', filmErr);
-                return next(filmErr);
-            }
-            if (!film) {
-                return next(new Error('Movie not found'));
+        fetchStaff(req.user?.userId, (staffErr, staff) => {
+            if (staffErr) {
+                logger.warn(
+                    'Staff fetch error for rent page; proceeding with req.user fallback',
+                    staffErr
+                );
             }
 
-            // same date defaults as above
-            const now = new Date();
-            now.setMinutes(Math.ceil(now.getMinutes() / 5) * 5);
-            const isoStart = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-                .toISOString()
-                .slice(0, 16);
-            const then = new Date(now.getTime() + 7 * 24 * 3600 * 1000);
-            const isoReturn = new Date(then.getTime() - then.getTimezoneOffset() * 60000)
-                .toISOString()
-                .slice(0, 16);
+            if (!staff) {
+                logger.error('Staff fetch returned no results; cannot proceed');
+                return next(new Error('Staff fetch returned no results; cannot proceed'));
+            }
 
-            res.render('staff/rentMovie', {
-                title: 'Rent Movie',
-                preselectedCustomer: null,
-                preselectedMovie: {
+            // proceed even if staff is null; template falls back to user.id
+            readMovieById(movieId, (filmErr, film) => {
+                if (filmErr) {
+                    logger.error('Film fetch error for rent page:', filmErr);
+                    return next(filmErr);
+                }
+                if (!film) {
+                    return next(new Error('Movie not found'));
+                }
+
+                const preselectedMovie = {
                     film_id: film.film_id ?? film.filmId,
                     title: film.title,
                     release_year: film.release_year ?? film.releaseYear,
                     rental_rate: film.rental_rate ?? film.rentalRate,
                     rental_duration: film.rental_duration ?? film.rentalDuration,
                     length: film.length,
-                },
-                stores,
-                defaults: {
-                    startDate: isoStart,
-                    expectedReturn: isoReturn,
-                },
+                };
+                const preselectedMovieB64 = Buffer.from(JSON.stringify(preselectedMovie)).toString(
+                    'base64'
+                );
+
+                // Render the rent movie page
+                res.render('staff/rentMovie', {
+                    title: 'Rent Movie',
+                    preselectedCustomer: null,
+                    preselectedMovie,
+                    // NEW: safe bootstrap values (no Handlebars in script tags)
+                    preselectedCustomerB64: '',
+                    preselectedMovieB64,
+                    staff: staff || null,
+                    user: req.user || null,
+                    actionUrl: '/rentals/new',
+                    actionMethod: 'POST',
+                    returnUrl: '/movies/' + movieId,
+                    stores,
+                });
             });
         });
     });

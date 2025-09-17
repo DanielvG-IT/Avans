@@ -1,12 +1,27 @@
 <div class="container py-4">
   <div class="d-flex align-items-center justify-content-between mb-4">
     <h1 class="h4 mb-0">Create Rental</h1>
-    <small class="text-muted">Staff: {{user.name}}</small>
+    <small class="text-muted">
+      Staff:
+      {{#if staff}}
+      {{#if staff.first_name}}{{staff.first_name}} {{staff.last_name}}{{else}}{{staff.staff_id}}{{/if}}
+      {{else}}
+      {{#if user.name}}{{user.name}}{{else}}#{{user.id}}{{/if}}
+      {{/if}}
+    </small>
   </div>
 
-  <form id="rentalForm" class="needs-validation" novalidate>
-    <div class="row g-3">
+  <!-- NEW: bootstrap data via hidden inputs (no Handlebars in script tags) -->
+  <input type="hidden" id="bootstrapPreselectedCustomer" value="{{preselectedCustomerB64}}">
+  <input type="hidden" id="bootstrapPreselectedMovie" value="{{preselectedMovieB64}}">
 
+  <form id="rentalForm" class="needs-validation" novalidate>
+    <!-- keep staffId available after removing the Dates & Options section -->
+    {{#if staff.staff_id}}
+    <input type="hidden" id="staffId" name="staffId" value="{{staff.staff_id}}">
+    {{/if}}
+
+    <div class="row g-3">
       <!-- LEFT: selectors -->
       <div class="col-12 col-xl-7">
         <div class="card mb-3">
@@ -92,41 +107,6 @@
           </div>
         </div>
 
-        <!-- Extra rental options -->
-        <div class="card mb-3">
-          <div class="card-body">
-            <h2 class="h6">Rental Dates & Options</h2>
-
-            <div class="row g-2">
-              <div class="col-12 col-md-6">
-                <label for="startDate" class="form-label">Start date</label>
-                <input id="startDate" name="startDate" type="datetime-local" class="form-control" required>
-              </div>
-
-              <div class="col-12 col-md-6">
-                <label for="expectedReturn" class="form-label">Expected return</label>
-                <input id="expectedReturn" name="expectedReturn" type="datetime-local" class="form-control" required>
-              </div>
-
-              <!-- Staff is prefilled from server user context (no staff search endpoint provided) -->
-              <div class="col-12 col-md-6">
-                <label for="staffName" class="form-label">Staff (processing)</label>
-                <input id="staffName" class="form-control" type="text" value="{{user.name}}" readonly>
-                <input type="hidden" id="staffId" name="staffId" value="{{user.id}}">
-              </div>
-
-              <div class="col-12 col-md-6">
-                <label for="paymentMethod" class="form-label">Payment method</label>
-                <select id="paymentMethod" name="paymentMethod" class="form-select" required>
-                  <option value="cash">Cash</option>
-                  <option value="card">Card</option>
-                  <option value="account">Account</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
 
       <!-- RIGHT: summary & confirm -->
@@ -171,15 +151,6 @@
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-body">
-            <h2 class="h6">Quick actions</h2>
-            <div class="d-grid gap-2">
-              <button type="button" id="clearCartBtn" class="btn btn-sm btn-outline-danger">Clear cart</button>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
   </form>
@@ -221,6 +192,7 @@
 </style>
 
 <script>
+  const RENTALS_ENDPOINT = '/rentals/new';
   /* ---------------------------
     Helper functions & state
   ----------------------------*/
@@ -368,7 +340,10 @@
     if (!filmId) return;
     const movie = lastSelectedMovie && String(lastSelectedMovie.film_id) === String(filmId) ? lastSelectedMovie : null;
     if (movie) renderMovieModal(movie);
-    else fetch('/movies/' + encodeURIComponent(filmId)).then(r => r.json()).then(renderMovieModal);
+    else fetch('/movies/' + encodeURIComponent(filmId) + '?format=json') // CHANGED: request JSON
+      .then(r => r.json())
+      .then(renderMovieModal)
+      .catch(() => { });
   });
 
   function renderMovieModal(movie) {
@@ -430,7 +405,7 @@
   const confirmBtn = document.getElementById('confirmBtn');
   const paymentAmount = document.getElementById('paymentAmount');
 
-  function addToCart(item) {
+  function addToCart(item = {}) {
     const idx = cart.findIndex(c => String(c.film_id) === String(item.film_id));
     if (idx >= 0) {
       cart[idx].qty += 1;
@@ -484,7 +459,6 @@
         renderCart();
       };
     });
-    // removed: durationInput listeners (duration is fixed)
   }
 
   function updateSummary() {
@@ -498,32 +472,22 @@
     summaryTotal.textContent = fmtMoney(total);
   }
 
-  /* quick actions */
-  document.getElementById('clearCartBtn').addEventListener('click', () => {
-    cart = [];
-    renderCart();
-  });
-  // removed: prefillDurationBtn handler
-
   /* ---------------------------
     Submit — POSTs to /rental/new for each cart item
   ----------------------------*/
   confirmBtn.addEventListener('click', () => {
     const customerId = document.getElementById('customerId').value;
-    const startDate = document.getElementById('startDate').value;
-    const expectedReturn = document.getElementById('expectedReturn').value;
+    // removed: startDate, expectedReturn, paymentMethod
     const staffId = document.getElementById('staffId').value;
-    const paymentMethod = document.getElementById('paymentMethod').value;
     const paymentAmt = Number(paymentAmount.value || 0);
     const storeId = document.getElementById('storeId').value;
 
     if (!customerId) return showFeedback('Please select a customer.', 'danger');
     if (!cart.length) return showFeedback('Please add at least one movie to the cart.', 'danger');
-    if (!startDate || !expectedReturn) return showFeedback('Please set start and expected return dates.', 'danger');
+    // removed: start/return validation
     if (!staffId) return showFeedback('No staff selected. Please sign in again.', 'danger');
     if (!storeId) return showFeedback('Please select a store.', 'danger');
 
-    // Build per-item payloads and POST them in parallel
     confirmBtn.disabled = true;
     showFeedback('Submitting rental(s)...', 'info');
 
@@ -533,16 +497,12 @@
         customerId: Number(customerId),
         staffId: Number(staffId),
         storeId: Number(storeId),
-        // optional extra meta the server might use - remove if server rejects
-        startDate,
-        expectedReturn,
-        paymentMethod,
         paymentAmount: paymentAmt,
         qty: item.qty,
         rental_duration: item.rental_duration,
         rental_rate: item.rental_rate
       };
-      return fetch('/rental/new', {
+      return fetch(RENTALS_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -559,11 +519,9 @@
           return;
         }
         showFeedback('All rentals created successfully!', 'success');
-        // pick the first returned rentalId to redirect (or change as needed)
         const rentalId = results[0] && results[0].rental && results[0].rental.rental_id || results[0].rentalId || '';
         setTimeout(() => {
-          if (rentalId) window.location.href = '/staff/rentals/' + rentalId;
-          else window.location.reload();
+          window.location.href = '/staff/';
         }, 700);
       })
       .catch(err => {
@@ -589,16 +547,13 @@
     Auto prefill support
   ----------------------------*/
   document.addEventListener('DOMContentLoaded', () => {
-    // set default start/return if server didn't set via `defaults`
-    const now = new Date();
-    now.setMinutes(Math.ceil(now.getMinutes() / 5) * 5);
-    const iso = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-    if (!document.getElementById('startDate').value) document.getElementById('startDate').value = (window.defaults &&
-      window.defaults.startDate) || iso;
-    const then = new Date(now.getTime() + 7 * 24 * 3600 * 1000);
-    const iso2 = new Date(then.getTime() - then.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-    if (!document.getElementById('expectedReturn').value) document.getElementById('expectedReturn').value = (window.defaults
-      && window.defaults.expectedReturn) || iso2;
+    // NEW: decode base64 bootstrap values into window variables
+    const fromB64Json = (b64) => {
+      if (!b64) return null;
+      try { return JSON.parse(atob(b64)); } catch { return null; }
+    };
+    window.preselectedCustomer = fromB64Json(document.getElementById('bootstrapPreselectedCustomer')?.value || '');
+    window.preselectedMovie = fromB64Json(document.getElementById('bootstrapPreselectedMovie')?.value || '');
 
     // use server preselected values if present
     if (window.preselectedCustomer) {
