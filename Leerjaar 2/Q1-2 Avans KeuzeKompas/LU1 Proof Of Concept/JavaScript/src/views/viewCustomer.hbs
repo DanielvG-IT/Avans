@@ -1,311 +1,596 @@
-<div class="container mt-4 staff-customer-view">
-  <!-- Header / Profile Section -->
-  <header class="d-flex align-items-center mb-4">
-    <div class="me-3 avatar-placeholder" aria-hidden="true">
-      <!-- Optional: customer avatar if available -->
-      {{#if customer.avatarUrl}}
-      <img src="{{customer.avatarUrl}}" alt="{{customer.first_name}} avatar" class="rounded-circle"
-        style="width:72px;height:72px;object-fit:cover;">
-      {{else}}
-      <div class="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center"
-        style="width:72px;height:72px;">
-        {{customer.first_name.[0]}}
-      </div>
-      {{/if}}
-    </div>
+<!-- Enhanced viewCustomer Handlebars template (single-file)
+     - Improvements: clearer header, consistent variable names, inline movie modal preview,
+       improved metrics, responsive/accessible layout, sticky aside, tooltip + relative due date,
+       optimistic 'Mark Returned' with non-blocking toast, and small visual polish.
+     - Drop this into your existing Express/Handlebars setup as a replacement for viewCustomer.hbs
+-->
 
-    <div class="flex-grow-1">
-      <h1 class="h4 mb-1">{{customer.first_name}} {{customer.last_name}}</h1>
-      <div class="text-light small">
-        {{#if customer.email}}<div>Email: <a href="mailto:{{customer.email}}">{{customer.email}}</a></div>{{/if}}
-        {{#if customer.phone}}<div>Phone: <a href="tel:{{customer.phone}}">{{customer.phone}}</a></div>{{/if}}
-        {{#if customer.address}}<div>Address: {{customer.address}}</div>{{/if}}
+<div class="profile-wrapper container">
+  <!-- Header / Identity -->
+  <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3 header-row">
+    <div class="d-flex align-items-center gap-3">
+      <div class="avatar-placeholder rounded-circle flex-shrink-0" aria-hidden="true">
+        {{#if user.avatar}}
+        <img src="{{user.avatar}}" alt="{{customer.first_name}} avatar" class="rounded-circle avatar-img">
+        {{else}}
+        <div class="initial rounded-circle" aria-hidden="true">{{customer.first_name.[0]}}</div>
+        {{/if}}
       </div>
-    </div>
-
-    <div class="text-end">
       <div>
-        {{!-- Status badge --}}
-        {{#if (eq customer.status "active")}}
-        <span class="badge bg-success">Active</span>
-        {{else if (eq customer.status "inactive")}}
-        <span class="badge bg-secondary">Inactive</span>
-        {{else if (eq customer.status "banned")}}
-        <span class="badge bg-danger">Banned</span>
-        {{else}}
-        <span class="badge bg-light text-dark">{{customer.status}}</span>
-        {{/if}}
+        <h3 class="mb-1 text-white name">{{customer.first_name}} {{customer.last_name}}</h3>
+        <div class="text-light small meta">
+          {{#if customer.email}}<div>Email: <a href="mailto:{{customer.email}}">{{customer.email}}</a></div>{{/if}}
+          {{#if customer.phone}}<div>Phone: <a href="tel:{{customer.phone}}">{{customer.phone}}</a></div>{{/if}}
+          {{#if customer.address}}<div>Address: {{customer.address}}</div>{{/if}}
+        </div>
       </div>
     </div>
-  </header>
 
-  <!-- Key Metrics / Badges -->
-  <section class="mb-4">
-    <div class="row g-2">
-      <div class="col-auto">
-        <div class="card p-2 text-center">
-          <div class="h6 mb-0">Active Rentals</div>
-          <div class="fs-4 fw-bold">{{metrics.activeRentalsCount}}</div>
+    <div class="ms-auto text-end status-wrap">
+      <span class="badge status-badge">{{customer.status}}</span>
+      <div class="small mt-2 text-light">Customer ID: <strong>{{customer.customer_id}}</strong></div>
+    </div>
+  </div>
+
+  <div class="content-card p-4">
+    <!-- Metrics + Actions -->
+    <div class="d-flex flex-wrap gap-3 align-items-start mb-4">
+      <div class="flex-grow-1 metrics d-flex flex-wrap gap-3 align-items-center">
+        <div class="metric card text-center p-2">
+          <div class="label">Active Rentals</div>
+          <div class="value">{{metrics.activeRentalsCount}}</div>
+        </div>
+        <div class="metric card text-center p-2 {{#if (gt metrics.overdueRentalsCount 0)}}metric-overdue{{/if}}">
+          <div class="label">Overdue</div>
+          <div class="value">{{metrics.overdueRentalsCount}}</div>
+        </div>
+        <div class="metric card text-center p-2">
+          <div class="label">Total Rentals</div>
+          <div class="value">{{metrics.totalRentals}}</div>
         </div>
       </div>
 
-      {{#if (gt metrics.overdueRentalsCount 0)}}
-      <div class="col-auto">
-        <div class="card p-2 text-center bg-danger text-white">
-          <div class="h6 mb-0">Overdue</div>
-          <div class="fs-4 fw-bold">
-            {{metrics.overdueRentalsCount}}
+      <div class="ms-auto d-flex flex-column gap-2 action-stack">
+        {{#if (eq user.role "STAFF")}}
+        <a href="/staff/crm/{{customer.customer_id}}/rent" class="btn btn-primary">Create Rental</a>
+        <a href="/staff/crm/{{customer.customer_id}}/edit" class="btn btn-warning">Edit Contact</a>
+        {{else}}
+        <a href="/customer/edit" class="btn btn-warning">Edit Profile</a>
+        {{/if}}
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Main column -->
+      <div class="col-lg-8">
+
+        <!-- Active Rentals -->
+        <section class="mb-4">
+          <h5 class="mb-3 text-white">Active Rentals</h5>
+
+          {{#if activeRentals.length}}
+          <div class="table-responsive data-table">
+            <table class="table table-sm table-hover align-middle">
+              <thead>
+                <tr>
+                  <th>Rental #</th>
+                  <th>Title</th>
+                  <th>Start</th>
+                  <th>End</th>
+                  <th>Status</th>
+                  <th class="text-end action-cell">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each activeRentals}}
+                <tr class="rental-row {{#if this.isHighlighted}}table-info{{/if}}" data-rental-id="{{this.rental_id}}">
+                  <td class="mono">{{this.rental_id}}</td>
+
+                  <td>
+                    <div class="fw-semibold">{{this.title}}</div>
+                    <div class="small text-gray"
+                      style="max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                      {{this.description}}</div>
+                  </td>
+
+                  <td class="small">{{formatDate this.rental_date}}</td>
+
+                  <!-- End / due with relative helper -->
+                  <td class="small">
+                    <span class="due" data-due-date="{{this.due_date}}">{{formatDate this.due_date}}</span>
+                    {{#if this.isOverdue}} <span class="ms-1 badge bg-danger">Overdue</span>{{/if}}
+                  </td>
+
+                  <td>
+                    {{#if this.isReturned}}<span class="badge bg-secondary">Returned</span>
+                    {{else if this.isOverdue}}<span class="badge bg-danger">Overdue</span>
+                    {{else}}<span class="badge bg-success">Active</span>{{/if}}
+                  </td>
+
+                  <td class="text-end">
+                    <div class="d-flex justify-content-end gap-2">
+                      {{#if (eq user.role 'STAFF')}}
+                      <button data-action="mark-returned" data-id="{{this.rental_id}}"
+                        class="btn btn-sm btn-outline-primary">Mark Returned</button>
+                      {{/if}}
+
+                      <!-- View opens modal with inline movie details -->
+                      <button class="btn btn-sm btn-outline-light view-movie" data-title="{{this.title}}"
+                        data-description="{{this.description}}" data-release-year="{{this.release_year}}"
+                        data-length="{{this.length}}" data-rating="{{this.rating}}" data-poster-url="{{this.posterUrl}}"
+                        aria-label="View {{this.title}} details" disabled
+                        style="opacity:0.5; cursor:not-allowed;">View</button>
+                    </div>
+                  </td>
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
           </div>
-        </div>
-      </div>
-      {{else}}
-      <div class="col-auto">
-        <div class="card p-2 text-center">
-          <div class="h6 mb-0">Overdue</div>
-          <div class="fs-4 fw-bold">
-            {{metrics.overdueRentalsCount}}
+          {{else}}
+          <div class="alert alert-light">No active rentals.</div>
+          {{/if}}
+        </section>
+
+        <!-- Upcoming Rentals -->
+        <section class="mb-4">
+          <h5 class="mb-3 text-white">Upcoming Rentals</h5>
+          {{#if futureRentals.length}}
+          <div class="table-responsive data-table">
+            <table class="table table-sm align-middle">
+              <thead>
+                <tr>
+                  <th>Rental #</th>
+                  <th>Item</th>
+                  <th>Start</th>
+                  <th>End</th>
+                  <th>Status</th>
+                  <th class="text-end action-cell">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each futureRentals}}
+                <tr>
+                  <td>{{this.rental_id}}</td>
+                  <td>{{this.title}}</td>
+                  <td>{{formatDate this.startDate}}</td>
+                  <td>{{formatDate this.endDate}}</td>
+                  <td><span class="badge bg-primary">Scheduled</span></td>
+                  <td class="text-end action-cell">
+                    <a href="/rentals/{{this.rental_id}}" class="btn btn-sm btn-outline-light">View</a>
+                  </td>
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
           </div>
-        </div>
-      </div>
-      {{/if}}
-
-      <div class="col-auto">
-        <div class="card p-2 text-center">
-          <div class="h6 mb-0">Total Rentals</div>
-          <div class="fs-4 fw-bold">{{metrics.totalRentals}}</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="row">
-    <!-- Rentals Section (Main column) -->
-    <div class="col-lg-8">
-      <!-- Active Rentals (always shown at top) -->
-      <section class="mb-4">
-        <h2 class="h6">Active Rentals</h2>
-        {{#if activeRentals.length}}
-        <table class="table table-sm table-hover">
-          <thead>
-            <tr>
-              <th>Rental #</th>
-              <th>Item</th>
-              <th>Start</th>
-              <th>End</th>
-              <th>Status</th>
-              <th class="text-end">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{#each activeRentals}}
-            <tr class="{{#if this.isHighlighted}}table-info{{else}}{{/if}}">
-              <td>
-                {{#if this.rentalId}}{{this.rentalId}}{{else}}{{this.rental_id}}{{/if}}
-              </td>
-              <td>
-                {{#if this.itemName}}{{this.itemName}}{{else}}{{this.title}}{{/if}}
-              </td>
-              <td>
-                {{#if this.startDate}}{{formatDate this.startDate}}{{else}}{{formatDate this.rental_date}}{{/if}}
-              </td>
-              <td class="{{#if this.isOverdue}}text-danger{{else}}{{#if this.is_overdue}}text-danger{{/if}}{{/if}}">
-                {{#if this.endDate}}{{formatDate this.endDate}}{{else}}{{formatDate this.due_date}}{{/if}}
-              </td>
-              <td>
-                {{#if this.isReturned}}
-                <span class="badge bg-secondary">Returned</span>
-                {{else if this.is_returned}}
-                <span class="badge bg-secondary">Returned</span>
-                {{else if this.isOverdue}}
-                <span class="badge bg-danger">Overdue</span>
-                {{else if this.is_overdue}}
-                <span class="badge bg-danger">Overdue</span>
-                {{else if this.rental_status}}
-                <span class="badge bg-info text-dark">{{this.rental_status}}</span>
-                {{else}}
-                <span class="badge bg-success">Active</span>
-                {{/if}}
-              </td>
-              <td class="text-end">
-                {{#if (eq user.role 'STAFF')}}
-                <a href="/staff/rentals/{{this.rental_id}}/return" class="btn btn-sm btn-outline-primary">Mark
-                  returned</a>
-                {{/if}}
-              </td>
-            </tr>
-            {{/each}}
-          </tbody>
-        </table>
-        {{else}}
-        <div class="alert alert-light">No active rentals.</div>
-        {{/if}}
-      </section>
-
-      <!-- Future Rentals -->
-      <section class="mb-4">
-        <h2 class="h6">Upcoming Rentals</h2>
-        {{#if futureRentals.length}}
-        <table class="table table-sm">
-          <thead>
-            <tr>
-              <th>Rental #</th>
-              <th>Item</th>
-              <th>Start</th>
-              <th>End</th>
-              <th>Status</th>
-              <th class="text-end">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{#each futureRentals}}
-            <tr class="{{#if this.isHighlighted}}table-info{{/if}}">
-              <td>{{this.rental_id}}</td>
-              <td>{{this.title}}</td>
-              <td>
-                {{#if this.startDate}}
-                {{formatDate this.startDate}}
-                {{else}}
-                {{formatDate this.rental_date}}
-                {{/if}}
-              </td>
-              <td class="{{#if this.isOverdue}}text-danger{{else}}{{#if this.is_overdue}}text-danger{{/if}}{{/if}}">
-                {{#if this.endDate}}
-                {{formatDate this.endDate}}
-                {{else}}
-                {{formatDate this.due_date}}
-                {{/if}}
-              </td>
-              <td>
-                {{#if this.isReturned}}
-                <span class="badge bg-secondary">Returned</span>
-                {{else if this.is_returned}}
-                <span class="badge bg-secondary">Returned</span>
-                {{else if this.isOverdue}}
-                <span class="badge bg-danger">Overdue</span>
-                {{else if this.is_overdue}}
-                <span class="badge bg-danger">Overdue</span>
-                {{else if this.rental_status}}
-                <span class="badge bg-info text-dark">{{this.rental_status}}</span>
-                {{else}}
-                <span class="badge bg-primary">Scheduled</span>
-                {{/if}}
-              </td>
-              <td class="text-end">
-                {{!-- ACTIONS --}}
-              </td>
-            </tr>
-            {{/each}}
-          </tbody>
-        </table>
-        {{else}}
-        <div class="text-light small">No upcoming rentals.</div>
-        {{/if}}
-      </section>
-
-      <!-- Past Rentals (collapsible) -->
-      <section class="mb-4">
-        <details>
-          <summary class="mb-2"><strong>Past Rentals</strong> ({{pastRentals.length}})</summary>
-          {{#if pastRentals.length}}
-          <table class="table table-sm">
-            <thead>
-              <tr>
-                <th>Rental #</th>
-                <th>Item</th>
-                <th>Start</th>
-                <th>Return</th>
-                <th>Due</th>
-                <th>Status</th>
-                <th>Staff</th>
-                <th class="text-end">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {{#each pastRentals}}
-              <tr class="{{#if this.isHighlighted}}table-info{{/if}}">
-                <td>
-                  {{#if this.rentalId}}{{this.rentalId}}{{else}}{{this.rental_id}}{{/if}}
-                </td>
-                <td>{{#if this.itemName}}{{this.itemName}}{{else}}{{this.title}}{{/if}}</td>
-                <td>
-                  {{#if this.startDate}}{{formatDate this.startDate}}{{else}}{{formatDate this.rental_date}}{{/if}}
-                </td>
-                <td class="{{#if this.isOverdue}}text-danger{{else}}{{#if this.is_overdue}}text-danger{{/if}}{{/if}}">
-                  {{#if this.endDate}}{{formatDate this.endDate}}
-                  {{else if this.return_date}}{{formatDate this.return_date}}
-                  {{else}}{{/if}}
-                </td>
-                <td>{{#if this.dueDate}}{{formatDate this.dueDate}}{{else}}{{formatDate this.due_date}}{{/if}}</td>
-                <td>
-                  {{#if this.isReturned}}
-                  <span class="badge bg-secondary">Returned</span>
-                  {{else if this.is_returned}}
-                  <span class="badge bg-secondary">Returned</span>
-                  {{else if this.isOverdue}}
-                  <span class="badge bg-danger">Overdue</span>
-                  {{else if this.is_overdue}}
-                  <span class="badge bg-danger">Overdue</span>
-                  {{else if this.rental_status}}
-                  <span class="badge bg-info text-dark">{{this.rental_status}}</span>
-                  {{else}}
-                  <span class="badge bg-light text-dark">Past</span>
-                  {{/if}}
-                </td>
-                <td>
-                  {{#if this.staff_first_name}}{{this.staff_first_name}} {{this.staff_last_name}}{{/if}}
-                </td>
-                <td class="text-end">
-                  {{!-- ACTIONS --}}
-                </td>
-              </tr>
-              {{/each}}
-            </tbody>
-          </table>
           {{else}}
-          <div class="text-light small">No past rentals.</div>
+          <div class="text-light small">No upcoming rentals.</div>
           {{/if}}
-        </details>
-      </section>
-    </div>
+        </section>
 
-    <!-- Actions / Side Column -->
-    <aside class="col-lg-4">
-      <div class="card mb-3 p-3">
-        <h3 class="h6 mb-3">Actions</h3>
-
-        <div class="d-grid gap-2 mb-2">
-          {{#if (eq user.role "STAFF")}}
-          <a href="/staff/crm/{{customer.customer_id}}/rent" class="btn btn-primary">Create New Rental</a>
-          {{/if}}
-
-          {{#if (eq user.role "STAFF")}}
-          <a href="/staff/crm/{{customer.customer_id}}/edit" class="btn btn-warning">Edit Contact Details</a>
-          {{else}}
-          <a href="/customer/edit" class="btn btn-warning">Edit Contact Details</a>
-          {{/if}}
-
-          {{#if (eq user.role "STAFF")}}
-          <div class="position-relative">
-            <a href="/staff/crm/{{customer.customer_id}}/invoices" class="btn btn-outline-secondary d-block"
-              style="pointer-events:none; opacity:0.6;" aria-disabled="true" tabindex="-1">
-              View Payment History / Invoices
-            </a>
-
-            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-              role="status" aria-label="Coming soon overlay" style="pointer-events:auto;
-                        background: repeating-linear-gradient(135deg,
-                          rgba(128,128,128,0.16) 0 10px,
-                          rgba(255,255,255,0.02) 10px 20px);
-                        -webkit-mask: linear-gradient(#000, #000);
-                        color:#444;">
-              <span class="fw-bold bg-white bg-opacity-75 py-1 px-2 rounded" style="color:#333;">
-                Coming Soon
-              </span>
+        <!-- Past Rentals -->
+        <section>
+          <details>
+            <summary class="mb-2"><strong>Past Rentals</strong> ({{pastRentals.length}})</summary>
+            {{#if pastRentals.length}}
+            <div class="table-responsive data-table mt-2">
+              <table class="table table-sm align-middle">
+                <thead>
+                  <tr>
+                    <th>Rental #</th>
+                    <th>Item</th>
+                    <th>Start</th>
+                    <th>Return</th>
+                    <th>Due</th>
+                    <th>Status</th>
+                    <th>Staff</th>
+                    <th class="text-end action-cell">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {{#each pastRentals}}
+                  <tr>
+                    <td>{{this.rental_id}}</td>
+                    <td>{{this.title}}</td>
+                    <td>{{formatDate this.startDate}}</td>
+                    <td>{{formatDate this.return_date}}</td>
+                    <td>{{formatDate this.due_date}}</td>
+                    <td><span class="badge bg-secondary">Returned</span></td>
+                    <td>{{this.staff_first_name}} {{this.staff_last_name}}</td>
+                    <td class="text-end action-cell">
+                      <a href="/rentals/{{this.rental_id}}" class="btn btn-sm btn-outline-light">View</a>
+                    </td>
+                  </tr>
+                  {{/each}}
+                </tbody>
+              </table>
             </div>
-          </div>
-          {{/if}}
-        </div>
+            {{else}}
+            <div class="text-light small">No past rentals.</div>
+            {{/if}}
+          </details>
+        </section>
       </div>
-    </aside>
+
+      <!-- Aside (staff-only) -->
+      {{#if (eq user.role "STAFF")}}
+      <aside class="col-lg-4 mt-4 mt-lg-0">
+        <div class="card p-3 aside-card">
+          <h6 class="mb-3 text-white">Quick Actions</h6>
+          <div class="d-grid gap-2 mb-3">
+            <a href="/staff/crm/{{customer.customer_id}}/invoices"
+              class="btn btn-outline-secondary {{#unless metrics.totalRentals}}disabled{{/unless}}">View Payment
+              History</a>
+            <a href="/customers" class="btn btn-outline-light">Back to Customers</a>
+          </div>
+          <div class="small text-light">
+            <div>Last Activity: <strong>{{formatDate customer.last_activity}}</strong></div>
+            <div>Account created: <strong>{{formatDate customer.created_at}}</strong></div>
+          </div>
+        </div>
+      </aside>
+      {{/if}}
+    </div>
   </div>
 </div>
+
+<!-- Movie details modal (accessible, lightweight) -->
+<div id="movieModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="movieModalTitle" hidden>
+  <div class="modal-card">
+    <button class="modal-close" aria-label="Close">×</button>
+    <div class="modal-body d-flex gap-3">
+      <div class="modal-poster">
+        <img id="modalPoster" src="" alt="Poster" onerror="this.style.display='none'">
+        <div id="modalPosterFallback" class="poster-fallback modal-fallback" hidden></div>
+      </div>
+      <div>
+        <h4 id="movieModalTitle" class="mb-1"></h4>
+        <div id="movieMeta" class="small text-muted mb-2"></div>
+        <p id="movieDescription" class="mb-0"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification (non-blocking) -->
+<div id="toast" class="toast" aria-hidden="true"></div>
+
+<style>
+  /* Layout */
+  .profile-wrapper {
+    max-width: 1200px;
+    padding-top: 2rem;
+    margin: 1.5rem auto;
+  }
+
+  .content-card {
+    background: linear-gradient(180deg, rgba(20, 20, 20, 0.9), rgba(28, 28, 28, 0.9));
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, .45);
+    padding: 1.5rem;
+  }
+
+  /* Header */
+  .avatar-img,
+  .avatar-placeholder .initial {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+  }
+
+  .initial {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+  }
+
+  .status-badge {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+    padding: .35rem .6rem;
+    border-radius: 999px;
+  }
+
+  /* Metrics */
+  .metrics {
+    gap: 1rem;
+  }
+
+  .metric {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: .6rem .75rem;
+    min-width: 120px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .25);
+  }
+
+  .metric .label {
+    font-size: .85rem;
+    color: #cfcfcf;
+    margin-bottom: .2rem;
+  }
+
+  .metric .value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .metric-overdue {
+    border: 1px solid rgba(220, 53, 69, .15);
+  }
+
+  /* Table */
+  .table thead th {
+    color: #cfcfcf;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  }
+
+  .table tbody tr td {
+    color: #ddd;
+    background-color: #151515;
+    vertical-align: middle;
+  }
+
+  .table tbody tr:hover,
+  tbody tr:focus-within {
+    background: rgba(255, 255, 255, 0.01);
+  }
+
+  .mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  }
+
+  /* Poster */
+  .poster-thumb {
+    width: 64px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .45);
+  }
+
+  .poster-fallback {
+    width: 64px;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.03);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  /* Aside */
+  .aside-card {
+    position: sticky;
+    top: 1.6rem;
+    background: rgba(18, 18, 18, 0.9);
+    border-radius: 8px;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1050;
+  }
+
+  .modal-card {
+    background: #0f0f10;
+    color: #f7f7f7;
+    border-radius: 10px;
+    padding: 1rem;
+    width: min(940px, 96%);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, .6);
+  }
+
+  .modal-close {
+    background: transparent;
+    border: 0;
+    color: #fff;
+    font-size: 1.6rem;
+    position: absolute;
+    right: 1.25rem;
+    top: 1rem;
+    cursor: pointer;
+  }
+
+  .modal-body {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .modal-poster img {
+    width: 160px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+
+  .modal-fallback {
+    width: 160px;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    font-weight: 700;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    min-width: 220px;
+    padding: .6rem .8rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    display: none;
+    z-index: 2000;
+  }
+
+  .toast.show {
+    display: block;
+    animation: slideUp .28s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(8px);
+      opacity: 0
+    }
+
+    to {
+      transform: translateY(0);
+      opacity: 1
+    }
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 991px) {
+    .modal-body {
+      flex-direction: column;
+    }
+
+    .modal-poster img,
+    .modal-fallback {
+      width: 100%;
+      height: auto;
+    }
+
+    .poster-thumb {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    const toastEl = document.getElementById('toast');
+    function showToast(msg, timeout = 2500) {
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      toastEl.setAttribute('aria-hidden', 'false');
+      setTimeout(() => { toastEl.classList.remove('show'); toastEl.setAttribute('aria-hidden', 'true'); }, timeout);
+    }
+
+    // Relative due-date render
+    document.querySelectorAll('.due').forEach(el => {
+      const iso = el.dataset.dueDate;
+      if (!iso) return;
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return;
+      const now = new Date();
+      const diff = Math.ceil((d - now) / (1000 * 60 * 60 * 24));
+      let label = el.textContent;
+      if (diff === 0) label += ' • due today';
+      else if (diff > 0 && diff <= 3) label += ` • due in ${diff} day${diff > 1 ? 's' : ''}`;
+      else if (diff < 0) label += ` • ${Math.abs(diff)} day${Math.abs(diff) > 1 ? 's' : ''} overdue`;
+      el.textContent = label;
+    });
+
+    // Movie modal
+    const modal = document.getElementById('movieModal');
+    const modalTitle = document.getElementById('movieModalTitle');
+    const movieMeta = document.getElementById('movieMeta');
+    const movieDesc = document.getElementById('movieDescription');
+    const modalPoster = document.getElementById('modalPoster');
+    const modalPosterFallback = document.getElementById('modalPosterFallback');
+
+    function openModal(data) {
+      modalTitle.textContent = data.title || 'Untitled';
+      movieMeta.textContent = [data.releaseYear ? `Year ${data.releaseYear}` : '', data.length ? `${data.length} min` : '', data.rating ? data.rating : ''].filter(Boolean).join(' • ');
+      movieDesc.textContent = data.description || '';
+      if (data.posterUrl) { modalPoster.src = data.posterUrl; modalPoster.hidden = false; modalPosterFallback.hidden = true; }
+      else { modalPoster.src = ''; modalPoster.hidden = true; modalPosterFallback.textContent = (data.title || '').slice(0, 2).toUpperCase(); modalPosterFallback.hidden = false; }
+      modal.hidden = false;
+      modal.querySelector('.modal-close').focus();
+    }
+
+    function closeModal() { modal.hidden = true; }
+
+    document.addEventListener('click', (ev) => {
+      const btn = ev.target.closest('.view-movie');
+      if (btn) {
+        const dataset = {
+          title: btn.getAttribute('data-title'),
+          description: btn.getAttribute('data-description'),
+          releaseYear: btn.getAttribute('data-release-year'),
+          length: btn.getAttribute('data-length'),
+          rating: btn.getAttribute('data-rating'),
+          posterUrl: btn.getAttribute('data-poster-url')
+        };
+        openModal(dataset);
+      }
+
+      if (ev.target.closest('.modal-close') || (ev.target === modal)) closeModal();
+    });
+
+    // keyboard accessibility for modal
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) closeModal(); });
+
+    // Mark returned optimistic flow
+    document.addEventListener('click', async (ev) => {
+      const btn = ev.target.closest('button[data-action="mark-returned"]');
+      if (!btn) return;
+      ev.preventDefault();
+      const rentalId = btn.getAttribute('data-id');
+      if (!rentalId) return;
+
+      // confirmation
+      if (!confirm('Mark rental ' + rentalId + ' as returned?')) return;
+
+      btn.disabled = true;
+      const original = btn.innerHTML;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Marking...';
+
+      try {
+        const res = await fetch(`/staff/rentals/${encodeURIComponent(rentalId)}/return`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin'
+        });
+
+        if (res.ok) {
+          // update UI: status cell + remove button
+          const row = btn.closest('tr');
+          const statusCell = row?.querySelector('td:nth-child(6)');
+          if (statusCell) statusCell.innerHTML = '<span class="badge bg-secondary">Returned</span>';
+          btn.remove();
+          showToast('Marked returned: ' + rentalId);
+          // update metrics if present (best-effort)
+          const activeEl = document.querySelector('.metric .value');
+        } else {
+          const text = await res.text().catch(() => 'Failed to mark returned');
+          showToast(text, 3500);
+          btn.disabled = false; btn.innerHTML = original;
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Network error. Try again.');
+        btn.disabled = false; btn.innerHTML = original;
+      }
+    });
+
+    // Close modal on outside click
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+    // small progressive enhancement: log metrics for debugging
+    try { console.log('Customer Metrics:', {{ json metrics }});
+  } catch (e) { }
+  }) ();
+</script>

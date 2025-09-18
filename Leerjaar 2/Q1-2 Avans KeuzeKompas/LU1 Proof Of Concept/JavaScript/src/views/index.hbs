@@ -1,70 +1,81 @@
+<!-- Root / Home — polished, dark-card carousel sections -->
 <div class="container mt-4">
-    <h3>Popular Movies</h3>
-    <div id="popularCarousel" class="carousel slide position-relative" data-bs-interval="false">
-        <div class="carousel-inner" id="popularInner"></div>
-        <!-- Controls -->
-        <button class="carousel-control-prev btn-control" type="button" data-bs-target="#popularCarousel"
-            data-bs-slide="prev" aria-label="Previous">
-            <span class="visually-hidden">Previous</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="color:#6c757d;">
-                <use xlink:href="/images/sprite.svg#icon-arrow-left"></use>
-            </svg>
-        </button>
-        <button class="carousel-control-next btn-control" type="button" data-bs-target="#popularCarousel"
-            data-bs-slide="next" aria-label="Next">
-            <span class="visually-hidden">Next</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="color:#6c757d;">
-                <use xlink:href="/images/sprite.svg#icon-arrow-right"></use>
-            </svg>
-        </button>
+    <div class="content-card p-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="mb-0">Popular Movies</h3>
+            <a href="/movies" class="btn btn-sm btn-outline-light">View all</a>
+        </div>
+
+        <div id="popularCarousel" class="carousel slide position-relative" data-bs-interval="false" role="region"
+            aria-label="Popular movies">
+            <div class="carousel-inner" id="popularInner" aria-live="polite"></div>
+
+            <!-- Controls -->
+            <button class="carousel-control-prev btn-control" type="button" data-bs-target="#popularCarousel"
+                data-bs-slide="prev" aria-label="Previous popular movies">
+                <span class="visually-hidden">Previous</span>
+                <i class="bi bi-chevron-left" aria-hidden="true"></i>
+            </button>
+            <button class="carousel-control-next btn-control" type="button" data-bs-target="#popularCarousel"
+                data-bs-slide="next" aria-label="Next popular movies">
+                <span class="visually-hidden">Next</span>
+                <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            </button>
+        </div>
     </div>
 </div>
 
 <div class="container mt-4">
-    <h3>Longest Movies</h3>
-    <div id="longestCarousel" class="carousel slide position-relative" data-bs-interval="false">
-        <div class="carousel-inner" id="longestInner"></div>
-        <!-- Controls -->
-        <button class="carousel-control-prev btn-control" type="button" data-bs-target="#longestCarousel"
-            data-bs-slide="prev" aria-label="Previous">
-            <span class="visually-hidden">Previous</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="color:#6c757d;">
-                <use xlink:href="/images/sprite.svg#icon-arrow-left"></use>
-            </svg>
-        </button>
-        <button class="carousel-control-next btn-control" type="button" data-bs-target="#longestCarousel"
-            data-bs-slide="next" aria-label="Next">
-            <span class="visually-hidden">Next</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="color:#6c757d;">
-                <use xlink:href="/images/sprite.svg#icon-arrow-right"></use>
-            </svg>
-        </button>
+    <div class="content-card p-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="mb-0">Longest Movies</h3>
+            <a href="/movies" class="btn btn-sm btn-outline-light">View all</a>
+        </div>
+
+        <div id="longestCarousel" class="carousel slide position-relative" data-bs-interval="false" role="region"
+            aria-label="Longest movies">
+            <div class="carousel-inner" id="longestInner" aria-live="polite"></div>
+
+            <button class="carousel-control-prev btn-control" type="button" data-bs-target="#longestCarousel"
+                data-bs-slide="prev" aria-label="Previous longest movies">
+                <span class="visually-hidden">Previous</span>
+                <i class="bi bi-chevron-left" aria-hidden="true"></i>
+            </button>
+            <button class="carousel-control-next btn-control" type="button" data-bs-target="#longestCarousel"
+                data-bs-slide="next" aria-label="Next longest movies">
+                <span class="visually-hidden">Next</span>
+                <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            </button>
+        </div>
     </div>
 </div>
 
-<div class="container mt-4">
-    <h3>Cheapest Movies</h3>
-    <div id="cheapestCarousel" class="carousel slide position-relative" data-bs-interval="false">
-        <div class="carousel-inner" id="cheapestInner"></div>
-        <!-- Controls -->
-        <button class="carousel-control-prev btn-control" type="button" data-bs-target="#cheapestCarousel"
-            data-bs-slide="prev" aria-label="Previous">
-            <span class="visually-hidden">Previous</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="color:#6c757d;">
-                <use xlink:href="/images/sprite.svg#icon-arrow-left"></use>
-            </svg>
-        </button>
-        <button class="carousel-control-next btn-control" type="button" data-bs-target="#cheapestCarousel"
-            data-bs-slide="next" aria-label="Next">
-            <span class="visually-hidden">Next</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="color:#6c757d;">
-                <use xlink:href="/images/sprite.svg#icon-arrow-right"></use>
-            </svg>
-        </button>
+<div class="container mt-4 mb-5">
+    <div class="content-card p-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="mb-0">Cheapest Movies</h3>
+            <a href="/movies" class="btn btn-sm btn-outline-light">View all</a>
+        </div>
+
+        <div id="cheapestCarousel" class="carousel slide position-relative" data-bs-interval="false" role="region"
+            aria-label="Cheapest movies">
+            <div class="carousel-inner" id="cheapestInner" aria-live="polite"></div>
+
+            <button class="carousel-control-prev btn-control" type="button" data-bs-target="#cheapestCarousel"
+                data-bs-slide="prev" aria-label="Previous cheapest movies">
+                <span class="visually-hidden">Previous</span>
+                <i class="bi bi-chevron-left" aria-hidden="true"></i>
+            </button>
+            <button class="carousel-control-next btn-control" type="button" data-bs-target="#cheapestCarousel"
+                data-bs-slide="next" aria-label="Next cheapest movies">
+                <span class="visually-hidden">Next</span>
+                <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            </button>
+        </div>
     </div>
 </div>
 
-<!-- JSON Data -->
+<!-- JSON Data (handlebars) -->
 <script id="popularMoviesJson" type="application/json">
   {{{json popularMovies}}}
 </script>
@@ -85,44 +96,59 @@
             return 6;
         }
 
+        function buildCard(m) {
+            const posterHtml = m.coverUrl
+                ? `<div class="poster"><img loading="lazy" src="${m.coverUrl}" class="card-img-top" alt="${escapeHtml(m.title)}"></div>`
+                : `<div class="poster placeholder" aria-hidden="true">
+             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" role="img" aria-hidden="true">
+               <rect width="24" height="24" rx="2" fill="#2a2a2a"></rect>
+               <path d="M5 16L9 11l3 4 4-6 4 7H5z" fill="#6c6c6c"></path>
+             </svg>
+           </div>`;
+
+            // badges (stacked)
+            const badges = [
+                m.category ? `<span class="badge bg-primary small me-1 mb-1">${escapeHtml(m.category)}</span>` : '',
+                (m.rentalRate != null) ? `<span class="badge bg-warning text-dark small me-1 mb-1">€${(typeof m.rentalRate === 'number' ? m.rentalRate.toFixed(2) : escapeHtml(m.rentalRate))}</span>` : '',
+                (m.rentalCount != null) ? `<span class="badge bg-success small me-1 mb-1">Rented ${escapeHtml(String(m.rentalCount))}</span>` : '',
+                (m.length != null) ? `<span class="badge bg-secondary small me-1 mb-1">${escapeHtml(String(m.length))} min</span>` : ''
+            ].join('');
+
+            return `
+        <a href="/movies/${m.filmId}" class="movie-link" aria-label="${escapeHtml(m.title)}" tabindex="0">
+          <div class="card h-100 shadow-sm">
+            ${posterHtml}
+            <div class="card-body p-2">
+              <h6 class="card-title mb-1" title="${escapeHtml(m.title)}">${escapeHtml(m.title)}</h6>
+              <div class="d-flex flex-wrap">${badges}</div>
+            </div>
+          </div>
+        </a>`;
+        }
+
         function buildSlide(items, isActive) {
             const div = document.createElement('div');
             div.className = 'carousel-item' + (isActive ? ' active' : '');
             const row = document.createElement('div');
-            row.className = 'd-flex flex-wrap justify-content-center gap-2 slide-grid';
+            row.className = 'd-flex flex-wrap justify-content-start gap-2 slide-grid';
             items.forEach(m => {
-                const card = document.createElement('div');
-                card.className = 'movie-card';
-                card.innerHTML = `
-        <a href="/movies/${m.filmId}" class="movie-link" aria-label="${m.title}">
-          <div class="card h-100 shadow-sm">
-            ${m.coverUrl ? `
-              <div class="poster">
-                <img src="${m.coverUrl}" class="card-img-top" alt="${m.title}">
-              </div>` : `
-              <div class="poster placeholder" aria-hidden="true">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                  <rect width="24" height="24" rx="2" fill="#e0e0e0"></rect>
-                  <path d="M5 16L9 11l3 4 4-6 4 7H5z" fill="#cfcfcf"></path>
-                </svg>
-              </div>`}
-            <div class="card-body p-2">
-              <h6 class="card-title mb-0" title="${m.title}">${m.title}</h6>
-              ${m.category ? `<span class="badge bg-primary mb-2">${m.category}</span>` : ''}
-              ${m.rentalRate != null ? `<span class="badge bg-warning text-dark mb-2">€${typeof m.rentalRate === 'number' ? m.rentalRate.toFixed(2) : m.rentalRate}</span>` : ''}
-              ${m.rentalCount != null ? `<span class="badge bg-success mb-2">Rented ${m.rentalCount}</span>` : ''}
-              ${m.length != null ? `<span class="badge bg-secondary mb-2">${m.length} min</span>` : ''}
-            </div>
-          </div>
-        </a>`;
-                row.appendChild(card);
+                const cardWrap = document.createElement('div');
+                cardWrap.className = 'movie-card';
+                cardWrap.innerHTML = buildCard(m);
+                row.appendChild(cardWrap);
             });
             div.appendChild(row);
             return div;
         }
 
+        // small HTML-escape helper to avoid accidental injection
+        function escapeHtml(s) {
+            return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
         function initCarousel(jsonId, innerId) {
-            const movies = JSON.parse(document.getElementById(jsonId).textContent || '[]');
+            const el = document.getElementById(jsonId);
+            const movies = el ? JSON.parse(el.textContent || '[]') : [];
             const carouselInner = document.getElementById(innerId);
             let currentPerSlide = null;
 
@@ -132,20 +158,46 @@
                 currentPerSlide = per;
 
                 carouselInner.innerHTML = '';
+                if (!movies.length) {
+                    const empty = document.createElement('div');
+                    empty.className = 'text-center py-4 text-secondary';
+                    empty.textContent = 'No movies to show.';
+                    carouselInner.appendChild(empty);
+                    return;
+                }
+
                 for (let i = 0; i < movies.length; i += per) {
                     const slice = movies.slice(i, i + per);
                     carouselInner.appendChild(buildSlide(slice, i === 0));
                 }
             }
 
+            // reflow on resize (debounced)
             window.addEventListener('resize', () => {
                 clearTimeout(carouselInner._resizeTimer);
                 carouselInner._resizeTimer = setTimeout(rebuild, 120);
             });
 
+            // keyboard support: if carousel has focus, arrow keys navigate
+            const carouselRoot = document.getElementById(innerId).closest('.carousel');
+            if (carouselRoot) {
+                carouselRoot.addEventListener('keydown', (ev) => {
+                    if (ev.key === 'ArrowLeft') {
+                        ev.preventDefault();
+                        carouselRoot.querySelector('.carousel-control-prev')?.click();
+                    } else if (ev.key === 'ArrowRight') {
+                        ev.preventDefault();
+                        carouselRoot.querySelector('.carousel-control-next')?.click();
+                    }
+                });
+                // make carousel root focusable
+                carouselRoot.tabIndex = 0;
+            }
+
             rebuild();
         }
 
+        // init all three carousels
         initCarousel('popularMoviesJson', 'popularInner');
         initCarousel('longestMoviesJson', 'longestInner');
         initCarousel('cheapestMoviesJson', 'cheapestInner');
@@ -153,15 +205,17 @@
 </script>
 
 <style>
+    /* Outer card and wrapper use your existing content-card style */
     .movie-card {
         flex: 1 0 auto;
         max-width: 180px;
     }
 
     .slide-grid {
-        padding-top: 4px;
+        padding-top: 6px;
     }
 
+    /* responsive sizing */
     @media (max-width: 575.98px) {
         .movie-card {
             max-width: 48%;
@@ -196,19 +250,23 @@
         border-radius: 8px;
         overflow: hidden;
         cursor: pointer;
-        transition: transform .15s ease;
+        transition: transform .15s ease, box-shadow .15s ease;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.03);
     }
 
-    .movie-card .card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    .movie-card .card:hover,
+    .movie-card .card:focus-within {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
     }
 
     .poster {
         width: 100%;
         aspect-ratio: 2 / 3;
         overflow: hidden;
-        background: #f2f2f2;
+        background: #1c1c1c;
+        display: block;
     }
 
     .poster img {
@@ -222,6 +280,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 1rem;
     }
 
     .card-title {
@@ -230,35 +289,96 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        color: #fff;
     }
 
     .movie-link {
         text-decoration: none;
         color: inherit;
         display: block;
+        outline: none;
     }
 
-    /* Controls */
+    .movie-link:focus {
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.06);
+        border-radius: 8px;
+    }
+
+    /* control buttons (circular) */
+    /* ===== Carousel controls: keep them outside the cards ===== */
+    /* add horizontal padding to the carousel so slides don't start under the buttons */
+    .carousel {
+        position: relative;
+        padding-left: 72px;
+        /* space for the left control */
+        padding-right: 72px;
+        /* space for the right control */
+    }
+
+    /* make inner slides use full width inside the padded area */
+    .carousel .carousel-inner {
+        /* keep items aligned to the visible area (no change) */
+    }
+
+    /* circular control button styling (use same class names as before) */
     .carousel-control-prev.btn-control,
     .carousel-control-next.btn-control {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        width: 44px;
-        height: 44px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #e9ecef;
-        border: 1px solid rgba(0, 0, 0, 0.08);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-        transition: background .12s ease;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        color: #cfcfcf;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+        transition: transform .12s ease, background .12s ease;
+        z-index: 5;
+        /* above cards */
+        cursor: pointer;
         pointer-events: auto;
+    }
+
+    /* place the buttons inside the padded area so they don't overlap cards */
+    .carousel-control-prev.btn-control {
+        left: 12px;
+    }
+
+    .carousel-control-next.btn-control {
+        right: 12px;
     }
 
     .carousel-control-prev.btn-control:hover,
     .carousel-control-next.btn-control:hover {
-        background: #e0e0e0;
+        transform: translateY(-50%) scale(1.04);
+        background: rgba(255, 255, 255, 0.055);
+    }
+
+    /* smaller screens: reduce padding so content still feels full-width */
+    @media (max-width: 576px) {
+        .carousel {
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+
+        .carousel-control-prev.btn-control,
+        .carousel-control-next.btn-control {
+            width: 38px;
+            height: 38px;
+            left: 6px;
+            right: 6px;
+        }
+    }
+
+    /* optional: if you want the first card to have extra left-gap on very wide screens */
+    @media (min-width: 1400px) {
+        .carousel {
+            padding-left: 88px;
+            padding-right: 88px;
+        }
     }
 </style>

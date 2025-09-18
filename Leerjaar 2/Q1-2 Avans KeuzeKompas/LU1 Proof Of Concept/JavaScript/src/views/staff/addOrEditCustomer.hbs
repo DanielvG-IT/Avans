@@ -1,148 +1,156 @@
-<div class="container mt-4">
-  <h1>{{#if isEdit}}Edit Customer{{else}}Add Customer{{/if}}</h1>
+<style>
+  .login-wrapper {
+    max-width: 800px;
+    margin: 2rem auto;
+  }
 
-  <form method="{{actionMethod}}" action="{{actionUrl}}" data-return-url="{{returnUrl}}" novalidate>
-    {{#if isEdit}}
-    <input type="hidden" name="storeId" value="{{#if storeId}}{{storeId}}{{else}}1{{/if}}">
-    {{/if}}
+  .card-title {
+    margin-bottom: .25rem;
+    font-weight: 600;
+  }
 
-    <div class="mt-3">
-      {{#if successMessage}}
-      <div class="alert alert-success" role="alert">
-        {{successMessage}}
-      </div>
+  .form-text-muted {
+    color: #cfcfcf;
+    font-size: .95rem;
+  }
+
+  .bi.spin {
+    animation: spin 0.9s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (max-width: 576px) {
+    .content-actions {
+      flex-direction: column;
+      gap: .5rem;
+    }
+  }
+</style>
+
+<div class="login-wrapper">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">{{#if isEdit}}Edit Customer{{else}}Add Customer{{/if}}</h1>
+    <a href="{{returnUrl}}" class="btn btn-sm btn-outline-secondary">Cancel</a>
+  </div>
+
+  <div class="content-card p-4">
+    <form id="customerForm" method="{{actionMethod}}" action="{{actionUrl}}" novalidate>
+      {{#if isEdit}}
+      <input type="hidden" name="storeId" value="{{#if storeId}}{{storeId}}{{else}}1{{/if}}">
       {{/if}}
 
-      {{#if errorMessage}}
-      <div class="alert alert-danger" role="alert">
-        {{errorMessage}}
-      </div>
-      {{/if}}
-    </div>
-
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label for="firstName" class="form-label">First name</label>
-        <input id="firstName" name="firstName" type="text"
-          class="form-control {{#if (lookup errors 'firstName')}}is-invalid{{else}}{{#if (lookup errors 'first_name')}}is-invalid{{/if}}{{/if}}"
-          value="{{#if customer.firstName}}{{customer.firstName}}{{else}}{{customer.first_name}}{{/if}}" required>
-        {{#if (lookup errors 'firstName')}}
-        <div class="invalid-feedback">{{lookup errors 'firstName'}}</div>
-        {{else}}{{#if (lookup errors 'first_name')}}
-        <div class="invalid-feedback">{{lookup errors 'first_name'}}</div>
-        {{/if}}{{/if}}
-      </div>
-
-      <div class="col-md-6 mb-3">
-        <label for="lastName" class="form-label">Last name</label>
-        <input id="lastName" name="lastName" type="text"
-          class="form-control {{#if (lookup errors 'lastName')}}is-invalid{{else}}{{#if (lookup errors 'last_name')}}is-invalid{{/if}}{{/if}}"
-          value="{{#if customer.lastName}}{{customer.lastName}}{{else}}{{customer.last_name}}{{/if}}" required>
-        {{#if (lookup errors 'lastName')}}
-        <div class="invalid-feedback">{{lookup errors 'lastName'}}</div>
-        {{else}}{{#if (lookup errors 'last_name')}}
-        <div class="invalid-feedback">{{lookup errors 'last_name'}}</div>
-        {{/if}}{{/if}}
-      </div>
-    </div>
-
-    <div class="mb-3">
-      <label for="email" class="form-label">Email</label>
-      <input id="email" name="email" type="email" class="form-control {{#if (lookup errors 'email')}}is-invalid{{/if}}"
-        value="{{customer.email}}">
-      {{#if (lookup errors 'email')}}
-      <div class="invalid-feedback">{{lookup errors 'email'}}</div>
-      {{/if}}
-    </div>
-
-    <div class="mb-3">
-      <label for="phone" class="form-label">Phone</label>
-      <input id="phone" name="phone" type="tel" class="form-control {{#if (lookup errors 'phone')}}is-invalid{{/if}}"
-        value="{{#if customer.phone}}{{customer.phone}}{{else}}{{customer.phone_number}}{{/if}}">
-      {{#if (lookup errors 'phone')}}
-      <div class="invalid-feedback">{{lookup errors 'phone'}}</div>
-      {{/if}}
-    </div>
-
-    <fieldset class="mb-3">
-      <legend class="col-form-label">Address</legend>
-      <div class="mb-2">
-        <input id="address" name="address" type="text" placeholder="Street"
-          class="form-control {{#if (lookup errors 'address')}}is-invalid{{else}}{{#if (lookup errors 'address.street')}}is-invalid{{/if}}{{/if}}"
-          value="{{#if customer.address}}{{#if customer.address.street}}{{customer.address.street}}{{else}}{{customer.address}}{{/if}}{{else}}{{customer.address}}{{/if}}">
-        {{#if (lookup errors 'address')}}
-        <div class="invalid-feedback">{{lookup errors 'address'}}</div>
-        {{else}}{{#if (lookup errors 'address.street')}}
-        <div class="invalid-feedback">{{lookup errors 'address.street'}}</div>
-        {{/if}}{{/if}}
-      </div>
-
-      <div class="row">
-        <div class="col-md-4 mb-2">
-          <input id="city" name="city" type="text" placeholder="City"
-            class="form-control {{#if (lookup errors 'city')}}is-invalid{{else}}{{#if (lookup errors 'address.city')}}is-invalid{{/if}}{{/if}}"
-            value="{{#if customer.city}}{{customer.city}}{{else}}{{#if customer.address}}{{customer.address.city}}{{/if}}{{/if}}">
-          {{#if (lookup errors 'city')}}
-          <div class="invalid-feedback">{{lookup errors 'city'}}</div>
-          {{else}}{{#if (lookup errors 'address.city')}}
-          <div class="invalid-feedback">{{lookup errors 'address.city'}}</div>
-          {{/if}}{{/if}}
-        </div>
-
-        <div class="col-md-4 mb-2">
-          <input id="province" name="province" type="text" placeholder="Province / State"
-            class="form-control {{#if (lookup errors 'province')}}is-invalid{{/if}}"
-            value="{{#if customer.province}}{{customer.province}}{{else}}{{#if customer.district}}{{customer.district}}{{else}}{{#if customer.address}}{{customer.address.province}}{{/if}}{{/if}}{{/if}}">
-          {{#if (lookup errors 'province')}}
-          <div class="invalid-feedback">{{lookup errors 'province'}}</div>
-          {{/if}}
-        </div>
-
-        <div class="col-md-4 mb-2">
-          <input id="postalCode" name="postalCode" type="text" placeholder="ZIP"
-            class="form-control {{#if (lookup errors 'postalCode')}}is-invalid{{else}}{{#if (lookup errors 'postal_code')}}is-invalid{{/if}}{{/if}}"
-            value="{{#if customer.postalCode}}{{customer.postalCode}}{{else}}{{#if customer.postal_code}}{{customer.postal_code}}{{else}}{{#if customer.address}}{{customer.address.zip}}{{/if}}{{/if}}{{/if}}">
-          {{#if (lookup errors 'postalCode')}}
-          <div class="invalid-feedback">{{lookup errors 'postalCode'}}</div>
-          {{else}}{{#if (lookup errors 'postal_code')}}
-          <div class="invalid-feedback">{{lookup errors 'postal_code'}}</div>
-          {{/if}}{{/if}}
-        </div>
-      </div>
-
-      <div class="mb-2">
-        <input id="country" name="country" type="text" placeholder="Country"
-          class="form-control {{#if (lookup errors 'country')}}is-invalid{{/if}}"
-          value="{{#if customer.country}}{{customer.country}}{{else}}{{#if customer.address}}{{customer.address.country}}{{/if}}{{/if}}">
-        {{#if (lookup errors 'country')}}
-        <div class="invalid-feedback">{{lookup errors 'country'}}</div>
+      <!-- Alerts -->
+      <div class="mb-3">
+        {{#if successMessage}}
+        <div class="alert alert-success" role="alert">{{successMessage}}</div>
+        {{/if}}
+        {{#if errorMessage}}
+        <div class="alert alert-danger" role="alert">{{errorMessage}}</div>
         {{/if}}
       </div>
-    </fieldset>
 
-    <div class="mb-3 form-check">
-      <input id="active" name="active" type="checkbox" class="form-check-input" value="1" {{#if
-        customer.active}}checked{{/if}}>
-      <label class="form-check-label" for="active">Active</label>
-    </div>
+      <div class="row g-3">
+        <!-- Name Fields -->
+        <div class="col-md-6">
+          <label for="firstName" class="form-label">First Name</label>
+          <input id="firstName" name="firstName" type="text" class="form-control form-control-lg"
+            value="{{#if customer.firstName}}{{customer.firstName}}{{else}}{{customer.first_name}}{{/if}}" required>
+        </div>
 
-    <div class="mb-2">
-      <label for="storeOption">Store</label>
-      <select id="storeOption" name="storeId" class="form-select {{#if (lookup errors 'storeId')}}is-invalid{{/if}}">
-        {{#each stores}}
-        <option value="{{this.store_id}}" {{#if (eq this.store_id ../customer.storeId)}}selected{{else}}{{#if (eq
-          this.store_id ../storeId)}}selected{{/if}}{{/if}}>{{this.name}}</option>
-        {{/each}}
-      </select>
-      {{#if (lookup errors 'storeId')}}
-      <div class="invalid-feedback">{{lookup errors 'storeId'}}</div>
-      {{/if}}
-    </div>
+        <div class="col-md-6">
+          <label for="lastName" class="form-label">Last Name</label>
+          <input id="lastName" name="lastName" type="text" class="form-control form-control-lg"
+            value="{{#if customer.lastName}}{{customer.lastName}}{{else}}{{customer.last_name}}{{/if}}" required>
+        </div>
 
-    <div class="d-flex gap-2">
-      <button id="submitBtn" type="submit" class="btn btn-primary">{{#if isEdit}}Save changes{{else}}Create
-        customer{{/if}}</button>
-      <a href="{{returnUrl}}" class="btn btn-secondary">Cancel</a>
-    </div>
-  </form>
+        <!-- Email & Phone -->
+        <div class="col-md-6">
+          <label for="email" class="form-label">Email</label>
+          <input id="email" name="email" type="email" class="form-control form-control-lg" value="{{customer.email}}">
+        </div>
+
+        <div class="col-md-6">
+          <label for="phone" class="form-label">Phone</label>
+          <input id="phone" name="phone" type="tel" class="form-control form-control-lg"
+            value="{{#if customer.phone}}{{customer.phone}}{{else}}{{customer.phone_number}}{{/if}}">
+        </div>
+
+        <!-- Address -->
+        <div class="col-12">
+          <label class="form-label">Address</label>
+          <input id="address" name="address" type="text" class="form-control form-control-lg" placeholder="Street"
+            value="{{#if customer.address}}{{#if customer.address.street}}{{customer.address.street}}{{else}}{{customer.address}}{{/if}}{{else}}{{customer.address}}{{/if}}">
+        </div>
+
+        <div class="col-md-4">
+          <input id="city" name="city" type="text" class="form-control form-control-lg" placeholder="City"
+            value="{{#if customer.city}}{{customer.city}}{{else}}{{#if customer.address}}{{customer.address.city}}{{/if}}{{/if}}">
+        </div>
+
+        <div class="col-md-4">
+          <input id="province" name="province" type="text" class="form-control form-control-lg"
+            placeholder="Province / State"
+            value="{{#if customer.province}}{{customer.province}}{{else}}{{#if customer.district}}{{customer.district}}{{else}}{{#if customer.address}}{{customer.address.province}}{{/if}}{{/if}}{{/if}}">
+        </div>
+
+        <div class="col-md-4">
+          <input id="postalCode" name="postalCode" type="text" class="form-control form-control-lg" placeholder="ZIP"
+            value="{{#if customer.postalCode}}{{customer.postalCode}}{{else}}{{#if customer.postal_code}}{{customer.postal_code}}{{else}}{{#if customer.address}}{{customer.address.zip}}{{/if}}{{/if}}{{/if}}">
+        </div>
+
+        <div class="col-12">
+          <input id="country" name="country" type="text" class="form-control form-control-lg" placeholder="Country"
+            value="{{#if customer.country}}{{customer.country}}{{else}}{{#if customer.address}}{{customer.address.country}}{{/if}}{{/if}}">
+        </div>
+
+        <!-- Active -->
+        <div class="col-12 form-check">
+          <input id="active" name="active" type="checkbox" class="form-check-input" value="1" {{#if
+            customer.active}}checked{{/if}}>
+          <label class="form-check-label" for="active">Active</label>
+        </div>
+
+        <!-- Store -->
+        <div class="col-12">
+          <label for="storeOption" class="form-label">Store</label>
+          <select id="storeOption" name="storeId" class="form-select form-select-lg">
+            {{#each stores}}
+            <option value="{{this.store_id}}" {{#if (eq this.store_id ../customer.storeId)}}selected{{else}}{{#if (eq
+              this.store_id ../storeId)}}selected{{/if}}{{/if}}>{{this.name}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="d-flex gap-2 mt-3">
+        <button id="submitBtn" type="submit" class="btn btn-primary btn-lg">
+          {{#if isEdit}}Save changes{{else}}Create customer{{/if}}
+        </button>
+        <a href="{{returnUrl}}" class="btn btn-outline-secondary btn-lg">Cancel</a>
+      </div>
+    </form>
+  </div>
 </div>
+
+<script>
+  (() => {
+    const form = document.getElementById('customerForm');
+    if (!form) return;
+
+    form.addEventListener('submit', (e) => {
+      if (!form.checkValidity()) {
+        e.preventDefault();
+        e.stopPropagation();
+        const invalid = form.querySelector(':invalid');
+        if (invalid && typeof invalid.focus === 'function') invalid.focus();
+      }
+      form.classList.add('was-validated');
+    }, false);
+  })();
+</script>

@@ -1,40 +1,87 @@
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card shadow-sm">
-                <div class="card-header text-center bg-primary text-white">
-                    <h4 class="mb-0">User Login</h4>
-                </div>
-                <div class="card-body">
-                    <form onsubmit="clientLogin(event)" novalidate>
-                        <!-- Email -->
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="email" placeholder="janny@example.com"
-                                required>
-                        </div>
+<style>
+    /* small local helpers (kept minimal; global theme provided by layout) */
+    .bi.spin {
+        animation: spin 0.9s linear infinite;
+    }
 
-                        <!-- Password -->
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" placeholder="************"
-                                required>
-                        </div>
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
 
-                        <!-- Messages -->
-                        <div id="errorMessage" class="alert alert-danger d-none" role="alert">
-                            <p class="mb-0"></p>
-                        </div>
-                        <div id="successMessage" class="alert alert-success d-none" role="alert">
-                            <p class="mb-0"></p>
-                        </div>
+    /* tighten spacing inside the layout content-card */
+    .login-wrapper {
+        max-width: 520px;
+        margin: 0 auto;
+    }
 
-                        <!-- Submit -->
-                        <button type="submit" id="loginButton" class="btn btn-primary w-100">Login</button>
-                    </form>
-                </div>
-            </div>
+    .card-title {
+        margin-bottom: .25rem;
+        font-weight: 600;
+    }
+
+    .form-text-muted {
+        color: #cfcfcf;
+        font-size: .95rem;
+    }
+
+    @media (max-width: 576px) {
+        .content-actions {
+            flex-direction: column;
+            gap: .5rem;
+        }
+    }
+</style>
+
+<div class="login-wrapper">
+    <div class="d-flex align-items-start justify-content-between mb-3">
+        <div>
+            <h4 class="card-title">User Login</h4>
+            <p class="form-text-muted mb-0">Sign in to continue to your dashboard</p>
         </div>
+        <div class="ms-2 d-none d-sm-flex align-items-center">
+            <i class="bi bi-person-circle" aria-hidden="true" style="font-size:1.4rem;color:#cfcfcf"></i>
+        </div>
+    </div>
+
+    <form onsubmit="clientLogin(event)" novalidate>
+        <!-- Email -->
+        <div class="mb-3">
+            <label for="email" class="form-label">Email address</label>
+            <input id="email" type="email" class="form-control form-control-lg" placeholder="jane@example.com" required
+                autocomplete="username">
+        </div>
+
+        <!-- Password -->
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input id="password" type="password" class="form-control form-control-lg" placeholder="••••••••" required
+                autocomplete="current-password">
+        </div>
+
+        <!-- Messages -->
+        <div id="errorMessage" class="alert alert-danger d-none" role="alert" aria-live="polite">
+            <p class="mb-0"></p>
+        </div>
+        <div id="successMessage" class="alert alert-success d-none" role="status" aria-live="polite">
+            <p class="mb-0"></p>
+        </div>
+
+        <!-- Submit -->
+        <div class="d-grid mb-3">
+            <button id="loginButton" type="submit" class="btn btn-primary btn-lg" aria-label="Login">
+                <i class="bi bi-box-arrow-in-right me-2" aria-hidden="true"></i>
+                Login
+            </button>
+        </div>
+    </form>
+
+    <!-- Secondary actions -->
+    <div class="d-flex justify-content-between align-items-center content-actions">
+        <a href="/auth/register" class="btn btn-outline-light btn-sm" role="button" aria-label="Sign up">
+            <i class="bi bi-person-plus-fill me-1" aria-hidden="true"></i> Sign up
+        </a>
     </div>
 </div>
 
@@ -42,17 +89,18 @@
     async function clientLogin(event) {
         event.preventDefault();
 
-        const email = document.getElementById('email').value;
+        const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
         const errorMessage = document.getElementById('errorMessage');
         const successMessage = document.getElementById('successMessage');
         const loginButton = document.getElementById('loginButton');
 
+        // UI: show loading
         loginButton.disabled = true;
-        loginButton.textContent = 'Logging in...';
+        const originalHtml = loginButton.innerHTML;
+        loginButton.innerHTML = '<i class="bi bi-arrow-repeat spin me-2" aria-hidden="true"></i> Logging in...';
 
-        errorMessage.classList.add('d-none');
-        successMessage.classList.add('d-none');
+        errorMessage.classList.add('d-none'); successMessage.classList.add('d-none');
 
         try {
             const response = await fetch('/auth/login', {
@@ -64,24 +112,23 @@
 
             if (response.ok) {
                 const data = await response.json();
-
-                successMessage.querySelector('p').textContent = 'Login successful! Redirecting...';
+                successMessage.querySelector('p').textContent = 'Login successful. Redirecting...';
                 successMessage.classList.remove('d-none');
 
                 const redirectPath = data.redirectPath || '/auth/profile';
-                setTimeout(() => window.location.replace(redirectPath), 1000);
+                setTimeout(() => window.location.replace(redirectPath), 900);
             } else {
-                const data = await response.json();
-                errorMessage.querySelector('p').textContent = data.error || 'Login failed. Try again.';
+                let data;
+                try { data = await response.json(); } catch { data = {}; }
+                errorMessage.querySelector('p').textContent = data.error || 'Login failed. Please check your credentials.';
                 errorMessage.classList.remove('d-none');
             }
         } catch (err) {
             errorMessage.querySelector('p').textContent = 'Network error. Try again.';
             errorMessage.classList.remove('d-none');
-        }
-        finally {
+        } finally {
             loginButton.disabled = false;
-            loginButton.textContent = 'Login';
+            loginButton.innerHTML = originalHtml;
         }
     }
 </script>

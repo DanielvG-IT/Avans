@@ -1,20 +1,65 @@
+<style>
+  .movie-card {
+    background: #1c1c1c;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .movie-meta span {
+    margin-right: .5rem;
+  }
+
+  .movie-description {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+  }
+
+  .info-item {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: .75rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .info-item strong {
+    font-weight: 600;
+  }
+
+  .actor-badge {
+    background: #2a2a2a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: .95rem;
+    padding: .4rem .75rem;
+    border-radius: 20px;
+  }
+
+  .availability-card {
+    background: #1c1c1c;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: .75rem 1rem;
+    margin-bottom: .5rem;
+  }
+</style>
+
 <div class="container py-5">
   <div class="row gx-5">
 
     <!-- Movie Cover -->
     <div class="col-12 col-lg-3 mb-4 mb-lg-0">
-      <div class="card shadow border-0 bg-dark text-light">
+      <div class="movie-card p-0 overflow-hidden">
         {{#if movie.coverUrl}}
-        <img src="{{movie.coverUrl}}" alt="{{movie.title}} cover image" class="card-img-top rounded"
-          style="object-fit: cover; aspect-ratio: 2/3; filter: brightness(0.95);">
+        <img src="{{movie.coverUrl}}" alt="{{movie.title}} cover image" class="w-100 rounded"
+          style="object-fit: cover; aspect-ratio: 2/3; filter: brightness(0.95);" loading="lazy">
         {{else}}
         <div class="d-flex align-items-center justify-content-center bg-secondary rounded" style="aspect-ratio: 2/3;">
-          <svg width="120" height="180" viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg"
-            aria-label="No cover image available">
-            <rect width="120" height="180" fill="#343a40" rx="12" />
-            <text x="50%" y="50%" text-anchor="middle" fill="#6c757d" font-size="18" font-family="Arial, sans-serif"
-              dy=".3em">No Cover</text>
-          </svg>
+          <span class="text-muted">No Cover</span>
         </div>
         {{/if}}
       </div>
@@ -23,98 +68,85 @@
     <!-- Movie Details -->
     <div class="col-12 col-lg-9 d-flex flex-column">
 
-      <!-- Title & Badges -->
-      <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
-        <div>
-          <h1 class="fw-bold text-light mb-1">{{movie.title}}</h1>
-          {{#if movie.releaseYear}}<span class="badge bg-secondary me-2">{{movie.releaseYear}}</span>{{/if}}
-          {{#if movie.category}}<span class="badge bg-info text-dark me-2">{{movie.category}}</span>{{/if}}
-          {{#if movie.rating}}<span class="badge bg-warning text-dark">{{movie.rating}}</span>{{/if}}
-        </div>
+      <!-- Title & Meta -->
+      <div class="movie-card">
+        <div class="d-flex flex-wrap justify-content-between align-items-start mb-3">
+          <div>
+            <h1 class="fw-bold text-light mb-1">{{movie.title}}</h1>
+            <div class="movie-meta">
+              {{#if movie.releaseYear}}<span class="badge bg-secondary">{{movie.releaseYear}}</span>{{/if}}
+              {{#if movie.category}}<span class="badge bg-info text-dark">{{movie.category}}</span>{{/if}}
+              {{#if movie.rating}}<span class="badge bg-warning text-dark">{{movie.rating}}</span>{{/if}}
+              {{#if movie.length}}<span class="badge bg-primary"><i class="bi bi-clock me-1"></i>{{movie.length}}
+                min</span>{{/if}}
+            </div>
+          </div>
 
-        <div class="d-flex align-items-center">
-          {{#if movie.length}}
-          <span class="badge bg-primary mt-2 mt-lg-0 me-2">
-            <i class="bi bi-clock me-1"></i>{{movie.length}} min
-          </span>
-          {{/if}}
-
-          <!-- Edit Button: prominent on large screens, floating FAB on small screens -->
           {{#if (eq user.role 'STAFF')}}
-          <a href="/movies/{{movie.filmId}}/edit"
-            class="btn btn-warning btn-sm shadow-sm ms-1 d-none d-lg-inline-flex align-items-center" role="button"
-            aria-label="Edit movie" data-bs-toggle="tooltip" title="Edit movie">
-            <i class="bi bi-pencil-square me-1"></i><span class="visually-hidden">Edit</span>
-          </a>
+          <div class="d-flex flex-column gap-2 d-none d-lg-block">
+            <a href="/movies/{{movie.filmId}}/edit" class="btn btn-warning btn-sm">
+              <i class="bi bi-pencil-square me-1"></i>Edit
+            </a>
+            <a href="/movies/{{movie.filmId}}/rent" class="btn btn-info btn-sm">
+              <i class="bi bi-cart-plus me-1"></i>Rent
+            </a>
+          </div>
           {{/if}}
         </div>
+
+        {{#if movie.description}}
+        <p class="movie-description">{{movie.description}}</p>
+        {{/if}}
       </div>
 
-      <!-- Description -->
-      {{#if movie.description}}
-      <p class="lead text-light opacity-75 mb-4" style="max-width: 700px;">{{movie.description}}</p>
-      {{/if}}
-
-      <!-- Movie Info -->
-      <ul class="list-group list-group-flush mb-4" style="max-width: 700px;">
+      <!-- Info -->
+      <div class="movie-card">
         {{#if movie.language}}
-        <li class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between">
-          <span><i class="bi bi-translate me-2 text-info"></i><strong>Language:</strong></span>
+        <div class="info-item"><span><i class="bi bi-translate me-2 text-info"></i><strong>Language:</strong></span>
           <span>{{movie.language}}</span>
-        </li>
+        </div>
         {{/if}}
         {{#if movie.rentalDuration}}
-        <li class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between">
-          <span><i class="bi bi-calendar2-week me-2 text-info"></i><strong>Rental Duration:</strong></span>
-          <span>{{movie.rentalDuration}} days</span>
-        </li>
+        <div class="info-item"><span><i class="bi bi-calendar2-week me-2 text-info"></i><strong>Rental
+              Duration:</strong></span> <span>{{movie.rentalDuration}} days</span></div>
         {{/if}}
         {{#if movie.rentalRate}}
-        <li class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between">
-          <span><i class="bi bi-currency-dollar me-2 text-info"></i><strong>Rental Rate:</strong></span>
-          <span>${{movie.rentalRate}}</span>
-        </li>
+        <div class="info-item"><span><i class="bi bi-currency-euro me-2 text-info"></i><strong>Rental
+              Rate:</strong></span> <span>€{{movie.rentalRate}}</span></div>
         {{/if}}
         {{#if movie.replacementCost}}
-        <li class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between">
-          <span><i class="bi bi-cash-stack me-2 text-info"></i><strong>Replacement Cost:</strong></span>
-          <span>${{movie.replacementCost}}</span>
-        </li>
+        <div class="info-item"><span><i class="bi bi-cash-stack me-2 text-info"></i><strong>Replacement
+              Cost:</strong></span> <span>€{{movie.replacementCost}}</span></div>
         {{/if}}
         {{#if movie.specialFeatures}}
-        <li class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between">
-          <span><i class="bi bi-stars me-2 text-info"></i><strong>Special Features:</strong></span>
+        <div class="info-item"><span><i class="bi bi-stars me-2 text-info"></i><strong>Special Features:</strong></span>
           <span>{{movie.specialFeatures}}</span>
-        </li>
+        </div>
         {{/if}}
-      </ul>
+      </div>
 
       <!-- Actors -->
       {{#if movie.actors}}
-      <div class="mb-4" style="max-width: 700px;">
-        <h5 class="text-light mb-2"><i class="bi bi-people-fill me-2 text-info"></i>Actors</h5>
-        <ul class="list-inline mb-0">
+      <div class="movie-card">
+        <h5 class="text-light mb-3"><i class="bi bi-people-fill me-2 text-info"></i>Actors</h5>
+        <div class="d-flex flex-wrap gap-2">
           {{#each movie.actors}}
-          <li class="list-inline-item mb-1">
-            <span class="badge bg-secondary text-light px-3 py-2 fs-6">{{this.firstName}} {{this.lastName}}</span>
-          </li>
+          <span class="actor-badge">{{this.firstName}} {{this.lastName}}</span>
           {{/each}}
-        </ul>
+        </div>
       </div>
       {{/if}}
 
       <!-- Availability -->
-      <div class="mb-4" style="max-width: 700px;">
-        <h5 class="text-light mb-2"><i class="bi bi-shop me-2 text-info"></i>Availability</h5>
+      <div class="movie-card">
+        <h5 class="text-light mb-3"><i class="bi bi-shop me-2 text-info"></i>Availability</h5>
         {{#if movie.availability}}
-        <ul class="list-group">
-          {{#each movie.availability}}
-          <li class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between">
-            <span>{{this.storeName}}</span>
-            <span class="badge bg-success">{{this.copies}} copies</span>
-          </li>
-          {{/each}}
-        </ul>
+        {{#each movie.availability}}
+        <div class="availability-card d-flex justify-content-between align-items-center">
+          <span>{{this.storeName}}</span>
+          <span class="badge bg-success">{{this.copies}} copies</span>
+        </div>
+        {{/each}}
         {{else}}
         <div class="alert alert-danger mb-0">
           <i class="bi bi-x-circle-fill me-2"></i>Not available in any of our stores!
@@ -124,13 +156,11 @@
     </div>
   </div>
 
-  <!-- Mobile FAB Edit Button (appears only on small screens) -->
+  <!-- Mobile FAB -->
   {{#if (eq user.role 'STAFF')}}
   <a href="/movies/{{movie.filmId}}/edit" class="btn btn-warning btn-lg rounded-circle shadow d-lg-none position-fixed"
     style="right:16px; bottom:16px; z-index:1050;" aria-label="Edit movie">
     <i class="bi bi-pencil-square"></i>
   </a>
   {{/if}}
-
-</div>
 </div>
