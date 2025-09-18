@@ -435,7 +435,7 @@ staffRouter.get('/crm/:customerId/edit', requireStaffAuthWeb, (req, res, next) =
     });
 });
 staffRouter.post('/crm/:customerId/edit', requireStaffAuthWeb, (req, res, next) => {
-    logger.info('staffRouter.post /crm/:customerId/edit triggered', {
+    logger.debug('staffRouter.post /crm/:customerId/edit triggered', {
         body: req.body,
         params: req.params,
     });

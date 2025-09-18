@@ -124,7 +124,7 @@ export const register = (
                             storeId,
                             (createErr) => {
                                 if (createErr) return cb(createErr);
-                                logger.info(`Created customer for existing user ${user.userId}`);
+                                logger.debug(`Created customer for existing user ${user.userId}`);
                                 cb(null, { userId: user.userId, email: normalizedEmail });
                             }
                         );
@@ -155,7 +155,7 @@ export const register = (
                             // Link existing customer to this new user
                             linkCustomerToUser(customerToLink.customer_id, userId, (linkErr) => {
                                 if (linkErr) return cb(linkErr);
-                                logger.info(
+                                logger.debug(
                                     `Linked existing customer ${customerToLink.customer_id} to new user ${userId}`
                                 );
                                 cb(null, { userId, email: normalizedEmail });
@@ -181,7 +181,7 @@ export const register = (
                                         storeId,
                                         (createCustErr) => {
                                             if (createCustErr) return cb(createCustErr);
-                                            logger.info(`Created new user + customer ${userId}`);
+                                            logger.debug(`Created new user + customer ${userId}`);
                                             cb(null, { userId, email: normalizedEmail });
                                         }
                                     );
@@ -301,7 +301,7 @@ export const changePassword = (userId, newPassword, callback) => {
             return callback(new Error('Password update failed.'));
         }
 
-        logger.info(`Password updated for userId ${userId}`);
+        logger.debug(`Password updated for userId ${userId}`);
         return callback(null, result);
     });
 };
