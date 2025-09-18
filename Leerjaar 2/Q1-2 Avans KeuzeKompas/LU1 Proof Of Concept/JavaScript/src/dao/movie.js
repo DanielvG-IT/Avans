@@ -289,7 +289,6 @@ export const readMovieById = (id, callback) => {
                 logger.error('getMovieById MySQL Error:', error);
                 return cb(error);
             }
-            console.log(rows);
             cb(null, rows[0]);
         });
     } catch (err) {

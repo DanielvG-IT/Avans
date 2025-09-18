@@ -237,7 +237,7 @@ moviesRouter.get('/new', requireStaffAuthWeb, (req, res, next) => {
 });
 
 moviesRouter.post('/new', requireStaffAuthApi, (req, res, next) => {
-    console.log('[DEBUG] Entering POST /movies/new', { body: req.body });
+    logger.debug('Entering POST /movies/new', { body: req.body });
 
     // Collect submitted fields (same names as edit)
     const moviePayload = {
@@ -405,20 +405,18 @@ moviesRouter.get('/:id/edit', requireStaffAuthWeb, (req, res, next) => {
 });
 moviesRouter.post('/:id/edit', requireStaffAuthApi, (req, res, next) => {
     const movieId = parsePositiveInt(req.params.id, null);
-    console.log('[DEBUG] Entering POST /movies/:id/edit', {
+    logger.debug('Entering POST /movies/:id/edit', {
         paramsId: req.params.id,
         movieId,
         body: req.body,
     });
     if (!movieId) {
-        console.log('[DEBUG] Invalid movie id in POST /movies/:id/edit', {
+        logger.debug('Invalid movie id in POST /movies/:id/edit', {
             paramsId: req.params.id,
         });
         logger.warn('Edit movie: invalid movie id', { movieId: req.params.id });
         return next(new Error('Invalid movie id'));
     }
-
-    console.log(req.body);
 
     const title = req.body.title;
     const description = req.body.description;
@@ -431,7 +429,7 @@ moviesRouter.post('/:id/edit', requireStaffAuthApi, (req, res, next) => {
     const rating = req.body.rating;
     const specialFeatures = req.body.special_features;
 
-    console.log('[DEBUG] Calling updateMovieById', { movieId });
+    logger.debug('Calling updateMovieById', { movieId });
     updateMovieById(
         movieId,
         title,
@@ -446,27 +444,27 @@ moviesRouter.post('/:id/edit', requireStaffAuthApi, (req, res, next) => {
         specialFeatures,
         (err) => {
             if (err) {
-                console.log('[DEBUG] updateMovieById returned error', err);
+                logger.debug('updateMovieById returned error', err);
                 logger.error('Edit movie: updateMovie error', { movieId, err });
 
                 let errorMessage;
                 fetchMovieById(movieId, (fetchErr, movie) => {
-                    console.log('[DEBUG] fetchMovieById callback', { fetchErr, movie });
+                    logger.debug('fetchMovieById callback', { fetchErr, movie });
                     if (fetchErr) {
-                        console.log('[DEBUG] fetchMovieById error', fetchErr);
+                        logger.debug('fetchMovieById error', fetchErr);
                         logger.error('Edit movie: fetchMovieById error', { movieId, fetchErr });
                         errorMessage = fetchErr;
                     }
                     if (!movie) {
-                        console.log('[DEBUG] fetchMovieById returned no movie', { movieId });
+                        logger.debug('fetchMovieById returned no movie', { movieId });
                         logger.warn('Edit movie: movie not found', { movieId });
                         errorMessage = 'Movie not found';
                     }
 
                     fetchRatingNames((ratingErr, ratings) => {
-                        console.log('[DEBUG] fetchRatingNames callback', { ratingErr, ratings });
+                        logger.debug('fetchRatingNames callback', { ratingErr, ratings });
                         if (ratingErr) {
-                            console.log('[DEBUG] fetchRatingNames error', ratingErr);
+                            logger.debug('fetchRatingNames error', ratingErr);
                             logger.error('Edit movie: fetchRatingNames error', {
                                 movieId,
                                 ratingErr,
@@ -474,12 +472,12 @@ moviesRouter.post('/:id/edit', requireStaffAuthApi, (req, res, next) => {
                             errorMessage = ratingErr;
                         }
                         fetchLanguageNames((langErr, languages) => {
-                            console.log('[DEBUG] fetchLanguageNames callback', {
+                            logger.debug('fetchLanguageNames callback', {
                                 langErr,
                                 languages,
                             });
                             if (langErr) {
-                                console.log('[DEBUG] fetchLanguageNames error', langErr);
+                                logger.debug('fetchLanguageNames error', langErr);
                                 logger.error('Edit movie: fetchLanguageNames error', {
                                     movieId,
                                     langErr,
@@ -487,19 +485,19 @@ moviesRouter.post('/:id/edit', requireStaffAuthApi, (req, res, next) => {
                                 errorMessage = langErr;
                             }
                             fetchCategoryNames((catErr, categories) => {
-                                console.log('[DEBUG] fetchCategoryNames callback', {
+                                logger.debug('fetchCategoryNames callback', {
                                     catErr,
                                     categories,
                                 });
                                 if (catErr) {
-                                    console.log('[DEBUG] fetchCategoryNames error', catErr);
+                                    logger.debug('fetchCategoryNames error', catErr);
                                     logger.error('Edit movie: fetchCategoryNames error', {
                                         movieId,
                                         catErr,
                                     });
                                     errorMessage = catErr;
                                 }
-                                console.log('[DEBUG] Rendering createOrEdit with errorMessage', {
+                                logger.debug('Rendering createOrEdit with errorMessage', {
                                     errorMessage,
                                 });
                                 return res.render('movies/createOrEdit', {
@@ -518,7 +516,7 @@ moviesRouter.post('/:id/edit', requireStaffAuthApi, (req, res, next) => {
                 });
                 return;
             }
-            console.log('[DEBUG] updateMovieById callback complete - redirecting', { movieId });
+            logger.debug('updateMovieById callback complete - redirecting', { movieId });
             return res.redirect('/movies/' + movieId);
         }
     );
