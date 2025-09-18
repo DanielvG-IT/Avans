@@ -403,8 +403,9 @@ staffRouter.get('/crm/:customerId', requireStaffAuthWeb, (req, res, next) => {
                 overdueRentalsCount: overdueCount,
             };
 
-            res.render('staff/viewCustomer', {
+            res.render('viewCustomer', {
                 title: 'Customer Details',
+                user: req.user,
                 customer,
                 metrics,
                 activeRentals,
