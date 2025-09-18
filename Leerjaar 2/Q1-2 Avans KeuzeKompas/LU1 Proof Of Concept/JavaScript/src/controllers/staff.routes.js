@@ -196,7 +196,7 @@ staffRouter.get('/crm/new', requireStaffAuthWeb, (req, res, next) => {
             logger.error('Store Error:', storeError);
             return next(storeError);
         }
-        res.render('staff/addOrEditCustomer', {
+        res.render('addOrEditCustomer', {
             title: 'New Customer',
             customer: {},
             stores,
@@ -240,7 +240,7 @@ staffRouter.post('/crm/new', requireStaffAuthApi, (req, res, next) => {
                 logger.error('Store Error:', storeError);
                 return next(storeError);
             }
-            return res.render('staff/addOrEditCustomer', {
+            return res.render('addOrEditCustomer', {
                 title: 'New Customer',
                 customer: {
                     firstName,
@@ -303,7 +303,7 @@ staffRouter.post('/crm/new', requireStaffAuthApi, (req, res, next) => {
                     renderErrorMessage = 'Email already in use.';
                 }
 
-                return res.render('staff/addOrEditCustomer', {
+                return res.render('addOrEditCustomer', {
                     title: 'New Customer',
                     customer: customerData,
                     stores,
@@ -424,17 +424,21 @@ staffRouter.get('/crm/:customerId/edit', requireStaffAuthWeb, (req, res, next) =
             return next(error);
         }
 
-        res.render('staff/addOrEditCustomer', {
+        res.render('addOrEditCustomer', {
             title: 'Edit Customer',
             customer: customer,
             isEdit: true,
-            actionUrl: '/crm/' + customerId + '/edit',
-            actionMethod: 'PUT',
+            actionUrl: '/staff/crm/' + customerId + '/edit',
+            actionMethod: 'POST',
             returnUrl: '/staff/crm',
         });
     });
 });
-staffRouter.put('/crm/:customerId/edit', requireStaffAuthWeb, (req, res, next) => {
+staffRouter.post('/crm/:customerId/edit', requireStaffAuthWeb, (req, res, next) => {
+    logger.info('staffRouter.post /crm/:customerId/edit triggered', {
+        body: req.body,
+        params: req.params,
+    });
     const customerId = parsePositiveInt(req.params.customerId, null);
     const {
         firstName,
@@ -468,7 +472,7 @@ staffRouter.put('/crm/:customerId/edit', requireStaffAuthWeb, (req, res, next) =
                 logger.error('Store Error:', storeError);
                 return next(storeError);
             }
-            return res.render('staff/addOrEditCustomer', {
+            return res.render('addOrEditCustomer', {
                 title: 'New Customer',
                 customer: {
                     firstName,
@@ -531,7 +535,7 @@ staffRouter.put('/crm/:customerId/edit', requireStaffAuthWeb, (req, res, next) =
                     renderErrorMessage = 'Email already in use.';
                 }
 
-                return res.render('staff/addOrEditCustomer', {
+                return res.render('addOrEditCustomer', {
                     title: 'New Customer',
                     customer: customerData,
                     stores,
