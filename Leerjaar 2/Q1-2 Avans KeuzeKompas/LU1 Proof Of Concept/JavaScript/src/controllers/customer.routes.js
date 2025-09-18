@@ -168,7 +168,7 @@ customerRouter.post('/edit', requireCustomerAuthWeb, (req, res, next) => {
         const province = req.body.province ? req.body.province.trim() : '';
         const postalCode = req.body.postalCode ? req.body.postalCode.trim() : '';
         const country = req.body.country ? req.body.country.trim() : '';
-        const storeId = req.body.storeId ? parseInt(req.body.storeId, 1) : null;
+        const storeId = req.body.storeId ? parseInt(req.body.storeId, 10) : null;
         const active = req.body.active === '1' || req.body.active === 'on' ? 1 : 0;
 
         const data = {
@@ -197,24 +197,23 @@ customerRouter.post('/edit', requireCustomerAuthWeb, (req, res, next) => {
             console.log(result);
 
             if (result.affectedRows === 0 || result.changedRows === 0) {
-                fetchCustomerByUserId(req.user.userId, (error, customer) => {
+                return fetchCustomerByUserId(req.user.userId, (error, customer) => {
                     if (error) {
                         logger.error('Customer Error:', error);
                         return next(error);
                     }
-
-                    res.render('addOrEditCustomer', {
+                    return res.status(200).render('addOrEditCustomer', {
                         title: 'Edit Customer',
                         customer: customer,
                         isEdit: true,
                         actionUrl: '/customer/edit',
                         actionMethod: 'POST',
                         returnUrl: '/customer',
-                        errorMessage: error || 'Error occurred during update',
+                        errorMessage: error || 'No changes were made.',
                     });
                 });
             }
-            res.redirect('/customer');
+            return res.redirect('/customer');
         });
     });
 });
