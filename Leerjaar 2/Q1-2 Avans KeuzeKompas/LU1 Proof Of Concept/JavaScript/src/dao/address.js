@@ -78,6 +78,45 @@ export const readAddress = (address, callback) => {
     }
 };
 
+export const updateAddress = (addressId, data, callback) => {
+    const cb = onceCallback(callback);
+    try {
+        if (!addressId) return cb(new Error('addressId required'));
+        const fields = [];
+        const values = [];
+        if (data.address !== undefined) {
+            fields.push('address = ?');
+            values.push(data.address);
+        }
+        if (data.district !== undefined) {
+            fields.push('district = ?');
+            values.push(data.district);
+        }
+        if (data.postal_code !== undefined) {
+            fields.push('postal_code = ?');
+            values.push(data.postal_code);
+        }
+        if (data.phone !== undefined) {
+            fields.push('phone = ?');
+            values.push(data.phone);
+        }
+        if (!fields.length) return cb(new Error('No address fields to update'));
+        fields.push('last_update = NOW()');
+        const sql = `UPDATE address SET ${fields.join(', ')} WHERE address_id = ?`;
+        values.push(addressId);
+        query(sql, values, (err, result) => {
+            if (err) {
+                logger.error('updateAddress MySQL Error:', err);
+                return cb(err);
+            }
+            cb(null, result);
+        });
+    } catch (err) {
+        logger.error('updateAddress sync error:', err);
+        cb(err);
+    }
+};
+
 // export const updateAddress = (addressId, addressData, callback) => {
 //     const cb = onceCallback(callback);
 //     try {
