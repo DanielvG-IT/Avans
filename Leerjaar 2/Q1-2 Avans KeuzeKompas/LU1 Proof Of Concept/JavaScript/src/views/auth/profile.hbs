@@ -175,6 +175,7 @@
       if (response.ok) {
         successMessage.querySelector('p').textContent = 'Password reset successful!';
         successMessage.classList.remove('d-none');
+        document.getElementById('newPassword').value = '';
         setTimeout(() => {
           successMessage.classList.add('d-none');
         }, 2500);
