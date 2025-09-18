@@ -3,6 +3,7 @@ import { logger } from '../util/logger.js';
 import { requireCustomerAuthWeb } from '../middleware/auth.js';
 import { fetchCustomerById, fetchRentalsByCustomerId } from '../services/customerService.js';
 import { readCustomerByUserId } from '../dao/customer.js';
+import { fetchUser } from '../services/authService.js';
 
 const customerRouter = express.Router();
 
@@ -97,15 +98,27 @@ customerRouter.get('/', requireCustomerAuthWeb, (req, res, next) => {
                     overdueRentalsCount: overdueCount,
                 };
 
-                res.render('viewCustomer', {
-                    title: 'Customer Details',
-                    user: req.user,
-                    customer,
-                    metrics,
-                    activeRentals,
-                    futureRentals,
-                    pastRentals,
-                    returnUrl: '/customer',
+                fetchUser(req.user.userId, (error, user) => {
+                    if (error) {
+                        logger.error('User Fetch Error:', error);
+                        return next(error);
+                    }
+                    if (!user) {
+                        logger.warn('User not found for userId:', req.user.userId);
+                        return next(new Error('User not found'));
+                    }
+                    req.user = user; // Attach full user details
+
+                    res.render('viewCustomer', {
+                        title: 'Customer Details',
+                        user: req.user,
+                        customer,
+                        metrics,
+                        activeRentals,
+                        futureRentals,
+                        pastRentals,
+                        returnUrl: '/customer',
+                    });
                 });
             });
         });
