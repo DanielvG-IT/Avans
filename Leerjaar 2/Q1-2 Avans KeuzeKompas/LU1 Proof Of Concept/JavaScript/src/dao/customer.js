@@ -286,20 +286,57 @@ export const readCustomerByUserId = (userId, callback) => {
 
 export const updateCustomer = (customerId, customerData, callback) => {
     const cb = onceCallback(callback);
-    const { firstName, lastName, addressId, active = 1, emailId } = customerData || {};
     try {
-        const sql = `UPDATE customer SET (first_name, last_name, address_id, active, emailId) = (?,?,?,?,?) WHERE customer_id = ?`;
-        query(
-            sql,
-            [firstName, lastName, addressId, active, emailId, normalizeId(customerId)],
-            (error, result) => {
-                if (error) {
-                    logger.error('updateCustomer MySQL Error:', error);
-                    return cb(error);
-                }
-                cb(null, result);
+        if (!customerData || typeof customerData !== 'object') {
+            logger.warn('updateCustomer called with no customerData');
+            return cb(new Error('No customer data provided'));
+        }
+
+        const fields = [];
+        const values = [];
+
+        if (customerData.firstName !== undefined) {
+            fields.push('first_name = ?');
+            values.push(normalizeName(customerData.firstName));
+        }
+        if (customerData.lastName !== undefined) {
+            fields.push('last_name = ?');
+            values.push(normalizeName(customerData.lastName));
+        }
+        if (customerData.addressId !== undefined) {
+            fields.push('address_id = ?');
+            values.push(normalizeId(customerData.addressId));
+        }
+        if (customerData.active !== undefined) {
+            fields.push('active = ?');
+            values.push(customerData.active ? 1 : 0);
+        }
+        if (customerData.emailId !== undefined) {
+            fields.push('email_id = ?');
+            values.push(normalizeId(customerData.emailId));
+        }
+
+        if (!fields.length) {
+            logger.warn('updateCustomer called with no fields to update');
+            return cb(new Error('No fields to update'));
+        }
+
+        // Always update last_update timestamp
+        fields.push('last_update = NOW()');
+
+        const sql = `UPDATE customer SET ${fields.join(', ')} WHERE customer_id = ?`;
+        values.push(normalizeId(customerId));
+
+        logger.info('updateCustomer SQL', { sql, values });
+
+        query(sql, values, (error, result) => {
+            if (error) {
+                logger.error('updateCustomer MySQL Error:', error);
+                return cb(error);
             }
-        );
+            logger.info('updateCustomer result', { result });
+            cb(null, result);
+        });
     } catch (err) {
         logger.error('updateCustomer sync error:', err);
         cb(err);

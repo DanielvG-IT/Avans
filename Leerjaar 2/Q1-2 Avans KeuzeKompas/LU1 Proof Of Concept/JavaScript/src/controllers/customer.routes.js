@@ -1,7 +1,12 @@
 import express from 'express';
 import { logger } from '../util/logger.js';
 import { requireCustomerAuthWeb } from '../middleware/auth.js';
-import { fetchCustomerById, fetchRentalsByCustomerId } from '../services/customerService.js';
+import {
+    fetchCustomerById,
+    fetchCustomerByUserId,
+    fetchRentalsByCustomerId,
+    updateCustomerById,
+} from '../services/customerService.js';
 import { readCustomerByUserId } from '../dao/customer.js';
 import { fetchUser } from '../services/authService.js';
 
@@ -121,6 +126,95 @@ customerRouter.get('/', requireCustomerAuthWeb, (req, res, next) => {
                     });
                 });
             });
+        });
+    });
+});
+customerRouter.get('/edit', requireCustomerAuthWeb, (req, res, next) => {
+    fetchCustomerByUserId(req.user.userId, (error, customer) => {
+        if (error) {
+            logger.error('Customer Error:', error);
+            return next(error);
+        }
+
+        res.render('addOrEditCustomer', {
+            title: 'Edit Customer',
+            customer: customer,
+            isEdit: true,
+            actionUrl: '/customer/edit',
+            actionMethod: 'POST',
+            returnUrl: '/customer',
+            errorMessage: null,
+        });
+    });
+});
+customerRouter.post('/edit', requireCustomerAuthWeb, (req, res, next) => {
+    logger.info('customerRouter.post /edit triggered', { body: req.body, user: req.user });
+    fetchCustomerByUserId(req.user.userId, (error, customer) => {
+        if (error) {
+            logger.error('Customer Error:', error);
+            return next(error);
+        }
+        if (!customer) {
+            return next(new Error('Customer not found'));
+        }
+
+        // Validate and sanitize input
+        const firstName = req.body.firstName ? req.body.firstName.trim() : '';
+        const lastName = req.body.lastName ? req.body.lastName.trim() : '';
+        const email = req.body.email ? req.body.email.trim() : '';
+        const phone = req.body.phone ? req.body.phone.trim() : '';
+        const address = req.body.address ? req.body.address.trim() : '';
+        const city = req.body.city ? req.body.city.trim() : '';
+        const province = req.body.province ? req.body.province.trim() : '';
+        const postalCode = req.body.postalCode ? req.body.postalCode.trim() : '';
+        const country = req.body.country ? req.body.country.trim() : '';
+        const storeId = req.body.storeId ? parseInt(req.body.storeId, 1) : null;
+        const active = req.body.active === '1' || req.body.active === 'on' ? 1 : 0;
+
+        const data = {
+            firstName,
+            lastName,
+            email,
+            phone,
+            address,
+            city,
+            province,
+            postalCode,
+            country,
+            storeId: isNaN(storeId) ? null : storeId,
+            active,
+        };
+
+        // NaNaNa123!
+
+        console.log(data);
+
+        updateCustomerById(customer.customer_id, data, (error, result) => {
+            if (error) {
+                logger.error('Update Error:', error);
+                return next(error);
+            }
+            console.log(result);
+
+            if (result.affectedRows === 0 || result.changedRows === 0) {
+                fetchCustomerByUserId(req.user.userId, (error, customer) => {
+                    if (error) {
+                        logger.error('Customer Error:', error);
+                        return next(error);
+                    }
+
+                    res.render('addOrEditCustomer', {
+                        title: 'Edit Customer',
+                        customer: customer,
+                        isEdit: true,
+                        actionUrl: '/customer/edit',
+                        actionMethod: 'POST',
+                        returnUrl: '/customer',
+                        errorMessage: error || 'Error occurred during update',
+                    });
+                });
+            }
+            res.redirect('/customer');
         });
     });
 });

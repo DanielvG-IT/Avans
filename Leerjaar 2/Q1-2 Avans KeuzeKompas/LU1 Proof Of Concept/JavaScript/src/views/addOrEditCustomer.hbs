@@ -39,7 +39,7 @@
   </div>
 
   <div class="content-card p-4">
-    <form id="customerForm" method="{{actionMethod}}" action="{{actionUrl}}" novalidate>
+    <form id="customerForm" method="{{actionMethod}}" action="{{actionUrl}}">
       {{#if isEdit}}
       <input type="hidden" name="storeId" value="{{#if storeId}}{{storeId}}{{else}}1{{/if}}">
       {{/if}}
@@ -116,6 +116,7 @@
         </div>
 
         <!-- Store -->
+        {{!-- TODO: Fix store selection not showing stores --}}
         <div class="col-12">
           <label for="storeOption" class="form-label">Store</label>
           <select id="storeOption" name="storeId" class="form-select form-select-lg">

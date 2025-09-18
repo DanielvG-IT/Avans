@@ -9,6 +9,7 @@ import {
     updateCustomer,
     createCustomer,
     readCustomers,
+    readCustomerByUserId,
 } from '../dao/customer.js';
 
 /**
@@ -184,6 +185,25 @@ export const fetchCustomerById = (customerId, callback) => {
     });
 };
 
+export const fetchCustomerByUserId = (userId, callback) => {
+    const cb = onceCallback(callback);
+    if (userId === null || userId === undefined) {
+        logger.warn('fetchCustomerByUserId called with invalid userId:', userId);
+        return cb(new Error('Invalid userId'));
+    }
+
+    readCustomerByUserId(userId, (error, result) => {
+        if (error) {
+            logger.error('Customer Error:', error);
+            return cb(error);
+        }
+        if (!result) {
+            return cb(new Error('Customer not found'));
+        }
+        cb(null, result);
+    });
+};
+
 export const updateCustomerById = (customerId, data, callback) => {
     const cb = onceCallback(callback);
 
@@ -205,90 +225,85 @@ export const updateCustomerById = (customerId, data, callback) => {
         active,
     } = data || {};
 
+    logger.info('updateCustomerById called', { customerId, data });
+
     const performUpdate = (updateData) => {
+        logger.info('Calling updateCustomer with', { customerId, updateData });
         updateCustomer(customerId, updateData, (error, result) => {
             if (error) {
                 logger.error('Customer Update Error:', error);
                 return cb(error);
             }
+            logger.info('Customer update result', { result });
             cb(null, result);
         });
     };
 
-    const proceedWithCustomerUpdate = (emailId) => {
-        if (
-            !firstName &&
-            !lastName &&
-            !address &&
-            !province &&
-            !postalCode &&
-            !phone &&
-            !city &&
-            !country &&
-            active === undefined &&
-            !emailId
-        ) {
-            return cb(new Error('No data provided for update'));
-        }
-
-        readAddress(address, (error, addressRow) => {
-            if (error) {
-                logger.error('Address Lookup Error:', error);
-                return cb(error);
-            }
-
-            const finishUpdate = (addressId) => {
-                const updateData = {
-                    firstName: firstName ? String(firstName).trim() : undefined,
-                    lastName: lastName ? String(lastName).trim() : undefined,
-                    addressId,
-                    active: active !== undefined ? Boolean(active) : undefined,
-                    emailId,
-                };
-                performUpdate(updateData);
-            };
-
-            if (addressRow) {
-                finishUpdate(addressRow.address_id);
-            } else {
-                makeAddress(
-                    String(address || '').trim(),
-                    String(province || '').trim(),
-                    String(postalCode || '').trim(),
-                    String(phone || '').trim(),
-                    String(country || '').trim(),
-                    String(city || '').trim(),
-                    (err, { address } = {}) => {
-                        if (err) {
-                            logger.error('Address Creation Error:', err);
-                            return cb(err);
-                        }
-                        finishUpdate(address?.address_id ?? null);
-                    }
-                );
-            }
-        });
+    const buildBaseUpdate = (emailId, addressId) => {
+        const updateData = {};
+        if (firstName) updateData.firstName = String(firstName).trim();
+        if (lastName) updateData.lastName = String(lastName).trim();
+        if (addressId !== undefined) updateData.addressId = addressId; // can be null if creation failed
+        if (active !== undefined) updateData.active = Boolean(active);
+        if (emailId !== undefined) updateData.emailId = emailId;
+        return updateData;
     };
 
-    readEmail(email, (error, emailRow) => {
-        if (error) {
-            logger.error('Email Lookup Error:', error);
-            return cb(error);
+    const proceed = (emailId) => {
+        // If no address fields supplied, just update the simple fields
+        const anyAddressField = address || province || postalCode || phone || city || country;
+        if (!anyAddressField) {
+            const updateData = buildBaseUpdate(emailId, undefined);
+            if (Object.keys(updateData).length === 0) {
+                return cb(new Error('No data provided for update'));
+            }
+            return performUpdate(updateData);
         }
 
-        const emailId = emailRow?.email_id || null;
-        if (!emailId && email) {
-            createEmail(String(email).trim(), (emailErr, newEmailRow) => {
-                if (emailErr) {
-                    logger.error('Email Creation Error:', emailErr);
-                    return cb(emailErr);
+        // We have some address-related change; create or locate address record
+        makeAddress(
+            String(address || '').trim(),
+            String(province || '').trim(),
+            String(postalCode || '').trim(),
+            String(phone || '').trim(),
+            String(country || '').trim(),
+            String(city || '').trim(),
+            (err, { address: addrRow } = {}) => {
+                if (err) {
+                    logger.error('Address Creation Error:', err);
+                    return cb(err);
                 }
-                proceedWithCustomerUpdate(newEmailRow.email_id);
-            });
-        } else {
-            proceedWithCustomerUpdate(emailId);
-        }
-    });
+                const updateData = buildBaseUpdate(emailId, addrRow?.address_id);
+                if (Object.keys(updateData).length === 0) {
+                    return cb(new Error('No data provided for update'));
+                }
+                performUpdate(updateData);
+            }
+        );
+    };
+
+    // Handle email lookups / creation
+    if (email) {
+        readEmail(email, (error, emailRow) => {
+            if (error) {
+                logger.error('Email Lookup Error:', error);
+                return cb(error);
+            }
+            const existingId = emailRow?.email_id;
+            if (!existingId) {
+                return createEmail(String(email).trim(), (emailErr, newEmailRow) => {
+                    if (emailErr) {
+                        logger.error('Email Creation Error:', emailErr);
+                        return cb(emailErr);
+                    }
+                    proceed(newEmailRow.email_id);
+                });
+            }
+            proceed(existingId);
+        });
+    } else {
+        proceed(undefined);
+    }
 };
 
 export const deleteCustomerById = (customerId, callback) => {
