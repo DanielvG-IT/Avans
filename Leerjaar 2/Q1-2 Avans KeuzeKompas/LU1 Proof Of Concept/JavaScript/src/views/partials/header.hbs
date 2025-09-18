@@ -1,96 +1,90 @@
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg w-full fixed-top shadow-sm">
+<nav class="navbar navbar-expand-lg fixed-top shadow-sm" style="background:#141414;">
   <div class="container">
+    <!-- Brand -->
     <a class="navbar-brand d-flex align-items-center" href="/">
-      <img src="/images/eject!-logo-text.png" height="35" alt="Eject! Logo" />
+      <img src="/images/eject!-logo-text.png" height="35" alt="Eject! Logo" class="me-2" />
     </a>
 
-    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+    <!-- Mobile Toggler -->
+    <button class="navbar-toggler border-0 text-light" type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <i class="bi bi-list fs-2"></i>
     </button>
 
+    <!-- Nav Content -->
     <div class="collapse navbar-collapse" id="navbarNav">
+      <!-- Main Nav -->
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link active" href="/">Home</a>
+          <a class="nav-link {{#if (eq activePage 'home')}}active fw-bold{{/if}}" href="/">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/movies">Movies</a>
+          <a class="nav-link {{#if (eq activePage 'movies')}}active fw-bold{{/if}}" href="/movies">Movies</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/about">About</a>
+          <a class="nav-link {{#if (eq activePage 'about')}}active fw-bold{{/if}}" href="/about">About</a>
         </li>
-        {{#if user}}
         {{#if user.role}}
         {{#if (eq user.role 'CUSTOMER')}}
         <li class="nav-item">
-          <a class="nav-link" href="/customer">MyEject!</a>
+          <a class="nav-link {{#if (eq activePage 'customer')}}active fw-bold{{/if}}" href="/customer">MyEject!</a>
         </li>
         {{/if}}
         {{#if (eq user.role 'STAFF')}}
         <li class="nav-item">
-          <a class="nav-link" href="/staff">Staff</a>
+          <a class="nav-link {{#if (eq activePage 'staff')}}active fw-bold{{/if}}" href="/staff">Staff</a>
         </li>
-        {{/if}}
         {{/if}}
         {{/if}}
       </ul>
 
-      <!-- Desktop Login/Profile -->
-      <div class="d-none d-lg-flex align-items-center">
+      <!-- Right Side -->
+      <div class="d-flex align-items-center">
         {{#if user}}
+        <!-- Profile Dropdown -->
         <div class="dropdown">
-          <a href="#" class="btn btn-outline-light btn-sm rounded-pill d-flex align-items-center"
-            data-bs-toggle="dropdown">
+          <button class="btn btn-outline-light btn-sm rounded-pill d-flex align-items-center px-3"
+            data-bs-toggle="dropdown" aria-expanded="false">
             {{#if user.profileImage}}
-            <img src="{{user.profileImage}}" class="profile-img me-2" alt="Profile" />
+            <img src="{{user.profileImage}}" class="profile-img me-2" alt="Profile picture of {{user.name}}" />
             {{else}}
             <i class="bi bi-person-circle me-2 fs-5"></i>
             {{/if}}
-            Profile
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end mt-2">
-            <li><a class="dropdown-item" href="/auth/profile">My Profile</a></li>
+            <span class="d-none d-md-inline">Profile</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end mt-2 shadow">
+            <li><a class="dropdown-item text-light" href="/auth/profile"><i class="bi bi-person me-2"></i>My Profile</a>
+            </li>
             <li>
               <hr class="dropdown-divider">
             </li>
-            <li><button class="dropdown-item" onclick="clientLogOut()">Logout</button></li>
+            <li><button class="dropdown-item text-danger" onclick="clientLogOut()"><i
+                  class="bi bi-box-arrow-right me-2"></i>Logout</button></li>
           </ul>
         </div>
         {{else}}
-        <a href="/auth/login" class="btn btn-outline-light btn-sm rounded-pill me-2">Login</a>
-        <a href="/auth/register" class="btn btn-primary btn-sm rounded-pill">Register</a>
-        {{/if}}
-      </div>
-
-      <!-- Mobile Login/Profile -->
-      <div class="d-lg-none mt-3">
-        {{#if user}}
-        <div class="dropdown">
-          <a href="#"
-            class="btn btn-outline-light btn-sm w-100 rounded-pill d-flex align-items-center justify-content-center"
-            data-bs-toggle="dropdown">
-            {{#if user.profileImage}}
-            <img src="{{user.profileImage}}" class="profile-img me-2" alt="Profile" />
-            {{else}}
-            <i class="bi bi-person-circle me-2 fs-5"></i>
-            {{/if}}
-            Profile
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end mt-2 w-100">
-            <li><a class="dropdown-item text-center" href="/auth/profile">My Profile</a></li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li><button class="dropdown-item text-center" onclick="clientLogOut()">Logout</button></li>
-          </ul>
-        </div>
-        {{else}}
-        <a href="/auth/login" class="btn btn-outline-light btn-sm rounded-pill w-100 mb-2">Login</a>
-        <a href="/auth/register" class="btn btn-primary btn-sm rounded-pill w-100">Register</a>
+        <!-- Login/Register -->
+        <a href="/auth/login" class="btn btn-outline-light btn-sm rounded-pill me-2 px-3">Login</a>
+        <a href="/auth/register" class="btn btn-primary btn-sm rounded-pill px-3">Register</a>
         {{/if}}
       </div>
     </div>
   </div>
 </nav>
+
+<style>
+  .navbar .nav-link {
+    color: #e5e5e5 !important;
+    transition: color 0.2s ease;
+  }
+
+  .navbar .nav-link:hover {
+    color: #ffffff !important;
+  }
+
+  .navbar .nav-link.active {
+    color: #0d6efd !important;
+    border-bottom: 2px solid #0d6efd;
+  }
+</style>

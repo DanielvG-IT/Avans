@@ -1,100 +1,157 @@
-<div class="container py-5">
-  <div class="row justify-content-center gx-4">
-    <!-- Two identical profile cards centered (each 1/3 width on md+) -->
-    <div class="col-12 col-md-4">
-      <div class="card shadow-sm mb-4">
-        <div class="card-body text-center">
-          <!-- Avatar container -->
-          <div class="position-relative d-inline-block mb-3" style="width:120px; height:120px;">
-            <div id="avatarDrop" role="button" tabindex="0"
-              class="rounded-circle bg-transparent d-inline-flex align-items-center justify-content-center"
-              style="width:100%; height:100%; overflow:hidden; position:relative; cursor:pointer;"
-              ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-
-              {{#if user.avatar}}
-              <img id="profileAvatar" src="{{user.avatar}}" alt="{{user.name}} avatar" class="rounded-circle"
-                style="width:100%; height:100%; object-fit:cover; display:block; border:2px solid rgba(255,255,255,0.6); box-shadow:0 4px 10px rgba(0,0,0,0.12);"
-                loading="lazy">
-              {{else}}
-              <div id="profileAvatar"
-                class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center"
-                style="width:100%; height:100%; font-size:36px; font-weight:600; border:2px solid rgba(255,255,255,0.6); box-shadow:0 4px 10px rgba(0,0,0,0.12);"
-                aria-hidden="true">
-                <span class="placeholder-avatar">U</span>
-              </div>
-              {{/if}}
-            </div>
+<div class="container py-4">
+  <div class="row gy-4 gx-4">
+    <!-- Left: Profile / Avatar -->
+    <div class="col-12 col-md-4 text-center">
+      <div class="mb-3">
+        <div id="avatarDrop" class="avatar-drop shadow-sm" role="button" tabindex="0" ondragover="handleDragOver(event)"
+          ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+          {{#if user.avatar}}
+          <img id="profileAvatar" src="{{user.avatar}}" alt="{{user.name}} avatar" class="avatar-img rounded-circle"
+            loading="lazy">
+          {{else}}
+          <div id="profileAvatar" aria-hidden="true">
+            <span class="placeholder-avatar">U</span>
           </div>
-
-          <!-- Action buttons below avatar -->
-          <div class="d-flex justify-content-center gap-2">
-            <!-- Change avatar -->
-            <label for="avatarInput" class="btn btn-sm btn-outline-secondary" style="cursor:pointer;">
-              <i class="bi bi-camera"></i>
-              <span class="visually-hidden">Change avatar</span>
-            </label>
-            <input type="file" id="avatarInput" class="d-none" accept=".jpg,.jpeg,.png,.webp"
-              onchange="previewAvatar(event)">
-
-            <!-- Remove avatar -->
-            <button type="button" onclick="removeAvatar()" class="btn btn-sm btn-outline-danger">
-              <i class="bi bi-trash"></i>
-              <span class="visually-hidden">Remove avatar</span>
-            </button>
-          </div>
-
-          <!-- Save button & feedback -->
-          <div class="mt-3 d-flex flex-column align-items-center">
-            <button onclick="saveAvatar()" id="saveAvatarBtn" class="btn btn-sm btn-success d-none mb-1">
-              Save Avatar
-            </button>
-            <div id="avatarFeedback" class="alert d-none w-100 mt-2" role="alert"></div>
-          </div>
-
-          <!-- User Info -->
-          <div class="text-muted mb-2" aria-label="username">{{user.email}}</div>
-          <div class="mb-2">
-            <span class="badge bg-primary" aria-label="role">{{user.role}}</span>
-          </div>
+          {{/if}}
         </div>
+      </div>
+
+      <!-- Avatar actions -->
+      <div class="d-flex justify-content-center gap-2 mb-3 flex-wrap">
+        <label for="avatarInput" class="btn btn-sm btn-outline-light">
+          <i class="bi bi-camera me-1"></i>Change
+        </label>
+        <input type="file" id="avatarInput" class="d-none" accept=".jpg,.jpeg,.png,.webp"
+          onchange="previewAvatar(event)">
+        <button type="button" onclick="removeAvatar()" class="btn btn-sm btn-outline-light">
+          <i class="bi bi-trash me-1"></i>Remove
+        </button>
+      </div>
+
+      <!-- Save Avatar -->
+      <div class="d-flex flex-column align-items-center">
+        <button onclick="saveAvatar()" id="saveAvatarBtn" class="btn btn-primary btn-sm d-none mb-2">
+          <i class="bi bi-upload me-1"></i>Save Avatar
+        </button>
+        <div id="avatarFeedback" class="alert d-none w-100 small mt-2" role="alert"></div>
+      </div>
+
+      <!-- User meta -->
+      <div class="mt-3">
+        <p class="text-light small mb-1">{{user.email}}</p>
+        <span class="badge bg-primary rounded-pill">{{user.role}}</span>
       </div>
     </div>
 
-    <div class="col-12 col-md-4">
-      <div class="card shadow-sm mb-4">
-        <div class="card-body text-center">
-          <h5 class="card-title mb-3">Account Details</h5>
-          <div class="text-start">
-            <p class="mb-2"><strong>User ID:</strong> {{user.userId}}</p>
-            <p class="mb-2"><strong>Email:</strong> {{user.email}}</p>
-            {{#if user.role}}
-            <p class="mb-2"><strong>Role:</strong> {{user.role}}</p>
-            {{/if}}
-            {{#if user.avatarFormat}}
-            <p class="mb-2"><strong>Avatar Format:</strong> {{user.avatarFormat}}</p>
-            {{/if}}
+    <!-- Right: Account Details -->
+    <div class="col-12 col-md-8">
+      <div class="content-card p-4">
+        <h4 class="card-title">Account Details</h4>
+        <div class="small text-light mb-3">
+          <p class="mb-1"><strong>User ID:</strong> {{user.userId}}</p>
+          <p class="mb-1"><strong>Email:</strong> {{user.email}}</p>
+          {{#if user.role}}<p class="mb-1"><strong>Role:</strong> {{user.role}}</p>{{/if}}
+          {{#if user.avatarFormat}}<p class="mb-1"><strong>Avatar Format:</strong> {{user.avatarFormat}}</p>{{/if}}
+        </div>
+
+        <hr style="border-color:var(--border); opacity:0.6;">
+
+        <h5 class="card-title mt-3">Password Reset</h5>
+        <form onsubmit="clientPasswordReset(event)" aria-label="password reset form">
+          <div class="mb-3">
+            <label for="newPassword" class="form-label text-light">New Password</label>
+            <input type="password" id="newPassword" name="newPassword" class="form-control form-control-lg"
+              placeholder="Enter new password" required>
           </div>
-          <hr class="my-3">
-          <h5 class="card-title mb-3 mt-3">Password Reset</h5>
-          <form onsubmit=clientPasswordReset(event) class="text-start w-100" aria-label="password reset form">
-            <div class="mb-3">
-              <label for="newPassword" class="form-label visually-hidden">New Password</label>
-              <input type="password" id="newPassword" name="newPassword" class="form-control"
-                placeholder="Enter new password" value="{{newPassword}}" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Send password reset</button>
-          </form>
-          <div class="small text-danger mt-2 d-none" id="errorMessage" role="alert">
-            <p></p>
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-lg">
+              <i class="bi bi-envelope-check me-1"></i>Send password reset
+            </button>
           </div>
-          <div class="alert alert-success w-100 d-none" id="successMessage" role="status">
-            <p></p>
+        </form>
+
+        <div class="mt-3">
+          <div id="errorMessage" class="alert alert-danger d-none" role="alert">
+            <p class="mb-0"></p>
+          </div>
+          <div id="successMessage" class="alert alert-success d-none" role="status">
+            <p class="mb-0"></p>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<style>
+  /* Avatar */
+  .avatar-drop {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.05));
+  }
+
+  .avatar-drop:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+  }
+
+  .avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .placeholder-avatar {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  /* Form inputs */
+  .form-control {
+    background: #fff;
+    color: #222;
+    border-color: #555;
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Alerts */
+  .alert {
+    border-radius: 8px;
+    padding: .5rem .75rem;
+    font-size: .875rem;
+  }
+
+  /* Badges */
+  .badge {
+    font-size: .75rem;
+    font-weight: 600;
+    padding: .4em .7em;
+  }
+
+  /* Responsive */
+  @media (max-width: 767px) {
+    .avatar-drop {
+      width: 96px;
+      height: 96px;
+    }
+
+    .content-card {
+      padding: 1rem;
+    }
+  }
+</style>
 
 <script>
   async function clientPasswordReset(event) {

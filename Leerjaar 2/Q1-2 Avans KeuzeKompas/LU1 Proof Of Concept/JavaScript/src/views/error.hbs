@@ -1,43 +1,95 @@
-<section role="alert" aria-labelledby="error-title" aria-describedby="error-desc"
-    class="d-flex align-items-center justify-content-center min-vh-60 py-5" style="background:none; color:white;">
+<style>
+    .error-wrapper {
+        max-width: 700px;
+        margin: 5rem auto;
+    }
 
-    <div class="position-relative w-100" style="max-width:700px;">
-        <!-- Gradient Background -->
-        <div class="position-absolute inset-0" style="z-index:0;
-            background: radial-gradient(800px 300px at 10% 20%, rgba(233,9,20,0.08), transparent 6%),
-                        radial-gradient(600px 240px at 90% 80%, rgba(255,255,255,0.02), transparent 10%),
-                        linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
-            filter: blur(32px) saturate(110%);"></div>
+    .error-card {
+        position: relative;
+        z-index: 1;
+        background: rgba(20, 20, 20, 0.85);
+        backdrop-filter: blur(6px) saturate(120%);
+        border-radius: 1rem;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        box-shadow: 0 4px 32px rgba(0, 0, 0, 0.25);
+    }
 
-        <!-- Content -->
-        <div class="position-relative z-1 bg-dark bg-opacity-25 rounded-3 p-4 shadow"
-            style="backdrop-filter: blur(6px) saturate(120%); border:1px solid rgba(255,255,255,0.03);">
+    .error-code {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #e50914;
+        text-shadow: 0 2px 18px rgba(229, 9, 20, 0.18);
+    }
 
-            <header class="mb-3">
-                <h1 class="d-flex align-items-baseline gap-2">
-                    <span class="text-danger fw-bold fs-3" style="text-shadow: 0 2px 18px rgba(229,9,20,0.18);">
-                        {{error.statusCode}}
-                    </span>
-                    <span class="text-secondary fs-6 fw-semibold">
+    .error-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #ccc;
+    }
+
+    .error-desc {
+        font-size: 1rem;
+        color: #aaa;
+        margin-bottom: 1.5rem;
+    }
+
+    .error-actions .btn {
+        min-width: 120px;
+        padding: 0.6rem 1.2rem;
+        font-size: 0.95rem;
+    }
+
+    /* Gradient / subtle backdrop */
+    .error-bg {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background: radial-gradient(800px 300px at 10% 20%, rgba(233, 9, 20, 0.08), transparent 6%),
+            radial-gradient(600px 240px at 90% 80%, rgba(255, 255, 255, 0.02), transparent 10%),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.01), transparent);
+        filter: blur(32px) saturate(110%);
+    }
+
+    @media (max-width: 576px) {
+        .error-actions {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    }
+</style>
+
+<section class="error-wrapper d-flex flex-column align-items-center justify-content-center min-vh-60 py-5" role="alert"
+    aria-labelledby="error-title" aria-describedby="error-desc">
+
+    <div class="position-relative w-100">
+        <div class="error-bg"></div>
+
+        <div class="error-card">
+            <header class="mb-4 text-center">
+                <div class="d-flex justify-content-center align-items-baseline gap-2 mb-2">
+                    <span class="error-code">{{error.statusCode}}</span>
+                    <span class="error-title">
                         {{#if error.title}}{{error.title}}{{else}}Something went wrong{{/if}}
                     </span>
-                </h1>
-                <p id="error-desc" class="lead text-secondary">
+                </div>
+                <p id="error-desc" class="error-desc">
                     {{#if error.message}}{{error.message}}{{else}}We couldn't find what you're looking for. Try again or
                     browse something you'll love.{{/if}}
                 </p>
             </header>
 
-            <div class="d-flex flex-wrap gap-2">
-                <a href="/" class="btn btn-primary d-inline-flex align-items-center gap-2">
+            <div class="d-flex justify-content-center gap-2 error-actions flex-wrap">
+                <a href="/" class="btn btn-primary d-inline-flex align-items-center justify-content-center gap-2">
                     Go Home
                 </a>
-                <button id="retryBtn" class="btn btn-outline-light d-inline-flex align-items-center gap-2">
+                <button id="retryBtn"
+                    class="btn btn-outline-light d-inline-flex align-items-center justify-content-center gap-2">
                     Try Again
                 </button>
                 {{#if supportEmail}}
                 <a href="mailto:{{error.supportEmail}}?subject=Error%20{{error.statusCode}}"
-                    class="btn btn-secondary d-inline-flex align-items-center gap-2">
+                    class="btn btn-secondary d-inline-flex align-items-center justify-content-center gap-2">
                     Contact Support
                 </a>
                 {{/if}}
@@ -50,7 +102,7 @@
         if (retryBtn) {
             retryBtn.addEventListener('click', () => {
                 retryBtn.disabled = true;
-                retryBtn.textContent = 'Retrying...';
+                retryBtn.innerHTML = '<i class="bi bi-arrow-repeat spin me-2"></i>Retrying...';
                 setTimeout(() => location.reload(), 450);
             });
         }

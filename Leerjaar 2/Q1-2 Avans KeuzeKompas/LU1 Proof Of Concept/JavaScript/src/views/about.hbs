@@ -1,237 +1,386 @@
-<section class="py-5">
-    <div class="container">
-        <h1 class="mb-4">About This Project</h1>
-        <p class="lead">
-            This web application was built around <strong>user stories</strong>. Each story captures a requirement,
-            its importance, and its progress. Below you can explore the stories grouped by their <strong>Epics</strong>.
+<style>
+    .about-wrapper {
+        max-width: 1100px;
+        margin: 0 auto 3rem;
+    }
+
+    .page-hero {
+        margin-bottom: 1.25rem;
+    }
+
+    .epic-header {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        margin-top: 2.5rem;
+        margin-bottom: .75rem;
+    }
+
+    .epic-header h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+    }
+
+    .story-card {
+        background-color: #1c1c1c;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        padding: 1rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+    }
+
+    .story-title {
+        font-weight: 600;
+        margin-bottom: .25rem;
+    }
+
+    .story-meta {
+        display: flex;
+        gap: .5rem;
+        flex-wrap: wrap;
+        margin-top: .25rem;
+    }
+
+    .story-note {
+        color: #cfcfcf;
+        font-size: .9rem;
+    }
+
+    .story-footer {
+        margin-top: .5rem;
+        margin-left: auto;
+    }
+
+    .badge {
+        border-radius: .5rem;
+        font-weight: 600;
+    }
+
+    /* small helpers */
+    .muted-small {
+        color: #a9a9a9;
+        font-size: .85rem;
+    }
+
+    @media (max-width: 768px) {
+        .epic-header {
+            margin-top: 1.25rem;
+        }
+    }
+</style>
+
+<main class="about-wrapper">
+    <header class="page-hero">
+        <h1 class="h3 mb-2">About This Project</h1>
+        <p class="lead mb-0">
+            This web application was built around <strong>user stories</strong>. Each story captures a requirement, its
+            priority, and current progress. The stories below are grouped by <strong>Epics</strong>.
         </p>
+    </header>
 
-        <!-- Homepage & Recommendations -->
-        <h2 class="mt-5">📺 Homepage & Recommendations</h2>
-        <div class="row g-4">
-            <div class="col-md-6">
-                <div class="card bg-dark text-light h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Welcome message</h5>
-                        <p class="card-text">As a visitor, I want to see a welcome message so I know what the site is
-                            about.</p>
-                        <span class="badge bg-success">Done</span>
-                        <span class="badge bg-secondary">Low</span>
-                        <span class="badge bg-info">Feature</span>
-                        <p class="small mt-2">Task ID: TDANIEL-003 | SP: 1 | Due: 2025-09-04</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card bg-dark text-light h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Recommended films</h5>
-                        <p class="card-text">As a visitor, I want to see recommended films on the homepage so I know
-                            what’s popular.</p>
-                        <span class="badge bg-success">Done</span>
-                        <span class="badge bg-warning text-dark">Medium</span>
-                        <span class="badge bg-info">Feature</span>
-                        <p class="small mt-2">Task ID: TDANIEL-004 | SP: 5 | Due: 2025-09-05</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card bg-dark text-light h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Film details link</h5>
-                        <p class="card-text">As a visitor, I want to click on a recommended film to see details.</p>
-                        <span class="badge bg-success">Done</span>
-                        <span class="badge bg-danger">Critical</span>
-                        <span class="badge bg-info">Feature</span>
-                        <p class="small mt-2">Task ID: TDANIEL-005 | SP: 8 | Due: 2025-09-09</p>
-                    </div>
-                </div>
-            </div>
+    <!-- Epic: Homepage & Recommendations -->
+    <section>
+        <div class="epic-header">
+            <h2>📺 Homepage & Recommendations</h2>
+            <small class="muted-small">Core experience for anonymous visitors</small>
         </div>
 
-        <!-- Film Catalog & Availability -->
-        <h2 class="mt-5">🎬 Film Catalog & Availability</h2>
         <div class="row g-4">
             <div class="col-md-6">
-                <div class="card bg-dark text-light h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Browse catalog</h5>
-                        <p class="card-text">As a visitor, I want to browse the film catalog so I can see what movies
-                            are offered.</p>
-                        <span class="badge bg-success">Done</span>
-                        <span class="badge bg-danger">Critical</span>
-                        <span class="badge bg-info">Feature</span>
-                        <p class="small mt-2">Task ID: TDANIEL-011 | SP: 13 | Due: 2025-09-07</p>
+                <article class="story-card">
+                    <div>
+                        <div class="story-title">Welcome message</div>
+                        <div class="story-note">As a visitor, I want to see a welcome message so I know what the site is
+                            about.</div>
                     </div>
-                </div>
+                    <div class="story-meta">
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-secondary text-dark">Low</span>
+                        <span class="badge bg-info text-dark">Feature</span>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-003 · SP: 1 · Due: 2025-09-04</div>
+                    </div>
+                </article>
             </div>
+
             <div class="col-md-6">
-                <div class="card bg-dark text-light h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">View film details</h5>
-                        <p class="card-text">As a customer, I want to view details of a film so I know more before
-                            reserving.</p>
+                <article class="story-card">
+                    <div>
+                        <div class="story-title">Recommended films</div>
+                        <div class="story-note">As a visitor, I want to see recommended films on the homepage so I know
+                            what’s popular.</div>
+                    </div>
+                    <div class="story-meta">
                         <span class="badge bg-success">Done</span>
                         <span class="badge bg-warning text-dark">Medium</span>
-                        <span class="badge bg-info">Feature</span>
-                        <p class="small mt-2">Task ID: TDANIEL-010 | SP: 5 | Due: 2025-09-11</p>
+                        <span class="badge bg-info text-dark">Feature</span>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-004 · SP: 5 · Due: 2025-09-05</div>
                     </div>
-                </div>
+                </article>
             </div>
+
             <div class="col-md-6">
-                <div class="card bg-dark text-light h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Filter by store availability</h5>
-                        <p class="card-text">As a visitor, I want to filter movies based on stores and their
-                            availability.</p>
+                <article class="story-card">
+                    <div>
+                        <div class="story-title">Film details link</div>
+                        <div class="story-note">As a visitor, I want to click on a recommended film to see details.
+                        </div>
+                    </div>
+                    <div class="story-meta">
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-danger">Critical</span>
+                        <span class="badge bg-info text-dark">Feature</span>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-005 · SP: 8 · Due: 2025-09-09</div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Epic: Film Catalog & Availability -->
+    <section>
+        <div class="epic-header">
+            <h2>🎬 Film Catalog & Availability</h2>
+            <small class="muted-small">Browsing and inventory visibility</small>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <article class="story-card">
+                    <div>
+                        <div class="story-title">Browse catalog</div>
+                        <div class="story-note">As a visitor, I want to browse the film catalog so I can see what movies
+                            are offered.</div>
+                    </div>
+                    <div class="story-meta">
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-danger">Critical</span>
+                        <span class="badge bg-info text-dark">Feature</span>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-011 · SP: 13 · Due: 2025-09-07</div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-6">
+                <article class="story-card">
+                    <div>
+                        <div class="story-title">View film details</div>
+                        <div class="story-note">As a customer, I want to view details of a film so I know more before
+                            reserving.</div>
+                    </div>
+                    <div class="story-meta">
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-warning text-dark">Medium</span>
+                        <span class="badge bg-info text-dark">Feature</span>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-010 · SP: 5 · Due: 2025-09-11</div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-6">
+                <article class="story-card">
+                    <div>
+                        <div class="story-title">Filter by store availability</div>
+                        <div class="story-note">As a visitor, I want to filter movies based on stores and their
+                            availability.</div>
+                    </div>
+                    <div class="story-meta">
                         <span class="badge bg-secondary">Planned</span>
-                        <span class="badge bg-info">Quality</span>
-                        <p class="small mt-2">Task ID: TDANIEL-016 | SP: 3</p>
+                        <span class="badge bg-info text-dark">Quality</span>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-016 · SP: 3</div>
                     </div>
-                </div>
+                </article>
             </div>
+
             <div class="col-md-6">
-                <div class="card bg-dark text-light h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Staff film availability</h5>
-                        <p class="card-text">As staff, I want to see which films are available in my store so I can
-                            process reservations/rentals.</p>
+                <article class="story-card">
+                    <div>
+                        <div class="story-title">Staff film availability</div>
+                        <div class="story-note">As staff, I want to see which films are available in my store so I can
+                            process reservations/rentals.</div>
+                    </div>
+                    <div class="story-meta">
                         <span class="badge bg-success">Done</span>
                         <span class="badge bg-warning text-dark">Medium</span>
-                        <span class="badge bg-info">Feature</span>
-                        <p class="small mt-2">Task ID: TDANIEL-009 | SP: 3 | Due: 2025-09-13</p>
+                        <span class="badge bg-info text-dark">Feature</span>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-009 · SP: 3 · Due: 2025-09-13</div>
                     </div>
-                </div>
+                </article>
             </div>
         </div>
+    </section>
 
-        <!-- Authentication & User Management -->
-        <h2 class="mt-5">🔐 Authentication & User Management</h2>
-        <div class="row g-4">
-            <div class="col-md-6">
-                <div class="card bg-dark text-light h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Customer login</h5>
-                        <p class="card-text">As a customer, I want to log in so that I can access my reservations and
-                            rentals.</p>
-                        <span class="badge bg-success">Done</span>
-                        <span class="badge bg-warning text-dark">High</span>
-                        <p class="small mt-2">Task ID: TDANIEL-014 | SP: 21 | Due: 2025-09-11</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card bg-dark text-light h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Staff login</h5>
-                        <p class="card-text">As staff, I want to log in with my account so I can manage reservations and
-                            rentals for customers.</p>
-                        <span class="badge bg-success">Done</span>
-                        <span class="badge bg-warning text-dark">High</span>
-                        <p class="small mt-2">Task ID: TDANIEL-013 | SP: 13 | Due: 2025-09-11</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card bg-dark text-light h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Account registration</h5>
-                        <p class="card-text">As a customer I want to register an online account linked to my existing
-                            customer record.</p>
-                        <span class="badge bg-success">Done</span>
-                        <span class="badge bg-warning text-dark">High</span>
-                        <p class="small mt-2">Task ID: TDANIEL-018 | SP: 34 | Due: 2025-09-12</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card bg-dark text-light h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Upload photo</h5>
-                        <p class="card-text">As a user, I want to upload a photo so I can personalize my environment.
-                        </p>
-                        <span class="badge bg-success">Done</span>
-                        <span class="badge bg-secondary">Low</span>
-                        <p class="small mt-2">Task ID: TDANIEL-017 | SP: 8 | Due: 2025-09-12</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card bg-dark text-light h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Update information</h5>
-                        <p class="card-text">As a user, I want to be able to update my information so it is never out of
-                            date.</p>
-                        <span class="badge bg-success">Done</span>
-                        <span class="badge bg-secondary">Best Effort</span>
-                        <p class="small mt-2">Task ID: TDANIEL-019 | SP: 3</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card bg-dark text-light h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Delete account</h5>
-                        <p class="card-text">As a user, I want to be able to delete my account whenever I stop using the
-                            service.</p>
-                        <span class="badge bg-warning text-dark">In Progress</span>
-                        <span class="badge bg-secondary">Best Effort</span>
-                        <p class="small mt-2">Task ID: TDANIEL-026 | SP: 3</p>
-                    </div>
-                </div>
-            </div>
+    <!-- Epic: Authentication & User Management -->
+    <section>
+        <div class="epic-header">
+            <h2>🔐 Authentication & User Management</h2>
+            <small class="muted-small">Sign-in, accounts and profile features</small>
         </div>
 
-        <!-- Reservations & Rentals -->
-        <h2 class="mt-5">📀 Reservations & Rentals</h2>
         <div class="row g-4">
             <div class="col-md-6">
-                <div class="card bg-dark text-light h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">See my rentals</h5>
-                        <p class="card-text">As a customer, I want to see my rented films so I can track them.</p>
-                        <span class="badge bg-warning text-dark">In Progress</span>
-                        <span class="badge bg-warning text-dark">High</span>
-                        <p class="small mt-2">Task ID: TDANIEL-006 | SP: 13 | Due: 2025-09-16</p>
+                <article class="story-card">
+                    <div>
+                        <div class="story-title">Customer login</div>
+                        <div class="story-note">As a customer, I want to log in so that I can access my reservations and
+                            rentals.</div>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card bg-dark text-light h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Create purchase without account</h5>
-                        <p class="card-text">As store staff, I want to create a purchase linked to a customer using only
-                            their name and contact information.</p>
+                    <div class="story-meta">
                         <span class="badge bg-success">Done</span>
                         <span class="badge bg-warning text-dark">High</span>
-                        <p class="small mt-2">Task ID: TDANIEL-023 | SP: 13 | Due: 2025-09-16</p>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-014 · SP: 21 · Due: 2025-09-11</div>
                     </div>
-                </div>
+                </article>
             </div>
+
             <div class="col-md-6">
-                <div class="card bg-dark text-light h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Store dashboard</h5>
-                        <p class="card-text">As a store staff member, I want to see key metrics of the store on a
-                            dashboard.</p>
+                <article class="story-card">
+                    <div>
+                        <div class="story-title">Staff login</div>
+                        <div class="story-note">As staff, I want to log in with my account so I can manage reservations
+                            and rentals for customers.</div>
+                    </div>
+                    <div class="story-meta">
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-warning text-dark">High</span>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-013 · SP: 13 · Due: 2025-09-11</div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-6">
+                <article class="story-card">
+                    <div>
+                        <div class="story-title">Account registration</div>
+                        <div class="story-note">As a customer I want to register an online account linked to my existing
+                            customer record.</div>
+                    </div>
+                    <div class="story-meta">
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-warning text-dark">High</span>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-018 · SP: 34 · Due: 2025-09-12</div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-6">
+                <article class="story-card">
+                    <div>
+                        <div class="story-title">Upload photo</div>
+                        <div class="story-note">As a user, I want to upload a photo so I can personalize my environment.
+                        </div>
+                    </div>
+                    <div class="story-meta">
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-secondary text-dark">Low</span>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-017 · SP: 8 · Due: 2025-09-12</div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-6">
+                <article class="story-card">
+                    <div>
+                        <div class="story-title">Update information</div>
+                        <div class="story-note">As a user, I want to be able to update my information so it is never out
+                            of date.</div>
+                    </div>
+                    <div class="story-meta">
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-secondary text-dark">Best Effort</span>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-019 · SP: 3</div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-6">
+                <article class="story-card">
+                    <div>
+                        <div class="story-title">Delete account</div>
+                        <div class="story-note">As a user, I want to be able to delete my account whenever I stop using
+                            the service.</div>
+                    </div>
+                    <div class="story-meta">
+                        <span class="badge bg-warning text-dark">In Progress</span>
+                        <span class="badge bg-secondary text-dark">Best Effort</span>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-026 · SP: 3</div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Epic: Reservations & Rentals -->
+    <section>
+        <div class="epic-header">
+            <h2>📀 Reservations & Rentals</h2>
+            <small class="muted-small">Customer and staff rental flows</small>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <article class="story-card">
+                    <div>
+                        <div class="story-title">See my rentals</div>
+                        <div class="story-note">As a customer, I want to see my rented films so I can track them.</div>
+                    </div>
+                    <div class="story-meta">
+                        <span class="badge bg-warning text-dark">In Progress</span>
+                        <span class="badge bg-warning text-dark">High</span>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-006 · SP: 13 · Due: 2025-09-16</div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-6">
+                <article class="story-card">
+                    <div>
+                        <div class="story-title">Create purchase without account</div>
+                        <div class="story-note">As store staff, I want to create a purchase linked to a customer using
+                            only their name and contact information.</div>
+                    </div>
+                    <div class="story-meta">
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-warning text-dark">High</span>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-023 · SP: 13 · Due: 2025-09-16</div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="col-md-6">
+                <article class="story-card">
+                    <div>
+                        <div class="story-title">Store dashboard</div>
+                        <div class="story-note">As a store staff member, I want to see key metrics of the store on a
+                            dashboard.</div>
+                    </div>
+                    <div class="story-meta">
                         <span class="badge bg-secondary">Planned</span>
-                        <span class="badge bg-secondary">Best Effort</span>
-                        <p class="small mt-2">Task ID: TDANIEL-024 | SP: 8 | Due: 2025-09-17</p>
+                        <span class="badge bg-secondary text-dark">Best Effort</span>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-024 · SP: 8 · Due: 2025-09-17</div>
                     </div>
-                </div>
+                </article>
             </div>
+
             <div class="col-md-6">
-                <div class="card bg-dark text-light h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Create customer</h5>
-                        <p class="card-text">As a store staff member, I want to create a customer so I can process their
-                            rentals.</p>
+                <article class="story-card">
+                    <div>
+                        <div class="story-title">Create customer</div>
+                        <div class="story-note">As a store staff member, I want to create a customer so I can process
+                            their rentals.</div>
+                    </div>
+                    <div class="story-meta">
                         <span class="badge bg-success">Done</span>
                         <span class="badge bg-danger">Critical</span>
-                        <p class="small mt-2">Task ID: TDANIEL-025 | SP: 8 | Due: 2025-09-13</p>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-025 · SP: 8 · Due: 2025-09-13</div>
                     </div>
-                </div>
+                </article>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+</main>

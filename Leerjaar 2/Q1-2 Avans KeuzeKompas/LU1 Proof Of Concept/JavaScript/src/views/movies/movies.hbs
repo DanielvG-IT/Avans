@@ -1,189 +1,178 @@
+<style>
+  .filter-card {
+    background: #1c1c1c;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .35);
+  }
+
+  .movie-card-grid {
+    background: #1c1c1c;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+
+  .movie-card-grid:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .45);
+  }
+
+  .movie-card-grid .card-body {
+    padding: .9rem;
+  }
+
+  .movie-card-grid h6 {
+    font-size: .95rem;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .movie-badge {
+    font-size: .75rem;
+    border-radius: 6px;
+  }
+
+  .pagination .page-link {
+    background: #1c1c1c;
+    border: 1px solid #2a2a2a;
+    color: #ddd;
+  }
+
+  .pagination .page-item.active .page-link {
+    background: #0d6efd;
+    border-color: #0d6efd;
+    color: #fff;
+  }
+
+  .pagination .page-link:hover {
+    background: #2a2a2a;
+    color: #fff;
+  }
+
+  .bg-orange {
+    background-color: #fd7e14 !important;
+  }
+</style>
+
 <div class="container py-4">
 
   <!-- Page Title -->
-  <h2 class="mb-4">Movies</h2>
+  <h2 class="mb-4 text-light">Movies</h2>
 
-  <!-- Movie Filters / Search / Sorting -->
-  <form method="GET" class="mb-4">
-    <div class="row g-3 align-items-center">
+  <!-- Filters -->
+  <div class="filter-card">
+    <form method="GET">
+      <div class="row g-3 align-items-center">
 
-      <!-- Search Box -->
-      <div class="col-12 col-md-4">
-        <label for="search" class="form-label visually-hidden">Search by title</label>
-        <input type="text" id="search" name="search" value="{{search}}" class="form-control"
-          placeholder="Search movies..." aria-label="Search movies by title">
+        <!-- Search -->
+        <div class="col-12 col-md-4">
+          <input type="text" id="search" name="search" value="{{search}}" class="form-control"
+            placeholder="Search movies..." aria-label="Search movies by title">
+        </div>
+
+        <!-- Category -->
+        <div class="col-6 col-md-3">
+          <select id="category" name="category" class="form-select" aria-label="Filter by category">
+            <option value="">All Categories</option>
+            {{#each categories}}
+            <option value="{{this}}" {{#ifEquals ../category this}}selected{{/ifEquals}}>{{this}}</option>
+            {{/each}}
+          </select>
+        </div>
+
+        <!-- Rating -->
+        <div class="col-6 col-md-2">
+          <select id="rating" name="rating" class="form-select" aria-label="Filter by rating">
+            <option value="">All Ratings</option>
+            {{#each ratings}}
+            <option value="{{this}}" {{#ifEquals ../rating this}}selected{{/ifEquals}}>{{this}}</option>
+            {{/each}}
+          </select>
+        </div>
+
+        <!-- Sort -->
+        <div class="col-12 col-md-3">
+          <select id="sort" name="sort" class="form-select" aria-label="Sort movies">
+            <option value="title,asc" {{#ifEquals sort "title,asc" }}selected{{/ifEquals}}>Title A–Z</option>
+            <option value="title,desc" {{#ifEquals sort "title,desc" }}selected{{/ifEquals}}>Title Z–A</option>
+            <option value="year,asc" {{#ifEquals sort "year,asc" }}selected{{/ifEquals}}>Year (Old → New)</option>
+            <option value="year,desc" {{#ifEquals sort "year,desc" }}selected{{/ifEquals}}>Year (New → Old)</option>
+            <option value="length,asc" {{#ifEquals sort "length,asc" }}selected{{/ifEquals}}>Length (Short → Long)
+            </option>
+            <option value="length,desc" {{#ifEquals sort "length,desc" }}selected{{/ifEquals}}>Length (Long → Short)
+            </option>
+            <option value="rate,asc" {{#ifEquals sort "rate,asc" }}selected{{/ifEquals}}>Rate (Low → High)</option>
+            <option value="rate,desc" {{#ifEquals sort "rate,desc" }}selected{{/ifEquals}}>Rate (High → Low)</option>
+          </select>
+        </div>
+
+        <!-- Buttons -->
+        <div class="col-12 d-flex flex-wrap gap-2">
+          <button type="submit" class="btn btn-primary flex-grow-1 flex-md-grow-0">Apply</button>
+          <a href="/movies" class="btn btn-outline-secondary flex-grow-1 flex-md-grow-0">Clear</a>
+          {{#if (eq user.role "STAFF")}}
+          <a href="/movies/new" class="btn btn-success ms-md-auto">Add Movie</a>
+          {{/if}}
+        </div>
       </div>
 
-      <!-- Category Filter -->
-      <div class="col-6 col-md-3">
-        <label for="category" class="form-label visually-hidden">Filter by category</label>
-        <select id="category" name="category" class="form-select" aria-label="Filter by category">
-          <option value="">All Categories</option>
-          {{#each categories}}
-          <option value="{{this}}" {{#ifEquals ../category this}}selected{{/ifEquals}}>{{this}}</option>
-          {{/each}}
-        </select>
-      </div>
-
-      <!-- Rating Filter -->
-      <div class="col-6 col-md-2">
-        <label for="rating" class="form-label visually-hidden">Filter by rating</label>
-        <select id="rating" name="rating" class="form-select" aria-label="Filter by rating">
-          <option value="">All Ratings</option>
-          {{#each ratings}}
-          <option value="{{this}}" {{#ifEquals ../rating this}}selected{{/ifEquals}}>{{this}}</option>
-          {{/each}}
-        </select>
-      </div>
-
-      <!-- Sort Dropdown -->
-      <div class="col-12 col-md-3">
-        <label for="sort" class="form-label visually-hidden">Sort movies</label>
-        <select id="sort" name="sort" class="form-select" aria-label="Sort movies">
-          <option value="title,asc" {{#ifEquals sort "title,asc" }}selected{{/ifEquals}}>Title A–Z</option>
-          <option value="title,desc" {{#ifEquals sort "title,desc" }}selected{{/ifEquals}}>Title Z–A</option>
-          <option value="year,asc" {{#ifEquals sort "year,asc" }}selected{{/ifEquals}}>Release Year (Old → New)</option>
-          <option value="year,desc" {{#ifEquals sort "year,desc" }}selected{{/ifEquals}}>Release Year (New → Old)
-          </option>
-          <option value="length,asc" {{#ifEquals sort "length,asc" }}selected{{/ifEquals}}>Length (Short → Long)
-          </option>
-          <option value="length,desc" {{#ifEquals sort "length,desc" }}selected{{/ifEquals}}>Length (Long → Short)
-          </option>
-          <option value="rate,asc" {{#ifEquals sort "rate,asc" }}selected{{/ifEquals}}>Rental Rate (Low → High)</option>
-          <option value="rate,desc" {{#ifEquals sort "rate,desc" }}selected{{/ifEquals}}>Rental Rate (High → Low)
-          </option>
-        </select>
-      </div>
-
-      <!-- Apply / Clear Buttons -->
-      <div class="col-12 d-flex flex-wrap gap-2">
-        <button type="submit" class="btn btn-primary flex-grow-1 flex-md-grow-0">Apply</button>
-        <a href="/movies" class="btn btn-outline-secondary flex-grow-1 flex-md-grow-0">Clear</a>
-        {{#if (eq user.role "STAFF")}}
-        <a href="/movies/new" class="btn btn-success ms-md-auto">Add New Movie</a>
+      <!-- Movie Count -->
+      <div class="mt-3">
+        {{#if movies.length}}
+        <div class="text-light">Showing {{movies.length}} of {{total}} movies</div>
+        {{else}}
+        <div class="alert alert-warning mb-0">No movies found matching your criteria.</div>
         {{/if}}
       </div>
-
-    </div>
-
-    <!-- Movie Count / No Results -->
-    <div class="mt-3">
-      {{#if movies.length}}
-      <div class="text-light">
-        Showing {{movies.length}} of {{total}} movies
-      </div>
-      {{else}}
-      <div class="alert alert-warning" role="alert">
-        No movies found matching your criteria.
-      </div>
-      {{/if}}
-    </div>
-  </form>
+    </form>
+  </div>
 
   <!-- Movies Grid -->
   <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3">
     {{#each movies}}
     <div class="col">
-      <a href="/movies/{{filmId}}" class="text-decoration-none text-dark">
-        <div class="card h-100 shadow-sm">
+      <a href="/movies/{{filmId}}" class="text-decoration-none">
+        <div class="movie-card-grid h-100">
 
           <!-- Poster -->
           {{#if coverUrl}}
-          <img src="{{coverUrl}}" alt="{{title}}" class="card-img-top" style="object-fit: cover; aspect-ratio: 2/3;">
+          <img src="{{coverUrl}}" alt="{{title}}" class="card-img-top" style="object-fit: cover; aspect-ratio: 2/3;"
+            loading="lazy">
           {{else}}
           <div class="bg-secondary d-flex align-items-center justify-content-center" style="aspect-ratio: 2/3;">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 96" role="img" aria-labelledby="no-image-title"
-              class="w-50 h-auto" focusable="false">
-              <title id="no-image-title">No image available</title>
-
-              <!-- card background -->
-              <rect x="2" y="6" width="60" height="84" rx="4" fill="#f5f5f7" stroke="#dcdcdc"></rect>
-
-              <!-- film strip header (clapper style) -->
-              <g transform="translate(6,10)">
-                <rect x="0" y="0" width="52" height="14" rx="2" fill="#e9eef6"></rect>
-                <g fill="#c4d0e9">
-                  <rect x="2" y="2" width="6" height="10" rx="1"></rect>
-                  <rect x="12" y="2" width="6" height="10" rx="1"></rect>
-                  <rect x="22" y="2" width="6" height="10" rx="1"></rect>
-                  <rect x="32" y="2" width="6" height="10" rx="1"></rect>
-                  <rect x="42" y="2" width="6" height="10" rx="1"></rect>
-                </g>
-              </g>
-
-              <!-- film window -->
-              <rect x="10" y="28" width="44" height="52" rx="2" fill="#ffffff"></rect>
-              <g transform="translate(10,28)">
-                <!-- left sprocket holes -->
-                <g fill="#e6e6e6">
-                  <rect x="-6" y="6" width="6" height="6" rx="1"></rect>
-                  <rect x="-6" y="22" width="6" height="6" rx="1"></rect>
-                  <rect x="-6" y="38" width="6" height="6" rx="1"></rect>
-                </g>
-
-                <!-- right sprocket holes -->
-                <g transform="translate(44,0)" fill="#e6e6e6">
-                  <rect x="6" y="6" width="6" height="6" rx="1"></rect>
-                  <rect x="6" y="22" width="6" height="6" rx="1"></rect>
-                  <rect x="6" y="38" width="6" height="6" rx="1"></rect>
-                </g>
-
-                <!-- simple artwork: mountain + sun -->
-                <g transform="translate(4,6)">
-                  <polygon points="8,36 20,8 32,36" fill="#d0d7ef"></polygon>
-                  <circle cx="26" cy="14" r="6" fill="#ffd580"></circle>
-                  <rect x="0" y="36" width="44" height="6" fill="#f0f2fa"></rect>
-                </g>
-
-                <!-- play button to indicate media -->
-                <g transform="translate(12,16)">
-                  <circle cx="10" cy="10" r="10" fill="#d9e3ff" opacity="0.95"></circle>
-                  <polygon points="14,10 8,14 8,6" fill="#6b7aa6"></polygon>
-                </g>
-              </g>
-
-              <!-- label -->
-              <text x="32" y="88" font-family="Helvetica, Arial, sans-serif" font-size="8" fill="#6c757d"
-                text-anchor="middle">
-                No image
-              </text>
-            </svg>
+            <span class="text-muted">No image</span>
           </div>
           {{/if}}
 
-          <!-- Card Body -->
-          <div class="card-body p-3 d-flex flex-column" style="min-height:110px;">
-            <h6 class="card-title mb-2 text-truncate" title="{{title}}">{{title}}</h6>
+          <!-- Info -->
+          <div class="card-body d-flex flex-column">
+            <h6 class="mb-2 text-truncate" title="{{title}}">{{title}}</h6>
 
-            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap w-100">
+            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
               {{#if category}}
-              <span class="badge bg-info text-dark small text-truncate" style="max-width:8rem;">{{category}}</span>
+              <span class="badge bg-info text-dark movie-badge text-truncate"
+                style="max-width:8rem;">{{category}}</span>
               {{/if}}
 
-              <span class="badge small
-                {{#if (eq rating " G")}}bg-success {{else if (eq rating "PG" )}}bg-warning text-dark {{else if (eq
-                rating "PG-13" )}}bg-orange text-dark {{else if (eq rating "R" )}}bg-danger {{else if (eq rating "NC-17"
-                )}}bg-dark {{else}}bg-secondary{{/if}}">
+              <span class="badge movie-badge
+                {{#if (eq rating " G")}}bg-success{{else if (eq rating "PG" )}}bg-warning text-dark {{else if (eq
+                rating "PG-13" )}}bg-orange text-dark{{else if (eq rating "R" )}}bg-danger {{else if (eq rating "NC-17"
+                )}}bg-dark{{else}}bg-secondary{{/if}}">
                 {{#if rating}}{{rating}}{{else}}PG-18{{/if}}
               </span>
 
-
-              <div class="ms-auto text-end">
-                <small class="text-light d-block">{{releaseYear}}</small>
-              </div>
+              <small class="text-light ms-auto">{{releaseYear}}</small>
             </div>
 
             <div class="d-flex justify-content-between align-items-center mt-auto">
-              <div class="d-flex gap-2 align-items-center">
-                {{#if length}}<small class="text-light">{{length}} min</small>{{else}}<small
-                  class="text-light">—</small>{{/if}}
-              </div>
-
-              <!-- Outer anchor wraps the whole card, keep this as a visual action -->
+              <small class="text-light">{{#if length}}{{length}} min{{else}}—{{/if}}</small>
               <span class="btn btn-sm btn-outline-primary">View</span>
             </div>
           </div>
-
         </div>
       </a>
     </div>
@@ -192,75 +181,56 @@
 
   <!-- Pagination -->
   <nav aria-label="Movies pagination" class="mt-4">
-
-    <!-- Mobile: simplified controls -->
+    <!-- Mobile simple -->
     <div class="d-flex d-sm-none justify-content-between align-items-center">
-      <!-- Previous -->
       {{#if prevPage}}
-      <a class="btn btn-outline-primary btn-sm" href="{{pageQueryPrefix}}{{prevPage}}"
-        aria-label="Previous page">Prev</a>
+      <a class="btn btn-outline-primary btn-sm" href="{{pageQueryPrefix}}{{prevPage}}">Prev</a>
       {{else}}
-      <span class="btn btn-outline-secondary btn-sm disabled" aria-hidden="true">Prev</span>
+      <span class="btn btn-outline-secondary btn-sm disabled">Prev</span>
       {{/if}}
 
-      <!-- Current page (find active) -->
-      <small class="text-light mx-2">
-        Page
-        {{#each pagesToShow}}
-        {{#if this.active}}{{this.page}}{{/if}}
-        {{/each}}
-        of {{totalPages}}
+      <small class="text-light">
+        Page {{#each pagesToShow}}{{#if this.active}}{{this.page}}{{/if}}{{/each}} of {{totalPages}}
       </small>
 
-      <!-- Next -->
       {{#if nextPage}}
-      <a class="btn btn-outline-primary btn-sm" href="{{pageQueryPrefix}}{{nextPage}}" aria-label="Next page">Next</a>
+      <a class="btn btn-outline-primary btn-sm" href="{{pageQueryPrefix}}{{nextPage}}">Next</a>
       {{else}}
-      <span class="btn btn-outline-secondary btn-sm disabled" aria-hidden="true">Next</span>
+      <span class="btn btn-outline-secondary btn-sm disabled">Next</span>
       {{/if}}
     </div>
 
-    <!-- Desktop / Tablet: full pagination -->
-    <ul class="pagination justify-content-center flex-wrap d-none d-sm-flex mt-3" role="navigation"
-      aria-label="Pagination">
-      <!-- Previous -->
-      <li class="page-item {{#unless prevPage}}disabled{{/unless}} me-1 mb-1">
+    <!-- Desktop pagination -->
+    <ul class="pagination justify-content-center flex-wrap d-none d-sm-flex mt-3">
+      <li class="page-item {{#unless prevPage}}disabled{{/unless}}">
         {{#if prevPage}}
-        <a class="page-link px-3 py-1" href="{{pageQueryPrefix}}{{prevPage}}" aria-label="Previous">Previous</a>
+        <a class="page-link" href="{{pageQueryPrefix}}{{prevPage}}">Previous</a>
         {{else}}
-        <span class="page-link px-3 py-1" aria-hidden="true">Previous</span>
+        <span class="page-link">Previous</span>
         {{/if}}
       </li>
 
-      <!-- Page buttons (server-generated array) -->
       {{#each pagesToShow}}
       {{#if this.ellipsis}}
-      <li class="page-item disabled me-1 mb-1" aria-hidden="true"><span class="page-link px-3 py-1">…</span></li>
+      <li class="page-item disabled"><span class="page-link">…</span></li>
       {{else}}
-      <li class="page-item {{#if this.active}}active{{/if}} me-1 mb-1">
+      <li class="page-item {{#if this.active}}active{{/if}}">
         {{#if this.active}}
-        <span class="page-link px-3 py-1" aria-current="page">{{this.page}} <span
-            class="visually-hidden">(current)</span></span>
+        <span class="page-link">{{this.page}}</span>
         {{else}}
-        <a class="page-link px-3 py-1" href="{{../pageQueryPrefix}}{{this.page}}">{{this.page}}</a>
+        <a class="page-link" href="{{../pageQueryPrefix}}{{this.page}}">{{this.page}}</a>
         {{/if}}
       </li>
       {{/if}}
       {{/each}}
 
-      <!-- Next -->
-      <li class="page-item {{#unless nextPage}}disabled{{/unless}} me-1 mb-1">
+      <li class="page-item {{#unless nextPage}}disabled{{/unless}}">
         {{#if nextPage}}
-        <a class="page-link px-3 py-1" href="{{pageQueryPrefix}}{{nextPage}}" aria-label="Next">Next</a>
+        <a class="page-link" href="{{pageQueryPrefix}}{{nextPage}}">Next</a>
         {{else}}
-        <span class="page-link px-3 py-1" aria-hidden="true">Next</span>
+        <span class="page-link">Next</span>
         {{/if}}
       </li>
     </ul>
   </nav>
 </div>
-<style>
-  .bg-orange {
-    background-color: #fd7e14;
-  }
-</style>

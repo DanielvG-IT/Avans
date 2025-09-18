@@ -1,147 +1,171 @@
-<div class="container my-4">
-  <div class="card shadow-sm">
-    <div class="card-body">
-      <div class="d-flex justify-content-between align-items-start mb-3">
-        <h1 class="h4 mb-0">
-          {{#if movie.filmId}}Edit Movie #{{movie.filmId}}{{else}}Create Movie{{/if}}
-        </h1>
-        <a href="{{cancelUrl}}" class="btn btn-sm btn-outline-secondary">Cancel</a>
-      </div>
+<style>
+  /* Card & wrapper style */
+  .login-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+  }
 
-      {{#if errorMessage}}
-      <div class="alert alert-danger" role="alert" id="errorMessage">
-        {{errorMessage}}
-      </div>
+  .card-title {
+    margin-bottom: .25rem;
+    font-weight: 600;
+  }
+
+  .form-text-muted {
+    color: #cfcfcf;
+    font-size: .95rem;
+  }
+
+  .bi.spin {
+    animation: spin 0.9s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (max-width: 576px) {
+    .content-actions {
+      flex-direction: column;
+      gap: .5rem;
+    }
+  }
+</style>
+
+<div class="login-wrapper">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">
+      {{#if movie.filmId}}Edit Movie #{{movie.filmId}}{{else}}Create Movie{{/if}}
+    </h1>
+    <a href="{{cancelUrl}}" class="btn btn-sm btn-outline-secondary">Cancel</a>
+  </div>
+
+  {{#if errorMessage}}
+  <div class="alert alert-danger" role="alert" id="errorMessage">
+    {{errorMessage}}
+  </div>
+  {{/if}}
+
+  <div class="content-card p-4">
+    <form id="movieForm" method="post"
+      action="{{#if movie.filmId}}/movies/{{movie.filmId}}/edit{{else}}/movies/new{{/if}}" novalidate>
+      {{#if movie.filmId}}
+      <input type="hidden" name="film_id" value="{{movie.filmId}}">
       {{/if}}
 
-      <form id="movieForm" method="post"
-        action="{{#if movie.filmId}}/movies/{{movie.filmId}}/edit{{else}}/movies/new{{/if}}" class="needs-validation"
-        novalidate>
-        {{#if movie.filmId}}
-        <input type="hidden" name="film_id" value="{{movie.filmId}}">
-        {{/if}}
+      <div class="row g-3">
+        <!-- Title -->
+        <div class="col-12 col-md-6">
+          <label for="title" class="form-label">Title <span class="text-danger">*</span></label>
+          <input id="title" name="title" type="text" class="form-control form-control-lg" required
+            value="{{movie.title}}">
+          <div class="invalid-feedback">Title is required.</div>
+        </div>
 
-        <div class="row g-3">
+        <!-- Language -->
+        <div class="col-12 col-md-3">
+          <label for="language_id" class="form-label">Language <span class="text-danger">*</span></label>
+          <select id="language_id" name="language_id" class="form-select form-select-lg" required
+            aria-describedby="languageHelp">
+            <option value="">Choose...</option>
+            {{#each languages}}
+            <option value="{{this.id}}" {{#if (eq this.name ../movie.language)}}selected{{/if}}>{{this.name}}
+            </option>
+            {{/each}}
+          </select>
+          <div class="invalid-feedback">Language is required.</div>
+          <div id="languageHelp" class="form-text">Select the primary language.</div>
+        </div>
 
-          <!-- Title -->
-          <div class="col-12 col-md-6">
-            <div class="form-floating">
-              <input id="title" name="title" type="text" class="form-control" required value="{{movie.title}}"
-                placeholder="Title">
-              <label for="title">Title <span class="text-danger">*</span></label>
-              <div class="invalid-feedback">Title is required.</div>
+        <!-- Release Year -->
+        <div class="col-12 col-md-3">
+          <label for="release_year" class="form-label">Release Year</label>
+          <input id="release_year" name="release_year" type="number" min="1800" max="9999"
+            class="form-control form-control-lg" value="{{movie.releaseYear}}">
+        </div>
+
+        <!-- Description -->
+        <div class="col-12">
+          <label for="description" class="form-label">Description</label>
+          <textarea id="description" name="description" rows="4" class="form-control form-control-lg"
+            placeholder="Description">{{movie.description}}</textarea>
+        </div>
+
+        <!-- Numeric fields -->
+        <div class="col-12 row g-3">
+          <div class="col-6 col-md-3">
+            <label for="rental_duration" class="form-label">Rental Duration (days)</label>
+            <input id="rental_duration" name="rental_duration" type="number" min="0"
+              class="form-control form-control-lg" value="{{movie.rentalDuration}}">
+          </div>
+
+          <div class="col-6 col-md-3">
+            <label for="length" class="form-label">Length (min)</label>
+            <input id="length" name="length" type="number" min="0" class="form-control form-control-lg"
+              value="{{movie.length}}">
+          </div>
+
+          <div class="col-6 col-md-3">
+            <label for="rental_rate" class="form-label">Rental Rate</label>
+            <div class="input-group input-group-lg">
+              <span class="input-group-text">€</span>
+              <input id="rental_rate" name="rental_rate" type="number" step="0.01" min="0"
+                class="form-control form-control-lg" value="{{movie.rentalRate}}">
             </div>
           </div>
 
-          <!-- Language -->
-          <div class="col-12 col-md-3">
-            <label for="language_id" class="form-label">Language <span class="text-danger">*</span></label>
-            <select id="language_id" name="language_id" class="form-select" required aria-describedby="languageHelp">
+          <div class="col-6 col-md-3">
+            <label for="replacement_cost" class="form-label">Replacement Cost</label>
+            <div class="input-group input-group-lg">
+              <span class="input-group-text">€</span>
+              <input id="replacement_cost" name="replacement_cost" type="number" step="0.01" min="0"
+                class="form-control form-control-lg" value="{{movie.replacementCost}}">
+            </div>
+          </div>
+        </div>
+
+        <!-- Rating & Category -->
+        <div class="col-12 row g-3 mt-2">
+          <div class="col-6 col-md-3">
+            <label for="rating" class="form-label">Rating</label>
+            <select id="rating" name="rating" class="form-select form-select-lg" required>
               <option value="">Choose...</option>
-              {{#each languages}}
-              <option value="{{this.id}}" {{#if (eq this.name ../movie.language)}}selected{{/if}}>{{this.name}}</option>
+              {{#each ratings}}
+              <option value="{{this}}" {{#if (eq this ../movie.rating)}}selected{{/if}}>{{this}}</option>
               {{/each}}
             </select>
-            <div class="invalid-feedback">Language is required.</div>
-            <div id="languageHelp" class="form-text">Select the primary language.</div>
+            <div class="invalid-feedback">Rating is required.</div>
           </div>
 
-          <!-- Release Year -->
-          <div class="col-12 col-md-3">
-            <div class="form-floating">
-              <input id="release_year" name="release_year" type="number" min="1800" max="9999" class="form-control"
-                value="{{movie.releaseYear}}" placeholder="Release Year">
-              <label for="release_year">Release Year</label>
-            </div>
+          <div class="col-6 col-md-3">
+            <label for="category" class="form-label">Category</label>
+            <select id="category" name="category" class="form-select form-select-lg">
+              <option value="">Choose...</option>
+              {{#each categories}}
+              <option value="{{this}}" {{#if (eq this ../movie.category)}}selected{{/if}}>{{this}}</option>
+              {{/each}}
+            </select>
           </div>
 
-          <!-- Description -->
-          <div class="col-12">
-            <div class="form-floating">
-              <textarea id="description" name="description" rows="4" class="form-control"
-                placeholder="Description">{{movie.description}}</textarea>
-              <label for="description">Description</label>
-            </div>
+          <div class="col-12 col-md-6">
+            <label for="special_features" class="form-label">Special Features</label>
+            <input id="special_features" name="special_features" type="text" class="form-control form-control-lg"
+              placeholder="Trailers,Deleted Scenes" value="{{movie.specialFeatures}}">
+            <div class="form-text">Comma-separated (e.g. Trailers,Deleted Scenes).</div>
           </div>
-
-          <!-- Numeric fields row -->
-          <div class="col-12">
-            <div class="row g-3">
-              <div class="col-6 col-md-3">
-                <label for="rental_duration" class="form-label">Rental Duration (days)</label>
-                <input id="rental_duration" name="rental_duration" type="number" min="0" class="form-control"
-                  value="{{movie.rentalDuration}}">
-              </div>
-
-              <div class="col-6 col-md-3">
-                <label for="length" class="form-label">Length (min)</label>
-                <input id="length" name="length" type="number" min="0" class="form-control" value="{{movie.length}}">
-              </div>
-
-              <div class="col-6 col-md-3">
-                <label for="rental_rate" class="form-label">Rental Rate</label>
-                <div class="input-group">
-                  <span class="input-group-text">€</span>
-                  <input id="rental_rate" name="rental_rate" type="number" step="0.01" min="0" class="form-control"
-                    value="{{movie.rentalRate}}">
-                </div>
-              </div>
-
-              <div class="col-6 col-md-3">
-                <label for="replacement_cost" class="form-label">Replacement Cost</label>
-                <div class="input-group">
-                  <span class="input-group-text">€</span>
-                  <input id="replacement_cost" name="replacement_cost" type="number" step="0.01" min="0"
-                    class="form-control" value="{{movie.replacementCost}}">
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Rating & Category -->
-          <div class="col-12">
-            <div class="row g-3">
-              <div class="col-6 col-md-3">
-                <label for="rating" class="form-label">Rating</label>
-                <select id="rating" name="rating" class="form-select" required>
-                  <option value="">Choose...</option>
-                  {{#each ratings}}
-                  <option value="{{this}}" {{#if (eq this ../movie.rating)}}selected{{/if}}>{{this}}</option>
-                  {{/each}}
-                </select>
-                <div class="invalid-feedback">Rating is required.</div>
-              </div>
-
-              <div class="col-6 col-md-3">
-                <label for="category" class="form-label">Category</label>
-                <select id="category" name="category" class="form-select">
-                  <option value="">Choose...</option>
-                  {{#each categories}}
-                  <option value="{{this}}" {{#if (eq this ../movie.category)}}selected{{/if}}>{{this}}</option>
-                  {{/each}}
-                </select>
-              </div>
-
-              <div class="col-12 col-md-6">
-                <label for="special_features" class="form-label">Special Features</label>
-                <input id="special_features" name="special_features" type="text" class="form-control"
-                  placeholder="Trailers,Deleted Scenes" value="{{movie.specialFeatures}}">
-                <div class="form-text">Comma-separated (e.g. Trailers,Deleted Scenes).</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Submit -->
-          <div class="col-12 d-flex gap-2 mt-2">
-            <button type="submit" class="btn btn-primary">
-              {{#if movie.filmId}}Save changes{{else}}Create movie{{/if}}
-            </button>
-            <a href="{{cancelUrl}}" class="btn btn-outline-secondary">Back</a>
-          </div>
-
         </div>
-      </form>
-    </div>
+
+        <!-- Submit -->
+        <div class="d-flex gap-2 mt-3">
+          <button type="submit" class="btn btn-primary btn-lg">
+            {{#if movie.filmId}}Save changes{{else}}Create movie{{/if}}
+          </button>
+          <a href="{{cancelUrl}}" class="btn btn-outline-secondary btn-lg">Back</a>
+        </div>
+
+      </div>
+    </form>
   </div>
 </div>
 
@@ -149,12 +173,11 @@
   (() => {
     const form = document.getElementById('movieForm');
     if (!form) return;
+
     form.addEventListener('submit', (e) => {
-      // Standard Bootstrap validation behavior
       if (!form.checkValidity()) {
         e.preventDefault();
         e.stopPropagation();
-        // focus first invalid control for usability
         const invalid = form.querySelector(':invalid');
         if (invalid && typeof invalid.focus === 'function') invalid.focus();
       }
