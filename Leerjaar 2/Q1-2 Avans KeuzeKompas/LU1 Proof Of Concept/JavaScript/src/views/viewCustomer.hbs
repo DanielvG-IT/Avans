@@ -588,9 +588,5 @@
 
     // Close modal on outside click
     modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-
-    // small progressive enhancement: log metrics for debugging
-    try { console.log('Customer Metrics:', {{ json metrics }});
-  } catch (e) { }
-  }) ();
+  })();
 </script>
