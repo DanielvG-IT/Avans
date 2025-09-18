@@ -27,7 +27,7 @@ describe('Customer Edit Page', () => {
         }
     });
     beforeEach(() => {
-        cy.login(TEST_EMAIL, TEST_PASSWORD);
+        cy.loginSession(TEST_EMAIL, TEST_PASSWORD);
         cy.visitCustomerEdit();
     });
 
@@ -53,7 +53,7 @@ describe('Customer Edit Page', () => {
     it('updates name and phone then saves changes', () => {
         const newFirst = 'Test' + randomLetters(); // only letters; normalization strips digits otherwise
         const newLast = 'User';
-        const newPhone = '555-' + Date.now().toString().slice(-6);
+        const newPhone = '076-' + Date.now().toString().slice(-6);
 
         cy.get('#firstName').clear().type(newFirst);
         cy.get('#lastName').clear().type(newLast);
@@ -132,5 +132,36 @@ describe('Customer Edit Page', () => {
                 cy.log('Only one store option present; skipping change test.');
             }
         });
+    });
+
+    it('submitting with no actual changes re-renders (no-change path)', () => {
+        // Capture existing values
+        cy.get('#firstName')
+            .invoke('val')
+            .then((origFirst) => {
+                cy.get('#lastName')
+                    .invoke('val')
+                    .then((origLast) => {
+                        cy.get('#phone')
+                            .invoke('val')
+                            .then((origPhone) => {
+                                // Re-type same values
+                                cy.get('#firstName').clear().type(String(origFirst));
+                                cy.get('#lastName').clear().type(String(origLast));
+                                cy.get('#phone').clear().type(String(origPhone));
+                                cy.intercept('POST', '/customer/edit').as('saveSame');
+                                cy.get('#submitBtn').click();
+                                cy.wait('@saveSame').then((i) => {
+                                    expect([200, 302]).to.include(i.response?.statusCode);
+                                });
+                                // If still on edit page this confirms no-change scenario path; otherwise redirect.
+                                cy.location('pathname').then((p) => {
+                                    if (p === '/customer/edit') {
+                                        cy.contains('No changes were made.').should('exist');
+                                    }
+                                });
+                            });
+                    });
+            });
     });
 });

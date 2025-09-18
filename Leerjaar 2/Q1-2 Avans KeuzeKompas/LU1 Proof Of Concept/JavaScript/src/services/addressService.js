@@ -4,6 +4,7 @@ import {
     getOrCreateCity,
     createAddress,
     readAddress,
+    updateAddress,
 } from '../dao/address.js';
 import { logger } from '../util/logger.js';
 
@@ -112,14 +113,45 @@ export const makeAddress = (
                         return cb(err);
                     }
                     if (addressRow) {
-                        logger.debug('Address already exists, returning existing row', {
-                            addressRow,
-                        });
-                        return cb(null, {
-                            country: countryRow,
-                            city: cityRow,
-                            address: addressRow,
-                        });
+                        // If phone differs, update existing address record
+                        if (phone && addressRow.phone !== phone) {
+                            updateAddress(addressRow.address_id, { phone }, (uErr) => {
+                                if (uErr) {
+                                    logger.error('updateAddress error:', uErr);
+                                    // proceed with old phone rather than failing whole op
+                                    return cb(null, {
+                                        country: countryRow,
+                                        city: cityRow,
+                                        address: addressRow,
+                                    });
+                                }
+                                // re-read updated row
+                                return readAddressById(addressRow.address_id, (rErr, updated) => {
+                                    if (rErr) {
+                                        logger.error('readAddressById after update error:', rErr);
+                                        return cb(null, {
+                                            country: countryRow,
+                                            city: cityRow,
+                                            address: addressRow,
+                                        });
+                                    }
+                                    return cb(null, {
+                                        country: countryRow,
+                                        city: cityRow,
+                                        address: updated || addressRow,
+                                    });
+                                });
+                            });
+                        } else {
+                            logger.debug('Address already exists, returning existing row', {
+                                addressRow,
+                            });
+                            return cb(null, {
+                                country: countryRow,
+                                city: cityRow,
+                                address: addressRow,
+                            });
+                        }
                     }
                     logger.debug('Address does not exist, creating new address row', {
                         address,
