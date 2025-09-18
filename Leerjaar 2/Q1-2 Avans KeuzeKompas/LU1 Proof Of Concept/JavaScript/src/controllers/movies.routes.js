@@ -573,7 +573,6 @@ moviesRouter.get('/:id/rent', requireStaffAuthWeb, (req, res, next) => {
                     title: 'Rent Movie',
                     preselectedCustomer: null,
                     preselectedMovie,
-                    // NEW: safe bootstrap values (no Handlebars in script tags)
                     preselectedCustomerB64: '',
                     preselectedMovieB64,
                     staff: staff || null,
