@@ -68,4 +68,12 @@ export const expressHelpers = {
         if (!(date instanceof Date)) return date;
         return date.toISOString().split('T')[0];
     },
+    or: (...args) => {
+        const options = args.pop();
+        if (args.some((arg) => arg)) {
+            return typeof options.fn === 'function' ? options.fn(this) : '';
+        } else {
+            return typeof options.inverse === 'function' ? options.inverse(this) : '';
+        }
+    },
 };
