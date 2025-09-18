@@ -148,7 +148,7 @@ customerRouter.get('/edit', requireCustomerAuthWeb, (req, res, next) => {
     });
 });
 customerRouter.post('/edit', requireCustomerAuthWeb, (req, res, next) => {
-    logger.info('customerRouter.post /edit triggered', { body: req.body, user: req.user });
+    logger.debug('customerRouter.post /edit triggered', { body: req.body, user: req.user });
     fetchCustomerByUserId(req.user.userId, (error, customer) => {
         if (error) {
             logger.error('Customer Error:', error);

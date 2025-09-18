@@ -314,7 +314,7 @@ moviesRouter.post('/new', requireStaffAuthApi, (req, res, next) => {
                 });
                 return; // prevent fallthrough
             }
-            logger.info('Create movie: success', { newMovieId });
+            logger.debug('Create movie: success', { newMovieId });
             return res.redirect(`/movies/${newMovieId}`);
         }
     );

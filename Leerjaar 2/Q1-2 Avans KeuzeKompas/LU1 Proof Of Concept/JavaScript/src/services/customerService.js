@@ -225,16 +225,16 @@ export const updateCustomerById = (customerId, data, callback) => {
         active,
     } = data || {};
 
-    logger.info('updateCustomerById called', { customerId, data });
+    logger.debug('updateCustomerById called', { customerId, data });
 
     const performUpdate = (updateData) => {
-        logger.info('Calling updateCustomer with', { customerId, updateData });
+        logger.debug('Calling updateCustomer with', { customerId, updateData });
         updateCustomer(customerId, updateData, (error, result) => {
             if (error) {
                 logger.error('Customer Update Error:', error);
                 return cb(error);
             }
-            logger.info('Customer update result', { result });
+            logger.debug('Customer update result', { result });
             cb(null, result);
         });
     };
@@ -324,7 +324,7 @@ export const deleteCustomerById = (customerId, callback) => {
             return cb(error);
         }
         cb(null, result);
-        logger.info('deleteCustomerById is not implemented. CustomerId:', customerId);
+        logger.debug('deleteCustomerById is not implemented. CustomerId:', customerId);
     });
 };
 

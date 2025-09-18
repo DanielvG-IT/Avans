@@ -327,14 +327,14 @@ export const updateCustomer = (customerId, customerData, callback) => {
         const sql = `UPDATE customer SET ${fields.join(', ')} WHERE customer_id = ?`;
         values.push(normalizeId(customerId));
 
-        logger.info('updateCustomer SQL', { sql, values });
+        logger.debug('updateCustomer SQL', { sql, values });
 
         query(sql, values, (error, result) => {
             if (error) {
                 logger.error('updateCustomer MySQL Error:', error);
                 return cb(error);
             }
-            logger.info('updateCustomer result', { result });
+            logger.debug('updateCustomer result', { result });
             cb(null, result);
         });
     } catch (err) {
