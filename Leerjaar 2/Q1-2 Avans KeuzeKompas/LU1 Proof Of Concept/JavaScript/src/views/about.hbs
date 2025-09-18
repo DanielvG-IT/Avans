@@ -1,136 +1,237 @@
-<div class='container py-5'>
-    <h1 class='mb-4'>About This Project</h1>
-    <p class='lead'>This project is built around the following Epics, User Stories, and Subtasks.</p>
+<section class="py-5">
+    <div class="container">
+        <h1 class="mb-4">About This Project</h1>
+        <p class="lead">
+            This web application was built around <strong>user stories</strong>. Each story captures a requirement,
+            its importance, and its progress. Below you can explore the stories grouped by their <strong>Epics</strong>.
+        </p>
 
-    <!-- Epic 1 -->
-    <div class='card mb-4 border-primary'>
-        <div class='card-header bg-primary text-white'>
-            Epic 1: Authentication & User Management
+        <!-- Homepage & Recommendations -->
+        <h2 class="mt-5">📺 Homepage & Recommendations</h2>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card bg-dark text-light h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Welcome message</h5>
+                        <p class="card-text">As a visitor, I want to see a welcome message so I know what the site is
+                            about.</p>
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-secondary">Low</span>
+                        <span class="badge bg-info">Feature</span>
+                        <p class="small mt-2">Task ID: TDANIEL-003 | SP: 1 | Due: 2025-09-04</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-dark text-light h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Recommended films</h5>
+                        <p class="card-text">As a visitor, I want to see recommended films on the homepage so I know
+                            what’s popular.</p>
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-warning text-dark">Medium</span>
+                        <span class="badge bg-info">Feature</span>
+                        <p class="small mt-2">Task ID: TDANIEL-004 | SP: 5 | Due: 2025-09-05</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-dark text-light h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Film details link</h5>
+                        <p class="card-text">As a visitor, I want to click on a recommended film to see details.</p>
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-danger">Critical</span>
+                        <span class="badge bg-info">Feature</span>
+                        <p class="small mt-2">Task ID: TDANIEL-005 | SP: 8 | Due: 2025-09-09</p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class='card-body'>
-            <p>Enable secure access and role-based functionality for customers, staff, and owners.</p>
-            <ul>
-                <li><strong>As a customer</strong>: Register and log in to access reservations and
-                    rentals.
-                    <ul>
-                        <li>Create registration form (/register)</li>
-                        <li>Validate and store user info in DB</li>
-                        <li>Hash passwords & implement secure login (/login)</li>
-                    </ul>
-                </li>
-                <li><strong>As staff</strong>: Log in to manage reservations and rentals for
-                    customers.
-                    <ul>
-                        <li>Add staff login flow with role-based session</li>
-                        <li>Restrict staff actions to their store only</li>
-                        <li>Middleware for access control (staff only routes)</li>
-                    </ul>
-                </li>
-                <li><strong>As an owner</strong>: Manage staff accounts.
-                    <ul>
-                        <li>Owner dashboard (/staff)</li>
-                        <li>Create form to add new staff linked to store</li>
-                        <li>Implement update & delete staff</li>
-                    </ul>
-                </li>
-            </ul>
+
+        <!-- Film Catalog & Availability -->
+        <h2 class="mt-5">🎬 Film Catalog & Availability</h2>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card bg-dark text-light h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Browse catalog</h5>
+                        <p class="card-text">As a visitor, I want to browse the film catalog so I can see what movies
+                            are offered.</p>
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-danger">Critical</span>
+                        <span class="badge bg-info">Feature</span>
+                        <p class="small mt-2">Task ID: TDANIEL-011 | SP: 13 | Due: 2025-09-07</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-dark text-light h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">View film details</h5>
+                        <p class="card-text">As a customer, I want to view details of a film so I know more before
+                            reserving.</p>
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-warning text-dark">Medium</span>
+                        <span class="badge bg-info">Feature</span>
+                        <p class="small mt-2">Task ID: TDANIEL-010 | SP: 5 | Due: 2025-09-11</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-dark text-light h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Filter by store availability</h5>
+                        <p class="card-text">As a visitor, I want to filter movies based on stores and their
+                            availability.</p>
+                        <span class="badge bg-secondary">Planned</span>
+                        <span class="badge bg-info">Quality</span>
+                        <p class="small mt-2">Task ID: TDANIEL-016 | SP: 3</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-dark text-light h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Staff film availability</h5>
+                        <p class="card-text">As staff, I want to see which films are available in my store so I can
+                            process reservations/rentals.</p>
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-warning text-dark">Medium</span>
+                        <span class="badge bg-info">Feature</span>
+                        <p class="small mt-2">Task ID: TDANIEL-009 | SP: 3 | Due: 2025-09-13</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Authentication & User Management -->
+        <h2 class="mt-5">🔐 Authentication & User Management</h2>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card bg-dark text-light h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Customer login</h5>
+                        <p class="card-text">As a customer, I want to log in so that I can access my reservations and
+                            rentals.</p>
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-warning text-dark">High</span>
+                        <p class="small mt-2">Task ID: TDANIEL-014 | SP: 21 | Due: 2025-09-11</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-dark text-light h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Staff login</h5>
+                        <p class="card-text">As staff, I want to log in with my account so I can manage reservations and
+                            rentals for customers.</p>
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-warning text-dark">High</span>
+                        <p class="small mt-2">Task ID: TDANIEL-013 | SP: 13 | Due: 2025-09-11</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-dark text-light h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Account registration</h5>
+                        <p class="card-text">As a customer I want to register an online account linked to my existing
+                            customer record.</p>
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-warning text-dark">High</span>
+                        <p class="small mt-2">Task ID: TDANIEL-018 | SP: 34 | Due: 2025-09-12</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-dark text-light h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Upload photo</h5>
+                        <p class="card-text">As a user, I want to upload a photo so I can personalize my environment.
+                        </p>
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-secondary">Low</span>
+                        <p class="small mt-2">Task ID: TDANIEL-017 | SP: 8 | Due: 2025-09-12</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-dark text-light h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Update information</h5>
+                        <p class="card-text">As a user, I want to be able to update my information so it is never out of
+                            date.</p>
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-secondary">Best Effort</span>
+                        <p class="small mt-2">Task ID: TDANIEL-019 | SP: 3</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-dark text-light h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Delete account</h5>
+                        <p class="card-text">As a user, I want to be able to delete my account whenever I stop using the
+                            service.</p>
+                        <span class="badge bg-warning text-dark">In Progress</span>
+                        <span class="badge bg-secondary">Best Effort</span>
+                        <p class="small mt-2">Task ID: TDANIEL-026 | SP: 3</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reservations & Rentals -->
+        <h2 class="mt-5">📀 Reservations & Rentals</h2>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card bg-dark text-light h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">See my rentals</h5>
+                        <p class="card-text">As a customer, I want to see my rented films so I can track them.</p>
+                        <span class="badge bg-warning text-dark">In Progress</span>
+                        <span class="badge bg-warning text-dark">High</span>
+                        <p class="small mt-2">Task ID: TDANIEL-006 | SP: 13 | Due: 2025-09-16</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-dark text-light h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Create purchase without account</h5>
+                        <p class="card-text">As store staff, I want to create a purchase linked to a customer using only
+                            their name and contact information.</p>
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-warning text-dark">High</span>
+                        <p class="small mt-2">Task ID: TDANIEL-023 | SP: 13 | Due: 2025-09-16</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-dark text-light h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Store dashboard</h5>
+                        <p class="card-text">As a store staff member, I want to see key metrics of the store on a
+                            dashboard.</p>
+                        <span class="badge bg-secondary">Planned</span>
+                        <span class="badge bg-secondary">Best Effort</span>
+                        <p class="small mt-2">Task ID: TDANIEL-024 | SP: 8 | Due: 2025-09-17</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-dark text-light h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Create customer</h5>
+                        <p class="card-text">As a store staff member, I want to create a customer so I can process their
+                            rentals.</p>
+                        <span class="badge bg-success">Done</span>
+                        <span class="badge bg-danger">Critical</span>
+                        <p class="small mt-2">Task ID: TDANIEL-025 | SP: 8 | Due: 2025-09-13</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-    <!-- Epic 2 -->
-    <div class='card mb-4 border-success'>
-        <div class='card-header bg-success text-white'>
-            Epic 2: Film Catalog & Availability
-        </div>
-        <div class='card-body'>
-            <p>Provide customers and staff access to the movie catalog and store-specific
-                availability.</p>
-            <ul>
-                <li><strong>As a visitor</strong>: Browse the film catalog.
-                    <ul>
-                        <li>Build /films route with list of all films</li>
-                        <li>Connect to Sakila database (films table)</li>
-                        <li>Add search & filter by title/category</li>
-                    </ul>
-                </li>
-                <li><strong>As a customer</strong>: View details of a film.
-                    <ul>
-                        <li>Create film details page with metadata</li>
-                        <li>Show availability across stores</li>
-                        <li>Add "reserve" button (if logged in)</li>
-                    </ul>
-                </li>
-                <li><strong>As staff</strong>: Check film availability in their store.
-                    <ul>
-                        <li>Query films filtered by store_id</li>
-                        <li>Display availability in staff dashboard</li>
-                        <li>Prevent reservations for unavailable films</li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Epic 3 -->
-    <div class='card mb-4 border-warning'>
-        <div class='card-header bg-warning'>
-            Epic 3: Reservations & Rentals
-        </div>
-        <div class='card-body'>
-            <p>Enable customers to reserve films and staff to manage rentals.</p>
-            <ul>
-                <li><strong>As a customer</strong>: Reserve a film.
-                    <ul>
-                        <li>Reserve button creates entry in DB</li>
-                        <li>Validate login before reserving</li>
-                        <li>Show confirmation message</li>
-                    </ul>
-                </li>
-                <li><strong>As staff</strong>: Confirm rentals.
-                    <ul>
-                        <li>Mark reservation as "rented"</li>
-                        <li>Store rental info (customer_id, staff_id, date)</li>
-                        <li>Update availability in store</li>
-                    </ul>
-                </li>
-                <li><strong>As a customer</strong>: See reserved/rented films.
-                    <ul>
-                        <li>Build /customer dashboard</li>
-                        <li>List reservations with status</li>
-                        <li>Show store location</li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Epic 4 -->
-    <div class='card mb-4 border-info'>
-        <div class='card-header bg-info text-dark'>
-            Epic 4: Homepage & Recommendations
-        </div>
-        <div class='card-body'>
-            <p>Give visitors a landing page with film suggestions.</p>
-            <ul>
-                <li><strong>As a visitor</strong>: See a welcome message.
-                    <ul>
-                        <li>Homepage / with text "Welkom bij Sakila movie rental"</li>
-                        <li>Style with Bootstrap</li>
-                    </ul>
-                </li>
-                <li><strong>As a visitor</strong>: See recommended films.
-                    <ul>
-                        <li>Query recommended films (rental_count or category)</li>
-                        <li>Display in table with details link</li>
-                    </ul>
-                </li>
-                <li><strong>As a visitor</strong>: Click recommended film.
-                    <ul>
-                        <li>Link rows to film details page</li>
-                        <li>Ensure navigation works</li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-</div>
+</section>
