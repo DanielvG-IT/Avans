@@ -180,8 +180,6 @@ authRouter.delete('/profile', requireCustomerAuthApi, (req, res, next) => {
     // Proceed with the deletion
     deleteAccount(userId, (error, result) => {
         if (error) return res.status(400).json({ success: false, error: error.message });
-        console.log(result);
-
         if (result.affectedRows !== 1) {
             return res.status(400).json({ success: false, error: 'Account deletion failed.' });
         }

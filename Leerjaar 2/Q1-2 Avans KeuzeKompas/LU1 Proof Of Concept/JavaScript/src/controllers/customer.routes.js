@@ -185,16 +185,11 @@ customerRouter.post('/edit', requireCustomerAuthWeb, (req, res, next) => {
             active,
         };
 
-        // NaNaNa123!
-
-        console.log(data);
-
         updateCustomerById(customer.customer_id, data, (error, result) => {
             if (error) {
                 logger.error('Update Error:', error);
                 return next(error);
             }
-            console.log(result);
 
             if (result.affectedRows === 0 || result.changedRows === 0) {
                 return fetchCustomerByUserId(req.user.userId, (error, customer) => {

@@ -242,7 +242,6 @@ export const readCustomerByEmailId = (emailId, callback) => {
             logger.error('readCustomerByEmailId MySQL Error:', error);
             return callback(error);
         }
-        console.log('These are the rows:', rows, 'this was the emailId:', emailId);
         callback(null, rows[0] || null);
     });
 };
