@@ -75,14 +75,14 @@
     }
 </style>
 
-<main class="about-wrapper">
-    <header class="page-hero">
+<div class="about-wrapper">
+    <div class="page-hero">
         <h1 class="h3 mb-2">About This Project</h1>
         <p class="lead mb-0">
             This web application was built around <strong>user stories</strong>. Each story captures a requirement, its
             priority, and current progress. The stories below are grouped by <strong>Epics</strong>.
         </p>
-    </header>
+    </div>
 
     <!-- Epic: Homepage & Recommendations -->
     <section>
@@ -128,7 +128,7 @@
                 <article class="story-card">
                     <div>
                         <div class="story-title">Film details link</div>
-                        <div class="story-note">As a visitor, I want to click on a recommended film to see details.
+                        <div class="story-note">As a visitor, I want to click on a (recommended) film to see details.
                         </div>
                     </div>
                     <div class="story-meta">
@@ -172,6 +172,11 @@
                         <div class="story-title">View film details</div>
                         <div class="story-note">As a customer, I want to view details of a film so I know more before
                             reserving.</div>
+                        <ul class="muted-small">
+                            <li>Create film details page with metadata (Done)</li>
+                            <li>Show availability across stores (Done)</li>
+                            <li>Add "reserve" button (Stalled)</li>
+                        </ul>
                     </div>
                     <div class="story-meta">
                         <span class="badge bg-success">Done</span>
@@ -229,6 +234,9 @@
                         <div class="story-title">Customer login</div>
                         <div class="story-note">As a customer, I want to log in so that I can access my reservations and
                             rentals.</div>
+                        <ul class="muted-small">
+                            <li>Hash passwords & implement secure login (Done)</li>
+                        </ul>
                     </div>
                     <div class="story-meta">
                         <span class="badge bg-success">Done</span>
@@ -244,6 +252,11 @@
                         <div class="story-title">Staff login</div>
                         <div class="story-note">As staff, I want to log in with my account so I can manage reservations
                             and rentals for customers.</div>
+                        <ul class="muted-small">
+                            <li>Add staff login flow with role-based session (Done)</li>
+                            <li>Restrict staff actions to their store only (Done)</li>
+                            <li>Middleware for access control (Done)</li>
+                        </ul>
                     </div>
                     <div class="story-meta">
                         <span class="badge bg-success">Done</span>
@@ -293,7 +306,7 @@
                     <div class="story-meta">
                         <span class="badge bg-success">Done</span>
                         <span class="badge bg-secondary text-dark">Best Effort</span>
-                        <div class="story-footer muted-small">Task ID: TDANIEL-019 · SP: 3</div>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-019 · SP: 3 · Due: 2025-09-18</div>
                     </div>
                 </article>
             </div>
@@ -306,9 +319,9 @@
                             the service.</div>
                     </div>
                     <div class="story-meta">
-                        <span class="badge bg-warning text-dark">In Progress</span>
+                        <span class="badge bg-success">Done</span>
                         <span class="badge bg-secondary text-dark">Best Effort</span>
-                        <div class="story-footer muted-small">Task ID: TDANIEL-026 · SP: 3</div>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-026 · SP: 3 · Due: 2025-09-19</div>
                     </div>
                 </article>
             </div>
@@ -330,9 +343,9 @@
                         <div class="story-note">As a customer, I want to see my rented films so I can track them.</div>
                     </div>
                     <div class="story-meta">
-                        <span class="badge bg-warning text-dark">In Progress</span>
+                        <span class="badge bg-success">Done</span>
                         <span class="badge bg-warning text-dark">High</span>
-                        <div class="story-footer muted-small">Task ID: TDANIEL-006 · SP: 13 · Due: 2025-09-16</div>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-006 · SP: 13 · Due: 2025-09-18</div>
                     </div>
                 </article>
             </div>
@@ -356,13 +369,13 @@
                 <article class="story-card">
                     <div>
                         <div class="story-title">Store dashboard</div>
-                        <div class="story-note">As a store staff member, I want to see key metrics of the store on a
-                            dashboard.</div>
+                        <div class="story-note">As a store staff member, I want to see some key metrics of the store on
+                            a dashboard.</div>
                     </div>
                     <div class="story-meta">
                         <span class="badge bg-secondary">Planned</span>
                         <span class="badge bg-secondary text-dark">Best Effort</span>
-                        <div class="story-footer muted-small">Task ID: TDANIEL-024 · SP: 8 · Due: 2025-09-17</div>
+                        <div class="story-footer muted-small">Task ID: TDANIEL-024 · SP: 8</div>
                     </div>
                 </article>
             </div>
@@ -383,4 +396,4 @@
             </div>
         </div>
     </section>
-</main>
+</div>
