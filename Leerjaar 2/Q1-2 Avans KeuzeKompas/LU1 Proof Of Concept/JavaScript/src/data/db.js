@@ -1,5 +1,5 @@
 import mysql from "mysql2";
-import { logger } from "../utils/logger.js";
+import { logger } from "../util/logger.js";
 
 if (
   !process.env.DB_HOST ||
