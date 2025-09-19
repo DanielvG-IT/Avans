@@ -37,7 +37,7 @@ jobs:
         run: npm ci
 
       - name: Run unit & integration tests
-        run: npm run test:start 
+        run: npm run start:test 
   deploy:
     runs-on: ubuntu-latest
     needs: test 
@@ -69,4 +69,5 @@ jobs:
           app-name: 'avans-eject-danielvg-it'
           slot-name: 'Production'
           package: .
+
 
