@@ -4,7 +4,8 @@
     <div class="col-12 col-md-4 text-center">
       <div class="mb-3">
         <div id="avatarDrop" class="avatar-drop shadow-sm" role="button" tabindex="0" ondragover="handleDragOver(event)"
-          ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+          ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"
+          onclick="document.getElementById('avatarInput').click()">
           {{#if user.avatar}}
           <img id="profileAvatar" src="{{user.avatar}}" alt="{{user.name}} avatar" class="avatar-img rounded-circle"
             loading="lazy">
@@ -41,6 +42,12 @@
         <p class="text-light small mb-1">{{user.email}}</p>
         <span class="badge bg-primary rounded-pill">{{user.role}}</span>
       </div>
+
+      <!-- Delete Account -->
+      <button type="button" class="btn btn-danger btn-sm mt-3" data-bs-toggle="modal"
+        data-bs-target="#deleteAccountModal">
+        <i class="bi bi-person-x me-1"></i>Delete Account
+      </button>
     </div>
 
     <!-- Right: Account Details -->
@@ -78,6 +85,29 @@
             <p class="mb-0"></p>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteAccountModalLabel">Confirm Account Deletion</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Are you sure you want to delete your account? This action cannot be undone.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn" onclick="handleModalDeleteAccount()">Delete
+          Account</button>
       </div>
     </div>
   </div>
@@ -342,4 +372,38 @@
     }
   }
 
+  function handleModalDeleteAccount() {
+    // Close modal first
+    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteAccountModal'));
+    modal.hide();
+
+    // Call delete logic
+    deleteAccount();
+  }
+  async function deleteAccount() {
+    const feedbackEl = document.getElementById('avatarFeedback');
+    try {
+      const response = await fetch('/auth/profile', {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok) {
+        feedbackEl.className = "alert alert-success w-100 mt-2";
+        feedbackEl.textContent = data.message || "Account deleted. Redirecting...";
+        feedbackEl.classList.remove("d-none");
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
+      } else {
+        feedbackEl.className = "alert alert-danger w-100 mt-2";
+        feedbackEl.textContent = data.error || data.message || "Failed to delete account.";
+        feedbackEl.classList.remove("d-none");
+      }
+    } catch (err) {
+      feedbackEl.className = "alert alert-danger w-100 mt-2";
+      feedbackEl.textContent = "Network error. Try again.";
+      feedbackEl.classList.remove("d-none");
+    }
+  }
 </script>
