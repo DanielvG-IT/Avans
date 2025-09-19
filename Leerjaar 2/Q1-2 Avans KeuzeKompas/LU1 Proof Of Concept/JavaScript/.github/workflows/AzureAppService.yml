@@ -17,6 +17,7 @@ jobs:
       DB_HOST: ${{ secrets.TEST_DB_HOST }}
       DB_USER: ${{ secrets.TEST_DB_USER }}
       DB_PASS: ${{ secrets.TEST_DB_PASS }}
+      DB_PORT: ${{ secrets.TEST_DB_PORT }}
       DB_NAME: ${{ secrets.TEST_DB_NAME }}
       DB_CONNECTION_LIMIT: 10
       ACCESS_TOKEN_SECRET: ${{ secrets.TEST_ACCESSTOKEN_SECRET }}
@@ -69,5 +70,6 @@ jobs:
           app-name: 'avans-eject-danielvg-it'
           slot-name: 'Production'
           package: .
+
 
 
