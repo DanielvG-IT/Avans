@@ -13,7 +13,7 @@ jobs:
     env:
       NODE_ENV: test
       PORT: 3000
-      LOG_LEVEL: debug
+      LOG_LEVEL: info
       DB_HOST: ${{ secrets.TEST_DB_HOST }}
       DB_USER: ${{ secrets.TEST_DB_USER }}
       DB_PASS: ${{ secrets.TEST_DB_PASS }}
@@ -70,6 +70,7 @@ jobs:
           app-name: 'avans-eject-danielvg-it'
           slot-name: 'Production'
           package: .
+
 
 
 
