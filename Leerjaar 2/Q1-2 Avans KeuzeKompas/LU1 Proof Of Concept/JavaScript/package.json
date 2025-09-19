@@ -6,9 +6,6 @@
     "author": "Daniël van Ginneken",
     "type": "module",
     "main": "./src/app.js",
-    "directories": {
-        "test": "test"
-    },
     "scripts": {
         "start": "node ./src/app.js",
         "dev": "nodemon --trace-warnings ./src/app.js",
