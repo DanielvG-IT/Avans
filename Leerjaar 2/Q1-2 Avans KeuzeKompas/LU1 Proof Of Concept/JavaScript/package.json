@@ -12,7 +12,8 @@
     "scripts": {
         "start": "node ./src/app.js",
         "dev": "nodemon --trace-warnings ./src/app.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "cypress run",
+        "start:test": "node ./src/app.js & cypress run"
     },
     "dependencies": {
         "bcrypt": "^6.0.0",
