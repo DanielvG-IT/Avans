@@ -43,14 +43,14 @@ jobs:
       # Upload Cypress videos & screenshots for debugging
       - name: Upload Cypress Videos
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cypress-videos
           path: cypress/videos/
 
       - name: Upload Cypress Screenshots
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cypress-screenshots
           path: cypress/screenshots/
@@ -86,6 +86,7 @@ jobs:
           app-name: 'avans-eject-danielvg-it'
           slot-name: 'Production'
           package: .
+
 
 
 
