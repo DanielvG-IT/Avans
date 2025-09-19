@@ -242,6 +242,7 @@ export const readCustomerByEmailId = (emailId, callback) => {
             logger.error('readCustomerByEmailId MySQL Error:', error);
             return callback(error);
         }
+        console.log('These are the rows:', rows, 'this was the emailId:', emailId);
         callback(null, rows[0] || null);
     });
 };
@@ -373,7 +374,7 @@ export const unlinkCustomerFromUser = (customerId, callback) => {
 };
 
 export const linkCustomerToUser = (customerId, userId, callback) => {
-    const sql = `UPDATE customer SET userId = ? WHERE customer_id = ?`;
+    const sql = `UPDATE customer SET userId = ?, active = 1 WHERE customer_id = ?`;
     query(sql, [normalizeUserId(userId), normalizeId(customerId)], (error, result) => {
         if (typeof callback !== 'function') return;
         if (error) {
