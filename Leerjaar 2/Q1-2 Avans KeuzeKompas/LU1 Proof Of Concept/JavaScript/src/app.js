@@ -5,6 +5,8 @@ import createError from 'http-errors';
 import cookieParser from 'cookie-parser';
 import { create } from 'express-handlebars';
 
+import './workers/overdueWorker.js'; // <--- cron job for overdue emails
+
 import { logger } from './util/logger.js';
 import { expressHelpers } from './util/helpers.js';
 import authRouter from './controllers/auth.routes.js';
