@@ -1,14 +1,14 @@
-import express from 'express';
-import { logger } from '../util/logger.js';
 import { requireCustomerAuthWeb } from '../middleware/auth.js';
-import {
-    fetchCustomerById,
-    fetchCustomerByUserId,
-    fetchRentalsByCustomerId,
-    updateCustomerById,
-} from '../services/customerService.js';
 import { readCustomerByUserId } from '../dao/customer.js';
 import { fetchUser } from '../services/authService.js';
+import { logger } from '../util/logger.js';
+import express from 'express';
+import {
+    fetchCustomerById,
+    updateCustomerById,
+    fetchCustomerByUserId,
+    fetchRentalsByCustomerId,
+} from '../services/customerService.js';
 
 const customerRouter = express.Router();
 
