@@ -9,6 +9,8 @@ export default defineConfig({
         setupNodeEvents(on, config) {
             return config;
         },
+        video: true,
+        screenshotOnRunFailure: true,
     },
     env: {
         TEST_EMAIL: process.env.CYPRESS_TEST_EMAIL,

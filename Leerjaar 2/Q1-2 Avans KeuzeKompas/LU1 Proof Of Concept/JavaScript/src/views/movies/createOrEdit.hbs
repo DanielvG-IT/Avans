@@ -143,7 +143,7 @@
             <select id="category" name="category" class="form-select form-select-lg">
               <option value="">Choose...</option>
               {{#each categories}}
-              <option value="{{this}}" {{#if (eq this ../movie.category)}}selected{{/if}}>{{this}}</option>
+              <option value="{{this.id}}" {{#if (eq this.id ../movie.category)}}selected{{/if}}>{{this.name}}</option>
               {{/each}}
             </select>
           </div>

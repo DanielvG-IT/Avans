@@ -79,7 +79,7 @@
           <select id="category" name="category" class="form-select" aria-label="Filter by category">
             <option value="">All Categories</option>
             {{#each categories}}
-            <option value="{{this}}" {{#ifEquals ../category this}}selected{{/ifEquals}}>{{this}}</option>
+            <option value="{{this.id}}" {{#ifEquals ../category this.id}}selected{{/ifEquals}}>{{this.name}}</option>
             {{/each}}
           </select>
         </div>

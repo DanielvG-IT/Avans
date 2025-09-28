@@ -92,9 +92,52 @@ export const register = (
     const userId = uuid();
     const passwordHash = hashSync(password, 10);
 
-    // --------------------------
-    // 1. Check if user exists
-    // --------------------------
+    // Helper: proceed to create/link user & customer
+    const proceedCreateOrLinkUser = (emailId, customerToLink) => {
+        createUser(userId, emailId, passwordHash, 'CUSTOMER', null, null, (err) => {
+            if (err) return cb(err);
+
+            if (customerToLink) {
+                // Link existing customer to new user
+                linkCustomerToUser(customerToLink.customer_id, userId, (linkErr) => {
+                    if (linkErr) return cb(linkErr);
+                    logger.debug(
+                        `Linked existing customer ${customerToLink.customer_id} to new user ${userId}`
+                    );
+                    cb(null, { userId, email: normalizedEmail });
+                });
+            } else {
+                // No customer exists → create address & customer
+                makeAddress(
+                    address,
+                    district,
+                    postalCode,
+                    phone,
+                    countryName,
+                    cityName,
+                    (addrErr, addrObj) => {
+                        if (addrErr) return cb(addrErr);
+
+                        createCustomer(
+                            firstName,
+                            lastName,
+                            addrObj.address_id,
+                            userId,
+                            emailId,
+                            storeId,
+                            (createCustErr) => {
+                                if (createCustErr) return cb(createCustErr);
+                                logger.debug(`Created new user + customer ${userId}`);
+                                cb(null, { userId, email: normalizedEmail });
+                            }
+                        );
+                    }
+                );
+            }
+        });
+    };
+
+    // 1️⃣ Check if user exists
     readUserByEmail(normalizedEmail, (err, user) => {
         if (err) return cb(err);
 
@@ -104,8 +147,8 @@ export const register = (
                 if (custErr) return cb(custErr);
                 if (customer) return cb(new Error('Account already exists for this email.'));
 
-                // User exists but no customer → create customer
-                return makeAddress(
+                // User exists but no customer → create address & customer
+                makeAddress(
                     address,
                     district,
                     postalCode,
@@ -133,82 +176,28 @@ export const register = (
             });
         }
 
-        // --------------------------
-        // 2. User does not exist → check if a customer already exists
-        // --------------------------
-        readCustomerByEmailId(normalizedEmail, (custErr, existingCustomer) => {
-            if (custErr) return cb(custErr);
+        // 2️⃣ User does NOT exist → resolve email ID first
+        readEmail(normalizedEmail, (emailErr, emailRow) => {
+            if (emailErr) return cb(emailErr);
 
-            const proceedCreateOrLinkUser = (emailId, customerToLink = null) => {
-                // Create new user
-                createUser(
-                    userId,
-                    emailId,
-                    passwordHash,
-                    'CUSTOMER',
-                    null,
-                    null,
-                    (createUserErr) => {
-                        if (createUserErr) return cb(createUserErr);
+            const emailId = emailRow ? emailRow.email_id : null;
 
-                        if (customerToLink) {
-                            // Link existing customer to this new user
-                            linkCustomerToUser(customerToLink.customer_id, userId, (linkErr) => {
-                                if (linkErr) return cb(linkErr);
-                                logger.debug(
-                                    `Linked existing customer ${customerToLink.customer_id} to new user ${userId}`
-                                );
-                                cb(null, { userId, email: normalizedEmail });
-                            });
-                        } else {
-                            // No customer exists → create address & customer
-                            makeAddress(
-                                address,
-                                district,
-                                postalCode,
-                                phone,
-                                countryName,
-                                cityName,
-                                (addrErr, addrObj) => {
-                                    if (addrErr) return cb(addrErr);
-
-                                    createCustomer(
-                                        firstName,
-                                        lastName,
-                                        addrObj.address_id,
-                                        userId,
-                                        emailId,
-                                        storeId,
-                                        (createCustErr) => {
-                                            if (createCustErr) return cb(createCustErr);
-                                            logger.debug(`Created new user + customer ${userId}`);
-                                            cb(null, { userId, email: normalizedEmail });
-                                        }
-                                    );
-                                }
-                            );
-                        }
-                    }
-                );
+            const handleCustomerCheck = (emailIdToUse) => {
+                readCustomerByEmailId(emailIdToUse, (custErr, existingCustomer) => {
+                    if (custErr) return cb(custErr);
+                    proceedCreateOrLinkUser(emailIdToUse, existingCustomer);
+                });
             };
 
-            // --------------------------
-            // 3. Email table check
-            // --------------------------
-            readEmail(normalizedEmail, (emailErr, emailRows) => {
-                if (emailErr) return cb(emailErr);
-
-                const emailRow = emailRows && emailRows.length > 0 ? emailRows[0] : null;
-
-                if (!emailRow) {
-                    createEmail(normalizedEmail, (createEmailErr, result) => {
-                        if (createEmailErr) return cb(createEmailErr);
-                        proceedCreateOrLinkUser(result.insertId, existingCustomer);
-                    });
-                } else {
-                    proceedCreateOrLinkUser(emailRow.email_id, existingCustomer);
-                }
-            });
+            if (!emailRow) {
+                // Email doesn't exist → create it
+                createEmail(normalizedEmail, (createEmailErr, result) => {
+                    if (createEmailErr) return cb(createEmailErr);
+                    handleCustomerCheck(result.insertId);
+                });
+            } else {
+                handleCustomerCheck(emailId);
+            }
         });
     });
 };
@@ -334,7 +323,7 @@ export const deleteAccount = (userId, callback) => {
                         return callback(new Error('Account deletion failed.'));
                     }
 
-                    softDeleteCustomer(userId, (softDeleteError, result) => {
+                    softDeleteCustomer(customer.customer_id, (softDeleteError, result) => {
                         if (softDeleteError) {
                             logger.error(
                                 'Error occurred while soft deleting customer:',
@@ -345,8 +334,8 @@ export const deleteAccount = (userId, callback) => {
                             logger.warn(
                                 `No customer rows soft deleted for userId ${userId} when deleting account`
                             );
-                            return callback(null, result);
                         }
+                        return callback(null, result);
                     });
                 });
             });

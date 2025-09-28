@@ -6,13 +6,11 @@
     "author": "Daniël van Ginneken",
     "type": "module",
     "main": "./src/app.js",
-    "directories": {
-        "test": "test"
-    },
     "scripts": {
         "start": "node ./src/app.js",
         "dev": "nodemon --trace-warnings ./src/app.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "cypress run",
+        "start:test": "node ./src/app.js & cypress run"
     },
     "dependencies": {
         "bcrypt": "^6.0.0",
@@ -27,6 +25,8 @@
         "morgan": "^1.10.1",
         "multer": "^2.0.2",
         "mysql2": "^3.14.4",
+        "node-cron": "^4.2.1",
+        "nodemailer": "^7.0.6",
         "uuid": "^13.0.0",
         "winston": "^3.17.0",
         "winston-daily-rotate-file": "^5.0.0"

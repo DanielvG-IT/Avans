@@ -1,14 +1,14 @@
-import express from 'express';
-import { logger } from '../util/logger.js';
 import { requireCustomerAuthWeb } from '../middleware/auth.js';
-import {
-    fetchCustomerById,
-    fetchCustomerByUserId,
-    fetchRentalsByCustomerId,
-    updateCustomerById,
-} from '../services/customerService.js';
 import { readCustomerByUserId } from '../dao/customer.js';
 import { fetchUser } from '../services/authService.js';
+import { logger } from '../util/logger.js';
+import express from 'express';
+import {
+    fetchCustomerById,
+    updateCustomerById,
+    fetchCustomerByUserId,
+    fetchRentalsByCustomerId,
+} from '../services/customerService.js';
 
 const customerRouter = express.Router();
 
@@ -185,16 +185,11 @@ customerRouter.post('/edit', requireCustomerAuthWeb, (req, res, next) => {
             active,
         };
 
-        // NaNaNa123!
-
-        console.log(data);
-
         updateCustomerById(customer.customer_id, data, (error, result) => {
             if (error) {
                 logger.error('Update Error:', error);
                 return next(error);
             }
-            console.log(result);
 
             if (result.affectedRows === 0 || result.changedRows === 0) {
                 return fetchCustomerByUserId(req.user.userId, (error, customer) => {

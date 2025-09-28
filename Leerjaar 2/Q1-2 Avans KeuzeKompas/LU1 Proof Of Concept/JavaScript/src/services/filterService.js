@@ -32,7 +32,7 @@ export const fetchCategoryNames = (callback) => {
             return cb(new Error('Categories not found.'));
         }
 
-        const names = categories.map((c) => c.name);
+        const names = categories.map((c) => ({ id: c.category_id, name: c.name }));
         cb(null, names);
     });
 };

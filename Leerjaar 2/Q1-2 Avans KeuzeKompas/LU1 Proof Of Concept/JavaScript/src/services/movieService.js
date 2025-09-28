@@ -1,16 +1,15 @@
 import { getActorsInMovie } from '../dao/actor.js';
 import { logger } from '../util/logger.js';
 import {
-    readMovies,
-    readMovieById,
+    readMovieAvailability,
+    addMovieToCategory,
+    readCheapestMovies,
     readPopularMovies,
     readLongestMovies,
-    readCheapestMovies,
-    readMovieAvailability,
-    updateMovie as updateMovieDAO,
-    createMovie,
+    readMovieById,
     updateMovie,
-    addMovieToCategory, // added
+    createMovie,
+    readMovies,
 } from '../dao/movie.js';
 
 /**

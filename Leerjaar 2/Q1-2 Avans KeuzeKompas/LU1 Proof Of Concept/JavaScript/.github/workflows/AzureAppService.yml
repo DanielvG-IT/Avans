@@ -1,0 +1,94 @@
+name: Deploy Node.js app to Azure Web App - avans-eject-danielvg-it
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_ENV: test
+      PORT: 3000
+      LOG_LEVEL: info
+      DB_HOST: ${{ secrets.TEST_DB_HOST }}
+      DB_USER: ${{ secrets.TEST_DB_USER }}
+      DB_PASS: ${{ secrets.TEST_DB_PASS }}
+      DB_PORT: ${{ secrets.TEST_DB_PORT }}
+      DB_NAME: ${{ secrets.TEST_DB_NAME }}
+      DB_CONNECTION_LIMIT: 10
+      ACCESS_TOKEN_SECRET: ${{ secrets.TEST_ACCESSTOKEN_SECRET }}
+      REFRESH_TOKEN_SECRET: ${{ secrets.TEST_REFRESHTOKEN_SECRET }}
+      CYPRESS_BASE_URL: http://localhost:3000
+      CYPRESS_TEST_EMAIL: ${{ secrets.TEST_CYPRESS_EMAIL }}
+      CYPRESS_TEST_PASSWORD: ${{ secrets.TEST_CYPRESS_PASSWORD }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.x'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit & integration tests
+        run: npm run start:test 
+      
+      # Upload Cypress videos & screenshots for debugging
+      - name: Upload Cypress Videos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-videos
+          path: cypress/videos/
+
+      - name: Upload Cypress Screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots/
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test 
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.x'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_4BE8C26B29724804840F3288CB75D62B }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_EE01498ED9A945429B765CCDC011F93F }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_C643FA31F93B45788812CF63BD256ED6 }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'avans-eject-danielvg-it'
+          slot-name: 'Production'
+          package: .
+
+
+
+
+
+

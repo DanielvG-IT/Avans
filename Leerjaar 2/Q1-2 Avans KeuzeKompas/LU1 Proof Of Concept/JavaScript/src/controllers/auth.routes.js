@@ -9,7 +9,7 @@ import {
     generateAccessToken,
     refreshAccessToken,
     changePassword,
-    fetchCustomer,
+    deleteAccount,
     register,
     logOut,
     login,
@@ -170,6 +170,25 @@ authRouter.get('/profile', requireUserAuthWeb, (req, res, next) => {
     fetchUser(req.user.userId, (error, user) => {
         if (error) return next(error);
         res.render('auth/profile', { title: 'Profile', user: user });
+    });
+});
+authRouter.delete('/profile', requireCustomerAuthApi, (req, res, next) => {
+    const userId = req.user?.userId;
+    if (!userId) {
+        return res.status(400).json({ success: false, error: 'User ID is required.' });
+    }
+    // Proceed with the deletion
+    deleteAccount(userId, (error, result) => {
+        if (error) return res.status(400).json({ success: false, error: error.message });
+        if (result.affectedRows !== 1) {
+            return res.status(400).json({ success: false, error: 'Account deletion failed.' });
+        }
+
+        logger.debug(`User ${userId} account deleted successfully.`);
+
+        res.clearCookie('accessToken');
+        res.clearCookie('refreshToken');
+        res.status(204).send();
     });
 });
 

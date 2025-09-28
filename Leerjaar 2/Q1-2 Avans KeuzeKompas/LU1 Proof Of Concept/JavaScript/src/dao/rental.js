@@ -152,3 +152,63 @@ export const readCustomerRentalHistory = (customerId, callback) => {
         return cb(err);
     }
 };
+
+export const readOverdueRentals = (callback) => {
+    const cb = onceCallback(callback);
+    try {
+        const sql = `
+            SELECT 
+                r.rental_id,
+                c.first_name,
+                e.email,
+                f.title,
+                r.rental_date,
+                r.return_date,
+                f.rental_duration,
+                DATE_ADD(r.rental_date, INTERVAL f.rental_duration DAY) AS due_date,
+                CASE 
+                    WHEN r.return_date IS NOT NULL THEN 0
+                    WHEN DATE_ADD(r.rental_date, INTERVAL f.rental_duration DAY) < NOW() THEN 1
+                    ELSE 0
+                END AS is_overdue
+            FROM rental r
+            JOIN customer c ON c.customer_id = r.customer_id
+            JOIN inventory i ON i.inventory_id = r.inventory_id
+            JOIN film f ON f.film_id = i.film_id
+            LEFT JOIN email e ON e.email_id = c.email_id
+            WHERE r.return_date IS NULL
+            AND DATE_ADD(r.rental_date, INTERVAL f.rental_duration DAY) < NOW();
+        `;
+        query(sql, [], (error, rows) => {
+            if (error) {
+                logger.error('readOverdueRentals MySQL Error:', error);
+                return cb(error);
+            }
+            return cb(null, rows);
+        });
+    } catch (err) {
+        logger.error('readOverdueRentals sync error:', err);
+        return cb(err);
+    }
+};
+
+export const markOverdueEmailSent = (rentalId, callback) => {
+    const cb = onceCallback(callback);
+    try {
+        const sql = `
+            UPDATE rental
+            SET overdue_mail_sent_at = NOW()
+            WHERE rental_id = ?
+        `;
+        query(sql, [rentalId], (error, result) => {
+            if (error) {
+                logger.error('markOverdueEmailSent MySQL Error:', error);
+                return cb(error);
+            }
+            cb(null, result);
+        });
+    } catch (err) {
+        logger.error('markOverdueEmailSent sync error:', err);
+        cb(err);
+    }
+};
