@@ -11,3 +11,5 @@ pathlib
 torch
 spacy
 ipykernel
+nltk
+langdetect
