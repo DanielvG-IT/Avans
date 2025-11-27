@@ -1,0 +1,27 @@
+from typing import List, Tuple
+
+class StudentProfile:
+    def __init__(self,
+                 current_education: str,
+                 interests: List[str],
+                 wanted_study_credit_range: Tuple[int, int],
+                 location_preference: str,
+                 learning_goals: List[str]):
+        self.current_education = current_education
+        self.interests = interests
+        self.wanted_study_credit_range = wanted_study_credit_range
+        self.location_preference = location_preference
+        self.learning_goals = learning_goals
+
+    def to_text(self) -> str:
+        """
+        Converts student profile into a single string for TF-IDF vectorization.
+        """
+        return " ".join(self.interests + self.learning_goals)
+
+    def __repr__(self):
+        return (f"StudentProfile(current_education={self.current_education}, "
+                f"interests={self.interests}, "
+                f"wanted_study_credit_range={self.wanted_study_credit_range}, "
+                f"location_preference={self.location_preference}, "
+                f"learning_goals={self.learning_goals})")
