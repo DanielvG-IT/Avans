@@ -5,13 +5,17 @@ class StudentProfile:
                  current_education: str,
                  interests: List[str],
                  wanted_study_credit_range: Tuple[int, int],
-                 location_preference: str,
-                 learning_goals: List[str]):
+                 location_preference: List[str],
+                 learning_goals: List[str],
+                 level_preference: List[str],
+                 preferred_language: str):
         self.current_education = current_education
         self.interests = interests
         self.wanted_study_credit_range = wanted_study_credit_range
         self.location_preference = location_preference
         self.learning_goals = learning_goals
+        self.level_preference = level_preference
+        self.preferred_language = preferred_language
 
     def to_text(self) -> str:
         """
@@ -21,7 +25,8 @@ class StudentProfile:
 
     def __repr__(self):
         return (f"StudentProfile(current_education={self.current_education}, "
-                f"interests={self.interests}, "
-                f"wanted_study_credit_range={self.wanted_study_credit_range}, "
-                f"location_preference={self.location_preference}, "
-                f"learning_goals={self.learning_goals})")
+            f"interests={self.interests}, "
+            f"wanted_study_credit_range={self.wanted_study_credit_range}, "
+            f"location_preference={self.location_preference}, "
+            f"learning_goals={self.learning_goals}, "
+            f"preferred_language={self.preferred_language})")
