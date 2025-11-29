@@ -43,11 +43,12 @@ def _build_base_text_df():
 
 def _build_vectorizer_and_module_matrix(big_df: pd.DataFrame):
     vectorizer = TfidfVectorizer(
-        max_features=1000000,
+        max_features=10000000000,
         ngram_range=(1, 2),
         stop_words=None,
     )
     X_modules_tfidf = vectorizer.fit_transform(big_df["text"])
+    print(X_modules_tfidf.shape)
     return vectorizer, X_modules_tfidf
 
 
