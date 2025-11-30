@@ -54,7 +54,7 @@ def strength_phrase_se(score: float, is_dutch: bool = True) -> str:
             ])
 
 
-def _split_into_snippets(text: str, min_len: int = 15) -> list[str]:
+def _split_into_snippets(text: str, min_len: int = 40) -> list[str]:
     """Splits de profieltekst in korte, betekenisvolle snippers.
 
     We doen een simpele split op zinnen (., !, ?) en filteren
@@ -65,15 +65,35 @@ def _split_into_snippets(text: str, min_len: int = 15) -> list[str]:
         return []
 
     raw = text.replace("\n", " ")
-    # kleine variatie in hoe we splitsen zodat niet elke run
-    # exact dezelfde snippers geeft
-    seps_sets = [["!", "?", ";", ":"], ["!", "?"], [";", ":"]]
-    seps = random.choice(seps_sets)
-    for sep in seps:
+    # Splits op duidelijke zinsafsluiters; laat puntkomma/dubbele punt staan
+    for sep in ["?", "!", "."]:
         raw = raw.replace(sep, ".")
 
     parts = [p.strip() for p in raw.split(".")]
-    snippets = [p for p in parts if len(p) >= min_len]
+
+    # Neem alleen zinnen die genoeg lengte hebben maar niet absurd lang zijn.
+    snippets: list[str] = []
+    for p in parts:
+        if not p:
+            continue
+        if " " not in p:
+            continue
+
+        tokens = p.split()
+        # heel korte fragmenten (bijv. "Business", "Strategies") overslaan
+        if len(tokens) < 6:
+            continue
+
+        # trim extreem lange zinnen: hou alleen de eerste ~20 woorden
+        if len(tokens) > 20:
+            p = " ".join(tokens[:20]) + " ..."
+
+        # voorkom dat rare restwoorden zoals "DraBrandingma" een hele snippet maken
+        if any(len(tok) > 20 for tok in tokens):
+            continue
+
+        if len(p) >= min_len:
+            snippets.append(p)
     return snippets if snippets else [raw.strip()] if raw.strip() else []
 
 
