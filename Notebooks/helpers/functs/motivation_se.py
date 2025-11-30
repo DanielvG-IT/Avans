@@ -101,6 +101,7 @@ def _best_profile_snippets_for_module(
     student_profile_text: str,
     module_text: str,
     model: SentenceTransformer,
+    device: str = "cpu",
     top_k: int = 3,
 ) -> list[str]:
     """Zoekt de best passende snippers uit het studentenprofiel voor een module.
@@ -115,8 +116,8 @@ def _best_profile_snippets_for_module(
         return []
 
     # Embed snippets en module
-    snippet_embeddings = model.encode(snippets)
-    module_embedding = model.encode([module_text])[0].reshape(1, -1)
+    snippet_embeddings = model.encode(snippets, device=device)
+    module_embedding = model.encode([module_text], device=device)[0].reshape(1, -1)
 
     sims = cosine_similarity(module_embedding, np.vstack(snippet_embeddings))[0]
 
@@ -135,6 +136,7 @@ def motivation_sentence_se(
     student_text: str,
     module_text: str,
     model: SentenceTransformer,
+    device: str = "cpu",
     is_dutch: bool = True,
     formatter: Callable[[str], str] | None = None,
 ) -> str:
@@ -230,6 +232,7 @@ def add_motivation_column_se(
     preferred_language: str | None = None,
     raw_df: pd.DataFrame | None = None,
     model: SentenceTransformer | None = None,
+    device: str = "cpu",
 ) -> pd.DataFrame:
     """Voegt een kolom `motivation_full` toe aan `recs`.
 
