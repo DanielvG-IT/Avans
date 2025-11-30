@@ -11,7 +11,7 @@ from typing import Iterable, List, Tuple
 # Load datasets once at module import (similar pattern as BOW helper)
 df = pd.read_csv("../Data/Cleaned/cleaned_dataset_soft-NLP.csv")
 raw_df = pd.read_csv("../Data/Raw/Uitgebreide_VKM_dataset.csv")
-embedded_modules = pd.read_csv("../Data/Vectorized/sentence_embedded_dataframe.csv")
+embedded_modules = pd.read_csv("../Data/Processed/sentence_embedded_dataframe.csv")
 
 
 def _normalize_locations(series: pd.Series) -> pd.Series:
