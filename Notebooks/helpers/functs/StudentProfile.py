@@ -11,6 +11,7 @@ class StudentProfile:
         learning_goals: List[str],
         level_preference: List[str],
         preferred_language: str,
+        preferred_start_range: str
     ):
         self.current_study = current_study
         self.interests = interests
@@ -19,6 +20,7 @@ class StudentProfile:
         self.learning_goals = learning_goals
         self.level_preference = level_preference
         self.preferred_language = preferred_language
+        self.preferred_start_range = preferred_start_range
 
     def to_text(self) -> str:
         parts = []
