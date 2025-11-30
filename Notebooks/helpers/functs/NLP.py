@@ -55,9 +55,7 @@ def soft_nlp(text):
     if not isinstance(text, str):
         return text
 
-    text = text.lower()
-    text = re.sub(r"\d+", "", text)
-    text = text.translate(str.maketrans("", "", string.punctuation))
-    words = text.split()
-    return " ".join(words)
+    # Minimal preprocessing
+    return text.strip()
+
 from ..functs.NLP import *
