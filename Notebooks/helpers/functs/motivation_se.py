@@ -8,11 +8,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 def strength_phrase_se(score: float, is_dutch: bool = True) -> str:
-    """Map a cosine similarity score to a qualitative strength phrase.
-
-    Hergebruikt dezelfde drempels als het TF-IDF model zodat
-    de uitleg tussen modellen consistent aanvoelt.
-    """
+    # Map the similarity score to a short strength phrase
 
     if is_dutch:
         if score >= 0.6:
@@ -55,23 +51,19 @@ def strength_phrase_se(score: float, is_dutch: bool = True) -> str:
 
 
 def _split_into_snippets(text: str, min_len: int = 40) -> list[str]:
-    """Splits de profieltekst in korte, betekenisvolle snippers.
-
-    We doen een simpele split op zinnen (., !, ?) en filteren
-    extreem korte of lege stukjes weg.
-    """
+    # Split the profile text into short sentence snippets
 
     if not isinstance(text, str):
         return []
 
     raw = text.replace("\n", " ")
-    # Splits op duidelijke zinsafsluiters; laat puntkomma/dubbele punt staan
+    # Split on clear sentence enders; keep semicolons/colons as is
     for sep in ["?", "!", "."]:
         raw = raw.replace(sep, ".")
 
     parts = [p.strip() for p in raw.split(".")]
 
-    # Neem alleen zinnen die genoeg lengte hebben maar niet absurd lang zijn.
+    # Keep only sentences that are long enough but not extremely long
     snippets: list[str] = []
     for p in parts:
         if not p:
@@ -80,15 +72,15 @@ def _split_into_snippets(text: str, min_len: int = 40) -> list[str]:
             continue
 
         tokens = p.split()
-        # heel korte fragmenten (bijv. "Business", "Strategies") overslaan
+        # Skip very short fragments (e.g., single words like "Business")
         if len(tokens) < 6:
             continue
 
-        # trim extreem lange zinnen: hou alleen de eerste ~20 woorden
+        # Trim very long sentences: keep only the first ~20 words
         if len(tokens) > 20:
             p = " ".join(tokens[:20]) + " ..."
 
-        # voorkom dat rare restwoorden zoals "DraBrandingma" een hele snippet maken
+        # Skip snippets that contain very odd long tokens (noise words)
         if any(len(tok) > 20 for tok in tokens):
             continue
 
@@ -104,27 +96,19 @@ def _best_profile_snippets_for_module(
     device: str = "cpu",
     top_k: int = 3,
 ) -> list[str]:
-    """Zoekt de best passende snippers uit het studentenprofiel voor een module.
-
-    - embed alle profiel-snippets
-    - embed de module-tekst
-    - kies de top-k snippers met hoogste cosine similarity
-    """
-
+    # Find the profile snippet that is most similar to the module text
     snippets = _split_into_snippets(student_profile_text)
     if not snippets:
         return []
 
-    # Embed snippets en module
+    # Embed profile snippets and module text
     snippet_embeddings = model.encode(snippets, device=device)
     module_embedding = model.encode([module_text], device=device)[0].reshape(1, -1)
 
     sims = cosine_similarity(module_embedding, np.vstack(snippet_embeddings))[0]
 
-    # kies eerst de indices op basis van similarity
     order = np.argsort(-sims)
-    # neem alleen de beste index met score > 0, zodat we precies
-    # één duidelijk leesbaar fragment teruggeven
+    # Take only the best snippet with similarity > 0 for readability. Otherwise too cluttered
     for idx in order:
         if sims[idx] > 0:
             return [snippets[idx]]
@@ -140,16 +124,7 @@ def motivation_sentence_se(
     is_dutch: bool = True,
     formatter: Callable[[str], str] | None = None,
 ) -> str:
-    """Bouw een motivatie-zin voor één recommendation.
-
-    In plaats van de volledige profieltekst gebruiken we alleen die
-    zinnen/snippers uit het profiel die volgens het sentence embedding
-    model het meest lijken op de module-tekst.
-
-    Vereiste kolommen in `row`:
-      - 'score': cosine similarity waarde
-      - 'module_name': gebruikersvriendelijke modulenaam
-    """
+        # Build one motivation sentence for a recommended module
 
     score = float(row.get("score", 0.0))
     module_name = str(row.get("module_name", "deze module"))
@@ -160,7 +135,7 @@ def motivation_sentence_se(
 
     strength = strength_phrase_se(score, is_dutch=is_dutch)
 
-    # Kies de best passende profiel-snippers
+    # Pick the best matching profile snippets for this module
     best_snippets = _best_profile_snippets_for_module(
         student_profile_text=student_text,
         module_text=module_text,
@@ -216,12 +191,12 @@ def motivation_sentence_se(
         base_text = base_template.format(strength=strength_text)
 
     if best_snippets:
-        # gebruik alleen het beste fragment voor leesbaarheid
+        # Use only the best snippet to keep the text readable
         best = formatter(best_snippets[0])
         profile_part = random.choice(profile_templates).format(snippet=best)
         return base_text + profile_part
 
-    # Fallback als we echt niets zinnigs hebben
+    # Fallback if we could not find any good snippet
     fallback = random.choice(profile_templates)
     return base_text + fallback
 
@@ -234,14 +209,7 @@ def add_motivation_column_se(
     model: SentenceTransformer | None = None,
     device: str = "cpu",
 ) -> pd.DataFrame:
-    """Voegt een kolom `motivation_full` toe aan `recs`.
-
-    - `student_profile_text` is de originele (leesbare) studentinput, bv. `student.to_text()`.
-    - `raw_df` wordt gebruikt om een korte module-tekst op te bouwen
-      (naam + beschrijving). Als `raw_df` None is, valt hij terug op `module_name`.
-    - `model` is je SBERT model; als None wordt opnieuw een standaard
-      `SentenceTransformer('paraphrase-multilingual-mpnet-base-v2')` geladen.
-    """
+    # Add a motivation text column to the recommendations DataFrame
 
     use_dutch = True
     if isinstance(preferred_language, str):
@@ -254,7 +222,7 @@ def add_motivation_column_se(
 
     recs_out = recs.copy()
 
-    # bereid lookup van module-tekst voor
+    # For each row, build a short text that describes the module
     def build_module_text(row: pd.Series) -> str:
         if raw_df is not None and "module_id" in row and "id" in raw_df.columns:
             mid = row["module_id"]

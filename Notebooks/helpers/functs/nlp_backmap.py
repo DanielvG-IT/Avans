@@ -2,7 +2,7 @@ import re
 from collections import defaultdict
 from typing import Dict, Set
 
-
+# Function for the model to couple original words to the samewords ran through NLP. This way we can give back the original words to the user.
 def build_token_backmap(original_text: str, normalized_text: str) -> Dict[str, Set[str]]:
     orig_tokens = re.findall(r"[A-Za-zÀ-ÿ]+", original_text.lower())
     nlp_tokens = normalized_text.split()

@@ -1,6 +1,6 @@
 from typing import List, Tuple
 
-
+# Class to simulate user input. 
 class StudentProfile:
     def __init__(
         self,
