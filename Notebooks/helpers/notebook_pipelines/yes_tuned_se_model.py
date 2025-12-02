@@ -75,10 +75,6 @@ def _recommend_for_student(
     model: SentenceTransformer,
     top_n: int = 5,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """Run sentence-embedding recommendation for a single student.
-
-    Returns (recs, filtered_df).
-    """
 
     filtered_df = _build_filtered_df(student)
 
@@ -135,20 +131,14 @@ def run_evaluation_multi(
     top_n: int = 5,
     k: int = 5,
 ):
-    """Sentence-embedding equivalent van run_evaluation_multi voor BOW.
 
-    - Neemt een lijst van StudentProfile-objecten en bijbehorende ground-truth lijsten.
-    - Geeft per student een dict met de recommendations (inclusief motivatie) en precision@k terug.
-    - Retourneert ook de gemiddelde precision@k over alle studenten.
-    """
 
     students = list(students)
     matching_models_list = list(matching_models_list)
     if len(students) != len(matching_models_list):
         raise ValueError("students and matching_models_list must have the same length")
 
-    # Gebruik hetzelfde sentence-embedding model als in notebook 3.2
-    # en voor de gegenereerde embeddings in sentence_embedded_dataframe.csv
+    # Now using different model
     model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
 
     all_results = []

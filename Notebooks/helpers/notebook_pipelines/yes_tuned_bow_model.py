@@ -40,7 +40,7 @@ def _build_base_text_df():
     big_df = pd.DataFrame({"id": df["id"], "text": big_string})
     return big_df
 
-
+# Made ngram range bigger
 def _build_vectorizer_and_module_matrix(big_df: pd.DataFrame):
     vectorizer = TfidfVectorizer(
         max_features=10000000000,
@@ -170,6 +170,7 @@ def run_evaluation_multi(students, matching_models_list, top_n: int = 5, k: int 
     big_df = _build_base_text_df()
     vectorizer, X_modules_tfidf = _build_vectorizer_and_module_matrix(big_df)
 
+    # Going to 500 comps instead of 200
     n_components = 500
     svd = TruncatedSVD(n_components=n_components, random_state=42)
     X_modules_reduced = svd.fit_transform(X_modules_tfidf)

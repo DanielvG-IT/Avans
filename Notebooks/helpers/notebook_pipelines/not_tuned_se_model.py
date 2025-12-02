@@ -8,13 +8,14 @@ import numpy as np
 import ast
 from typing import Iterable, List, Tuple
 
-# Load datasets once at module import (similar pattern as BOW helper)
+# Load soft-NLP module data, raw data for names, and precomputed embeddings
 df = pd.read_csv("../Data/Cleaned/cleaned_dataset_soft-NLP.csv")
 raw_df = pd.read_csv("../Data/Raw/Uitgebreide_VKM_dataset.csv")
 embedded_modules = pd.read_csv("../Data/Processed/sentence_embedded_dataframe.csv")
 
 
 def _normalize_locations(series: pd.Series) -> pd.Series:
+    # Turn stored location strings into cleaned lists of locations
     def _to_list(val):
         try:
             parsed = ast.literal_eval(str(val))
@@ -28,6 +29,7 @@ def _normalize_locations(series: pd.Series) -> pd.Series:
 
 
 def _build_filtered_df(student: StudentProfile) -> pd.DataFrame:
+    # Filter modules based on credits, location, level, and availability
     filtered_df = df.copy()
 
     if hasattr(student, "wanted_study_credit_range") and student.wanted_study_credit_range is not None:
@@ -55,6 +57,7 @@ def _build_filtered_df(student: StudentProfile) -> pd.DataFrame:
 
 
 def _prepare_embedded_modules() -> pd.DataFrame:
+    # Parse stored embedding strings back into NumPy vectors
     em = embedded_modules.copy()
     if "sentence_embedding_vector" not in em.columns:
         raise KeyError("embedded_modules must contain 'sentence_embedding_vector' column.")
@@ -75,26 +78,27 @@ def _recommend_for_student(
     model: SentenceTransformer,
     top_n: int = 5,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """Run sentence-embedding recommendation for a single student.
-
-    Returns (recs, filtered_df).
-    """
-
+    # Build a filtered module set and compute similarity scores for one student
     filtered_df = _build_filtered_df(student)
 
+    # Turn StudentProfile into text and apply soft NLP preprocessing
     studentInterests = student.to_text()
     student_softNLP = soft_nlp(studentInterests)
 
+    # Encode the preprocessed profile text as a sentence embedding
     embedded_student_input = model.encode(student_softNLP, show_progress_bar=False)
     if isinstance(embedded_student_input, list):
         embedded_student_input = np.array(embedded_student_input)
     if embedded_student_input.ndim == 1:
         embedded_student_input = embedded_student_input.reshape(1, -1)
 
+    # Build a matrix with all module embeddings
     module_matrix = np.stack(_EMBEDDED_MODULES_PREPARED["sentence_embedding_vector"].values)
 
+    # Compute cosine similarity between student and each module
     scores_global = cosine_similarity(embedded_student_input, module_matrix)[0]
 
+    # Only keep similarities for modules that passed the filters
     candidate_ids = set(filtered_df["id"].tolist())
     candidate_mask = _EMBEDDED_MODULES_PREPARED["id"].isin(candidate_ids)
 
@@ -104,6 +108,7 @@ def _recommend_for_student(
     if len(idx_candidates) == 0:
         raise ValueError("No modules remain after filtering; cannot compute recommendations.")
 
+    # Sort candidate modules by similarity and take the top-N
     order = np.argsort(-scores_candidates)[:top_n]
     top_idx = idx_candidates[order]
 
@@ -117,6 +122,7 @@ def _recommend_for_student(
         else:
             module_names.append("")
 
+    # Assemble recommendations with rank, module id, name, and similarity score
     recs = pd.DataFrame(
         {
             "rank": list(range(1, len(top_idx) + 1)),
@@ -135,28 +141,23 @@ def run_evaluation_multi(
     top_n: int = 5,
     k: int = 5,
 ):
-    """Sentence-embedding equivalent van run_evaluation_multi voor BOW.
-
-    - Neemt een lijst van StudentProfile-objecten en bijbehorende ground-truth lijsten.
-    - Geeft per student een dict met de recommendations (inclusief motivatie) en precision@k terug.
-    - Retourneert ook de gemiddelde precision@k over alle studenten.
-    """
-
+    # Run the sentence-embedding pipeline for multiple students and compute precision@k
     students = list(students)
     matching_models_list = list(matching_models_list)
     if len(students) != len(matching_models_list):
         raise ValueError("students and matching_models_list must have the same length")
 
-    # Gebruik hetzelfde sentence-embedding model als in notebook 3.2
-    # en voor de gegenereerde embeddings in sentence_embedded_dataframe.csv
+    # Shared sentence-transformer model for all students
     model = SentenceTransformer("all-MiniLM-L6-v2")
 
     all_results = []
     precisions: List[float] = []
 
     for student, matching_models in zip(students, matching_models_list):
+        # Get top-N recommendations for this student
         recs, _ = _recommend_for_student(student, model=model, top_n=top_n)
 
+        # Add natural-language motivations based on the student profile
         student_profile_text = student.to_text()
         recs = add_motivation_column_se(
             recs=recs,
@@ -166,6 +167,7 @@ def run_evaluation_multi(
             model=model,
         )
 
+        # Compute precision@k using the ground-truth module IDs
         relevant_ids = set(matching_models)
         recommended_ids = recs["module_id"].tolist()
         kk = min(k, len(recommended_ids))
@@ -180,6 +182,7 @@ def run_evaluation_multi(
         print(f"precision@{kk}: {precision_at_k:.3f}")
         print("-" * 50)
 
+        # Store this student's results for later inspection and averaging
         all_results.append({
             "student": student,
             "recs": recs,
@@ -187,5 +190,6 @@ def run_evaluation_multi(
         })
         precisions.append(precision_at_k)
 
+    # Return per-student results and overall average precision@k
     avg_precision_at_k = float(np.mean(precisions)) if precisions else 0.0
     return all_results, avg_precision_at_k

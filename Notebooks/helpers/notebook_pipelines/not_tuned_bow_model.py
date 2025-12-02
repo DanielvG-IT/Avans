@@ -9,11 +9,13 @@ import numpy as np
 import ast
 import random
 
+# Load preprocessed (hard NLP) module data and raw data for names, etc.
 df = pd.read_csv("../Data/Cleaned/cleaned_dataset_hard-NLP.csv")
 raw_df = pd.read_csv("../Data/Raw/Uitgebreide_VKM_dataset.csv")
 
 
 def _normalize_locations(series: pd.Series) -> pd.Series:
+    # Convert stored location strings (like "['Den Bosch', 'Tilburg']") into clean lists
     def _to_list(val):
         try:
             parsed = ast.literal_eval(str(val))
@@ -27,6 +29,7 @@ def _normalize_locations(series: pd.Series) -> pd.Series:
 
 
 def _build_base_text_df():
+    # Combine key text fields into one string per module
     big_string = (
         df["name"].fillna("")
         + " "
@@ -42,6 +45,7 @@ def _build_base_text_df():
 
 
 def _build_vectorizer_and_module_matrix(big_df: pd.DataFrame):
+    # Fit a TF-IDF vectorizer on all module text and build the matrix
     vectorizer = TfidfVectorizer(
         max_features=10000000000,
         ngram_range=(1, 2),
@@ -53,6 +57,7 @@ def _build_vectorizer_and_module_matrix(big_df: pd.DataFrame):
 
 
 def _strength_phrase(score: float, is_dutch: bool = True) -> str:
+    # Turn a similarity score into a short, human-readable strength phrase
     if is_dutch:
         if score >= 0.6:
             return random.choice(
@@ -106,6 +111,7 @@ def _strength_phrase(score: float, is_dutch: bool = True) -> str:
 
 
 def _motivation_sentence(row: pd.Series, is_dutch: bool = True) -> str:
+    # Build a full motivation sentence using the score and shared terms
     score = row["score"]
     words = row["Motivation"]
     module_name = row["module_name"]
@@ -164,12 +170,15 @@ def _motivation_sentence(row: pd.Series, is_dutch: bool = True) -> str:
 
 
 def run_evaluation_multi(students, matching_models_list, top_n: int = 5, k: int = 5):
+    # Run the untuned BOW pipeline for multiple students and compute precision@k
     if len(students) != len(matching_models_list):
         raise ValueError("students and matching_models_list must have the same length")
 
+    # Prepare combined text per module and the TF-IDF representation
     big_df = _build_base_text_df()
     vectorizer, X_modules_tfidf = _build_vectorizer_and_module_matrix(big_df)
 
+    # Reduce dimensionality of TF-IDF vectors with SVD 
     n_components = 200
     svd = TruncatedSVD(n_components=n_components, random_state=42)
     X_modules_reduced = svd.fit_transform(X_modules_tfidf)
@@ -180,6 +189,7 @@ def run_evaluation_multi(students, matching_models_list, top_n: int = 5, k: int 
     precisions = []
 
     for student, matching_models in zip(students, matching_models_list):
+        # Start from all modules and apply filters based on the student profile
         filtered_df = df.copy()
 
         if hasattr(student, "wanted_study_credit_range") and student.wanted_study_credit_range is not None:
@@ -203,12 +213,15 @@ def run_evaluation_multi(students, matching_models_list, top_n: int = 5, k: int 
 
         filtered_df = filtered_df[filtered_df["available_spots"] > 0]
 
+        # Turn the structured StudentProfile into text and apply hard NLP
         studentInterests = student.to_text()
         student_hardNLP = hard_nlp(studentInterests)
 
+        # Build a mapping so we can later show nicer versions of important terms
         token_map = build_token_backmap(studentInterests, student_hardNLP)
         pretty_term = make_pretty_term(token_map)
 
+        # Vectorize the student text and project it into the same reduced space
         X_interests_tfidf = vectorizer.transform([student_hardNLP])
         X_student_reduced = svd.transform(X_interests_tfidf)
 
@@ -216,8 +229,10 @@ def run_evaluation_multi(students, matching_models_list, top_n: int = 5, k: int 
         if X_student_vec.ndim == 1:
             X_student_vec = X_student_vec.reshape(1, -1)
 
+        # Compute cosine similarity between student vector and all module vectors
         scores_global = cosine_similarity(X_student_vec, X_modules_reduced)[0]
 
+        # Only keep scores for modules that survived the filtering
         candidate_ids = set(filtered_df["id"].tolist())
         candidate_mask = big_df["id"].isin(candidate_ids)
 
@@ -227,12 +242,15 @@ def run_evaluation_multi(students, matching_models_list, top_n: int = 5, k: int 
         if len(idx_candidates) == 0:
             raise ValueError("No modules remain after filtering; cannot compute recommendations.")
 
+        # Sort candidates by similarity and take the top-N recommendations
         order = np.argsort(-scores_candidates)[:top_n]
         top_idx = idx_candidates[order]
 
+        # Use the full TF-IDF vectors (before SVD) to find shared terms
         student_vec = X_interests_tfidf.toarray().flatten()
 
         def top_shared_terms(module_idx, top_k: int = 5) -> str:
+            # Find the most important terms shared between student and module
             module_vec = X_modules_tfidf[module_idx].toarray().flatten()
             mask = (student_vec > 0) & (module_vec > 0)
             if not mask.any():
@@ -248,6 +266,7 @@ def run_evaluation_multi(students, matching_models_list, top_n: int = 5, k: int 
                         terms.append(term)
             return ", ".join(pretty_term(t) for t in terms)
 
+        # Build a list of shared-term strings for each recommended module
         motivation_list = [top_shared_terms(i) for i in top_idx]
 
         module_ids = big_df.iloc[top_idx]["id"].values
@@ -263,6 +282,7 @@ def run_evaluation_multi(students, matching_models_list, top_n: int = 5, k: int 
         else:
             module_names = big_df.iloc[top_idx]["text"].values
 
+        # Assemble recommendation DataFrame: rank, module info, score, and raw motivation terms
         recs = pd.DataFrame(
             {
                 "rank": list(range(1, len(top_idx) + 1)),
@@ -273,16 +293,19 @@ def run_evaluation_multi(students, matching_models_list, top_n: int = 5, k: int 
             }
         )
 
+        # Decide if we should generate Dutch or English motivations
         use_dutch = True
         if hasattr(student, "preferred_language"):
             lang = str(student.preferred_language).strip().lower()
             if lang in ["en", "eng", "english"]:
                 use_dutch = False
 
+        # Turn raw terms and scores into full motivation sentences
         recs["motivation_full"] = recs.apply(
             lambda row: _motivation_sentence(row, is_dutch=use_dutch), axis=1
         )
 
+        # Compute precision@k for this student based on ground-truth module IDs
         relevant_ids = set(matching_models)
         recommended_ids = recs["module_id"].tolist()
         kk = min(k, len(recommended_ids))
@@ -297,6 +320,7 @@ def run_evaluation_multi(students, matching_models_list, top_n: int = 5, k: int 
         print(f"precision@{kk}: {precision_at_k:.3f}")
         print("-" * 50)
 
+        # Store per-student results for later inspection
         all_results.append({
             "student": student,
             "recs": recs,
@@ -304,5 +328,6 @@ def run_evaluation_multi(students, matching_models_list, top_n: int = 5, k: int 
         })
         precisions.append(precision_at_k)
 
+    # Return all results plus the average precision@k across students
     avg_precision_at_k = float(np.mean(precisions)) if precisions else 0.0
     return all_results, avg_precision_at_k
