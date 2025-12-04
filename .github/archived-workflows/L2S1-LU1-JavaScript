@@ -66,3 +66,4 @@ jobs:
           app-name: 'avans-eject-danielvg-it'
           slot-name: 'Production'
           package: ./Leerjaar 2/Q1-2 Avans KeuzeKompas/LU1 Proof Of Concept/JavaScript
+
