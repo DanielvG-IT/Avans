@@ -1,0 +1,15 @@
+numpy
+pandas
+scikit-learn
+typing-extensions
+matplotlib
+seaborn
+scikit-learn
+sentence_transformers
+IPython
+pathlib
+torch
+spacy
+ipykernel
+nltk
+langdetect
