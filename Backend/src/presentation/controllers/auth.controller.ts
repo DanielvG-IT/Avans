@@ -31,7 +31,7 @@ export class AuthController {
       throw new ConflictException('Already authenticated');
     }
 
-    if (!dto.email || dto.password) {
+    if (!dto.email || !dto.password) {
       throw new BadRequestException('Missing email or password');
     }
 
