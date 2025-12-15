@@ -13,6 +13,8 @@ enum Role {
   USER
 }
 
+// Hier kan je nieuwe databaseschema's toevoegen. run "npx prisma generate" om de changes door te voeren.
+
 model User {
   id       String @id @default(uuid())
   name     String
