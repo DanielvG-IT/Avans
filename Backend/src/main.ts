@@ -14,11 +14,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const isProduction = process.env.NODE_ENV === 'production';
 
+  // Global API prefix - must be set before middleware
+  app.setGlobalPrefix('api');
+
   // Security: Set various HTTP headers
   app.use(helmet());
-
-  // Global API prefix
-  app.setGlobalPrefix('api');
 
   // Enable CORS
   app.enableCors({
