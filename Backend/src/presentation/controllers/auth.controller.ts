@@ -1,6 +1,7 @@
 import { type IAuthService } from '@/application/ports/auth.port';
 import { LoginDto } from '@/presentation/dtos/auth.dto';
 import { UserDTO } from '@/presentation/dtos/user.dto';
+import { SessionData } from '@/types/session.types';
 import {
   BadRequestException,
   ConflictException,
@@ -25,7 +26,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(
     @Body() dto: LoginDto,
-    @Session() session: Record<string, any>,
+    @Session() session: SessionData,
   ): Promise<{ user: UserDTO }> {
     if (session && session.user) {
       throw new ConflictException('Already authenticated');
@@ -41,6 +42,25 @@ export class AuthController {
     }
 
     session.user = result.data.user;
+    session.lastActivity = Date.now();
     return { user: result.data.user };
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@Session() session: SessionData): Promise<{ message: string }> {
+    if (!session || !session.user) {
+      throw new BadRequestException('No active session to logout');
+    }
+
+    return new Promise((resolve, reject) => {
+      session.destroy((err?: Error) => {
+        if (err) {
+          reject(new BadRequestException('Failed to logout'));
+        } else {
+          resolve({ message: 'Successfully logged out' });
+        }
+      });
+    });
   }
 }

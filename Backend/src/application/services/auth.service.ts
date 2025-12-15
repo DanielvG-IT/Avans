@@ -30,8 +30,7 @@ export class AuthService implements IAuthService {
     return succeed({ user });
   }
 
-  // logout(session: string): Result {
-  //   // TODO Invalidate Session @BaasW @DanielvG-IT
-  //   return succeed(void 0);
-  // }
+  logout() {
+    return succeed(void 0);
+  }
 }
