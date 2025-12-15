@@ -1,0 +1,70 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build outputs
+dist/
+**/dist/
+build/
+out/
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vite / React
+.vite/
+public/build/
+.cache/
+
+# NestJS specific (build/cache folders)
+.nest/
+# compiled output lives in dist/ so it's already ignored above
+
+# Testing / Coverage
+coverage/
+coverage-final.json
+nyc_output/
+.vitest/
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# IDEs / editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker / local containers
+docker-compose.override.yml
+.env.docker
+
+# Misc sensitive / local artifacts
+*.pem
+*.key
+*.crt
+*.seed
+
+# Turborepo
+.turbo/
+**/.turbo/

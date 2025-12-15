@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="64 64 384 384" role="img" aria-label="Avans Keuzekompas custom logo">
+  <title>Avans Keuzekompas - custom mark</title>
+  <!-- Main 'inspired a' shape -->
+  <path d="M136 184 C188 92 324 92 376 184 C420 260 354 352 256 352 C158 352 92 260 136 184 Z"
+        fill="#b92020" />
+  <!-- Inner counter for the 'a' -->
+  <path d="M230 200 C262 162 338 166 338 216 C338 252 310 292 262 300 C214 308 182 272 202 232 C212 212 220 204 230 200 Z"
+        fill="white" />
+  <!-- Compass needle -->
+  <path d="M264 110 L292 230 L256 246 L220 230 Z" fill="#9f1c1c" opacity="0.95"/>
+  <path d="M256 98 L276 180 L256 197 L236 180 Z" fill="#ff3b3b" opacity="0.95"/>
+  <!-- Balancing cutout -->
+  <circle cx="330" cy="320" r="8" fill="white" opacity="0.95"/>
+</svg>
