@@ -10,7 +10,7 @@ generator client {
 enum Role {
   ADMIN
   TEACHER
-  USER
+  STUDENT
 }
 
 // Hier kan je nieuwe databaseschema's toevoegen. run "npx prisma generate" om de changes door te voeren.
@@ -19,8 +19,8 @@ model User {
   id       String @id @default(uuid())
   name     String
   email    String @unique
-  password String
-  role     Role   @default(USER)
+  hashedPassword String
+  role     Role   @default(STUDENT)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

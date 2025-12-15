@@ -1,15 +1,25 @@
 import 'dotenv/config';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
+import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient } from '@/infrastructure/database/generated/prisma/client';
 
-const globalForPrisma = global as unknown as { prisma?: PrismaClient };
+@Injectable()
+export class PrismaService
+  extends PrismaClient
+  implements OnModuleInit, OnModuleDestroy
+{
+  constructor() {
+    const adapter = new PrismaMariaDb(process.env.DATABASE_URL!);
+    super({ adapter });
+  }
 
-const adapter = new PrismaMariaDb({
-  host: 'localhost',
-  port: 3306,
-  connectionLimit: 5,
-});
+  async onModuleInit() {
+    await this.$connect();
+  }
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter });
+  async onModuleDestroy() {
+    await this.$disconnect();
+  }
+}
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+export type Prisma = PrismaClient;
