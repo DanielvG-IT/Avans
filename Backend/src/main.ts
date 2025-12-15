@@ -5,6 +5,9 @@ import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import helmet from 'helmet';
+import { configDotenv } from 'dotenv';
+
+configDotenv();
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
