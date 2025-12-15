@@ -17,6 +17,9 @@ async function bootstrap() {
   // Security: Set various HTTP headers
   app.use(helmet());
 
+  // Global API prefix
+  app.setGlobalPrefix('api');
+
   // Enable CORS
   app.enableCors({
     origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
@@ -75,8 +78,8 @@ async function bootstrap() {
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document);
-    logger.log('Swagger UI initialized at /api');
+    SwaggerModule.setup('docs', app, document);
+    logger.log('Swagger UI initialized at /docs');
   }
 
   // Graceful Shutdown
