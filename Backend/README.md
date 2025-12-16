@@ -1,3 +1,50 @@
+# CompassGPT — Backend
+
+This repository contains the NestJS backend for CompassGPT, including Prisma for database access.
+
+Requirements
+
+- Node.js (recommended 18+ or as specified in CI)
+- PostgreSQL (or other DB configured via `DATABASE_URL`)
+
+Quick start (development)
+
+1. Install dependencies:
+
+   npm ci
+
+2. Configure environment:
+   - Create a `.env` file with `DATABASE_URL` (and other secrets as needed).
+
+3. Run database migrations and start in dev mode:
+
+   npx prisma migrate dev
+   npm run start:dev
+
+Scripts
+
+- `npm run start` — start production server
+- `npm run start:dev` — start in watch mode
+- `npm run build` — compile TypeScript
+- `npm run test` — run unit tests
+- `npm run test:e2e` — run end-to-end tests
+
+Prisma
+
+- Schema lives in `src/infrastructure/database/schema` (or `prisma/schema.prisma`).
+- Use `npx prisma generate` after schema changes.
+
+Deployment
+
+- Build with `npm run build` and run the compiled output. Configure environment variables in your hosting platform.
+
+Support
+
+- See `README` and `docs` in this folder for more project-specific notes.
+
+License
+
+- See root `LICENSE`.
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
