@@ -1,11 +1,11 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { PrismaService } from './infrastructure/database/prisma';
 import { AuthService } from './application/services/auth.service';
 import { UserService } from './application/services/user.service';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { AuthController } from './presentation/controllers/auth.controller';
 import { UserController } from './presentation/controllers/user.controller';
-import { UserRepository } from './infrastructure/repositories/user.repository';
-import { PrismaService } from './infrastructure/database/prisma';
-import { SessionActivityMiddleware } from './infrastructure/middleware/session-activity.middleware';
+import { UserRepository } from './infrastructure/database/repositories/user.repository';
+import { SessionActivityMiddleware } from './presentation/middleware/session-activity.middleware';
 
 @Module({
   imports: [],
