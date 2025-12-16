@@ -1,5 +1,5 @@
 datasource db {
-    provider = "mysql"
+  provider = "mysql"
 }
 
 generator client {
@@ -10,15 +10,50 @@ generator client {
 enum Role {
   ADMIN
   TEACHER
-  USER
+  STUDENT
 }
 
+// Hier kan je nieuwe databaseschema's toevoegen. run "npx prisma generate" om de changes door te voeren.
+
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      Role     @default(USER)
+  id       String @id @default(uuid())
+  name     String
+  email    String @unique
+  hashedPassword String
+  role     Role   @default(STUDENT)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserFavourites {
+  id             String @id @default(uuid())
+  userId         String
+  choiceModuleId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, choiceModuleId])
+}
+
+model ChoiceModule {
+  id               String  @id @default(uuid())
+  name             String
+  shortDescription String?
+  description      String?
+  content          String?
+  studyCredits     Int
+  location         String?
+  //contactId     Int
+  level            String
+  learningOutcomes String?
+  moduleTags       String?
+  //interestsMatchScore Float
+  //popularityScore       Int
+  //estimatedDifficulty  Int
+  availableSpots   Int
+  startDate        String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
