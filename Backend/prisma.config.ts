@@ -8,6 +8,11 @@ export default defineConfig({
     seed: 'tsx src/infrastructure/database/seed.ts',
   },
   datasource: {
-    url: process.env.DATABASE_URL!,
+    url: (() => {
+      if (!process.env.DATABASE_URL) {
+        throw new Error('DATABASE_URL environment variable must be set');
+      }
+      return process.env.DATABASE_URL;
+    })(),
   },
 });
