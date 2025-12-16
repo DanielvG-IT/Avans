@@ -8,8 +8,6 @@ export default defineConfig({
     seed: 'tsx src/infrastructure/database/seed.ts',
   },
   datasource: {
-    url:
-      process.env.DATABASE_URL ||
-      'postgresql://user:password@localhost:5432/db',
+    url: process.env.DATABASE_URL!,
   },
 });
