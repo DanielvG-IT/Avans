@@ -11,4 +11,4 @@ def predict(data: StudentInput):
     return {
         "message": "Your input data is valid",
         "data": data
-        }
+    }
