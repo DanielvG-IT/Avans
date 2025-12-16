@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { IModuleService } from '@/application/ports/module.port';
 import { type IModuleRepository } from '@/domain/modules/module-repository.interface';
-import { Module } from '@/domain/modules/module.model';
+import { Module, moduleDetail } from '@/domain/modules/module.model';
 
 @Injectable()
 export class ModuleService implements IModuleService {
@@ -11,5 +11,8 @@ export class ModuleService implements IModuleService {
   }
   getAllModules(): Promise<Module[]> {
     return this.moduleRepository.getAllModules();
+  }
+  findById(id: string): Promise<moduleDetail> {
+    return this.moduleRepository.findById(id);
   }
 }

@@ -9,7 +9,7 @@ export interface moduleDetail {
   moduleTags: { id: string; name: string }[];
   learningOutcomes: string;
   availableSpots: number;
-  startDate: Date;
+  startDate: string;
 }
 export interface Module {
   id: string;
