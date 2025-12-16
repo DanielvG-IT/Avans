@@ -1,1 +1,3 @@
-export interface IUserService {}
+export interface IUserService {
+  findById(id: string): Promise<any>;
+}

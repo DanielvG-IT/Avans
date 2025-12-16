@@ -44,17 +44,44 @@ model ChoiceModule {
   description      String?
   content          String?
   studyCredits     Int
-  location         String?
   //contactId     Int
   level            String
   learningOutcomes String?
-  moduleTags       String?
   //interestsMatchScore Float
   //popularityScore       Int
   //estimatedDifficulty  Int
   availableSpots   Int
   startDate        String
+  location         ChoiceModuleLocation[]
+  moduleTags       ChoiceModuleTags[]  
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+model Location{
+  id               String @id @default(uuid())
+  name             String @unique
+  choiceModules    ChoiceModuleLocation[]
+}
+model ChoiceModuleLocation{
+  ChoiceModule     ChoiceModule @relation(fields: [choiceModuleId], references: [id])
+  choiceModuleId   String
+  Location         Location @relation(fields: [locationId], references: [id])
+  locationId       String
+
+
+  @@id([choiceModuleId, locationId])
+}
+model ModuleTags{
+  id               String @id @default(uuid())
+  name             String @unique
+  choiceModules    ChoiceModuleTags[]
+}
+model ChoiceModuleTags {
+  ChoiceModule     ChoiceModule @relation(fields: [choiceModuleId], references: [id])
+  choiceModuleId   String
+  ModuleTags       ModuleTags @relation(fields: [moduleTagsId], references: [id])
+  moduleTagsId     String
+
+  @@id([choiceModuleId, moduleTagsId])
 }

@@ -1,0 +1,22 @@
+export interface moduleDetail {
+  id: string;
+  name: string;
+  description: string;
+  content: string;
+  level: string;
+  studyCredits: number;
+  location: { id: string; name: string }[];
+  moduleTags: { id: string; name: string }[];
+  learningOutcomes: string;
+  availableSpots: number;
+  startDate: Date;
+}
+export interface Module {
+  id: string;
+  name: string;
+  shortdescription: string;
+  studyCredits: number;
+  level: string;
+  location: { id: string; name: string }[];
+  startDate: string;
+}
