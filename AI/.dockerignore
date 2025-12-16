@@ -1,0 +1,106 @@
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual environments
+.venv
+venv/
+ENV/
+env/
+.virtualenv
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+*.code-workspace
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# Testing
+.pytest_cache
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+*.cover
+.cache
+nosetests.xml
+coverage.xml
+
+# Documentation
+*.md
+!README.md
+docs/
+*.rst
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Models and data (if large)
+models/
+*.pkl
+*.h5
+*.pth
+*.onnx
+data/
+datasets/
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+*.bak
+
+# Temporary files
+tmp/
+temp/
+*.tmp
