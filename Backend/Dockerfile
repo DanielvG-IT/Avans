@@ -13,8 +13,8 @@ RUN npm ci
 # Copy source files
 COPY . .
 
-# Generate Prisma client
-ENV DATABASE_URL="postgresql://user:password@localhost:5432/db"
+# Generate Prisma client (dummy MySQL connection for build)
+ENV DATABASE_URL="mysql://user:password@localhost:3306/db"
 RUN npm run db:generate
 
 # Build application
