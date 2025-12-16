@@ -36,6 +36,8 @@ jobs:
         run: npm ci
 
       - name: Prisma Generate
+        env:
+          DATABASE_URL: postgresql://user:password@localhost:5432/db
         run: npx prisma generate
 
       - name: Run tests
@@ -91,6 +93,8 @@ jobs:
         run: npm ci
 
       - name: Prisma Generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx prisma generate
 
       - name: Prisma Migrate Deploy
