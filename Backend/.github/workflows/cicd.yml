@@ -50,6 +50,7 @@ jobs:
     name: Build & Push Docker Image
     runs-on: ubuntu-latest
     needs: build_test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - uses: actions/checkout@v3
@@ -80,7 +81,8 @@ jobs:
     name: Prisma Migrate Deploy
     runs-on: ubuntu-latest
     needs: docker_build_push
-    # Uncomment when Azure MySQL database is created and DATABASE_URL secret is set
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
     steps:
       - uses: actions/checkout@v3
 
@@ -132,9 +134,8 @@ jobs:
   deploy:
     name: Deploy to Azure Container App
     runs-on: ubuntu-latest
-    needs: docker_build_push
-    # Deploy after docker build, migration runs in parallel if configured
-    if: always() && needs.docker_build_push.result == 'success'
+    needs: [docker_build_push, prisma_migrate]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.docker_build_push.result == 'success'
 
     steps:
       - name: Azure Login
