@@ -37,14 +37,15 @@ async function bootstrap() {
   app.use(
     session({
       secret: process.env.SESSION_SECRET,
-      resave: false,
+      resave: true,
       saveUninitialized: false,
+      rolling: true, // Reset maxAge on every request
       cookie: {
         // For cross-site requests (frontend != backend) browsers require SameSite='None' and Secure=true
         sameSite: isProduction ? 'none' : 'lax',
         secure: isProduction,
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 1, // One hour
+        maxAge: 1000 * 60 * 60 * 24, // 24 hours
       },
     }),
   );
