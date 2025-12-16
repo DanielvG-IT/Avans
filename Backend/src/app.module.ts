@@ -6,10 +6,13 @@ import { AuthController } from './presentation/controllers/auth.controller';
 import { UserController } from './presentation/controllers/user.controller';
 import { UserRepository } from './infrastructure/database/repositories/user.repository';
 import { SessionActivityMiddleware } from './presentation/middleware/session-activity.middleware';
+import { LoggerService } from './common/logger.service';
+import { RequestLoggingMiddleware } from './presentation/middleware/request-logging.middleware';
 
 @Module({
   imports: [],
   providers: [
+    LoggerService,
     PrismaService,
     {
       provide: 'SERVICE.AUTH',
@@ -28,6 +31,8 @@ import { SessionActivityMiddleware } from './presentation/middleware/session-act
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(SessionActivityMiddleware).forRoutes('*');
+    consumer
+      .apply(RequestLoggingMiddleware, SessionActivityMiddleware)
+      .forRoutes('*');
   }
 }
