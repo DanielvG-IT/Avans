@@ -37,7 +37,7 @@ jobs:
 
       - name: Prisma Generate
         env:
-          DATABASE_URL: postgresql://user:password@localhost:5432/db
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx prisma generate
 
       - name: Run tests
