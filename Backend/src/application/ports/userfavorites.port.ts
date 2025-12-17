@@ -1,8 +1,8 @@
 import { UserFavorite } from '@/domain/userfavorites/userfavorites.model';
 
 export interface IUserFavoritesService {
-  getFavoritesForUser(userId: string): Promise<UserFavorite[]>;
-  addFavorite(userId: string, moduleId: string): Promise<void>;
-  removeFavorite(userId: string, moduleId: string): Promise<void>;
-  toggleFavorite(userId: string, moduleId: string): Promise<void>;
+  findFavorites(userId: string): Promise<UserFavorite[]>;
+  isModuleFavorited(userId: string, moduleId: string): Promise<boolean>;
+  favoriteModule(userId: string, moduleId: string): Promise<void>;
+  unfavoriteModule(userId: string, moduleId: string): Promise<void>;
 }

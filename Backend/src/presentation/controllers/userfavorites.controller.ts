@@ -10,54 +10,68 @@ import {
 import { SessionData } from '@/types/session.types';
 import { UserFavoritesService } from '@/application/services/userfavorites.service';
 
-@Controller('favorites')
+@Controller('api/user/favorites')
 export class UserFavoritesController {
-  private readonly favoritesService: UserFavoritesService;
-
   constructor(
     @Inject('SERVICE.USER_FAVORITES')
-    favoritesService: UserFavoritesService,
-  ) {
-    this.favoritesService = favoritesService;
-  }
+    private readonly favoritesService: UserFavoritesService,
+  ) {}
 
-  @Get()
-  async getMyFavorites(@Session() session: SessionData) {
-    const userId = session.user?.id;
-    if (!userId) {
-      throw new Error('No active session');
+    // GET /api/user/favorites
+    @Get()
+    async findFavorites(@Session() session: SessionData) {
+    if (!session?.user) {
+        throw new Error('No active session');
     }
 
     return {
-      favorites: await this.favoritesService.getFavoritesForUser(userId),
+        favorites: await this.favoritesService.findFavorites(session.user.id),
     };
-  }
-
-  @Post(':moduleId')
-  async addFavorite(
-    @Param('moduleId') moduleId: string,
-    @Session() session: SessionData,
-  ) {
-    const userId = session.user?.id;
-    if (!userId) {
-      throw new Error('No active session');
     }
 
-    await this.favoritesService.addFavorite(userId, moduleId);
-    return { success: true };
-  }
-
-  @Delete(':moduleId')
-  async removeFavorite(
+    // GET /api/user/favorites/:moduleId
+    @Get(':moduleId')
+    async isModuleFavorited(
     @Param('moduleId') moduleId: string,
     @Session() session: SessionData,
-  ) {
-    const userId = session.user?.id;
-    if (!userId) {
-      throw new Error('No active session');
+    ) {
+    if (!session?.user) {
+        throw new Error('No active session');
     }
 
-    await this.favoritesService.removeFavorite(userId, moduleId);
+    return {
+        isFavorited: await this.favoritesService.isModuleFavorited(
+        session.user.id,
+        moduleId,
+        ),
+    };
+    }
+
+    // POST /api/user/favorites/:moduleId
+    @Post(':moduleId')
+    async favoriteModule(
+    @Param('moduleId') moduleId: string,
+    @Session() session: SessionData,
+    ) {
+    if (!session?.user) {
+        throw new Error('No active session');
+    }
+
+    await this.favoritesService.favoriteModule(session.user.id, moduleId);
     return { success: true };
-  }
+    }
+
+    // DELETE /api/user/favorites/:moduleId
+    @Delete(':moduleId')
+    async unfavoriteModule(
+    @Param('moduleId') moduleId: string,
+    @Session() session: SessionData,
+    ) {
+    if (!session?.user) {
+        throw new Error('No active session');
+    }
+
+    await this.favoritesService.unfavoriteModule(session.user.id, moduleId);
+    return { success: true };
+    }
 }

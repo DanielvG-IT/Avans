@@ -14,28 +14,22 @@ export class UserFavoritesService implements IUserFavoritesService {
     this.favoritesRepository = _favoritesRepository;
   }
 
-  getFavoritesForUser(userId: string): Promise<UserFavorite[]> {
+  findFavorites(userId: string): Promise<UserFavorite[]> {
     return this.favoritesRepository.findByUserId(userId);
   }
 
-  async addFavorite(userId: string, moduleId: string): Promise<void> {
+  isModuleFavorited(userId: string, moduleId: string): Promise<boolean> {
+    return this.favoritesRepository.exists(userId, moduleId);
+  }
+
+  async favoriteModule(userId: string, moduleId: string): Promise<void> {
     const exists = await this.favoritesRepository.exists(userId, moduleId);
     if (!exists) {
       await this.favoritesRepository.add(userId, moduleId);
     }
   }
 
-  async removeFavorite(userId: string, moduleId: string): Promise<void> {
+  async unfavoriteModule(userId: string, moduleId: string): Promise<void> {
     await this.favoritesRepository.remove(userId, moduleId);
-  }
-
-  async toggleFavorite(userId: string, moduleId: string): Promise<void> {
-    const exists = await this.favoritesRepository.exists(userId, moduleId);
-
-    if (exists) {
-      await this.favoritesRepository.remove(userId, moduleId);
-    } else {
-      await this.favoritesRepository.add(userId, moduleId);
-    }
   }
 }
