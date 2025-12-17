@@ -13,6 +13,6 @@ export class UserService implements IUserService {
   }
 
   async findById(id: string): Promise<Result<User>> {
-    return this.userRepository.findById(id);
+    return await this.userRepository.findById(id);
   }
 }
