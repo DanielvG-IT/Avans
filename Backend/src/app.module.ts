@@ -1,8 +1,12 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { PrismaService } from './infrastructure/database/prisma';
 import { AuthService } from './application/services/auth.service';
 import { UserService } from './application/services/user.service';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { AuthController } from './presentation/controllers/auth.controller';
 import { UserController } from './presentation/controllers/user.controller';
+import { SessionActivityMiddleware } from './presentation/middleware/session-activity.middleware';
+import { LoggerService } from './common/logger.service';
+import { RequestLoggingMiddleware } from './presentation/middleware/request-logging.middleware';
 import { UserRepository } from './infrastructure/repositories/user.repository';
 import { PrismaService } from './infrastructure/database/prisma';
 import { SessionActivityMiddleware } from './infrastructure/middleware/session-activity.middleware';
@@ -13,6 +17,7 @@ import { ModulesController } from './presentation/controllers/modules.controller
 @Module({
   imports: [],
   providers: [
+    LoggerService,
     PrismaService,
     {
       provide: 'SERVICE.AUTH',
@@ -44,6 +49,8 @@ import { ModulesController } from './presentation/controllers/modules.controller
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(SessionActivityMiddleware).forRoutes('*');
+    consumer
+      .apply(RequestLoggingMiddleware, SessionActivityMiddleware)
+      .forRoutes('*');
   }
 }
