@@ -24,6 +24,5 @@ def predict(data: StudentInput):
     top5_recommendations = top5_via_cosine_similarity(vectorized_student_input)
 
     return {
-        "message": "Cleaned data:",
         "top 5": top5_recommendations
     }
