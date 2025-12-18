@@ -10,14 +10,14 @@ import {
 import { SessionData } from '@/types/session.types';
 import { UserFavoritesService } from '@/application/services/userfavorites.service';
 
-@Controller('api/user/favorites')
+@Controller('user/favorites')
 export class UserFavoritesController {
   constructor(
     @Inject('SERVICE.USER_FAVORITES')
     private readonly favoritesService: UserFavoritesService,
   ) {}
 
-    // GET /api/user/favorites
+    // GET /user/favorites
     @Get()
     async findFavorites(@Session() session: SessionData) {
     if (!session?.user) {
@@ -29,7 +29,7 @@ export class UserFavoritesController {
     };
     }
 
-    // GET /api/user/favorites/:moduleId
+    // GET /user/favorites/:moduleId
     @Get(':moduleId')
     async isModuleFavorited(
     @Param('moduleId') moduleId: string,
@@ -47,7 +47,7 @@ export class UserFavoritesController {
     };
     }
 
-    // POST /api/user/favorites/:moduleId
+    // POST /user/favorites/:moduleId
     @Post(':moduleId')
     async favoriteModule(
     @Param('moduleId') moduleId: string,
@@ -61,7 +61,7 @@ export class UserFavoritesController {
     return { success: true };
     }
 
-    // DELETE /api/user/favorites/:moduleId
+    // DELETE /user/favorites/:moduleId
     @Delete(':moduleId')
     async unfavoriteModule(
     @Param('moduleId') moduleId: string,
