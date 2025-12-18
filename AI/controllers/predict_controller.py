@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from models.student_input import StudentInput
 
 # Importing services
-from services.predict_service import clean_prediction_data, vectorize_student_input
+from services.predict_service import clean_prediction_data, vectorize_student_input, top5_via_cosine_similarity
 
 router = APIRouter(
     prefix="/predict",
@@ -21,8 +21,9 @@ def predict(data: StudentInput):
     vectorized_student_input = vectorize_student_input(cleaned_prediction_data)
 
     # Running cosine similarity between user input and VKM data (both vectorized with same model ofcourse)
+    top5_recommendations = top5_via_cosine_similarity(vectorized_student_input)
 
     return {
         "message": "Cleaned data:",
-        "data": cleaned_prediction_data
+        "top 5": top5_recommendations
     }
