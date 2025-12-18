@@ -1,7 +1,11 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { IModuleService } from '@/application/ports/module.port';
 import { type IModuleRepository } from '@/domain/modules/module-repository.interface';
-import { Module, moduleDetail } from '@/domain/modules/module.model';
+import {
+  Module,
+  moduleDetail,
+  createModule,
+} from '@/domain/modules/module.model';
 
 @Injectable()
 export class ModuleService implements IModuleService {
@@ -9,10 +13,14 @@ export class ModuleService implements IModuleService {
   constructor(@Inject('REPO.MODULE') _moduleRepository: IModuleRepository) {
     this.moduleRepository = _moduleRepository;
   }
-  getAllModules(): Promise<Module[]> {
-    return this.moduleRepository.getAllModules();
+  async getAllModules(): Promise<Module[]> {
+    return await this.moduleRepository.getAllModules();
   }
-  findById(id: string): Promise<moduleDetail> {
-    return this.moduleRepository.findById(id);
+  async findById(id: string): Promise<moduleDetail> {
+    return await this.moduleRepository.findById(id);
+  }
+  async createModule(module: createModule): Promise<moduleDetail> {
+    console.log(`Creating module: ${JSON.stringify(module)}`);
+    return await this.moduleRepository.createModule(module);
   }
 }

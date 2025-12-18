@@ -20,3 +20,16 @@ export interface Module {
   location: { id: string; name: string }[];
   startDate: string;
 }
+export interface createModule {
+  name: string;
+  description: string;
+  content: string;
+  level: string;
+  studyCredits: number;
+  location: { id: string; name: string }[];
+  moduleTags: { id: string; name: string }[];
+  learningOutcomes: string;
+  availableSpots: number;
+  startDate: string;
+  shortdescription: string;
+}
