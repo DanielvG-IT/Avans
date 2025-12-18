@@ -2,6 +2,7 @@ import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { LoggerService } from './common/logger.service';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import helmet from 'helmet';
@@ -10,8 +11,10 @@ import { configDotenv } from 'dotenv';
 configDotenv();
 
 async function bootstrap() {
-  const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
+  const logger = app.get(LoggerService);
+  // Let Nest use our LoggerService for framework logs and exceptions
+  app.useLogger(logger);
   const isProduction = process.env.NODE_ENV === 'production';
 
   // Global API prefix - must be set before middleware
@@ -37,14 +40,15 @@ async function bootstrap() {
   app.use(
     session({
       secret: process.env.SESSION_SECRET,
-      resave: false,
+      resave: true,
       saveUninitialized: false,
+      rolling: true, // Reset maxAge on every request
       cookie: {
         // For cross-site requests (frontend != backend) browsers require SameSite='None' and Secure=true
         sameSite: isProduction ? 'none' : 'lax',
         secure: isProduction,
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 1, // One hour
+        maxAge: 1000 * 60 * 60 * 24, // 24 hours
       },
     }),
   );
@@ -79,7 +83,7 @@ async function bootstrap() {
 
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('docs', app, document);
-    logger.log('Swagger UI initialized at /docs');
+    logger.log('Swagger UI initialized at /docs', 'Bootstrap');
   }
 
   // Graceful Shutdown
@@ -87,7 +91,7 @@ async function bootstrap() {
 
   const port = process.env.PUBLIC_PORT ?? 4000;
   await app.listen(port);
-  logger.log(`Application is running on: ${await app.getUrl()}`);
+  logger.log(`Application is running on: ${await app.getUrl()}`, 'Bootstrap');
 }
 
 bootstrap().catch((err) => {

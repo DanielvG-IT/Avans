@@ -1,21 +1,30 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { AuthService } from './application/services/auth.service';
 import { UserService } from './application/services/user.service';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { AuthController } from './presentation/controllers/auth.controller';
 import { UserController } from './presentation/controllers/user.controller';
-import { UserRepository } from './infrastructure/repositories/user.repository';
+import { LoggerService } from './common/logger.service';
+import { RequestLoggingMiddleware } from './infrastructure/middleware/request-logging.middleware';
 import { PrismaService } from './infrastructure/database/prisma';
-import { SessionActivityMiddleware } from './infrastructure/middleware/session-activity.middleware';
 import { AppController } from './presentation/controllers/app.controller';
-import { ChoiceModulesRepository } from './infrastructure/repositories/choicemodules.repository';
+import { ChoiceModulesRepository } from './infrastructure/database/repositories/choicemodules.repository';
 import { UserFavoritesService } from './application/services/userfavorites.service';
-import { UserFavoritesRepository } from './infrastructure/repositories/userfavorites.repository';
+import { UserFavoritesRepository } from './infrastructure/database/repositories/userfavorites.repository';
 import { UserFavoritesController } from './presentation/controllers/userfavorites.controller';
+
+class SessionActivityMiddleware {
+  use(req: any, res: any, next: () => void) {
+    // no-op middleware to track session activity (placeholder implementation)
+    next();
+  }
+}
+import { UserRepository } from './infrastructure/database/repositories/user.repository';
 import { ModuleService } from './application/services/module.service';
 import { ModulesController } from './presentation/controllers/modules.controller';
 @Module({
   imports: [],
   providers: [
+    LoggerService,
     PrismaService,
     {
       provide: 'SERVICE.AUTH',
@@ -56,6 +65,8 @@ import { ModulesController } from './presentation/controllers/modules.controller
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(SessionActivityMiddleware).forRoutes('*');
+    consumer
+      .apply(RequestLoggingMiddleware, SessionActivityMiddleware)
+      .forRoutes('*');
   }
 }

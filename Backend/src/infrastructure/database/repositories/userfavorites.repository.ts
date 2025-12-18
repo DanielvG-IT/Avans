@@ -1,7 +1,7 @@
 import { IUserFavoritesRepository } from '@/domain/userfavorites/userfavorites-repository.interface';
 import { UserFavorite } from '@/domain/userfavorites/userfavorites.model';
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../database/prisma';
+import { PrismaService } from '../prisma';
 
 @Injectable()
 export class UserFavoritesRepository implements IUserFavoritesRepository {

@@ -1,4 +1,4 @@
-import { Controller, Get, Session } from '@nestjs/common';
+import { Controller, Get, Param, Session } from '@nestjs/common';
 import { SessionData } from 'express-session';
 import { ModuleService } from '@/application/services/module.service';
 import { Inject } from '@nestjs/common';
@@ -17,6 +17,19 @@ export class ModulesController {
 
     return {
       modules: await this.moduleService.getAllModules(),
+    };
+  }
+  @Get(':id')
+  async getModuleById(
+    @Session() session: SessionData,
+    @Param('id') id: string,
+  ): Promise<any> {
+    if (!session) {
+      throw new Error('No active session');
+    }
+
+    return {
+      module: await this.moduleService.findById(id),
     };
   }
 }
