@@ -15,6 +15,7 @@ import {
   moduleDetail,
   createModule,
 } from '@/domain/modules/module.model';
+import { CreateModuleDTO } from '@/presentation/dtos/choiceModule.dto';
 
 @Controller('modules')
 export class ModulesController {
@@ -24,7 +25,9 @@ export class ModulesController {
     this.moduleService = _moduleService;
   }
   @Get()
-  async getModules(@Session() session: SessionData): Promise<any> {
+  async getModules(
+    @Session() session: SessionData,
+  ): Promise<{ modules: Module[] }> {
     if (!session) {
       throw new Error('No active session');
     }
@@ -37,36 +40,78 @@ export class ModulesController {
   async getModuleById(
     @Session() session: SessionData,
     @Param('id') id: string,
-  ): Promise<any> {
+  ): Promise<{ module: moduleDetail }> {
     if (!session) {
       throw new Error('No active session');
     }
 
+    if (!id || id.trim() === '') {
+      throw new Error('Cannot find module without id');
+    }
+
+    const module = await this.moduleService.findById(id);
+    if (!module) {
+      throw new Error('Module not found');
+    }
+
     return {
-      module: await this.moduleService.findById(id),
+      module,
     };
   }
   @Post()
   async createModule(
     @Session() session: SessionData,
-    @Body() moduleData: createModule,
-  ): Promise<any> {
+    @Body() moduleData: CreateModuleDTO,
+  ): Promise<{ module: moduleDetail } | { message: string }> {
     if (!session) {
       throw new UnauthorizedException('No active session');
     }
-    if (!session.user || session.user.role === 'STUDENT') {
-      console.log(session.user);
-      return { message: 'Unauthorized' };
-    }
 
     if (!session.user || session.user.role === 'STUDENT') {
-      console.log(session.user);
-      return { message: `Unauthorized ${session.user}` };
+      throw new UnauthorizedException('Only admins can create modules');
     }
+    if (!moduleData.name || moduleData.name.trim() === '') {
+      throw new UnauthorizedException('Module name is required');
+    }
+    if (!moduleData.description || moduleData.description.trim() === '') {
+      throw new UnauthorizedException('Module description is required');
+    }
+    if (!moduleData.content || moduleData.content.trim() === '') {
+      throw new UnauthorizedException('Module content is required');
+    }
+    if (!moduleData.startDate || new Date(moduleData.startDate) < new Date()) {
+      throw new UnauthorizedException('(Valid) Module start date is required');
+    }
+    if (!moduleData.location || moduleData.location.length === 0) {
+      throw new UnauthorizedException('At least one location is required');
+    }
+    if (!moduleData.moduleTags || moduleData.moduleTags.length === 0) {
+      throw new UnauthorizedException('At least one module tag is required');
+    }
+
+    if (
+      !moduleData.learningOutcomes ||
+      moduleData.learningOutcomes.length === 0
+    ) {
+      throw new UnauthorizedException(
+        'At least one learning outcome is required',
+      );
+    }
+
+    if (
+      moduleData.studyCredits === null ||
+      (moduleData.studyCredits !== 15 && moduleData.studyCredits !== 30)
+    ) {
+      throw new UnauthorizedException('Study credits must be 15 or 30');
+    }
+
+    if (moduleData.level !== 'NFQL5' && moduleData.level !== 'NFQL6') {
+      throw new UnauthorizedException('Level must be NFQL5 or NFQL6');
+    }
+
     const module = await this.moduleService.createModule(moduleData);
     if (!module) {
-      console.log(module);
-      return { message: `Failed to create module` };
+      return { message: 'Failed to create module' };
     }
 
     return {
