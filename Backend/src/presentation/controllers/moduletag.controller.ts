@@ -34,6 +34,10 @@ export class ModuleTagController {
     if (session.user.role == 'STUDENT') {
       throw new UnauthorizedException('Unauthorized');
     }
+
+    if (!name || name.trim() === '') {
+      throw new UnauthorizedException('Tag name is required');
+    }
     console.log(name);
     return await this.moduleTagService.createModuleTag(name);
   }

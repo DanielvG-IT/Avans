@@ -45,8 +45,17 @@ export class ModulesController {
       throw new Error('No active session');
     }
 
+    if (!id || id.trim() === '') {
+      throw new Error('Cannot find module without id');
+    }
+
+    const module = await this.moduleService.findById(id);
+    if (!module) {
+      throw new Error('Module not found');
+    }
+
     return {
-      module: await this.moduleService.findById(id),
+      module,
     };
   }
   @Post()
