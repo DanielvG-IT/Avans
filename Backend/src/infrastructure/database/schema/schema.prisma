@@ -16,17 +16,17 @@ enum Role {
 // Hier kan je nieuwe databaseschema's toevoegen. run "npx prisma generate" om de changes door te voeren.
 
 model User {
-  id       String @id @default(uuid())
-  name     String
-  email    String @unique
+  id             String @id @default(uuid())
+  name           String
+  email          String @unique
   hashedPassword String
-  role     Role   @default(STUDENT)
+  role           Role   @default(STUDENT)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model UserFavourites {
+model UserFavorites {
   id             String @id @default(uuid())
   userId         String
   choiceModuleId String
@@ -38,7 +38,7 @@ model UserFavourites {
 }
 
 model ChoiceModule {
-  id               String  @id @default(uuid())
+  id               String                 @id @default(uuid())
   name             String
   shortDescription String?
   description      String?
@@ -53,35 +53,38 @@ model ChoiceModule {
   availableSpots   Int
   startDate        String
   location         ChoiceModuleLocation[]
-  moduleTags       ChoiceModuleTags[]  
+  moduleTags       ChoiceModuleTags[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-model Location{
-  id               String @id @default(uuid())
-  name             String @unique
-  choiceModules    ChoiceModuleLocation[]
-}
-model ChoiceModuleLocation{
-  ChoiceModule     ChoiceModule @relation(fields: [choiceModuleId], references: [id])
-  choiceModuleId   String
-  Location         Location @relation(fields: [locationId], references: [id])
-  locationId       String
 
+model Location {
+  id            String                 @id @default(uuid())
+  name          String                 @unique
+  choiceModules ChoiceModuleLocation[]
+}
+
+model ChoiceModuleLocation {
+  ChoiceModule   ChoiceModule @relation(fields: [choiceModuleId], references: [id])
+  choiceModuleId String
+  Location       Location     @relation(fields: [locationId], references: [id])
+  locationId     String
 
   @@id([choiceModuleId, locationId])
 }
-model ModuleTags{
-  id               String @id @default(uuid())
-  name             String @unique
-  choiceModules    ChoiceModuleTags[]
+
+model ModuleTags {
+  id            String             @id @default(uuid())
+  name          String             @unique
+  choiceModules ChoiceModuleTags[]
 }
+
 model ChoiceModuleTags {
-  ChoiceModule     ChoiceModule @relation(fields: [choiceModuleId], references: [id])
-  choiceModuleId   String
-  ModuleTags       ModuleTags @relation(fields: [moduleTagsId], references: [id])
-  moduleTagsId     String
+  ChoiceModule   ChoiceModule @relation(fields: [choiceModuleId], references: [id])
+  choiceModuleId String
+  ModuleTags     ModuleTags   @relation(fields: [moduleTagsId], references: [id])
+  moduleTagsId   String
 
   @@id([choiceModuleId, moduleTagsId])
 }

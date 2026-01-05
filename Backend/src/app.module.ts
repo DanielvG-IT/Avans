@@ -7,22 +7,29 @@ import { LoggerService } from './common/logger.service';
 import { RequestLoggingMiddleware } from './infrastructure/middleware/request-logging.middleware';
 import { PrismaService } from './infrastructure/database/prisma';
 import { AppController } from './presentation/controllers/app.controller';
+
+import { ChoiceModulesRepository } from './infrastructure/database/repositories/choicemodules.repository';
+import { UserFavoritesService } from './application/services/userfavorites.service';
+import { UserFavoritesRepository } from './infrastructure/database/repositories/userfavorites.repository';
+import { UserFavoritesController } from './presentation/controllers/userfavorites.controller';
+
 import { LocationRepository } from './infrastructure/database/repositories/location.repository';
 import { LocationService } from './application/services/location.service';
 import { LocationController } from './presentation/controllers/location.controller';
 import { ModuleTagRepository } from './infrastructure/database/repositories/moduletag.repository';
+import { ModuleTagService } from './application/services/moduletag.service';
+import { ModuleTagController } from './presentation/controllers/moduletag.controller';
+
+import { UserRepository } from './infrastructure/database/repositories/user.repository';
+import { ModuleService } from './application/services/module.service';
+import { ModulesController } from './presentation/controllers/modules.controller';
+
 class SessionActivityMiddleware {
   use(req: any, res: any, next: () => void) {
     // no-op middleware to track session activity (placeholder implementation)
     next();
   }
 }
-import { ChoiceModulesRepository } from './infrastructure/database/repositories/choicemodules.repository';
-import { UserRepository } from './infrastructure/database/repositories/user.repository';
-import { ModuleService } from './application/services/module.service';
-import { ModulesController } from './presentation/controllers/modules.controller';
-import { ModuleTagService } from './application/services/moduletag.service';
-import { ModuleTagController } from './presentation/controllers/moduletag.controller';
 
 @Module({
   imports: [],
@@ -50,6 +57,14 @@ import { ModuleTagController } from './presentation/controllers/moduletag.contro
       useClass: ModuleService,
     },
     {
+      provide: 'SERVICE.USER_FAVORITES',
+      useClass: UserFavoritesService,
+    },
+    {
+      provide: 'REPO.USER_FAVORITES',
+      useClass: UserFavoritesRepository,
+    },
+    {
       provide: 'REPO.LOCATION',
       useClass: LocationRepository,
     },
@@ -71,6 +86,7 @@ import { ModuleTagController } from './presentation/controllers/moduletag.contro
     UserController,
     ModulesController,
     AppController,
+    UserFavoritesController,
     LocationController,
     ModuleTagController,
   ],
