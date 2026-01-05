@@ -7,10 +7,22 @@ import { LoggerService } from './common/logger.service';
 import { RequestLoggingMiddleware } from './infrastructure/middleware/request-logging.middleware';
 import { PrismaService } from './infrastructure/database/prisma';
 import { AppController } from './presentation/controllers/app.controller';
+
 import { ChoiceModulesRepository } from './infrastructure/database/repositories/choicemodules.repository';
 import { UserFavoritesService } from './application/services/userfavorites.service';
 import { UserFavoritesRepository } from './infrastructure/database/repositories/userfavorites.repository';
 import { UserFavoritesController } from './presentation/controllers/userfavorites.controller';
+
+import { LocationRepository } from './infrastructure/database/repositories/location.repository';
+import { LocationService } from './application/services/location.service';
+import { LocationController } from './presentation/controllers/location.controller';
+import { ModuleTagRepository } from './infrastructure/database/repositories/moduletag.repository';
+import { ModuleTagService } from './application/services/moduletag.service';
+import { ModuleTagController } from './presentation/controllers/moduletag.controller';
+
+import { UserRepository } from './infrastructure/database/repositories/user.repository';
+import { ModuleService } from './application/services/module.service';
+import { ModulesController } from './presentation/controllers/modules.controller';
 
 class SessionActivityMiddleware {
   use(req: any, res: any, next: () => void) {
@@ -18,9 +30,7 @@ class SessionActivityMiddleware {
     next();
   }
 }
-import { UserRepository } from './infrastructure/database/repositories/user.repository';
-import { ModuleService } from './application/services/module.service';
-import { ModulesController } from './presentation/controllers/modules.controller';
+
 @Module({
   imports: [],
   providers: [
@@ -54,6 +64,22 @@ import { ModulesController } from './presentation/controllers/modules.controller
       provide: 'REPO.USER_FAVORITES',
       useClass: UserFavoritesRepository,
     },
+    {
+      provide: 'REPO.LOCATION',
+      useClass: LocationRepository,
+    },
+    {
+      provide: 'SERVICE.LOCATION',
+      useClass: LocationService,
+    },
+    {
+      provide: 'REPO.MODULETAG',
+      useClass: ModuleTagRepository,
+    },
+    {
+      provide: 'SERVICE.MODULETAG',
+      useClass: ModuleTagService,
+    },
   ],
   controllers: [
     AuthController,
@@ -61,6 +87,8 @@ import { ModulesController } from './presentation/controllers/modules.controller
     ModulesController,
     AppController,
     UserFavoritesController,
+    LocationController,
+    ModuleTagController,
   ],
 })
 export class AppModule implements NestModule {
