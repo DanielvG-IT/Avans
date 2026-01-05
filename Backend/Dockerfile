@@ -27,9 +27,11 @@ WORKDIR /app
 
 # Install production dependencies only
 COPY package*.json ./
-RUN npm ci --only=production && npm cache clean --force
 
 # Copy built application from builder
+RUN npm ci --only=production && npm cache clean --force
+COPY --from=builder /app/src/infrastructure/database/generated ./src/infrastructure/database/generated
+COPY --from=builder /app/src/infrastructure/database/schema ./src/infrastructure/database/schema
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src/infrastructure/database/generated ./src/infrastructure/database/generated
 COPY --from=builder /app/src/infrastructure/database/schema ./src/infrastructure/database/schema
@@ -43,8 +45,8 @@ RUN addgroup -g 1001 -S nodejs && \
 RUN chown -R nestjs:nodejs /app
 
 # Switch to non-root user
-USER nestjs
-
+EXPOSE 4000
+CMD ["node", "dist/main.js"]
 # Expose port
 EXPOSE 4000
 
