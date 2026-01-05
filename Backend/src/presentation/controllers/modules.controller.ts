@@ -105,8 +105,8 @@ export class ModulesController {
       throw new UnauthorizedException('Study credits must be 15 or 30');
     }
 
-    if (moduleData.level !== 'NFQL5' && moduleData.level !== 'NFQL6') {
-      throw new UnauthorizedException('Level must be NFQL5 or NFQL6');
+    if (moduleData.level !== 'NLQF5' && moduleData.level !== 'NLQF6') {
+      throw new UnauthorizedException('Level must be NLQF5 or NLQF6');
     }
 
     const module = await this.moduleService.createModule(moduleData);

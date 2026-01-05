@@ -1,4 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { LocationDTO } from './location.dto';
+import { ModuleTagDTO } from './moduleTag.dto';
+import { Type } from 'class-transformer';
 import {
   IsString,
   IsNumber,
@@ -7,7 +10,6 @@ import {
   MinLength,
   Min,
   IsDateString,
-  IsObject,
 } from 'class-validator';
 
 export class CreateModuleDTO {
@@ -40,12 +42,12 @@ export class CreateModuleDTO {
 
   @ApiProperty()
   @IsArray()
-  @IsObject({ each: true })
+  @Type(() => LocationDTO)
   location: { id: string; name: string }[];
 
   @ApiProperty()
   @IsArray()
-  @IsObject({ each: true })
+  @Type(() => ModuleTagDTO)
   moduleTags: { id: string; name: string }[];
 
   @ApiProperty()
