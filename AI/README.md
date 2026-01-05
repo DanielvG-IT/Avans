@@ -1,43 +1,70 @@
-# CompassGPT — AI
+# CompassGPT AI
 
-This folder contains the small AI service used by CompassGPT (Python).
+This is the AI (machine learning) component of the CompassGPT project. It provides data processing, model training, and prediction services for the application.
 
-Requirements
+## Features
 
-- Python 3.10+ (use a virtualenv)
-- Docker (optional)
+- Data cleaning and preprocessing
+- Model training and inference
+- REST API for predictions
 
-Quick start (local)
+## Requirements
 
-1. Create and activate a virtual environment:
+- Python 3.10+
+- pip
+- (Optional) Docker
 
-   python -m venv .venv
-   source .venv/bin/activate
+## Installation
 
-2. Install dependencies:
-
+1. Clone the repository:
+   ```bash
+   git clone <repo-url>
+   cd AI
+   ```
+2. (Recommended) Create a virtual environment:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+3. Install dependencies:
+   ```bash
    pip install -r requirements.txt
+   ```
 
-3. Run the service:
+## Running Locally
 
-   python main.py
+### Start the API
 
-Docker
+```bash
+python main.py
+```
 
-- Build image:
+The API will start on the default port (see `main.py`).
 
-  docker build -t compassgpt-ai:latest .
+### Using Docker
 
-- Run container (pass needed env vars):
+Build and run the container:
 
-  docker run --rm -p 8000:8000 compassgpt-ai:latest
+```bash
+docker build -t compassgpt-ai .
+docker run -p 8000:8000 compassgpt-ai
+```
 
-Notes
+## Data
 
-- See `requirements.txt` for Python dependencies and `Dockerfile` for container setup.
+- Place your datasets in the `data/` directory as needed.
 
-License
+## Configuration
 
-- See repository `LICENSE`.
+- Adjust paths and parameters in `main.py` or the relevant service/controller files as needed.
 
-# AI
+## Project Structure
+
+- `controllers/` – API endpoints
+- `services/` – Business logic and ML
+- `models/` – Data models
+- `data/` – Datasets
+
+## License
+
+See [LICENSE](LICENSE).
