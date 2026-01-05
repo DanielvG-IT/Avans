@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from models.student_input import StudentInput
 
 # Importing services
-from services.predict_service import clean_prediction_data, vectorize_student_input, top5_via_cosine_similarity
+from services.predict_service import clean_prediction_data, vectorize_student_input, filter_matches_top_5
 
 router = APIRouter(
     prefix="/predict",
@@ -20,9 +20,9 @@ def predict(data: StudentInput):
     # Now vectorizing user input using SBERT model
     vectorized_student_input = vectorize_student_input(cleaned_prediction_data)
 
-    # Running cosine similarity between user input and VKM data (both vectorized with same model ofcourse)
-    top5_recommendations = top5_via_cosine_similarity(vectorized_student_input)
+    # Filtering (metadata first) + cosine similarity + top 5
+    filtered_top_5_matches = filter_matches_top_5(vectorized_student_input, data)
 
     return {
-        "top 5": top5_recommendations
+        "filtered_top_5_matches": filtered_top_5_matches,
     }
