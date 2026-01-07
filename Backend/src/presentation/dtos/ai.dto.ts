@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import {
+  IsString,
+  IsArray,
+  IsNumber,
+  ArrayMinSize,
+  ArrayMaxSize,
+} from 'class-validator';
 
 export class PredictionDto {
   @ApiProperty({ example: 'Informatica' })
@@ -11,6 +17,10 @@ export class PredictionDto {
   interests!: string[];
 
   @ApiProperty({ example: [30, 60] })
+  @IsArray()
+  @ArrayMinSize(2)
+  @ArrayMaxSize(2)
+  @IsNumber({}, { each: true })
   wanted_study_credit_range!: [number, number];
 
   @ApiProperty({ example: ['Breda', 'Tilburg'] })

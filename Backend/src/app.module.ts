@@ -10,6 +10,8 @@ import { RequestLoggingMiddleware } from './infrastructure/middleware/request-lo
 import { PrismaService } from './infrastructure/database/prisma';
 import { AppController } from './presentation/controllers/app.controller';
 import { AiHttpClient } from './infrastructure/ai-service/prediction-client';
+import { AiController } from './presentation/controllers/ai.controller';
+import { AiService } from './application/services/ai.service';
 
 import { ChoiceModulesRepository } from './infrastructure/database/repositories/choicemodules.repository';
 import { UserFavoritesService } from './application/services/userfavorites.service';
@@ -88,7 +90,14 @@ class SessionActivityMiddleware {
       provide: 'SERVICE.MODULETAG',
       useClass: ModuleTagService,
     },
-    AiHttpClient,
+    {
+      provide: 'SERVICE.AI',
+      useClass: AiService,
+    },
+    {
+      provide: 'HTTP.AI',
+      useClass: AiHttpClient,
+    },
   ],
   controllers: [
     AuthController,
@@ -98,6 +107,7 @@ class SessionActivityMiddleware {
     UserFavoritesController,
     LocationController,
     ModuleTagController,
+    AiController,
   ],
 })
 export class AppModule implements NestModule {

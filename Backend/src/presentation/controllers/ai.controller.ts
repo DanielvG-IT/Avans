@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
   BadRequestException,
   Controller,
+  HttpCode,
   Session,
   Inject,
   Body,
@@ -20,6 +21,7 @@ export class AiController {
   }
 
   @Post('predict')
+  @HttpCode(200)
   async createPrediction(
     @Session() session: SessionData,
     @Body() prediction: PredictionDto,
