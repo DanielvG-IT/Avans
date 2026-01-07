@@ -3,8 +3,14 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY package*.json ./
+COPY prisma.config.ts ./
+COPY src/infrastructure/database/schema ./src/infrastructure/database/schema
 
 RUN npm install
+
+# Generate Prisma client (dummy URL for build time)
+ENV DATABASE_URL="mysql://user:password@localhost:3306/db"
+RUN npx prisma generate
 
 EXPOSE 3000
 

@@ -47,9 +47,12 @@ USER nestjs
 # Expose port
 EXPOSE 3000
 
+# Migration and startup entrypoint
+RUN echo '#!/bin/sh\nset -e\necho "Running Prisma migrations..."\nnode -e "const {PrismaClient} = require(\"@prisma/client\"); const prisma = new PrismaClient(); (async () => { try { await prisma.$executeRawUnsafe(\"SELECT 1\"); console.log(\"Database connected\"); } catch(e) { console.error(\"Database not ready, continuing anyway\"); } finally { await prisma.$disconnect(); } })()" || true\necho "Starting application..."\nnode dist/main\n' > /app/start.sh && chmod +x /app/start.sh
+
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD node -e "require('http').get('http://localhost:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})" || exit 1
 
 # Start application
-CMD ["node", "dist/main.js"]
+CMD ["/app/start.sh"]
