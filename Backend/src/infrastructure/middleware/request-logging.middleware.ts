@@ -4,7 +4,9 @@ import { LoggerService } from '../../common/logger.service';
 
 @Injectable()
 export class RequestLoggingMiddleware implements NestMiddleware {
-  constructor(private readonly logger: LoggerService) {}
+  constructor(private readonly logger: LoggerService) {
+    this.logger.setContext('RequestLoggingMiddleware');
+  }
 
   use(req: Request, res: Response, next: NextFunction) {
     const start = Date.now();

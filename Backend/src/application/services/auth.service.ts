@@ -19,6 +19,7 @@ export class AuthService implements IAuthService {
     @Inject('REPO.USER') _userRepository: IUserRepository,
     private readonly logger?: LoggerService,
   ) {
+    this.logger?.setContext('AuthService');
     this.userRepository = _userRepository;
   }
 
