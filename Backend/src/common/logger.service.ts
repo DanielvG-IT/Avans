@@ -1,10 +1,9 @@
-import { Injectable, Scope, ConsoleLogger, LogLevel } from '@nestjs/common';
+import { Injectable, ConsoleLogger, LogLevel } from '@nestjs/common';
 
 /**
  * Extending ConsoleLogger to inherit Nest's built-in logic while overriding the output for structured JSON.
- * Scope.TRANSIENT allows each service to have its own instance with a unique context.
  */
-@Injectable({ scope: Scope.TRANSIENT })
+@Injectable()
 export class LoggerService extends ConsoleLogger {
   private contextName = 'App';
 
