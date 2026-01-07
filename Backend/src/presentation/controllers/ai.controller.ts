@@ -5,8 +5,6 @@ import {
   UnauthorizedException,
   BadRequestException,
   Controller,
-  HttpStatus,
-  HttpCode,
   Session,
   Inject,
   Body,
@@ -14,14 +12,14 @@ import {
 } from '@nestjs/common';
 
 @Controller('ai')
-export class AuthController {
+export class AiController {
   private readonly aiService: IAiService;
 
   constructor(@Inject('SERVICE.AI') _aiService: IAiService) {
     this.aiService = _aiService;
   }
 
-  @Post()
+  @Post('predict')
   async createPrediction(
     @Session() session: SessionData,
     @Body() prediction: PredictionDto,
@@ -38,23 +36,5 @@ export class AuthController {
     }
 
     return { prediction: result.data.filtered_top_5_matches };
-  }
-
-  @Post('logout')
-  @HttpCode(HttpStatus.OK)
-  async logout(@Session() session: SessionData): Promise<{ message: string }> {
-    if (!session || !session.user) {
-      throw new BadRequestException('No active session to logout');
-    }
-
-    return new Promise((resolve, reject) => {
-      session.destroy((err?: Error) => {
-        if (err) {
-          reject(new BadRequestException('Failed to logout'));
-        } else {
-          resolve({ message: 'Successfully logged out' });
-        }
-      });
-    });
   }
 }
