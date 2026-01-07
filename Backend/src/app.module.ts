@@ -9,7 +9,7 @@ import { LoggerService } from './common/logger.service';
 import { RequestLoggingMiddleware } from './infrastructure/middleware/request-logging.middleware';
 import { PrismaService } from './infrastructure/database/prisma';
 import { AppController } from './presentation/controllers/app.controller';
-import { AiHttpClient } from './infrastructure/ai-service/ai-client';
+import { AiHttpClient } from './infrastructure/ai-service/prediction-client';
 
 import { ChoiceModulesRepository } from './infrastructure/database/repositories/choicemodules.repository';
 import { UserFavoritesService } from './application/services/userfavorites.service';

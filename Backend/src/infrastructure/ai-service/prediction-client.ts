@@ -1,43 +1,26 @@
-import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
+import { IPredictionClient } from '@/domain/predictions/prediction-client.interface';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { firstValueFrom, catchError, timeout, Observable } from 'rxjs';
+import { LoggerService } from '@/common/logger.service';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { isAxiosError } from 'axios';
-
-/**
- * Interface representing the input from your prompt
- */
-export interface PredictionPayload {
-  current_study: string;
-  interests: string[];
-  wanted_study_credit_range: [number, number];
-  location_preference: string[];
-  learning_goals: string[];
-  level_preference: string[];
-  preferred_language: string;
-}
-
-/**
- * Interface representing the AI service output
- */
-export interface PredictionMatch {
-  id: number;
-  similarity_score: number;
-}
-
-export interface PredictionResponse {
-  filtered_top_5_matches: PredictionMatch[];
-}
+import {
+  PredictionMatch,
+  PredictionPayload,
+  PredictionResponse,
+} from '@/domain/predictions/prediction.model';
 
 @Injectable()
-export class AiHttpClient {
-  private readonly logger = new Logger(AiHttpClient.name);
+export class AiHttpClient implements IPredictionClient {
   private readonly aiServiceUrl: string;
 
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
+    private readonly logger: LoggerService,
   ) {
+    this.logger.setContext('AiHttpClient');
     // Use the config service with a fallback string to satisfy ESLint
     this.aiServiceUrl = this.configService.get<string>(
       'AI_SERVICE_URL',
@@ -45,7 +28,9 @@ export class AiHttpClient {
     );
   }
 
-  async getPrediction(payload: PredictionPayload): Promise<PredictionMatch[]> {
+  public async getPrediction(
+    payload: PredictionPayload,
+  ): Promise<PredictionMatch[]> {
     const url = `${this.aiServiceUrl}/predict`;
 
     try {
