@@ -1,12 +1,15 @@
 import { AuthService } from './application/services/auth.service';
 import { UserService } from './application/services/user.service';
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
+import { ConfigModule } from '@nestjs/config';
 import { AuthController } from './presentation/controllers/auth.controller';
 import { UserController } from './presentation/controllers/user.controller';
 import { LoggerService } from './common/logger.service';
 import { RequestLoggingMiddleware } from './infrastructure/middleware/request-logging.middleware';
 import { PrismaService } from './infrastructure/database/prisma';
 import { AppController } from './presentation/controllers/app.controller';
+import { AiHttpClient } from './infrastructure/ai-service/ai-client';
 
 import { ChoiceModulesRepository } from './infrastructure/database/repositories/choicemodules.repository';
 import { UserFavoritesService } from './application/services/userfavorites.service';
@@ -32,7 +35,12 @@ class SessionActivityMiddleware {
 }
 
 @Module({
-  imports: [],
+  imports: [
+    HttpModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+  ],
   providers: [
     LoggerService,
     PrismaService,
@@ -80,6 +88,7 @@ class SessionActivityMiddleware {
       provide: 'SERVICE.MODULETAG',
       useClass: ModuleTagService,
     },
+    AiHttpClient,
   ],
   controllers: [
     AuthController,
