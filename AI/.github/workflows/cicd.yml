@@ -92,14 +92,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Prisma Generate
-        run: prisma generate
-
-      - name: Prisma Migrate Deploy
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: prisma migrate deploy
-
   deploy:
     name: Deploy to Azure Container App
     runs-on: ubuntu-latest
