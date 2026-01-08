@@ -36,9 +36,11 @@ export class AiController {
 
     const result = await this.aiService.getPrediction(prediction);
     if (result._tag === 'Failure') {
-      throw new BadRequestException(
-        result.error?.message || 'Prediction failed',
-      );
+      const errorMessage = result.error?.message || 'Failed to get predictions';
+      throw new BadRequestException({
+        message: 'Prediction generation failed',
+        details: errorMessage,
+      });
     }
 
     return result.data;

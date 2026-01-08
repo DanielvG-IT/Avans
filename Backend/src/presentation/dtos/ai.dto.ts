@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
 import {
   IsString,
   IsArray,
@@ -12,14 +11,13 @@ import {
 
 /**
  * DTO for AI prediction requests
- * Uses camelCase (TypeScript best practice) and maps to snake_case for Python API
+ * Accepts camelCase from frontend
  */
 export class PredictionDto {
   @ApiProperty({
     example: 'Informatica',
     description: 'Current study program of the student',
   })
-  @Expose({ name: 'current_study' })
   @IsString()
   @IsNotEmpty()
   @MinLength(2)
@@ -41,7 +39,6 @@ export class PredictionDto {
     description: 'Study credit range [min, max] in EC',
     type: [Number],
   })
-  @Expose({ name: 'wanted_study_credit_range' })
   @IsArray()
   @ArrayMinSize(2, { message: 'Credit range must have min and max values' })
   @ArrayMaxSize(2, { message: 'Credit range must have exactly 2 values' })
@@ -53,7 +50,6 @@ export class PredictionDto {
     description: 'Preferred study locations (at least 1 required)',
     type: [String],
   })
-  @Expose({ name: 'location_preference' })
   @IsArray()
   @ArrayMinSize(1, { message: 'At least one location preference is required' })
   @IsString({ each: true })
@@ -68,7 +64,6 @@ export class PredictionDto {
     description: 'Learning goals for the module (at least 1 required)',
     type: [String],
   })
-  @Expose({ name: 'learning_goals' })
   @IsArray()
   @ArrayMinSize(1, { message: 'At least one learning goal is required' })
   @IsString({ each: true })
@@ -80,7 +75,6 @@ export class PredictionDto {
     description: 'Preferred education level (NLQF) (at least 1 required)',
     type: [String],
   })
-  @Expose({ name: 'level_preference' })
   @IsArray()
   @ArrayMinSize(1, { message: 'At least one level preference is required' })
   @IsString({ each: true })
@@ -91,7 +85,6 @@ export class PredictionDto {
     example: 'Nederlands',
     description: 'Preferred teaching language',
   })
-  @Expose({ name: 'preferred_language' })
   @IsString()
   @IsNotEmpty()
   preferredLanguage!: string;
