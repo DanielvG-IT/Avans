@@ -37,31 +37,21 @@ export class AiHttpClient implements IPredictionClient {
       const request$: Observable<{ data: PredictionResponse }> =
         this.httpService.post<PredictionResponse>(url, payload).pipe(
           timeout(10000), // AI services need more time (10s)
-          catchError((error: unknown) => {
-            this.handleError(error);
-            throw error;
-          }),
         );
 
       const response = await firstValueFrom(request$);
       return response.data.filtered_top_5_matches;
     } catch (error: unknown) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      this.logger.error(`Connection Error: ${(error as Error).message}`);
-      throw new HttpException(
-        'AI Service Unavailable',
-        HttpStatus.GATEWAY_TIMEOUT,
-      );
+      // Transform and throw appropriate HttpException
+      throw this.handleError(error);
     }
   }
 
   /**
-   * Private helper designed to satisfy @typescript-eslint/no-unsafe rules
+   * Private helper that logs and transforms errors into HttpExceptions.
+   * Returns the exception instead of throwing to make error flow explicit.
    */
-  private handleError(error: unknown): void {
+  private handleError(error: unknown): HttpException {
     if (isAxiosError(error)) {
       const status = error.response?.status ?? HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -75,13 +65,17 @@ export class AiHttpClient implements IPredictionClient {
         `[AI Service Error] ${status} - ${JSON.stringify(message)}`,
       );
 
-      throw new HttpException(message, status);
+      return new HttpException(message, status);
     }
 
     // Handle generic system errors (e.g., DNS, Timeout)
-    throw new HttpException(
-      'Internal Network Error',
-      HttpStatus.INTERNAL_SERVER_ERROR,
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
+    this.logger.error(`Connection Error: ${errorMessage}`);
+
+    return new HttpException(
+      'AI Service Unavailable',
+      HttpStatus.GATEWAY_TIMEOUT,
     );
   }
 }

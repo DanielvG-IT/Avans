@@ -1,10 +1,13 @@
+import { PredictionDto, PredictionResponseDto } from '../dtos/ai.dto';
 import { type IAiService } from '@/application/ports/ai.port';
+import { SessionGuard } from '../guards/session.guard';
 import { SessionData } from '@/types/session.types';
-import { PredictionDto } from '../dtos/ai.dto';
 import {
   UnauthorizedException,
   BadRequestException,
   Controller,
+  HttpStatus,
+  UseGuards,
   HttpCode,
   Session,
   Inject,
@@ -13,6 +16,7 @@ import {
 } from '@nestjs/common';
 
 @Controller('ai')
+@UseGuards(SessionGuard)
 export class AiController {
   private readonly aiService: IAiService;
 
@@ -21,12 +25,12 @@ export class AiController {
   }
 
   @Post('predict')
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   async createPrediction(
     @Session() session: SessionData,
     @Body() prediction: PredictionDto,
-  ): Promise<{ prediction: { id: number; similarity_score: number }[] }> {
-    if (!session) {
+  ): Promise<PredictionResponseDto> {
+    if (!session || !session.user) {
       throw new UnauthorizedException('No active session');
     }
 
@@ -37,6 +41,6 @@ export class AiController {
       );
     }
 
-    return { prediction: result.data.filtered_top_5_matches };
+    return result.data;
   }
 }
