@@ -106,6 +106,40 @@ def filter_matches_top_5(
                 metadata_df = metadata_df[metadata_df[candidate_col] == preferred_language]
                 break
 
+    # Apply preferred period filter.
+    # If the metadata contains a dedicated period column, use it.
+    # Otherwise, derive the period from the start_date column.
+    preferred_periods = getattr(data, "preferred_period", None)
+    if preferred_periods:
+        preferred_periods = set(preferred_periods)
+
+        # 1) Direct period column in dataset
+        for candidate_col in ("period", "periode", "preferred_period"):
+            if candidate_col in metadata_df.columns:
+                metadata_df = metadata_df[metadata_df[candidate_col].isin(preferred_periods)]
+                break
+        else:
+            # 2) Derive from start_date
+            if "start_date" in metadata_df.columns:
+                def date_to_period(dt: pd.Timestamp | None):
+                    if dt is None or pd.isna(dt):
+                        return None
+                    month = int(dt.month)
+                    if month in (9, 10):
+                        return "P1"
+                    if month in (11, 12, 1):
+                        return "P2"
+                    if month in (2, 3, 4):
+                        return "P3"
+                    if month in (5, 6, 7, 8):
+                        return "P4"
+                    return None
+
+                start_dates = pd.to_datetime(metadata_df["start_date"], errors="coerce")
+                metadata_df["_period"] = start_dates.apply(date_to_period)
+                metadata_df = metadata_df[metadata_df["_period"].isin(preferred_periods)]
+                metadata_df = metadata_df.drop(columns=["_period"])
+
     candidate_ids = set(metadata_df["id"].tolist())
     if not candidate_ids:
         return []

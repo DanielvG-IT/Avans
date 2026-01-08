@@ -70,5 +70,5 @@ class StudentInput(BaseModel):
             raise ValueError("Tenminste één periodevoorkeur is vereist")
         for period in value:
             if period not in ALLOWED_PERIODS:
-                raise ValueError(f"Periodevoorkeur '{value}' is ongeldig. Geldige opties zijn: {', '.join(ALLOWED_PERIODS)}")
+                raise ValueError(f"Periodevoorkeur '{period}' is ongeldig. Geldige opties zijn: {', '.join(ALLOWED_PERIODS)}")
         return value
