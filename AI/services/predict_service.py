@@ -125,13 +125,15 @@ def filter_matches_top_5(
                     if dt is None or pd.isna(dt):
                         return None
                     month = int(dt.month)
-                    if month in (9, 10):
+                    # Dutch school year quarters (school year starts in September)
+                    # P1: Sep–Nov, P2: Dec–Feb, P3: Mar–May, P4: Jun–Aug
+                    if month in (9, 10, 11):
                         return "P1"
-                    if month in (11, 12, 1):
+                    if month in (12, 1, 2):
                         return "P2"
-                    if month in (2, 3, 4):
+                    if month in (3, 4, 5):
                         return "P3"
-                    if month in (5, 6, 7, 8):
+                    if month in (6, 7, 8):
                         return "P4"
                     return None
 
