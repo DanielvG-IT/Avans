@@ -124,6 +124,7 @@ export class AiService implements IAiService {
       learning_goals: dto.learningGoals,
       level_preference: dto.levelPreference,
       preferred_language: dto.preferredLanguage,
+      preferred_period: dto.preferredPeriod,
     };
   }
 }

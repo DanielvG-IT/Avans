@@ -17,6 +17,8 @@ export interface PredictionPayload {
   level_preference: string[];
   /** Preferred teaching language (e.g., 'Nederlands', 'English') */
   preferred_language: string;
+  /** Preferred study periods - at least 1 required */
+  preferred_period: string[];
 }
 
 /**

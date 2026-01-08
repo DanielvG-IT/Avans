@@ -11,7 +11,7 @@ import {
 
 /**
  * DTO for AI prediction requests
- * Accepts camelCase from frontend
+ * Accepts camelCase from frontend, will be converted to snake_case for Python service
  */
 export class PredictionDto {
   @ApiProperty({
@@ -88,6 +88,17 @@ export class PredictionDto {
   @IsString()
   @IsNotEmpty()
   preferredLanguage!: string;
+
+  @ApiProperty({
+    example: ['P1', 'P2', 'P3', 'P4'],
+    description: 'Preferred study periods (at least 1 required)',
+    type: [String],
+  })
+  @IsArray()
+  @ArrayMinSize(1, { message: 'At least one period preference is required' })
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  preferredPeriod!: string[];
 }
 
 /**
