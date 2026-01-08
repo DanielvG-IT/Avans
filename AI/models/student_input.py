@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, field_validator
 
 ALLOWED_LEVELS = {"NLQF1", "NLQF2", "NLQF3", "NLQF4", "NLQF5", "NLQF6", "NLQF7", "NLQF8"}
 ALLOWED_LANGUAGES = {"Nederlands", "Engels", "Niet van toepassing"}
-ALLOWED_LOCATIONS = {"Tilburg", "Breda", "Den Bosch"}
+ALLOWED_LOCATIONS = {"Tilburg", "Breda", "Den Bosch", "Roosendaal"}
 ALLOWED_PERIODS = {"P1", "P2", "P3", "P4"}
 
 class StudentInput(BaseModel):
