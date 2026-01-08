@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field, field_validator
 ALLOWED_LEVELS = {"NLQF1", "NLQF2", "NLQF3", "NLQF4", "NLQF5", "NLQF6", "NLQF7", "NLQF8"}
 ALLOWED_LANGUAGES = {"Nederlands", "Engels", "Niet van toepassing"}
 ALLOWED_LOCATIONS = {"Tilburg", "Breda", "Den Bosch"}
+ALLOWED_PERIODS = {"P1", "P2", "P3", "P4"}
 
 class StudentInput(BaseModel):
     current_study: str = Field(..., description="Je huidige studie")
@@ -12,6 +13,7 @@ class StudentInput(BaseModel):
     learning_goals: list[str] = Field(..., description="Je leerdoelen in zinnen en/of woorden")
     level_preference: list[str] = Field(..., description="NLQF# niveaus")
     preferred_language: str = Field(..., description="Je taalsvoorkeur: 'Nederlands', 'Engels', 'Niet van toepassing'")
+    preferred_period: list[str] = Field(..., description="Je voorkeur voor de periode waarin de VKM wordt gegeven")
 
     @field_validator("wanted_study_credit_range")
     def validate_credit_range(value):
@@ -60,4 +62,13 @@ class StudentInput(BaseModel):
     def validate_language(value):
         if value not in ALLOWED_LANGUAGES:
             raise ValueError(f"Taalvoorkeur '{value}' is ongeldig. Geldige opties zijn: {', '.join(ALLOWED_LANGUAGES)}")
+        return value
+    
+    @field_validator("preferred_period")
+    def validate_period(value):
+        if not value:
+            raise ValueError("Tenminste één periodevoorkeur is vereist")
+        for period in value:
+            if period not in ALLOWED_PERIODS:
+                raise ValueError(f"Periodevoorkeur '{value}' is ongeldig. Geldige opties zijn: {', '.join(ALLOWED_PERIODS)}")
         return value
