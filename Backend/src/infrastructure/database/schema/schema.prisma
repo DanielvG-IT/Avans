@@ -45,12 +45,12 @@ model ChoiceModule {
   id               String                 @id @default(uuid())
   name             String
   shortDescription String?
-  description      String?
-  content          String?
+  description      String?                @db.Text
+  content          String?                @db.Text
   studyCredits     Int
   //contactId     Int
   level            String
-  learningOutcomes String?
+  learningOutcomes String?                @db.Text
   //interestsMatchScore Float
   //popularityScore       Int
   //estimatedDifficulty  Int
