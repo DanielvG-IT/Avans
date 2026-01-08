@@ -13,7 +13,7 @@ import { AiHttpClient } from './infrastructure/ai-service/prediction-client';
 import { AiController } from './presentation/controllers/ai.controller';
 import { AiService } from './application/services/ai.service';
 
-import { ChoiceModulesRepository } from './infrastructure/database/repositories/choicemodules.repository';
+import { ModuleRepository } from './infrastructure/database/repositories/module.repository';
 import { UserFavoritesService } from './application/services/userfavorites.service';
 import { UserFavoritesRepository } from './infrastructure/database/repositories/userfavorites.repository';
 import { UserFavoritesController } from './presentation/controllers/userfavorites.controller';
@@ -60,7 +60,7 @@ class SessionActivityMiddleware {
     },
     {
       provide: 'REPO.MODULE',
-      useClass: ChoiceModulesRepository,
+      useClass: ModuleRepository,
     },
     {
       provide: 'SERVICE.MODULE',

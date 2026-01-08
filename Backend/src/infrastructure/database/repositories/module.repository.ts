@@ -8,7 +8,7 @@ import { PrismaService } from '../prisma';
 import { IModuleRepository } from '@/domain/modules/module-repository.interface';
 
 @Injectable()
-export class ChoiceModulesRepository implements IModuleRepository {
+export class ModuleRepository implements IModuleRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async getAllModules(): Promise<Module[]> {
