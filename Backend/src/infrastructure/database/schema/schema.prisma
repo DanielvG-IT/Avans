@@ -24,12 +24,16 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  userFavorites UserFavorites[]
 }
 
 model UserFavorites {
   id             String @id @default(uuid())
   userId         String
+  user           User   @relation(fields: [userId], references: [id])
   choiceModuleId String
+  choiceModule   ChoiceModule @relation(fields: [choiceModuleId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -57,6 +61,8 @@ model ChoiceModule {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  userFavorites UserFavorites[]
 }
 
 model Location {

@@ -8,7 +8,7 @@ import { PrismaService } from '../prisma';
 import { IModuleRepository } from '@/domain/modules/module-repository.interface';
 
 @Injectable()
-export class ChoiceModulesRepository implements IModuleRepository {
+export class ModuleRepository implements IModuleRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async getAllModules(): Promise<Module[]> {
@@ -25,10 +25,10 @@ export class ChoiceModulesRepository implements IModuleRepository {
 
     return modules.map((mod) => ({
       id: mod.id,
-      name: mod.name!,
+      name: mod.name,
       shortdescription: mod.shortDescription ?? '',
-      studyCredits: mod.studyCredits!,
-      level: mod.level!,
+      studyCredits: mod.studyCredits,
+      level: mod.level,
       startDate: mod.startDate, // string -> Date
       location: mod.location.map((cml) => ({
         id: cml.Location.id,
@@ -53,11 +53,11 @@ export class ChoiceModulesRepository implements IModuleRepository {
     }
     return {
       id: mod.id,
-      name: mod.name!,
+      name: mod.name,
       description: mod.description!,
       content: mod.content!,
-      level: mod.level!,
-      studyCredits: mod.studyCredits!,
+      level: mod.level,
+      studyCredits: mod.studyCredits,
       startDate: mod.startDate, // string -> Date
       location: mod.location.map((cml) => ({
         id: cml.Location.id,
@@ -68,7 +68,7 @@ export class ChoiceModulesRepository implements IModuleRepository {
         name: cmt.ModuleTags.name,
       })),
       learningOutcomes: mod.learningOutcomes!,
-      availableSpots: mod.availableSpots!,
+      availableSpots: mod.availableSpots,
     } as moduleDetail;
   }
   async createModule(module: createModule): Promise<moduleDetail> {
@@ -121,11 +121,11 @@ export class ChoiceModulesRepository implements IModuleRepository {
 
     return {
       id: created.id,
-      name: created.name!,
+      name: created.name,
       description: created.description!,
       content: created.content!,
-      level: created.level!,
-      studyCredits: created.studyCredits!,
+      level: created.level,
+      studyCredits: created.studyCredits,
       startDate: created.startDate,
       location: created.location.map((cml) => ({
         id: cml.Location.id,
@@ -136,7 +136,7 @@ export class ChoiceModulesRepository implements IModuleRepository {
         name: cmt.ModuleTags.name,
       })),
       learningOutcomes: created.learningOutcomes!,
-      availableSpots: created.availableSpots!,
+      availableSpots: created.availableSpots,
     } as moduleDetail;
   }
 }

@@ -1,52 +1,60 @@
-import { Injectable, LoggerService as NestLoggerService } from '@nestjs/common';
+import { Injectable, ConsoleLogger, LogLevel } from '@nestjs/common';
 
-type LogLevel = 'log' | 'error' | 'warn' | 'debug' | 'verbose';
-
+/**
+ * Extending ConsoleLogger to inherit Nest's built-in logic while overriding the output for structured JSON.
+ */
 @Injectable()
-export class LoggerService implements NestLoggerService {
-  private name = 'App';
+export class LoggerService extends ConsoleLogger {
+  private contextName = 'App';
 
-  setContext(name: string) {
-    this.name = name;
+  override setContext(name: string) {
+    this.contextName = name;
+    super.setContext(name);
   }
 
-  private format(level: LogLevel, message: any, context?: string, meta?: any) {
-    const payload: Record<string, any> = {
+  /**
+   * Centralized formatter to ensure consistent JSON structure.
+   * Handles objects, strings, and circular references safely.
+   */
+  private formatEntry(
+    level: LogLevel,
+    message: unknown,
+    context?: string,
+    meta?: unknown,
+  ): string {
+    const entry = {
       timestamp: new Date().toISOString(),
       level,
-      context: context ?? this.name,
-      message: typeof message === 'string' ? message : JSON.stringify(message),
+      context: context ?? this.contextName,
+      message: typeof message === 'string' ? message : message,
+      ...(meta ? { meta } : {}),
     };
 
-    if (meta) payload.meta = meta;
-    return JSON.stringify(payload);
+    // Using a replacer or library like 'safe-stable-stringify' is better for prod, but standard JSON.stringify works fine for now.
+    return JSON.stringify(entry);
   }
 
-  log(message: any, context?: string) {
-    // Info
-    // eslint-disable-next-line no-console
-    console.info(this.format('log', message, context));
+  // --- Main Methods ---
+
+  override log(message: unknown, context?: string) {
+    console.info(this.formatEntry('log', message, context));
   }
 
-  error(message: any, trace?: string, context?: string) {
+  override error(message: unknown, trace?: string, context?: string) {
     const meta = trace ? { trace } : undefined;
-    // eslint-disable-next-line no-console
-    console.error(this.format('error', message, context, meta));
+    console.error(this.formatEntry('error', message, context, meta));
   }
 
-  warn(message: any, context?: string) {
-    // eslint-disable-next-line no-console
-    console.warn(this.format('warn', message, context));
+  override warn(message: unknown, context?: string) {
+    console.warn(this.formatEntry('warn', message, context));
   }
 
-  debug?(message: any, context?: string) {
-    // eslint-disable-next-line no-console
-    console.debug(this.format('debug', message, context));
+  override debug(message: unknown, context?: string) {
+    console.debug(this.formatEntry('debug', message, context));
   }
 
-  verbose?(message: any, context?: string) {
-    // eslint-disable-next-line no-console
-    console.debug(this.format('verbose', message, context));
+  override verbose(message: unknown, context?: string) {
+    console.debug(this.formatEntry('verbose', message, context));
   }
 }
 

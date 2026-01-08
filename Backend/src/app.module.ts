@@ -1,14 +1,19 @@
 import { AuthService } from './application/services/auth.service';
 import { UserService } from './application/services/user.service';
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
+import { ConfigModule } from '@nestjs/config';
 import { AuthController } from './presentation/controllers/auth.controller';
 import { UserController } from './presentation/controllers/user.controller';
 import { LoggerService } from './common/logger.service';
 import { RequestLoggingMiddleware } from './infrastructure/middleware/request-logging.middleware';
 import { PrismaService } from './infrastructure/database/prisma';
 import { AppController } from './presentation/controllers/app.controller';
+import { AiHttpClient } from './infrastructure/ai-service/prediction-client';
+import { AiController } from './presentation/controllers/ai.controller';
+import { AiService } from './application/services/ai.service';
 
-import { ChoiceModulesRepository } from './infrastructure/database/repositories/choicemodules.repository';
+import { ModuleRepository } from './infrastructure/database/repositories/module.repository';
 import { UserFavoritesService } from './application/services/userfavorites.service';
 import { UserFavoritesRepository } from './infrastructure/database/repositories/userfavorites.repository';
 import { UserFavoritesController } from './presentation/controllers/userfavorites.controller';
@@ -32,7 +37,12 @@ class SessionActivityMiddleware {
 }
 
 @Module({
-  imports: [],
+  imports: [
+    HttpModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+  ],
   providers: [
     LoggerService,
     PrismaService,
@@ -50,7 +60,7 @@ class SessionActivityMiddleware {
     },
     {
       provide: 'REPO.MODULE',
-      useClass: ChoiceModulesRepository,
+      useClass: ModuleRepository,
     },
     {
       provide: 'SERVICE.MODULE',
@@ -80,6 +90,14 @@ class SessionActivityMiddleware {
       provide: 'SERVICE.MODULETAG',
       useClass: ModuleTagService,
     },
+    {
+      provide: 'SERVICE.AI',
+      useClass: AiService,
+    },
+    {
+      provide: 'HTTP.AI',
+      useClass: AiHttpClient,
+    },
   ],
   controllers: [
     AuthController,
@@ -89,6 +107,7 @@ class SessionActivityMiddleware {
     UserFavoritesController,
     LocationController,
     ModuleTagController,
+    AiController,
   ],
 })
 export class AppModule implements NestModule {

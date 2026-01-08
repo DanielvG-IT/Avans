@@ -23,27 +23,31 @@ export class PrismaService
     });
     super({ adapter });
 
+    this.logger.setContext('PrismaService');
+
     // Forward Prisma client events to our logger
     try {
       // Prisma client's $on typing may be strict depending on generated client.
-      // Cast to `any` to attach listeners at runtime while keeping TypeScript happy.
-      (this as any).$on('info', (e: any) => {
+      // Use type assertion for the $on method
+      const client = this as unknown as {
+        $on: (
+          event: string,
+          callback: (e: { message: string; stack?: string }) => void,
+        ) => void;
+      };
+
+      client.$on('info', (e) => {
         this.logger.log(`${e.message}`, 'Prisma');
       });
 
-      (this as any).$on('warn', (e: any) => {
+      client.$on('warn', (e) => {
         this.logger.warn(`${e.message}`, 'Prisma');
       });
 
-      (this as any).$on('error', (e: any) => {
-        // e is an object with message and perhaps stack
-        this.logger.error(
-          `${e.message}`,
-          (e as any).stack ?? undefined,
-          'Prisma',
-        );
+      client.$on('error', (e) => {
+        this.logger.error(`${e.message}`, e.stack ?? undefined, 'Prisma');
       });
-    } catch (e) {
+    } catch {
       // Listening may fail in some runtime builds; safely ignore
     }
   }
