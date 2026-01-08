@@ -12,9 +12,9 @@ import {
 
 export class LocationDTO {
   @ApiProperty()
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  id: string;
+  id: number;
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

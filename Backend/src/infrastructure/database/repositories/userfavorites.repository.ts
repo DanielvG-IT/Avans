@@ -21,7 +21,7 @@ export class UserFavoritesRepository implements IUserFavoritesRepository {
     }));
   }
 
-  async add(userId: string, itemId: string): Promise<void> {
+  async add(userId: string, itemId: number): Promise<void> {
     await this.prisma.userFavorites.create({
       data: {
         userId,
@@ -30,7 +30,7 @@ export class UserFavoritesRepository implements IUserFavoritesRepository {
     });
   }
 
-  async remove(userId: string, itemId: string): Promise<void> {
+  async remove(userId: string, itemId: number): Promise<void> {
     await this.prisma.userFavorites.deleteMany({
       where: {
         userId,
@@ -39,7 +39,7 @@ export class UserFavoritesRepository implements IUserFavoritesRepository {
     });
   }
 
-  async exists(userId: string, itemId: string): Promise<boolean> {
+  async exists(userId: string, itemId: number): Promise<boolean> {
     const favorite = await this.prisma.userFavorites.findFirst({
       where: {
         userId,

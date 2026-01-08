@@ -109,12 +109,12 @@ export class ModulePredictionDto {
     description: 'Full module details',
   })
   module!: {
-    id: string;
+    id: number;
     name: string;
     shortdescription: string;
     studyCredits: number;
     level: string;
-    location: { id: string; name: string }[];
+    location: { id: number; name: string }[];
     startDate: string;
   };
 

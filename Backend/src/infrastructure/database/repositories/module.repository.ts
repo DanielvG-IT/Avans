@@ -36,7 +36,7 @@ export class ModuleRepository implements IModuleRepository {
       })),
     }));
   }
-  async findById(id: string): Promise<moduleDetail> {
+  async findById(id: number): Promise<moduleDetail> {
     const mod = await this.prisma.choiceModule.findUnique({
       where: { id },
       include: {

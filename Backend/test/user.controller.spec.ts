@@ -3,10 +3,7 @@ import { UserController } from '../src/presentation/controllers/user.controller'
 import { IUserService } from '../src/application/ports/user.port';
 
 const mockUserService: Partial<IUserService> = {
-  getAll: jest.fn(),
-  getById: jest.fn(),
-  update: jest.fn(),
-  delete: jest.fn(),
+  findById: jest.fn(),
 };
 
 describe('UserController', () => {

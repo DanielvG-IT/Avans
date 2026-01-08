@@ -6,6 +6,7 @@ import {
   Session,
   UnauthorizedException,
   Body,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { SessionData } from '@/types/session.types';
 import { ModuleService } from '@/application/services/module.service';
@@ -39,13 +40,13 @@ export class ModulesController {
   @Get(':id')
   async getModuleById(
     @Session() session: SessionData,
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
   ): Promise<{ module: moduleDetail }> {
     if (!session) {
       throw new Error('No active session');
     }
 
-    if (!id || id.trim() === '') {
+    if (!id) {
       throw new Error('Cannot find module without id');
     }
 

@@ -29,10 +29,10 @@ model User {
 }
 
 model UserFavorites {
-  id             String @id @default(uuid())
+  id             Int @id @default(autoincrement())
   userId         String
   user           User   @relation(fields: [userId], references: [id])
-  choiceModuleId String
+  choiceModuleId Int
   choiceModule   ChoiceModule @relation(fields: [choiceModuleId], references: [id])
 
   createdAt DateTime @default(now())
@@ -42,7 +42,7 @@ model UserFavorites {
 }
 
 model ChoiceModule {
-  id               String                 @id @default(uuid())
+  id               Int                    @id @default(autoincrement())
   name             String
   shortDescription String?
   description      String?                @db.Text
@@ -66,31 +66,31 @@ model ChoiceModule {
 }
 
 model Location {
-  id            String                 @id @default(uuid())
+  id            Int                    @id @default(autoincrement())
   name          String                 @unique
   choiceModules ChoiceModuleLocation[]
 }
 
 model ChoiceModuleLocation {
   ChoiceModule   ChoiceModule @relation(fields: [choiceModuleId], references: [id])
-  choiceModuleId String
+  choiceModuleId Int
   Location       Location     @relation(fields: [locationId], references: [id])
-  locationId     String
+  locationId     Int
 
   @@id([choiceModuleId, locationId])
 }
 
 model ModuleTags {
-  id            String             @id @default(uuid())
+  id            Int                @id @default(autoincrement())
   name          String             @unique
   choiceModules ChoiceModuleTags[]
 }
 
 model ChoiceModuleTags {
   ChoiceModule   ChoiceModule @relation(fields: [choiceModuleId], references: [id])
-  choiceModuleId String
+  choiceModuleId Int
   ModuleTags     ModuleTags   @relation(fields: [moduleTagsId], references: [id])
-  moduleTagsId   String
+  moduleTagsId   Int
 
   @@id([choiceModuleId, moduleTagsId])
 }

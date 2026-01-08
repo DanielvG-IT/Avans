@@ -3,7 +3,6 @@ import { UserService } from '../src/application/services/user.service';
 import { IUserRepository } from '../src/domain/user/user-repository.interface';
 
 const mockUserRepository: Partial<IUserRepository> = {
-  findAll: jest.fn(),
   findById: jest.fn(),
   findByEmail: jest.fn(),
   create: jest.fn(),

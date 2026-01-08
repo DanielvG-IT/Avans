@@ -16,7 +16,7 @@ export class ModuleService implements IModuleService {
   async getAllModules(): Promise<Module[]> {
     return await this.moduleRepository.getAllModules();
   }
-  async findById(id: string): Promise<moduleDetail> {
+  async findById(id: number): Promise<moduleDetail> {
     return await this.moduleRepository.findById(id);
   }
   async createModule(module: createModule): Promise<moduleDetail> {

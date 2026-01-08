@@ -6,6 +6,7 @@ import {
   Param,
   Session,
   Inject,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { SessionData } from '@/types/session.types';
 import { UserFavoritesService } from '@/application/services/userfavorites.service';
@@ -32,7 +33,7 @@ export class UserFavoritesController {
   // GET /user/favorites/:moduleId
   @Get(':moduleId')
   async isModuleFavorited(
-    @Param('moduleId') moduleId: string,
+    @Param('moduleId', ParseIntPipe) moduleId: number,
     @Session() session: SessionData,
   ) {
     if (!session?.user) {
@@ -50,7 +51,7 @@ export class UserFavoritesController {
   // POST /user/favorites/:moduleId
   @Post(':moduleId')
   async favoriteModule(
-    @Param('moduleId') moduleId: string,
+    @Param('moduleId', ParseIntPipe) moduleId: number,
     @Session() session: SessionData,
   ) {
     if (!session?.user) {
@@ -64,7 +65,7 @@ export class UserFavoritesController {
   // DELETE /user/favorites/:moduleId
   @Delete(':moduleId')
   async unfavoriteModule(
-    @Param('moduleId') moduleId: string,
+    @Param('moduleId', ParseIntPipe) moduleId: number,
     @Session() session: SessionData,
   ) {
     if (!session?.user) {

@@ -43,12 +43,12 @@ export class CreateModuleDTO {
   @ApiProperty()
   @IsArray()
   @Type(() => LocationDTO)
-  location: { id: string; name: string }[];
+  location: { id: number; name: string }[];
 
   @ApiProperty()
   @IsArray()
   @Type(() => ModuleTagDTO)
-  moduleTags: { id: string; name: string }[];
+  moduleTags: { id: number; name: string }[];
 
   @ApiProperty()
   @IsString()
@@ -72,7 +72,7 @@ export class CreateModuleDTO {
 
 export class ChoiceModuleDTO {
   @ApiProperty()
-  id: string;
+  id: number;
 
   @ApiProperty()
   name: string;

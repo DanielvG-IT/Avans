@@ -58,7 +58,7 @@ export class AiService implements IAiService {
       const predictions = await Promise.all(
         matches.map(async (match) => {
           try {
-            const module = await this.moduleService.findById(String(match.id));
+            const module = await this.moduleService.findById(match.id);
             if (!module) {
               throw new Error(
                 `Kan de aanbevolen module (ID: ${match.id}) niet vinden in de database`,

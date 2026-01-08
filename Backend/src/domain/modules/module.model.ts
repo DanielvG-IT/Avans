@@ -1,23 +1,23 @@
 export interface moduleDetail {
-  id: string;
+  id: number;
   name: string;
   description: string;
   content: string;
   level: string;
   studyCredits: number;
-  location: { id: string; name: string }[];
-  moduleTags: { id: string; name: string }[];
+  location: { id: number; name: string }[];
+  moduleTags: { id: number; name: string }[];
   learningOutcomes: string;
   availableSpots: number;
   startDate: string;
 }
 export interface Module {
-  id: string;
+  id: number;
   name: string;
   shortdescription: string;
   studyCredits: number;
   level: string;
-  location: { id: string; name: string }[];
+  location: { id: number; name: string }[];
   startDate: string;
 }
 export interface createModule {
@@ -26,8 +26,8 @@ export interface createModule {
   content: string;
   level: string;
   studyCredits: number;
-  location: { id: string; name: string }[];
-  moduleTags: { id: string; name: string }[];
+  location: { id: number; name: string }[];
+  moduleTags: { id: number; name: string }[];
   learningOutcomes: string;
   availableSpots: number;
   startDate: string;
