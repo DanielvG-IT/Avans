@@ -6,7 +6,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { fail, Result, succeed } from '@/result';
 import { PredictionPayload } from '@/domain/predictions/prediction.model';
 import { PredictionDto } from '@/presentation/dtos/ai.dto';
-import { instanceToPlain } from 'class-transformer';
 import { Module } from '@/domain/modules/module.model';
 
 /**
@@ -58,47 +57,74 @@ export class AiService implements IAiService {
       // Fetch full module details for each prediction
       const predictions = await Promise.all(
         matches.map(async (match) => {
-          const module = await this.moduleService.findById(String(match.id));
-          return {
-            module: {
-              id: module.id,
-              name: module.name,
-              shortdescription: module.description,
-              studyCredits: module.studyCredits,
-              level: module.level,
-              location: module.location,
-              startDate: module.startDate,
-            },
-            score: match.similarity_score,
-          };
+          try {
+            const module = await this.moduleService.findById(String(match.id));
+            if (!module) {
+              throw new Error(
+                `Kan de aanbevolen module (ID: ${match.id}) niet vinden in de database`,
+              );
+            }
+            return {
+              module: {
+                id: module.id,
+                name: module.name,
+                shortdescription: module.description,
+                studyCredits: module.studyCredits,
+                level: module.level,
+                location: module.location,
+                startDate: module.startDate,
+              },
+              score: match.similarity_score,
+            };
+          } catch (moduleError: unknown) {
+            const msg =
+              moduleError instanceof Error
+                ? moduleError.message
+                : 'Onbekende fout bij ophalen module';
+            throw new Error(
+              `Kan de aanbevolen module (ID: ${match.id}) niet verwerken: ${msg}`,
+            );
+          }
         }),
       );
 
       return succeed({ predictions });
     } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
+      let errorMessage = 'Kan de voorstellen niet verwerken';
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (typeof error === 'object' && error !== null) {
+        errorMessage = JSON.stringify(error);
+      }
 
       this.logger?.error(
         `Failed to get prediction: ${errorMessage}`,
         error instanceof Error ? error.stack : undefined,
       );
 
-      return fail(
-        error instanceof Error ? error : new Error('Prediction service failed'),
-      );
+      return fail(new Error(errorMessage));
     }
   }
 
   /**
    * Transform TypeScript DTO (camelCase) to Python API payload (snake_case)
-   * Uses class-transformer to handle the @Expose() decorators
+   * Maps frontend camelCase properties to backend snake_case requirements
    * @param dto Prediction DTO with camelCase properties
    * @returns Payload object with snake_case properties
    */
   private transformDtoToPayload(dto: PredictionDto): PredictionPayload {
-    // Use class-transformer to properly handle @Expose() mappings
-    const plain = instanceToPlain(dto) as PredictionPayload;
-    return plain;
+    return {
+      current_study: dto.currentStudy,
+      interests: dto.interests,
+      wanted_study_credit_range: dto.wantedStudyCreditRange,
+      location_preference: dto.locationPreference,
+      learning_goals: dto.learningGoals,
+      level_preference: dto.levelPreference,
+      preferred_language: dto.preferredLanguage,
+      preferred_period: dto.preferredPeriod,
+    };
   }
 }
