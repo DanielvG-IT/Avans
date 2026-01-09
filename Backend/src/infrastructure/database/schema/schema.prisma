@@ -25,20 +25,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  userFavorites UserFavorites[]
-}
-
-model UserFavorites {
-  id             Int @id @default(autoincrement())
-  userId         String
-  user           User   @relation(fields: [userId], references: [id])
-  choiceModuleId Int
-  choiceModule   ChoiceModule @relation(fields: [choiceModuleId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([userId, choiceModuleId])
+  userModules UserModules[]
 }
 
 model ChoiceModule {
@@ -62,7 +49,7 @@ model ChoiceModule {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  userFavorites UserFavorites[]
+  userModules UserModules[]
 }
 
 model Location {
@@ -93,4 +80,20 @@ model ChoiceModuleTags {
   moduleTagsId   Int
 
   @@id([choiceModuleId, moduleTagsId])
+}
+
+model UserModules {
+  id             Int @id @default(autoincrement())
+  userId         String
+  user           User   @relation(fields: [userId], references: [id])
+  choiceModuleId Int
+  choiceModule   ChoiceModule @relation(fields: [choiceModuleId], references: [id])
+
+  favorited   Boolean @default(false)
+  recommended Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, choiceModuleId])
 }

@@ -18,6 +18,10 @@ import { UserFavoritesService } from './application/services/userfavorites.servi
 import { UserFavoritesRepository } from './infrastructure/database/repositories/userfavorites.repository';
 import { UserFavoritesController } from './presentation/controllers/userfavorites.controller';
 
+import { UserRecommendedService } from './application/services/userrecommended.service';
+import { UserRecommendedRepository } from './infrastructure/database/repositories/userrecommended.repository';
+import { UserRecommendedController } from './presentation/controllers/userrecommended.controller';
+
 import { LocationRepository } from './infrastructure/database/repositories/location.repository';
 import { LocationService } from './application/services/location.service';
 import { LocationController } from './presentation/controllers/location.controller';
@@ -75,6 +79,14 @@ class SessionActivityMiddleware {
       useClass: UserFavoritesRepository,
     },
     {
+      provide: 'SERVICE.USER_RECOMMENDED',
+      useClass: UserRecommendedService,
+    },
+    {
+      provide: 'REPO.USER_RECOMMENDED',
+      useClass: UserRecommendedRepository,
+    },
+    {
       provide: 'REPO.LOCATION',
       useClass: LocationRepository,
     },
@@ -105,6 +117,7 @@ class SessionActivityMiddleware {
     ModulesController,
     AppController,
     UserFavoritesController,
+    UserRecommendedController,
     LocationController,
     ModuleTagController,
     AiController,

@@ -7,10 +7,19 @@ import { PrismaService } from '../prisma';
 export class UserFavoritesRepository implements IUserFavoritesRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  private get userModulesModel() {
+    const client = this.prisma as unknown as {
+      userModules?: any;
+      userRecommended?: any;
+    };
+
+    return client.userModules ?? client.userRecommended;
+  }
+
   async findByUserId(userId: string): Promise<UserFavorite[]> {
-    const favorites = await this.prisma.userFavorites.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
+    const favorites = await this.userModulesModel.findMany({
+      where: { userId, favorited: true },
+      orderBy: { updatedAt: 'desc' },
     });
 
     return favorites.map((fav) => ({
@@ -22,28 +31,53 @@ export class UserFavoritesRepository implements IUserFavoritesRepository {
   }
 
   async add(userId: string, itemId: number): Promise<void> {
-    await this.prisma.userFavorites.create({
-      data: {
+    await this.userModulesModel.upsert({
+      where: {
+        userId_choiceModuleId: {
+          userId,
+          choiceModuleId: itemId,
+        },
+      },
+      create: {
         userId,
         choiceModuleId: itemId,
+        favorited: true,
+        recommended: false,
+      },
+      update: {
+        favorited: true,
       },
     });
   }
 
   async remove(userId: string, itemId: number): Promise<void> {
-    await this.prisma.userFavorites.deleteMany({
-      where: {
-        userId,
-        choiceModuleId: itemId,
-      },
-    });
+    await this.prisma.$transaction([
+      this.userModulesModel.updateMany({
+        where: {
+          userId,
+          choiceModuleId: itemId,
+        },
+        data: {
+          favorited: false,
+        },
+      }),
+      this.userModulesModel.deleteMany({
+        where: {
+          userId,
+          choiceModuleId: itemId,
+          favorited: false,
+          recommended: false,
+        },
+      }),
+    ]);
   }
 
   async exists(userId: string, itemId: number): Promise<boolean> {
-    const favorite = await this.prisma.userFavorites.findFirst({
+    const favorite = await this.userModulesModel.findFirst({
       where: {
         userId,
         choiceModuleId: itemId,
+        favorited: true,
       },
     });
 
