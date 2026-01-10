@@ -18,8 +18,7 @@ import { AiService } from './application/services/ai.service';
 // -- imports for repositories --
 import { UserRepository } from './infrastructure/database/repositories/user.repository';
 import { ModuleRepository } from './infrastructure/database/repositories/module.repository';
-import { UserFavoritesRepository } from './infrastructure/database/repositories/userfavorites.repository';
-import { UserRecommendedRepository } from './infrastructure/database/repositories/userrecommended.repository';
+import { UserModulesRepository } from './infrastructure/database/repositories/usermodules.repository';
 import { LocationRepository } from './infrastructure/database/repositories/location.repository';
 import { ModuleTagRepository } from './infrastructure/database/repositories/moduletag.repository';
 
@@ -47,8 +46,7 @@ import { RequestLoggingMiddleware } from './infrastructure/middleware/request-lo
     { provide: 'SERVICE.AI', useClass: AiService },
     // Repositories
     { provide: 'REPO.USER', useClass: UserRepository },
-    { provide: 'REPO.USER_FAVORITES', useClass: UserFavoritesRepository },
-    { provide: 'REPO.USER_RECOMMENDED', useClass: UserRecommendedRepository },
+    { provide: 'REPO.USER_MODULES', useClass: UserModulesRepository },
     { provide: 'REPO.MODULE', useClass: ModuleRepository },
     { provide: 'REPO.LOCATION', useClass: LocationRepository },
     { provide: 'REPO.MODULETAG', useClass: ModuleTagRepository },

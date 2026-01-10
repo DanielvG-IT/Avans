@@ -12,13 +12,10 @@ export class ModuleRepository implements IModuleRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async getAllModules(): Promise<Module[]> {
-    const modules = await this.prisma.choiceModule.findMany({
+    const modules = await this.prisma.module.findMany({
       include: {
-        location: {
-          include: { Location: true },
-        },
         moduleTags: {
-          include: { ModuleTags: true },
+          include: { ModuleTag: true },
         },
       },
     });
@@ -29,22 +26,19 @@ export class ModuleRepository implements IModuleRepository {
       shortdescription: mod.shortDescription ?? '',
       studyCredits: mod.studyCredits,
       level: mod.level,
-      startDate: mod.startDate, // string -> Date
-      location: mod.location.map((cml) => ({
-        id: cml.Location.id,
-        name: cml.Location.name,
-      })),
+      startDate: mod.startDate,
+      location: [],
     }));
   }
   async findById(id: number): Promise<moduleDetail> {
-    const mod = await this.prisma.choiceModule.findUnique({
+    const mod = await this.prisma.module.findUnique({
       where: { id },
       include: {
         location: {
           include: { Location: true },
         },
         moduleTags: {
-          include: { ModuleTags: true },
+          include: { ModuleTag: true },
         },
       },
     });
@@ -64,8 +58,8 @@ export class ModuleRepository implements IModuleRepository {
         name: cml.Location.name,
       })),
       moduleTags: mod.moduleTags.map((cmt) => ({
-        id: cmt.ModuleTags.id,
-        name: cmt.ModuleTags.name,
+        id: cmt.ModuleTag.id,
+        name: cmt.ModuleTag.name,
       })),
       learningOutcomes: mod.learningOutcomes!,
       availableSpots: mod.availableSpots,
@@ -73,7 +67,7 @@ export class ModuleRepository implements IModuleRepository {
   }
   async createModule(module: createModule): Promise<moduleDetail> {
     const created = await this.prisma.$transaction(async (tx) => {
-      const baseModule = await tx.choiceModule.create({
+      const baseModule = await tx.module.create({
         data: {
           name: module.name,
           shortDescription: module.shortdescription,
@@ -89,28 +83,28 @@ export class ModuleRepository implements IModuleRepository {
       console.log('Created base module:', baseModule);
 
       if (module.location.length > 0) {
-        await tx.choiceModuleLocation.createMany({
+        await tx.moduleLocation.createMany({
           data: module.location.map((loc) => ({
-            choiceModuleId: baseModule.id,
+            moduleId: baseModule.id,
             locationId: loc.id,
           })),
         });
       }
 
       if (module.moduleTags.length > 0) {
-        await tx.choiceModuleTags.createMany({
+        await tx.moduleTags.createMany({
           data: module.moduleTags.map((tag) => ({
-            choiceModuleId: baseModule.id,
-            moduleTagsId: tag.id,
+            moduleId: baseModule.id,
+            moduleTagId: tag.id,
           })),
         });
       }
 
-      return tx.choiceModule.findUnique({
+      return tx.module.findUnique({
         where: { id: baseModule.id },
         include: {
           location: { include: { Location: true } },
-          moduleTags: { include: { ModuleTags: true } },
+          moduleTags: { include: { ModuleTag: true } },
         },
       });
     });
@@ -132,8 +126,8 @@ export class ModuleRepository implements IModuleRepository {
         name: cml.Location.name,
       })),
       moduleTags: created.moduleTags.map((cmt) => ({
-        id: cmt.ModuleTags.id,
-        name: cmt.ModuleTags.name,
+        id: cmt.ModuleTag.id,
+        name: cmt.ModuleTag.name,
       })),
       learningOutcomes: created.learningOutcomes!,
       availableSpots: created.availableSpots,

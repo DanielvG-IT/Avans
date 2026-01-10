@@ -18,10 +18,9 @@ import { IUserRecommendedRepository } from '@/domain/userrecommended/userrecomme
 export class UserService implements IUserService {
   constructor(
     @Inject('REPO.USER') private readonly userRepository: IUserRepository,
-    @Inject('REPO.USER_FAVORITES')
-    private readonly favoritesRepository: IUserFavoritesRepository,
-    @Inject('REPO.USER_RECOMMENDED')
-    private readonly recommendedRepository: IUserRecommendedRepository,
+    @Inject('REPO.USER_MODULES')
+    private readonly userModulesRepository: IUserFavoritesRepository &
+      IUserRecommendedRepository,
     private readonly logger?: LoggerService,
   ) {
     this.logger?.setContext('UserService');
@@ -40,22 +39,22 @@ export class UserService implements IUserService {
   // ==========================================
 
   findFavorites(userId: string): Promise<UserFavorite[]> {
-    return this.favoritesRepository.findByUserId(userId);
+    return this.userModulesRepository.findByUserId(userId);
   }
 
   isModuleFavorited(userId: string, moduleId: number): Promise<boolean> {
-    return this.favoritesRepository.exists(userId, moduleId);
+    return this.userModulesRepository.exists(userId, moduleId);
   }
 
   async favoriteModule(userId: string, moduleId: number): Promise<void> {
-    const exists = await this.favoritesRepository.exists(userId, moduleId);
+    const exists = await this.userModulesRepository.exists(userId, moduleId);
     if (!exists) {
-      await this.favoritesRepository.add(userId, moduleId);
+      await this.userModulesRepository.add(userId, moduleId);
     }
   }
 
   async unfavoriteModule(userId: string, moduleId: number): Promise<void> {
-    await this.favoritesRepository.remove(userId, moduleId);
+    await this.userModulesRepository.remove(userId, moduleId);
   }
 
   // ==========================================
@@ -63,10 +62,10 @@ export class UserService implements IUserService {
   // ==========================================
 
   setRecommendedModules(userId: string, moduleIds: number[]): Promise<void> {
-    return this.recommendedRepository.setRecommendedModules(userId, moduleIds);
+    return this.userModulesRepository.setRecommendedModules(userId, moduleIds);
   }
 
   getRecommendedModuleIds(userId: string): Promise<number[]> {
-    return this.recommendedRepository.getRecommendedModuleIds(userId);
+    return this.userModulesRepository.getRecommendedModuleIds(userId);
   }
 }

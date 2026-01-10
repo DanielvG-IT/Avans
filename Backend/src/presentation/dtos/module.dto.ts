@@ -75,7 +75,7 @@ export class CreateModuleDTO {
   shortdescription!: string;
 }
 
-export class ChoiceModuleDTO {
+export class ModuleDTO {
   @ApiProperty()
   id: number;
 

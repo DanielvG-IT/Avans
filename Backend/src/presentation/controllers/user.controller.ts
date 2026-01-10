@@ -94,7 +94,7 @@ export class UserController {
     const recentIds = moduleIds.slice(0, MAX_RECENT_RECOMMENDED);
 
     return {
-      recommended: recentIds.map((choiceModuleId) => ({ choiceModuleId })),
+      recommended: recentIds.map((moduleId) => ({ moduleId })),
     };
   }
 

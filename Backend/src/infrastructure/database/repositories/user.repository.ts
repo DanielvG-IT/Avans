@@ -1,6 +1,6 @@
 import { type IUserRepository } from '@/domain/user/user-repository.interface';
 import { PrismaService } from '@/infrastructure/database/prisma';
-import type { User } from '@/domain/user/user.model';
+import type { User, UserRole } from '@/domain/user/user.model';
 import { Role as PrismaRole } from '@/infrastructure/database/generated/prisma/enums';
 import { Injectable } from '@nestjs/common';
 import { Result, succeed, fail } from '@/result';
@@ -22,7 +22,7 @@ export class UserRepository implements IUserRepository {
         name: user.name,
         email: user.email,
         hashedPassword: user.hashedPassword,
-        role: String(user.role),
+        role: user.role as UserRole,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       };
@@ -45,7 +45,7 @@ export class UserRepository implements IUserRepository {
         name: user.name,
         email: user.email,
         hashedPassword: user.hashedPassword,
-        role: String(user.role),
+        role: user.role as UserRole,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       };
@@ -75,7 +75,7 @@ export class UserRepository implements IUserRepository {
         name: createdUser.name,
         email: createdUser.email,
         hashedPassword: createdUser.hashedPassword,
-        role: String(createdUser.role),
+        role: createdUser.role as UserRole,
         createdAt: createdUser.createdAt,
         updatedAt: createdUser.updatedAt,
       };
@@ -106,7 +106,7 @@ export class UserRepository implements IUserRepository {
         name: updatedUser.name,
         email: updatedUser.email,
         hashedPassword: updatedUser.hashedPassword,
-        role: String(updatedUser.role),
+        role: updatedUser.role as UserRole,
         createdAt: updatedUser.createdAt,
         updatedAt: updatedUser.updatedAt,
       };

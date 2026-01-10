@@ -1,6 +1,6 @@
 export interface UserFavorite {
   id: number;
   userId: string;
-  choiceModuleId: number;
+  moduleId: number;
   createdAt: Date;
 }
