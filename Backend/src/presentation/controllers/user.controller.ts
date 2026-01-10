@@ -50,6 +50,33 @@ export class UserController {
     };
   }
 
+  @Get('recommended')
+  @HttpCode(HttpStatus.OK)
+  async getRecommended(@Session() session: AuthenticatedSession) {
+    const MAX_RECENT_RECOMMENDED = 5;
+    const moduleIds = await this.userService.getRecommendedModuleIds(
+      session.user.id,
+    );
+    const recentIds = moduleIds.slice(0, MAX_RECENT_RECOMMENDED);
+
+    return {
+      recommended: recentIds.map((moduleId) => ({ moduleId })),
+    };
+  }
+
+  @Post('recommended')
+  @HttpCode(HttpStatus.CREATED)
+  async submitRecommended(
+    @Body() body: SubmitRecommendedDto,
+    @Session() session: AuthenticatedSession,
+  ) {
+    await this.userService.setRecommendedModules(
+      session.user.id,
+      body.moduleIds,
+    );
+    return { success: true };
+  }
+
   @Get(':moduleId')
   @HttpCode(HttpStatus.OK)
   async isModuleFavorited(
@@ -81,33 +108,6 @@ export class UserController {
     @Session() session: AuthenticatedSession,
   ) {
     await this.userService.unfavoriteModule(session.user.id, moduleId);
-    return { success: true };
-  }
-
-  @Get('recommended')
-  @HttpCode(HttpStatus.OK)
-  async getRecommended(@Session() session: AuthenticatedSession) {
-    const MAX_RECENT_RECOMMENDED = 5;
-    const moduleIds = await this.userService.getRecommendedModuleIds(
-      session.user.id,
-    );
-    const recentIds = moduleIds.slice(0, MAX_RECENT_RECOMMENDED);
-
-    return {
-      recommended: recentIds.map((moduleId) => ({ moduleId })),
-    };
-  }
-
-  @Post('recommended')
-  @HttpCode(HttpStatus.CREATED)
-  async submitRecommended(
-    @Body() body: SubmitRecommendedDto,
-    @Session() session: AuthenticatedSession,
-  ) {
-    await this.userService.setRecommendedModules(
-      session.user.id,
-      body.moduleIds,
-    );
     return { success: true };
   }
 
