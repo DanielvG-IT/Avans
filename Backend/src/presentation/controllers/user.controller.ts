@@ -1,3 +1,4 @@
+import { RequireAuth } from '../decorators/auth.decorator';
 import { AuthenticatedSession } from '@/types/session.types';
 import { SessionGuard } from '../guards/session.guard';
 import {
@@ -43,6 +44,7 @@ export class UserController {
   }
 
   @Get()
+  @RequireAuth('STUDENT')
   @HttpCode(HttpStatus.OK)
   async findFavorites(@Session() session: AuthenticatedSession) {
     return {
@@ -51,6 +53,7 @@ export class UserController {
   }
 
   @Get('recommended')
+  @RequireAuth('STUDENT')
   @HttpCode(HttpStatus.OK)
   async getRecommended(@Session() session: AuthenticatedSession) {
     const MAX_RECENT_RECOMMENDED = 5;
@@ -65,6 +68,7 @@ export class UserController {
   }
 
   @Post('recommended')
+  @RequireAuth('STUDENT')
   @HttpCode(HttpStatus.CREATED)
   async submitRecommended(
     @Body() body: SubmitRecommendedDto,
@@ -78,6 +82,7 @@ export class UserController {
   }
 
   @Get(':moduleId')
+  @RequireAuth('STUDENT')
   @HttpCode(HttpStatus.OK)
   async isModuleFavorited(
     @Param('moduleId', ParseIntPipe) moduleId: number,
@@ -92,6 +97,7 @@ export class UserController {
   }
 
   @Post(':moduleId')
+  @RequireAuth('STUDENT')
   @HttpCode(HttpStatus.CREATED)
   async favoriteModule(
     @Param('moduleId', ParseIntPipe) moduleId: number,
@@ -102,6 +108,7 @@ export class UserController {
   }
 
   @Delete(':moduleId')
+  @RequireAuth('STUDENT')
   @HttpCode(HttpStatus.OK)
   async unfavoriteModule(
     @Param('moduleId', ParseIntPipe) moduleId: number,

@@ -53,7 +53,7 @@ export class ModulesController {
     };
   }
   @Post('moduletags')
-  @RequireAuth('ADMIN')
+  @RequireAuth('ADMIN', 'TEACHER')
   @HttpCode(HttpStatus.CREATED)
   async createModuleTag(
     @Body() dto: CreateModuleTagDto,
@@ -74,8 +74,9 @@ export class ModulesController {
 
     return { module };
   }
+
   @Post()
-  @RequireAuth('ADMIN')
+  @RequireAuth('ADMIN', 'TEACHER')
   @HttpCode(HttpStatus.CREATED)
   async createModule(
     @Body() moduleData: CreateModuleDTO,

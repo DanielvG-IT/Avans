@@ -1,3 +1,4 @@
+import { RequireAuth } from '../decorators/auth.decorator';
 import { AuthenticatedSession } from '@/types/session.types';
 import { SessionGuard } from '../guards/session.guard';
 import {
@@ -22,6 +23,7 @@ export class AiController {
   constructor(@Inject('SERVICE.AI') private readonly aiService: IAiService) {}
 
   @Post('predict')
+  @RequireAuth('STUDENT')
   @HttpCode(HttpStatus.OK)
   async createPrediction(
     @Session() session: AuthenticatedSession,
