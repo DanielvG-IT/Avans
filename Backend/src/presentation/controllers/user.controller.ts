@@ -43,7 +43,7 @@ export class UserController {
     return { user: this.toUserDto(result.data) };
   }
 
-  @Get()
+  @Get('favorites')
   @RequireAuth('STUDENT')
   @HttpCode(HttpStatus.OK)
   async findFavorites(@Session() session: AuthenticatedSession) {

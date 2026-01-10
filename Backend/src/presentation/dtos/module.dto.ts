@@ -85,7 +85,7 @@ export class ModuleDTO {
   name: string;
 
   @ApiProperty()
-  shortDescription: string;
+  shortdescription: string;
 
   @ApiProperty()
   description: string;
