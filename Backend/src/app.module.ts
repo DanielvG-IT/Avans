@@ -1,6 +1,7 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
+import { TerminusModule } from '@nestjs/terminus';
 
 // -- imports for controllers --
 import { AppController } from './presentation/controllers/app.controller';
@@ -31,6 +32,7 @@ import { RequestLoggingMiddleware } from './infrastructure/middleware/request-lo
 @Module({
   imports: [
     HttpModule,
+    TerminusModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
