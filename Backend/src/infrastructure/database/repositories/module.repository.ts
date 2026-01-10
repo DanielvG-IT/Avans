@@ -14,6 +14,9 @@ export class ModuleRepository implements IModuleRepository {
   async getAllModules(): Promise<Module[]> {
     const modules = await this.prisma.module.findMany({
       include: {
+        location: {
+          include: { Location: true },
+        },
         moduleTags: {
           include: { ModuleTag: true },
         },
@@ -27,7 +30,10 @@ export class ModuleRepository implements IModuleRepository {
       studyCredits: mod.studyCredits,
       level: mod.level,
       startDate: mod.startDate,
-      location: [],
+      location: mod.location.map((cml) => ({
+        id: cml.Location.id,
+        name: cml.Location.name,
+      })),
     }));
   }
   async findById(id: number): Promise<moduleDetail> {
