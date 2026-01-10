@@ -25,7 +25,7 @@ import { ModuleTagRepository } from './infrastructure/database/repositories/modu
 // -- imports for infrastructure --
 import { LoggerService } from './logger.service';
 import { PrismaService } from './infrastructure/database/prisma';
-import { AiHttpClient } from './infrastructure/ai-service/prediction-client';
+import { PredictionClient } from './infrastructure/prediction/prediction-client';
 import { RequestLoggingMiddleware } from './infrastructure/middleware/request-logging.middleware';
 
 @Module({
@@ -51,7 +51,7 @@ import { RequestLoggingMiddleware } from './infrastructure/middleware/request-lo
     { provide: 'REPO.LOCATION', useClass: LocationRepository },
     { provide: 'REPO.MODULETAG', useClass: ModuleTagRepository },
     // HTTP Clients
-    { provide: 'HTTP.AI', useClass: AiHttpClient },
+    { provide: 'CLIENT.PREDICTION', useClass: PredictionClient },
   ],
   controllers: [
     AppController,
