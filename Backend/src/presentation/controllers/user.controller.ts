@@ -18,21 +18,13 @@ import {
 // -- imports for users --
 import { User } from '@/domain/user/user.model';
 import { UserDTO } from '@/presentation/dtos/user.dto';
-import { IUserService } from '@/application/ports/user.port';
-// -- imports for user favorites --
-import { IUserFavoritesService } from '@/application/ports/userfavorites.port';
-// -- imports for user recommended --
-import { IUserRecommendedService } from '@/application/ports/userrecommended.port';
+import { UserService } from '@/application/services/user.service';
 import { SubmitRecommendedDto } from '../dtos/userrecommended.dto';
 
 @Controller('user')
 export class UserController {
   constructor(
-    @Inject('SERVICE.USER') private readonly userService: IUserService,
-    @Inject('SERVICE.USER_FAVORITES')
-    private readonly favoritesService: IUserFavoritesService,
-    @Inject('SERVICE.USER_RECOMMENDED')
-    private readonly recommendedService: IUserRecommendedService,
+    @Inject('SERVICE.USER') private readonly userService: UserService,
   ) {}
 
   @Get('profile')
@@ -63,7 +55,7 @@ export class UserController {
     }
 
     return {
-      favorites: await this.favoritesService.findFavorites(session.user.id),
+      favorites: await this.userService.findFavorites(session.user.id),
     };
   }
 
@@ -78,7 +70,7 @@ export class UserController {
     }
 
     return {
-      isFavorited: await this.favoritesService.isModuleFavorited(
+      isFavorited: await this.userService.isModuleFavorited(
         session.user.id,
         moduleId,
       ),
@@ -95,7 +87,7 @@ export class UserController {
       throw new UnauthorizedException('No active session');
     }
 
-    await this.favoritesService.favoriteModule(session.user.id, moduleId);
+    await this.userService.favoriteModule(session.user.id, moduleId);
     return { success: true };
   }
 
@@ -109,7 +101,7 @@ export class UserController {
       throw new UnauthorizedException('No active session');
     }
 
-    await this.favoritesService.unfavoriteModule(session.user.id, moduleId);
+    await this.userService.unfavoriteModule(session.user.id, moduleId);
     return { success: true };
   }
 
@@ -121,7 +113,7 @@ export class UserController {
     }
 
     const MAX_RECENT_RECOMMENDED = 5;
-    const moduleIds = await this.recommendedService.getRecommendedModuleIds(
+    const moduleIds = await this.userService.getRecommendedModuleIds(
       session.user.id,
     );
     const recentIds = moduleIds.slice(0, MAX_RECENT_RECOMMENDED);
@@ -141,7 +133,7 @@ export class UserController {
       throw new UnauthorizedException('No active session');
     }
 
-    await this.recommendedService.setRecommendedModules(
+    await this.userService.setRecommendedModules(
       session.user.id,
       body.moduleIds,
     );

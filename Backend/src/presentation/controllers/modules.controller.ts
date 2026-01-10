@@ -17,12 +17,8 @@ import {
 // -- imports for modules --
 import { ModuleService } from '@/application/services/module.service';
 import { moduleDetail, Module } from '@/domain/modules/module.model';
-// -- imports for locations --
-import { ILocationService } from '@/application/ports/location.port';
 import { Location } from '@/domain/locations/location.model';
-// -- imports for module tags --
 import { CreateModuleTagDto } from '@/presentation/dtos/moduleTag.dto';
-import { IModuleTagService } from '@/application/ports/moduletag.port';
 import { CreateModuleDTO } from '@/presentation/dtos/module.dto';
 import { ModuleTag } from '@/domain/moduletags/moduletag.model';
 
@@ -30,10 +26,6 @@ import { ModuleTag } from '@/domain/moduletags/moduletag.model';
 export class ModulesController {
   constructor(
     @Inject('SERVICE.MODULE') private readonly moduleService: ModuleService,
-    @Inject('SERVICE.LOCATION')
-    private readonly locationService: ILocationService,
-    @Inject('SERVICE.MODULETAG')
-    private readonly moduleTagService: IModuleTagService,
   ) {}
 
   @Get()
@@ -54,7 +46,7 @@ export class ModulesController {
   @HttpCode(HttpStatus.OK)
   async getAllLocation(): Promise<{ locations: Location[] }> {
     return {
-      locations: await this.locationService.getAllLocation(),
+      locations: await this.moduleService.getAllLocation(),
     };
   }
 
@@ -62,7 +54,7 @@ export class ModulesController {
   @HttpCode(HttpStatus.OK)
   async getAllModuleTags(): Promise<{ moduleTags: ModuleTag[] }> {
     return {
-      moduleTags: await this.moduleTagService.getAllModuleTags(),
+      moduleTags: await this.moduleService.getAllModuleTags(),
     };
   }
   @Post('moduletags')
@@ -78,7 +70,7 @@ export class ModulesController {
       throw new UnauthorizedException('Only admins can create module tags');
     }
 
-    const moduleTag = await this.moduleTagService.createModuleTag(dto.tag);
+    const moduleTag = await this.moduleService.createModuleTag(dto.tag);
     return { moduleTag };
   }
 

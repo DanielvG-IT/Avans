@@ -44,74 +44,23 @@ class SessionActivityMiddleware {
     }),
   ],
   providers: [
+    // Common
     LoggerService,
     PrismaService,
-    // Auth Service - handles authentication
-    {
-      provide: 'SERVICE.AUTH',
-      useClass: AuthService,
-    },
-    // User Service - handles profile, favorites, and recommendations
-    {
-      provide: 'SERVICE.USER',
-      useClass: UserService,
-    },
-    {
-      provide: 'SERVICE.USER_FAVORITES',
-      useClass: UserService,
-    },
-    {
-      provide: 'SERVICE.USER_RECOMMENDED',
-      useClass: UserService,
-    },
-    // Module Service - handles modules, locations, and tags
-    {
-      provide: 'SERVICE.MODULE',
-      useClass: ModuleService,
-    },
-    {
-      provide: 'SERVICE.LOCATION',
-      useClass: ModuleService,
-    },
-    {
-      provide: 'SERVICE.MODULETAG',
-      useClass: ModuleService,
-    },
-    // AI Service
-    {
-      provide: 'SERVICE.AI',
-      useClass: AiService,
-    },
+    // Services
+    { provide: 'SERVICE.AUTH', useClass: AuthService },
+    { provide: 'SERVICE.USER', useClass: UserService },
+    { provide: 'SERVICE.MODULE', useClass: ModuleService },
+    { provide: 'SERVICE.AI', useClass: AiService },
     // Repositories
-    {
-      provide: 'REPO.USER',
-      useClass: UserRepository,
-    },
-    {
-      provide: 'REPO.USER_FAVORITES',
-      useClass: UserFavoritesRepository,
-    },
-    {
-      provide: 'REPO.USER_RECOMMENDED',
-      useClass: UserRecommendedRepository,
-    },
-    {
-      provide: 'REPO.MODULE',
-      useClass: ModuleRepository,
-    },
-    {
-      provide: 'REPO.LOCATION',
-      useClass: LocationRepository,
-    },
-    {
-      provide: 'REPO.MODULETAG',
-      useClass: ModuleTagRepository,
-    },
+    { provide: 'REPO.USER', useClass: UserRepository },
+    { provide: 'REPO.USER_FAVORITES', useClass: UserFavoritesRepository },
+    { provide: 'REPO.USER_RECOMMENDED', useClass: UserRecommendedRepository },
+    { provide: 'REPO.MODULE', useClass: ModuleRepository },
+    { provide: 'REPO.LOCATION', useClass: LocationRepository },
+    { provide: 'REPO.MODULETAG', useClass: ModuleTagRepository },
     // HTTP Clients
-    {
-      provide: 'HTTP.AI',
-      useClass: AiHttpClient,
-    },
+    { provide: 'HTTP.AI', useClass: AiHttpClient },
   ],
   controllers: [
     AppController,
