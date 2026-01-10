@@ -1,6 +1,6 @@
-import { IUserFavoritesRepository } from '@/domain/userfavorites/userfavorites-repository.interface';
-import { IUserRecommendedRepository } from '@/domain/userrecommended/userrecommended-repository.interface';
-import { UserFavorite } from '@/domain/userfavorites/userfavorites.model';
+import { IUserModulesRepository } from '@/domain/usermodule/usermodules-repository.interface';
+import { UserFavorite } from '@/domain/usermodule/userfavorite.model';
+import { UserRecommended } from '@/domain/usermodule/userrecommended.model';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma';
 
@@ -9,16 +9,14 @@ import { PrismaService } from '../prisma';
  * Handles both favorites and recommended modules since they share the same table
  */
 @Injectable()
-export class UserModulesRepository
-  implements IUserFavoritesRepository, IUserRecommendedRepository
-{
+export class UserModulesRepository implements IUserModulesRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   // ==========================================
   // Favorites Methods
   // ==========================================
 
-  async findByUserId(userId: string): Promise<UserFavorite[]> {
+  async findFavoritesByUserId(userId: string): Promise<UserFavorite[]> {
     const favorites = await this.prisma.userModules.findMany({
       where: { userId, favorited: true },
       orderBy: { updatedAt: 'desc' },
@@ -32,7 +30,7 @@ export class UserModulesRepository
     }));
   }
 
-  async exists(userId: string, moduleId: number): Promise<boolean> {
+  async isFavorited(userId: string, moduleId: number): Promise<boolean> {
     const record = await this.prisma.userModules.findUnique({
       where: {
         userId_moduleId: {
@@ -46,7 +44,7 @@ export class UserModulesRepository
     return record?.favorited ?? false;
   }
 
-  async add(userId: string, moduleId: number): Promise<void> {
+  async addFavorite(userId: string, moduleId: number): Promise<void> {
     await this.prisma.userModules.upsert({
       where: {
         userId_moduleId: {
@@ -66,7 +64,7 @@ export class UserModulesRepository
     });
   }
 
-  async remove(userId: string, moduleId: number): Promise<void> {
+  async removeFavorite(userId: string, moduleId: number): Promise<void> {
     const existing = await this.prisma.userModules.findUnique({
       where: {
         userId_moduleId: {
@@ -106,14 +104,18 @@ export class UserModulesRepository
   // Recommended Methods
   // ==========================================
 
-  async getRecommendedModuleIds(userId: string): Promise<number[]> {
+  async findRecommendedByUserId(userId: string): Promise<UserRecommended[]> {
     const rows = await this.prisma.userModules.findMany({
       where: { userId, recommended: true },
-      select: { moduleId: true },
       orderBy: { updatedAt: 'desc' },
     });
 
-    return rows.map((r) => r.moduleId);
+    return rows.map((r) => ({
+      id: r.id,
+      userId: r.userId,
+      moduleId: r.moduleId,
+      createdAt: r.createdAt,
+    }));
   }
 
   async setRecommendedModules(
@@ -125,13 +127,8 @@ export class UserModulesRepository
     );
 
     await this.prisma.$transaction(async () => {
-      // 1) Ensure rows exist + set recommended=true for selected ids
+      // 1) Create missing rows first, then update all to set recommended=true
       if (uniqueIds.length > 0) {
-        await this.prisma.userModules.updateMany({
-          where: { userId, moduleId: { in: uniqueIds } },
-          data: { recommended: true },
-        });
-
         await this.prisma.userModules.createMany({
           data: uniqueIds.map((moduleId) => ({
             userId,
@@ -139,6 +136,11 @@ export class UserModulesRepository
             recommended: true,
           })),
           skipDuplicates: true,
+        });
+
+        await this.prisma.userModules.updateMany({
+          where: { userId, moduleId: { in: uniqueIds } },
+          data: { recommended: true },
         });
       }
 
