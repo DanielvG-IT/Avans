@@ -1,30 +1,49 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Post,
-  Session,
-  UnauthorizedException,
-  Body,
-  ParseIntPipe,
-} from '@nestjs/common';
+// General Imports
 import { SessionData } from '@/types/session.types';
-import { ModuleService } from '@/application/services/module.service';
-import { Inject } from '@nestjs/common';
 import {
-  Module,
-  moduleDetail,
-  createModule,
-} from '@/domain/modules/module.model';
-import { CreateModuleDTO } from '@/presentation/dtos/choiceModule.dto';
+  UnauthorizedException,
+  ParseIntPipe,
+  Controller,
+  Session,
+  Inject,
+  Param,
+  Body,
+  Post,
+  Get,
+} from '@nestjs/common';
 
+// Modules
+import { CreateModuleDTO } from '@/presentation/dtos/choiceModule.dto';
+import { ModuleService } from '@/application/services/module.service';
+import { moduleDetail, Module } from '@/domain/modules/module.model';
+
+// Locations
+import { ILocationService } from '@/application/ports/location.port';
+import { Location } from '@/domain/locations/location.model';
+
+// ModuleTags
+import { IModuleTagService } from '@/application/ports/moduletag.port';
+import { ModuleTag } from '@/domain/moduletags/moduletag.model';
+
+// ==========================
+// Controller
+// ==========================
 @Controller('modules')
 export class ModulesController {
   private readonly moduleService: ModuleService;
+  private readonly locationService: ILocationService;
+  private readonly moduleTagService: IModuleTagService;
 
-  constructor(@Inject('SERVICE.MODULE') _moduleService: ModuleService) {
+  constructor(
+    @Inject('SERVICE.MODULE') _moduleService: ModuleService,
+    @Inject('SERVICE.LOCATION') _locationService: ILocationService,
+    @Inject('SERVICE.MODULETAG') _moduleTagService: IModuleTagService,
+  ) {
+    this.moduleTagService = _moduleTagService;
+    this.locationService = _locationService;
     this.moduleService = _moduleService;
   }
+
   @Get()
   async getModules(
     @Session() session: SessionData,
@@ -37,6 +56,35 @@ export class ModulesController {
       modules: await this.moduleService.getAllModules(),
     };
   }
+
+  @Get('/locations')
+  async getAllLocation(): Promise<Location[]> {
+    return await this.locationService.getAllLocation();
+  }
+
+  @Get('/moduletags')
+  async getAllModuleTags(): Promise<ModuleTag[]> {
+    return await this.moduleTagService.getAllModuleTags();
+  }
+  @Post('/moduletags')
+  async createModuleTag(
+    @Body('tag') name: string,
+    @Session() session: SessionData,
+  ): Promise<ModuleTag> {
+    if (!session || !session.user) {
+      throw new UnauthorizedException('No active session');
+    }
+    if (session.user.role == 'STUDENT') {
+      throw new UnauthorizedException('Unauthorized');
+    }
+
+    if (!name || name.trim() === '') {
+      throw new UnauthorizedException('Tag name is required');
+    }
+    console.log(name);
+    return await this.moduleTagService.createModuleTag(name);
+  }
+
   @Get(':id')
   async getModuleById(
     @Session() session: SessionData,
