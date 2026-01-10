@@ -67,7 +67,7 @@ export class ModuleRepository implements IModuleRepository {
         id: cmt.ModuleTag.id,
         name: cmt.ModuleTag.name,
       })),
-      learningOutcomes: mod.learningOutcomes!,
+      learningOutcomes: mod.learningOutcomes ?? '',
       availableSpots: mod.availableSpots,
     } as moduleDetail;
   }
