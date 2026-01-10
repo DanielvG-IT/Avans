@@ -3,9 +3,9 @@ import type {
   createModule,
   Module,
   moduleDetail,
-} from '@/domain/modules/module.model';
+} from '@/domain/module/module.model';
 import { PrismaService } from '../prisma';
-import { IModuleRepository } from '@/domain/modules/module-repository.interface';
+import { IModuleRepository } from '@/domain/module/module-repository.interface';
 
 @Injectable()
 export class ModuleRepository implements IModuleRepository {
@@ -48,11 +48,11 @@ export class ModuleRepository implements IModuleRepository {
     return {
       id: mod.id,
       name: mod.name,
-      description: mod.description!,
-      content: mod.content!,
+      description: mod.description ?? '',
+      content: mod.content ?? '',
       level: mod.level,
       studyCredits: mod.studyCredits,
-      startDate: mod.startDate, // string -> Date
+      startDate: mod.startDate,
       location: mod.location.map((cml) => ({
         id: cml.Location.id,
         name: cml.Location.name,
@@ -80,8 +80,6 @@ export class ModuleRepository implements IModuleRepository {
           learningOutcomes: module.learningOutcomes,
         },
       });
-      console.log('Created base module:', baseModule);
-
       if (module.location.length > 0) {
         await tx.moduleLocation.createMany({
           data: module.location.map((loc) => ({
@@ -116,8 +114,8 @@ export class ModuleRepository implements IModuleRepository {
     return {
       id: created.id,
       name: created.name,
-      description: created.description!,
-      content: created.content!,
+      description: created.description ?? '',
+      content: created.content ?? '',
       level: created.level,
       studyCredits: created.studyCredits,
       startDate: created.startDate,
@@ -129,7 +127,7 @@ export class ModuleRepository implements IModuleRepository {
         id: cmt.ModuleTag.id,
         name: cmt.ModuleTag.name,
       })),
-      learningOutcomes: created.learningOutcomes!,
+      learningOutcomes: created.learningOutcomes ?? '',
       availableSpots: created.availableSpots,
     } as moduleDetail;
   }

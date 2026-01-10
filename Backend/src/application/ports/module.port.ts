@@ -2,9 +2,9 @@ import {
   Module,
   moduleDetail,
   createModule,
-} from '@/domain/modules/module.model';
-import { Location } from '@/domain/locations/location.model';
-import { ModuleTag } from '@/domain/moduletags/moduletag.model';
+} from '@/domain/module/module.model';
+import { Location } from '@/domain/location/location.model';
+import { ModuleTag } from '@/domain/moduletag/moduletag.model';
 
 export interface IModuleService {
   // Module methods
@@ -13,7 +13,7 @@ export interface IModuleService {
   createModule(module: createModule): Promise<moduleDetail>;
 
   // Location methods
-  getAllLocation(): Promise<Location[]>;
+  getAllLocations(): Promise<Location[]>;
 
   // Module tag methods
   getAllModuleTags(): Promise<ModuleTag[]>;

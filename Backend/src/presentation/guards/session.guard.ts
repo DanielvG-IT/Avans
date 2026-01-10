@@ -52,9 +52,6 @@ export class SessionGuard implements CanActivate {
       }
     }
 
-    // Update last activity since the request was successful
-    session.lastActivity = Date.now();
-
     return true;
   }
 }

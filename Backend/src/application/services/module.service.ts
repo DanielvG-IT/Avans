@@ -1,21 +1,21 @@
 import { Injectable, Inject } from '@nestjs/common';
 
 // -- imports for modules --
-import { type IModuleRepository } from '@/domain/modules/module-repository.interface';
+import { type IModuleRepository } from '@/domain/module/module-repository.interface';
 import { IModuleService } from '@/application/ports/module.port';
 import {
   Module,
   moduleDetail,
   createModule,
-} from '@/domain/modules/module.model';
+} from '@/domain/module/module.model';
 
 // -- imports for locations --
-import { ILocationRepository } from '@/domain/locations/location-repository.interface';
-import { Location } from '@/domain/locations/location.model';
+import { ILocationRepository } from '@/domain/location/location-repository.interface';
+import { Location } from '@/domain/location/location.model';
 
 // -- imports for module tags --
-import { IModuleTagRepository } from '@/domain/moduletags/moduletag-repository.interface';
-import { ModuleTag } from '@/domain/moduletags/moduletag.model';
+import { IModuleTagRepository } from '@/domain/moduletag/moduletag-repository.interface';
+import { ModuleTag } from '@/domain/moduletag/moduletag.model';
 
 @Injectable()
 export class ModuleService implements IModuleService {
@@ -45,8 +45,8 @@ export class ModuleService implements IModuleService {
   // ==========================================
   // Location Methods
   // ==========================================
-  async getAllLocation(): Promise<Location[]> {
-    return await this.locationRepository.getAllLocation();
+  async getAllLocations(): Promise<Location[]> {
+    return await this.locationRepository.getAllLocations();
   }
 
   // ==========================================

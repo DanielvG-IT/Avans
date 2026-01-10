@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { IModuleTagRepository } from '@/domain/moduletags/moduletag-repository.interface';
-import { ModuleTag } from '@/domain/moduletags/moduletag.model';
+import { IModuleTagRepository } from '@/domain/moduletag/moduletag-repository.interface';
+import { ModuleTag } from '@/domain/moduletag/moduletag.model';
 import { PrismaService } from '@/infrastructure/database/prisma';
 
 @Injectable()

@@ -1,6 +1,6 @@
 import { Result } from '@/result';
 import { User } from '@/domain/user/user.model';
-import { UserFavorite } from '@/domain/userfavorites/userfavorites.model';
+import { UserFavorite } from '@/domain/usermodule/userfavorite.model';
 
 export interface IUserService {
   // User profile methods

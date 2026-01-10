@@ -7,20 +7,16 @@ import { User } from '@/domain/user/user.model';
 import { type IUserRepository } from '@/domain/user/user-repository.interface';
 import { IUserService } from '@/application/ports/user.port';
 
-// -- imports for user favorites --
-import { IUserFavoritesRepository } from '@/domain/userfavorites/userfavorites-repository.interface';
-import { UserFavorite } from '@/domain/userfavorites/userfavorites.model';
-
-// -- imports for user recommended --
-import { IUserRecommendedRepository } from '@/domain/userrecommended/userrecommended-repository.interface';
+// -- imports for user modules (favorites & recommended) --
+import { IUserModulesRepository } from '@/domain/usermodule/usermodules-repository.interface';
+import { UserFavorite } from '@/domain/usermodule/userfavorite.model';
 
 @Injectable()
 export class UserService implements IUserService {
   constructor(
     @Inject('REPO.USER') private readonly userRepository: IUserRepository,
     @Inject('REPO.USER_MODULES')
-    private readonly userModulesRepository: IUserFavoritesRepository &
-      IUserRecommendedRepository,
+    private readonly userModulesRepository: IUserModulesRepository,
     private readonly logger?: LoggerService,
   ) {
     this.logger?.setContext('UserService');
@@ -39,22 +35,25 @@ export class UserService implements IUserService {
   // ==========================================
 
   findFavorites(userId: string): Promise<UserFavorite[]> {
-    return this.userModulesRepository.findByUserId(userId);
+    return this.userModulesRepository.findFavoritesByUserId(userId);
   }
 
   isModuleFavorited(userId: string, moduleId: number): Promise<boolean> {
-    return this.userModulesRepository.exists(userId, moduleId);
+    return this.userModulesRepository.isFavorited(userId, moduleId);
   }
 
   async favoriteModule(userId: string, moduleId: number): Promise<void> {
-    const exists = await this.userModulesRepository.exists(userId, moduleId);
+    const exists = await this.userModulesRepository.isFavorited(
+      userId,
+      moduleId,
+    );
     if (!exists) {
-      await this.userModulesRepository.add(userId, moduleId);
+      await this.userModulesRepository.addFavorite(userId, moduleId);
     }
   }
 
   async unfavoriteModule(userId: string, moduleId: number): Promise<void> {
-    await this.userModulesRepository.remove(userId, moduleId);
+    await this.userModulesRepository.removeFavorite(userId, moduleId);
   }
 
   // ==========================================
@@ -65,7 +64,9 @@ export class UserService implements IUserService {
     return this.userModulesRepository.setRecommendedModules(userId, moduleIds);
   }
 
-  getRecommendedModuleIds(userId: string): Promise<number[]> {
-    return this.userModulesRepository.getRecommendedModuleIds(userId);
+  async getRecommendedModuleIds(userId: string): Promise<number[]> {
+    const recommended =
+      await this.userModulesRepository.findRecommendedByUserId(userId);
+    return recommended.map((r) => r.moduleId);
   }
 }

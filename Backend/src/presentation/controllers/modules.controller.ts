@@ -16,11 +16,11 @@ import {
 
 // -- imports for modules --
 import { IModuleService } from '@/application/ports/module.port';
-import { moduleDetail, Module } from '@/domain/modules/module.model';
-import { Location } from '@/domain/locations/location.model';
+import { moduleDetail, Module } from '@/domain/module/module.model';
+import { Location } from '@/domain/location/location.model';
 import { CreateModuleTagDto } from '@/presentation/dtos/moduleTag.dto';
 import { CreateModuleDTO } from '@/presentation/dtos/module.dto';
-import { ModuleTag } from '@/domain/moduletags/moduletag.model';
+import { ModuleTag } from '@/domain/moduletag/moduletag.model';
 
 @Controller('modules')
 @UseGuards(SessionGuard)
@@ -39,9 +39,9 @@ export class ModulesController {
 
   @Get('locations')
   @HttpCode(HttpStatus.OK)
-  async getAllLocation(): Promise<{ locations: Location[] }> {
+  async getAllLocations(): Promise<{ locations: Location[] }> {
     return {
-      locations: await this.moduleService.getAllLocation(),
+      locations: await this.moduleService.getAllLocations(),
     };
   }
 
