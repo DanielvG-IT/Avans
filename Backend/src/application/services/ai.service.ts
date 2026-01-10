@@ -1,12 +1,12 @@
 import { IPredictionClient } from '@/domain/predictions/prediction-client.interface';
-import { IAiService } from '@/application/ports/ai.port';
+import { PredictionPayload } from '@/domain/predictions/prediction.model';
 import { IModuleService } from '@/application/ports/module.port';
+import { PredictionDto } from '@/presentation/dtos/ai.dto';
+import { IAiService } from '@/application/ports/ai.port';
 import { LoggerService } from '@/common/logger.service';
+import { Module } from '@/domain/modules/module.model';
 import { Inject, Injectable } from '@nestjs/common';
 import { fail, Result, succeed } from '@/result';
-import { PredictionPayload } from '@/domain/predictions/prediction.model';
-import { PredictionDto } from '@/presentation/dtos/ai.dto';
-import { Module } from '@/domain/modules/module.model';
 
 /**
  * Enhanced prediction response with full module details

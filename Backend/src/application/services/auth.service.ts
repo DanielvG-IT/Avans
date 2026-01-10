@@ -1,14 +1,16 @@
+import { fail, Result, succeed } from '@/result';
+import { Inject, Injectable } from '@nestjs/common';
+import { verify, type Options } from '@node-rs/argon2';
+import { LoggerService } from '@/common/logger.service';
+
+// -- imports for auth --
 import { type IUserRepository } from '@/domain/user/user-repository.interface';
 import { IAuthService } from '@/application/ports/auth.port';
-import { verify, type Options } from '@node-rs/argon2';
-import { Inject, Injectable } from '@nestjs/common';
-import { LoggerService } from '@/common/logger.service';
-import { fail, succeed } from '@/result';
+import { User } from '@/domain/user/user.model';
 
 @Injectable()
 export class AuthService implements IAuthService {
-  private readonly userRepository: IUserRepository;
-  private readonly opts: Options = {
+  private readonly argonOptions: Options = {
     memoryCost: 19456,
     parallelism: 1,
     outputLen: 32,
@@ -16,39 +18,40 @@ export class AuthService implements IAuthService {
   };
 
   constructor(
-    @Inject('REPO.USER') _userRepository: IUserRepository,
+    @Inject('REPO.USER') private readonly userRepository: IUserRepository,
     private readonly logger?: LoggerService,
   ) {
     this.logger?.setContext('AuthService');
-    this.userRepository = _userRepository;
   }
 
-  async login(email: string, password: string) {
+  async login(
+    email: string,
+    password: string,
+  ): Promise<Result<{ user: User }>> {
     const result = await this.userRepository.findByEmail(email);
     if (result._tag === 'Failure') {
-      // Don't log repository-specific "User not found" to avoid exposing user existence.
       const repoMsg = result.error?.message ?? 'Unknown error';
       const logMsg =
         repoMsg === 'User not found' ? 'Credentials not correct' : repoMsg;
-      this.logger?.warn(
-        `Failed login attempt for ${email}: ${logMsg}`,
-        'AuthService',
-      );
+      this.logger?.warn(`Failed login attempt for ${email}: ${logMsg}`);
       return fail(result.error);
     }
 
     const user = result.data;
-
-    const isMatch = await verify(user.hashedPassword, password);
+    const isMatch = await verify(
+      user.hashedPassword,
+      password,
+      this.argonOptions,
+    );
     if (!isMatch) {
-      this.logger?.warn(`Invalid credentials for ${email}`, 'AuthService');
+      this.logger?.warn(`Invalid credentials for ${email}`);
       return fail(new Error('Invalid credentials'));
     }
 
     return succeed({ user });
   }
 
-  logout() {
+  logout(): Result<void> {
     return succeed(void 0);
   }
 }

@@ -1,26 +1,66 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { IModuleService } from '@/application/ports/module.port';
+
+// -- imports for modules --
 import { type IModuleRepository } from '@/domain/modules/module-repository.interface';
+import { IModuleService } from '@/application/ports/module.port';
 import {
   Module,
   moduleDetail,
   createModule,
 } from '@/domain/modules/module.model';
 
+// -- imports for locations --
+import { ILocationRepository } from '@/domain/locations/location-repository.interface';
+import { ILocationService } from '@/application/ports/location.port';
+import { Location } from '@/domain/locations/location.model';
+
+// -- imports for module tags --
+import { IModuleTagRepository } from '@/domain/moduletags/moduletag-repository.interface';
+import { IModuleTagService } from '@/application/ports/moduletag.port';
+import { ModuleTag } from '@/domain/moduletags/moduletag.model';
+
 @Injectable()
-export class ModuleService implements IModuleService {
-  private readonly moduleRepository: IModuleRepository;
-  constructor(@Inject('REPO.MODULE') _moduleRepository: IModuleRepository) {
-    this.moduleRepository = _moduleRepository;
-  }
+export class ModuleService
+  implements IModuleService, ILocationService, IModuleTagService
+{
+  constructor(
+    @Inject('REPO.MODULE') private readonly moduleRepository: IModuleRepository,
+    @Inject('REPO.LOCATION')
+    private readonly locationRepository: ILocationRepository,
+    @Inject('REPO.MODULETAG')
+    private readonly moduleTagRepository: IModuleTagRepository,
+  ) {}
+
+  // ==========================================
+  // Module Methods
+  // ==========================================
   async getAllModules(): Promise<Module[]> {
     return await this.moduleRepository.getAllModules();
   }
+
   async findById(id: number): Promise<moduleDetail> {
     return await this.moduleRepository.findById(id);
   }
+
   async createModule(module: createModule): Promise<moduleDetail> {
-    console.log(`Creating module: ${JSON.stringify(module)}`);
     return await this.moduleRepository.createModule(module);
+  }
+
+  // ==========================================
+  // Location Methods
+  // ==========================================
+  async getAllLocation(): Promise<Location[]> {
+    return await this.locationRepository.getAllLocation();
+  }
+
+  // ==========================================
+  // Module Tag Methods
+  // ==========================================
+  async getAllModuleTags(): Promise<ModuleTag[]> {
+    return await this.moduleTagRepository.getAllModuleTags();
+  }
+
+  async createModuleTag(name: string): Promise<ModuleTag> {
+    return await this.moduleTagRepository.createModuleTag(name);
   }
 }
