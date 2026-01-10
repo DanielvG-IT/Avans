@@ -1,4 +1,4 @@
-import { IPredictionClient } from '@/domain/predictions/prediction-client.interface';
+import { IPredictionClient } from '@/domain/prediction/prediction-client.interface';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { firstValueFrom, timeout, Observable } from 'rxjs';
 import { LoggerService } from '@/logger.service';
@@ -9,10 +9,10 @@ import {
   PredictionMatch,
   PredictionPayload,
   PredictionResponse,
-} from '@/domain/predictions/prediction.model';
+} from '@/domain/prediction/prediction.model';
 
 @Injectable()
-export class AiHttpClient implements IPredictionClient {
+export class PredictionClient implements IPredictionClient {
   private readonly aiServiceUrl: string;
 
   constructor(
@@ -20,7 +20,7 @@ export class AiHttpClient implements IPredictionClient {
     private readonly configService: ConfigService,
     private readonly logger: LoggerService,
   ) {
-    this.logger.setContext('AiHttpClient');
+    this.logger.setContext('PredictionClient');
     // Use the config service with a fallback string to satisfy ESLint
     this.aiServiceUrl = this.configService.get<string>(
       'AI_SERVICE_URL',
