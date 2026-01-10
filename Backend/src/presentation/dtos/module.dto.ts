@@ -11,6 +11,7 @@ import {
   Min,
   IsDateString,
   ArrayMinSize,
+  IsIn,
 } from 'class-validator';
 
 export class CreateModuleDTO {
@@ -40,7 +41,7 @@ export class CreateModuleDTO {
 
   @ApiProperty({ description: 'Study credits (15 or 30)', enum: [15, 30] })
   @IsNumber()
-  @Min(0)
+  @IsIn([15, 30], { message: 'Study credits must be either 15 or 30' })
   studyCredits!: number;
 
   @ApiProperty({ description: 'Module locations', type: [LocationDTO] })
