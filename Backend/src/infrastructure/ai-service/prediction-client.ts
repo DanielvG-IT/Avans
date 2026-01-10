@@ -1,7 +1,7 @@
 import { IPredictionClient } from '@/domain/predictions/prediction-client.interface';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { firstValueFrom, timeout, Observable } from 'rxjs';
-import { LoggerService } from '@/common/logger.service';
+import { LoggerService } from '@/logger.service';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { isAxiosError } from 'axios';

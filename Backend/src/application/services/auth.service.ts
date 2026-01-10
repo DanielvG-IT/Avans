@@ -1,7 +1,7 @@
 import { fail, Result, succeed } from '@/result';
 import { Inject, Injectable } from '@nestjs/common';
 import { verify, type Options } from '@node-rs/argon2';
-import { LoggerService } from '@/common/logger.service';
+import { LoggerService } from '@/logger.service';
 
 // -- imports for auth --
 import { type IUserRepository } from '@/domain/user/user-repository.interface';

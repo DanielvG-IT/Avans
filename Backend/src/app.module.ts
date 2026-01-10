@@ -24,9 +24,9 @@ import { LocationRepository } from './infrastructure/database/repositories/locat
 import { ModuleTagRepository } from './infrastructure/database/repositories/moduletag.repository';
 
 // -- imports for infrastructure --
+import { LoggerService } from './logger.service';
 import { PrismaService } from './infrastructure/database/prisma';
 import { AiHttpClient } from './infrastructure/ai-service/prediction-client';
-import { LoggerService } from './common/logger.service';
 import { RequestLoggingMiddleware } from './infrastructure/middleware/request-logging.middleware';
 
 class SessionActivityMiddleware {

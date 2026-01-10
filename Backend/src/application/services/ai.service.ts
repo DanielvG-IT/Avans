@@ -3,7 +3,7 @@ import { PredictionPayload } from '@/domain/predictions/prediction.model';
 import { IModuleService } from '@/application/ports/module.port';
 import { PredictionDto } from '@/presentation/dtos/ai.dto';
 import { IAiService } from '@/application/ports/ai.port';
-import { LoggerService } from '@/common/logger.service';
+import { LoggerService } from '@/logger.service';
 import { Module } from '@/domain/modules/module.model';
 import { Inject, Injectable } from '@nestjs/common';
 import { fail, Result, succeed } from '@/result';

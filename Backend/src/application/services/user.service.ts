@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Result } from '@/result';
-import { LoggerService } from '@/common/logger.service';
+import { LoggerService } from '@/logger.service';
 
 // -- imports for user domain --
 import { User } from '@/domain/user/user.model';

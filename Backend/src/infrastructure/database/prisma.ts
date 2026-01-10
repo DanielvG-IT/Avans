@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient } from '@/infrastructure/database/generated/prisma/client';
-import { LoggerService } from '@/common/logger.service';
+import { LoggerService } from '@/logger.service';
 
 @Injectable()
 export class PrismaService
