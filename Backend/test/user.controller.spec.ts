@@ -1,9 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
 import { UserController } from '../src/presentation/controllers/user.controller';
 import { IUserService } from '../src/application/ports/user.port';
 
 const mockUserService: Partial<IUserService> = {
   findById: jest.fn(),
+};
+
+const mockConfigService = {
+  get: jest.fn((key: string) => {
+    if (key === 'INACTIVITY_TIMEOUT') return '1800000';
+    return null;
+  }),
 };
 
 describe('UserController', () => {
@@ -16,6 +24,10 @@ describe('UserController', () => {
         {
           provide: 'SERVICE.USER',
           useValue: mockUserService,
+        },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
         },
       ],
     }).compile();

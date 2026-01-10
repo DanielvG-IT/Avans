@@ -11,6 +11,7 @@ import {
   Min,
   IsDateString,
   ArrayMinSize,
+  IsIn,
 } from 'class-validator';
 
 export class CreateModuleDTO {
@@ -35,12 +36,13 @@ export class CreateModuleDTO {
 
   @ApiProperty({ description: 'NLQF level', enum: ['NLQF5', 'NLQF6'] })
   @IsString()
+  @IsIn(['NLQF5', 'NLQF6'], { message: 'Level must be either NLQF5 or NLQF6' })
   @IsNotEmpty({ message: 'Level is required' })
   level!: string;
 
   @ApiProperty({ description: 'Study credits (15 or 30)', enum: [15, 30] })
   @IsNumber()
-  @Min(0)
+  @IsIn([15, 30], { message: 'Study credits must be either 15 or 30' })
   studyCredits!: number;
 
   @ApiProperty({ description: 'Module locations', type: [LocationDTO] })
@@ -83,7 +85,7 @@ export class ModuleDTO {
   name: string;
 
   @ApiProperty()
-  shortDescription: string;
+  shortdescription: string;
 
   @ApiProperty()
   description: string;

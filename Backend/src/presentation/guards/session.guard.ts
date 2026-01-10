@@ -1,5 +1,6 @@
 import { SessionData } from '@/types/session.types';
 import { Reflector } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import {
   UnauthorizedException,
@@ -11,12 +12,18 @@ import {
 
 @Injectable()
 export class SessionGuard implements CanActivate {
-  private readonly INACTIVITY_TIMEOUT = parseInt(
-    process.env.INACTIVITY_TIMEOUT || '1800000',
-    10,
-  );
+  private readonly INACTIVITY_TIMEOUT: number;
 
-  constructor(private reflector: Reflector) {} // Inject to read metadata
+  constructor(
+    private reflector: Reflector,
+    private configService: ConfigService,
+  ) {
+    // Parse INACTIVITY_TIMEOUT once during construction
+    this.INACTIVITY_TIMEOUT = this.configService.get<number>(
+      'INACTIVITY_TIMEOUT',
+      1800000, // Default: 30 minutes
+    );
+  }
 
   canActivate(context: ExecutionContext): boolean {
     // 1. Get required roles from the decorator BOTH the method and the class level

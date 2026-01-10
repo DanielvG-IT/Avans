@@ -67,11 +67,8 @@ export class ModulesController {
   async getModuleById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<{ module: moduleDetail }> {
+    // Repository throws error if module not found, no null check needed
     const module = await this.moduleService.findById(id);
-    if (!module) {
-      throw new BadRequestException('Module not found');
-    }
-
     return { module };
   }
 
@@ -81,19 +78,9 @@ export class ModulesController {
   async createModule(
     @Body() moduleData: CreateModuleDTO,
   ): Promise<{ module: moduleDetail }> {
-    if (moduleData.studyCredits !== 15 && moduleData.studyCredits !== 30) {
-      throw new BadRequestException('Study credits must be 15 or 30');
-    }
-
-    if (moduleData.level !== 'NLQF5' && moduleData.level !== 'NLQF6') {
-      throw new BadRequestException('Level must be NLQF5 or NLQF6');
-    }
-
+    // studyCredits and level validation now handled by DTO validators
+    // Repository transaction will either return module or throw error
     const module = await this.moduleService.createModule(moduleData);
-    if (!module) {
-      throw new BadRequestException('Failed to create module');
-    }
-
     return { module };
   }
 }

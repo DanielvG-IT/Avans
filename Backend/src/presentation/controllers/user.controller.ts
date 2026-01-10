@@ -43,7 +43,7 @@ export class UserController {
     return { user: this.toUserDto(result.data) };
   }
 
-  @Get()
+  @Get('favorites')
   @RequireAuth('STUDENT')
   @HttpCode(HttpStatus.OK)
   async findFavorites(@Session() session: AuthenticatedSession) {
@@ -81,7 +81,7 @@ export class UserController {
     return { success: true };
   }
 
-  @Get(':moduleId')
+  @Get('favorites/:moduleId')
   @RequireAuth('STUDENT')
   @HttpCode(HttpStatus.OK)
   async isModuleFavorited(
@@ -96,7 +96,7 @@ export class UserController {
     };
   }
 
-  @Post(':moduleId')
+  @Post('favorites/:moduleId')
   @RequireAuth('STUDENT')
   @HttpCode(HttpStatus.CREATED)
   async favoriteModule(
@@ -107,7 +107,7 @@ export class UserController {
     return { success: true };
   }
 
-  @Delete(':moduleId')
+  @Delete('favorites/:moduleId')
   @RequireAuth('STUDENT')
   @HttpCode(HttpStatus.OK)
   async unfavoriteModule(
