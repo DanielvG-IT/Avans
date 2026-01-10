@@ -36,6 +36,7 @@ export class CreateModuleDTO {
 
   @ApiProperty({ description: 'NLQF level', enum: ['NLQF5', 'NLQF6'] })
   @IsString()
+  @IsIn(['NLQF5', 'NLQF6'], { message: 'Level must be either NLQF5 or NLQF6' })
   @IsNotEmpty({ message: 'Level is required' })
   level!: string;
 

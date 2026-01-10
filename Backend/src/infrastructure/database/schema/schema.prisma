@@ -59,7 +59,7 @@ model Location {
 }
 
 model ModuleLocation {
-  Module     Module   @relation(fields: [moduleId], references: [id])
+  Module     Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   moduleId   Int
   Location   Location @relation(fields: [locationId], references: [id])
   locationId Int
@@ -74,7 +74,7 @@ model ModuleTag {
 }
 
 model ModuleTags {
-  Module       Module    @relation(fields: [moduleId], references: [id])
+  Module       Module    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   moduleId     Int
   ModuleTag    ModuleTag @relation(fields: [moduleTagId], references: [id])
   moduleTagId  Int
@@ -85,9 +85,9 @@ model ModuleTags {
 model UserModules {
   id       Int    @id @default(autoincrement())
   userId   String
-  user     User   @relation(fields: [userId], references: [id])
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   moduleId Int
-  module   Module @relation(fields: [moduleId], references: [id])
+  module   Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
   favorited   Boolean @default(false)
   recommended Boolean @default(false)
