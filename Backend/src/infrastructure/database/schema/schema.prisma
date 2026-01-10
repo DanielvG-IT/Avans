@@ -28,7 +28,7 @@ model User {
   userModules UserModules[]
 }
 
-model ChoiceModule {
+model Module {
   id               Int                    @id @default(autoincrement())
   name             String
   shortDescription String?
@@ -43,8 +43,8 @@ model ChoiceModule {
   //estimatedDifficulty  Int
   availableSpots   Int
   startDate        String
-  location         ChoiceModuleLocation[]
-  moduleTags       ChoiceModuleTags[]
+  location         ModuleLocation[]
+  moduleTags       ModuleTags[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -53,41 +53,41 @@ model ChoiceModule {
 }
 
 model Location {
-  id            Int                    @id @default(autoincrement())
-  name          String                 @unique
-  choiceModules ChoiceModuleLocation[]
+  id      Int              @id @default(autoincrement())
+  name    String           @unique
+  modules ModuleLocation[]
 }
 
-model ChoiceModuleLocation {
-  ChoiceModule   ChoiceModule @relation(fields: [choiceModuleId], references: [id])
-  choiceModuleId Int
-  Location       Location     @relation(fields: [locationId], references: [id])
-  locationId     Int
+model ModuleLocation {
+  Module     Module   @relation(fields: [moduleId], references: [id])
+  moduleId   Int
+  Location   Location @relation(fields: [locationId], references: [id])
+  locationId Int
 
-  @@id([choiceModuleId, locationId])
+  @@id([moduleId, locationId])
+}
+
+model ModuleTag {
+  id      Int          @id @default(autoincrement())
+  name    String       @unique
+  modules ModuleTags[]
 }
 
 model ModuleTags {
-  id            Int                @id @default(autoincrement())
-  name          String             @unique
-  choiceModules ChoiceModuleTags[]
-}
+  Module       Module    @relation(fields: [moduleId], references: [id])
+  moduleId     Int
+  ModuleTag    ModuleTag @relation(fields: [moduleTagId], references: [id])
+  moduleTagId  Int
 
-model ChoiceModuleTags {
-  ChoiceModule   ChoiceModule @relation(fields: [choiceModuleId], references: [id])
-  choiceModuleId Int
-  ModuleTags     ModuleTags   @relation(fields: [moduleTagsId], references: [id])
-  moduleTagsId   Int
-
-  @@id([choiceModuleId, moduleTagsId])
+  @@id([moduleId, moduleTagId])
 }
 
 model UserModules {
-  id             Int @id @default(autoincrement())
-  userId         String
-  user           User   @relation(fields: [userId], references: [id])
-  choiceModuleId Int
-  choiceModule   ChoiceModule @relation(fields: [choiceModuleId], references: [id])
+  id       Int    @id @default(autoincrement())
+  userId   String
+  user     User   @relation(fields: [userId], references: [id])
+  moduleId Int
+  module   Module @relation(fields: [moduleId], references: [id])
 
   favorited   Boolean @default(false)
   recommended Boolean @default(false)
@@ -95,5 +95,5 @@ model UserModules {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([userId, choiceModuleId])
+  @@unique([userId, moduleId])
 }

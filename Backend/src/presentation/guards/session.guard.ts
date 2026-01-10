@@ -1,36 +1,54 @@
-import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { Request } from 'express';
 import { SessionData } from '@/types/session.types';
+import { Reflector } from '@nestjs/core';
+import { Request } from 'express';
+import {
+  UnauthorizedException,
+  ForbiddenException,
+  ExecutionContext,
+  CanActivate,
+  Injectable,
+} from '@nestjs/common';
 
-/**
- * Guard that ensures a valid, non-expired session exists.
- * Checks if the user is authenticated and the session hasn't expired due to inactivity.
- */
 @Injectable()
 export class SessionGuard implements CanActivate {
-  private readonly INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
+  private readonly INACTIVITY_TIMEOUT = parseInt(
+    process.env.INACTIVITY_TIMEOUT || '1800000',
+    10,
+  );
+
+  constructor(private reflector: Reflector) {} // Inject to read metadata
 
   canActivate(context: ExecutionContext): boolean {
+    // 1. Get required roles from the decorator BOTH the method and the class level
+    const requiredRoles = this.reflector.getAllAndOverride<string[]>('roles', [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
     const request = context.switchToHttp().getRequest<Request>();
     const session = request.session as SessionData;
 
-    // Check if user is authenticated
+    // 2. Check Authentication
     if (!session || !session.user) {
       throw new UnauthorizedException('No active session found');
     }
 
-    // Check for session inactivity
+    // 3. Check for Inactivity
     const lastActivity = session.lastActivity;
     if (lastActivity) {
       const now = Date.now();
       if (now - lastActivity > this.INACTIVITY_TIMEOUT) {
-        // Session expired due to inactivity
         throw new UnauthorizedException('Session expired due to inactivity');
+      }
+    }
+
+    // 4. Check Authorization (Roles)
+    if (requiredRoles && requiredRoles.length > 0) {
+      const userRole = session.user.role;
+      const hasRole = requiredRoles.includes(userRole);
+
+      if (!hasRole) {
+        throw new ForbiddenException('Insufficient permissions');
       }
     }
 

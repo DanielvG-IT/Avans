@@ -1,12 +1,12 @@
-import { IPredictionClient } from '@/domain/predictions/prediction-client.interface';
-import { IAiService } from '@/application/ports/ai.port';
+import { IPredictionClient } from '@/domain/prediction/prediction-client.interface';
+import { PredictionPayload } from '@/domain/prediction/prediction.model';
 import { IModuleService } from '@/application/ports/module.port';
-import { LoggerService } from '@/common/logger.service';
+import { PredictionDto } from '@/presentation/dtos/ai.dto';
+import { IAiService } from '@/application/ports/ai.port';
+import { LoggerService } from '@/logger.service';
+import { Module } from '@/domain/module/module.model';
 import { Inject, Injectable } from '@nestjs/common';
 import { fail, Result, succeed } from '@/result';
-import { PredictionPayload } from '@/domain/predictions/prediction.model';
-import { PredictionDto } from '@/presentation/dtos/ai.dto';
-import { Module } from '@/domain/modules/module.model';
 
 /**
  * Enhanced prediction response with full module details
@@ -24,13 +24,13 @@ export class AiService implements IAiService {
   private readonly moduleService: IModuleService;
 
   constructor(
-    @Inject('HTTP.AI') _predictionClient: IPredictionClient,
-    @Inject('SERVICE.MODULE') _moduleService: IModuleService,
+    @Inject('CLIENT.PREDICTION') predictionClient: IPredictionClient,
+    @Inject('SERVICE.MODULE') moduleService: IModuleService,
     private readonly logger?: LoggerService,
   ) {
     this.logger?.setContext('AiService');
-    this.predictionClient = _predictionClient;
-    this.moduleService = _moduleService;
+    this.predictionClient = predictionClient;
+    this.moduleService = moduleService;
   }
 
   /**

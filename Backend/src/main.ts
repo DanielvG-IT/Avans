@@ -2,7 +2,7 @@ import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { LoggerService } from './common/logger.service';
+import { LoggerService } from './logger.service';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import helmet from 'helmet';

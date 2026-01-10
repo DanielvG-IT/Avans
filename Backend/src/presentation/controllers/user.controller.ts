@@ -1,44 +1,121 @@
-import { SessionData } from '@/types/session.types';
-import { UserDTO } from '@/presentation/dtos/user.dto';
-import { IUserService } from '@/application/ports/user.port';
-import { User } from '@/domain/user/user.model';
-import { Result } from '@/result';
+import { RequireAuth } from '../decorators/auth.decorator';
+import { AuthenticatedSession } from '@/types/session.types';
+import { SessionGuard } from '../guards/session.guard';
 import {
-  Controller,
-  Get,
-  Inject,
   NotFoundException,
+  ParseIntPipe,
+  Controller,
+  HttpStatus,
+  UseGuards,
+  HttpCode,
   Session,
-  UnauthorizedException,
+  Delete,
+  Inject,
+  Param,
+  Body,
+  Post,
+  Get,
 } from '@nestjs/common';
 
-@Controller('user')
-export class UserController {
-  private readonly userService: IUserService;
+// -- imports for users --
+import { SubmitRecommendedDto } from '../dtos/userrecommended.dto';
+import { IUserService } from '@/application/ports/user.port';
+import { UserDTO } from '@/presentation/dtos/user.dto';
+import { User } from '@/domain/user/user.model';
 
-  constructor(@Inject('SERVICE.USER') _userService: IUserService) {
-    this.userService = _userService;
-  }
+@Controller('user')
+@UseGuards(SessionGuard)
+export class UserController {
+  constructor(
+    @Inject('SERVICE.USER') private readonly userService: IUserService,
+  ) {}
 
   @Get('profile')
+  @HttpCode(HttpStatus.OK)
   async getProfile(
-    @Session() session: SessionData,
+    @Session() session: AuthenticatedSession,
   ): Promise<{ user: UserDTO }> {
-    if (!session || !session.user) {
-      throw new UnauthorizedException('No active session');
-    }
-
-    const result: Result<User> = await this.userService.findById(
-      session.user.id,
-    );
+    const result = await this.userService.findById(session.user.id);
     if (result._tag === 'Failure' || !result.data) {
       throw new NotFoundException('User not found');
     }
 
-    const freshUser = result.data;
-    session.user = freshUser;
+    return { user: this.toUserDto(result.data) };
+  }
 
-    return { user: this.toUserDto(freshUser) };
+  @Get()
+  @RequireAuth('STUDENT')
+  @HttpCode(HttpStatus.OK)
+  async findFavorites(@Session() session: AuthenticatedSession) {
+    return {
+      favorites: await this.userService.findFavorites(session.user.id),
+    };
+  }
+
+  @Get('recommended')
+  @RequireAuth('STUDENT')
+  @HttpCode(HttpStatus.OK)
+  async getRecommended(@Session() session: AuthenticatedSession) {
+    const MAX_RECENT_RECOMMENDED = 5;
+    const moduleIds = await this.userService.getRecommendedModuleIds(
+      session.user.id,
+    );
+    const recentIds = moduleIds.slice(0, MAX_RECENT_RECOMMENDED);
+
+    return {
+      recommended: recentIds.map((moduleId) => ({ moduleId })),
+    };
+  }
+
+  @Post('recommended')
+  @RequireAuth('STUDENT')
+  @HttpCode(HttpStatus.CREATED)
+  async submitRecommended(
+    @Body() body: SubmitRecommendedDto,
+    @Session() session: AuthenticatedSession,
+  ) {
+    await this.userService.setRecommendedModules(
+      session.user.id,
+      body.moduleIds,
+    );
+    return { success: true };
+  }
+
+  @Get(':moduleId')
+  @RequireAuth('STUDENT')
+  @HttpCode(HttpStatus.OK)
+  async isModuleFavorited(
+    @Param('moduleId', ParseIntPipe) moduleId: number,
+    @Session() session: AuthenticatedSession,
+  ) {
+    return {
+      isFavorited: await this.userService.isModuleFavorited(
+        session.user.id,
+        moduleId,
+      ),
+    };
+  }
+
+  @Post(':moduleId')
+  @RequireAuth('STUDENT')
+  @HttpCode(HttpStatus.CREATED)
+  async favoriteModule(
+    @Param('moduleId', ParseIntPipe) moduleId: number,
+    @Session() session: AuthenticatedSession,
+  ) {
+    await this.userService.favoriteModule(session.user.id, moduleId);
+    return { success: true };
+  }
+
+  @Delete(':moduleId')
+  @RequireAuth('STUDENT')
+  @HttpCode(HttpStatus.OK)
+  async unfavoriteModule(
+    @Param('moduleId', ParseIntPipe) moduleId: number,
+    @Session() session: AuthenticatedSession,
+  ) {
+    await this.userService.unfavoriteModule(session.user.id, moduleId);
+    return { success: true };
   }
 
   private toUserDto(user: User): UserDTO {

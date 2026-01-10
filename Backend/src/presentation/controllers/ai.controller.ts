@@ -1,9 +1,7 @@
-import { PredictionDto, PredictionResponseDto } from '../dtos/ai.dto';
-import { type IAiService } from '@/application/ports/ai.port';
+import { RequireAuth } from '../decorators/auth.decorator';
+import { AuthenticatedSession } from '@/types/session.types';
 import { SessionGuard } from '../guards/session.guard';
-import { SessionData } from '@/types/session.types';
 import {
-  UnauthorizedException,
   BadRequestException,
   Controller,
   HttpStatus,
@@ -15,25 +13,22 @@ import {
   Post,
 } from '@nestjs/common';
 
+// -- imports for ai --
+import { PredictionDto, PredictionResponseDto } from '../dtos/ai.dto';
+import { type IAiService } from '@/application/ports/ai.port';
+
 @Controller('ai')
 @UseGuards(SessionGuard)
 export class AiController {
-  private readonly aiService: IAiService;
-
-  constructor(@Inject('SERVICE.AI') _aiService: IAiService) {
-    this.aiService = _aiService;
-  }
+  constructor(@Inject('SERVICE.AI') private readonly aiService: IAiService) {}
 
   @Post('predict')
+  @RequireAuth('STUDENT')
   @HttpCode(HttpStatus.OK)
   async createPrediction(
-    @Session() session: SessionData,
+    @Session() session: AuthenticatedSession,
     @Body() prediction: PredictionDto,
   ): Promise<PredictionResponseDto> {
-    if (!session || !session.user) {
-      throw new UnauthorizedException('No active session');
-    }
-
     const result = await this.aiService.getPrediction(prediction);
     if (result._tag === 'Failure') {
       const errorMessage = result.error?.message || 'Failed to get predictions';

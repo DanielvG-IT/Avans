@@ -1,12 +1,10 @@
-import { type IAuthService } from '@/application/ports/auth.port';
-import { LoginDto } from '@/presentation/dtos/auth.dto';
-import { UserDTO } from '@/presentation/dtos/user.dto';
-import { SessionData } from '@/types/session.types';
+import { SessionData, AuthenticatedSession } from '@/types/session.types';
 import {
   BadRequestException,
   ConflictException,
   Controller,
   HttpStatus,
+  UseGuards,
   HttpCode,
   Session,
   Inject,
@@ -14,13 +12,17 @@ import {
   Post,
 } from '@nestjs/common';
 
+// -- imports for auth --
+import { IAuthService } from '@/application/ports/auth.port';
+import { LoginDto } from '@/presentation/dtos/auth.dto';
+import { UserDTO } from '@/presentation/dtos/user.dto';
+import { SessionGuard } from '../guards/session.guard';
+
 @Controller('auth')
 export class AuthController {
-  private readonly authService: IAuthService;
-
-  constructor(@Inject('SERVICE.AUTH') _authService: IAuthService) {
-    this.authService = _authService;
-  }
+  constructor(
+    @Inject('SERVICE.AUTH') private readonly authService: IAuthService,
+  ) {}
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -30,10 +32,6 @@ export class AuthController {
   ): Promise<{ user: UserDTO }> {
     if (session && session.user) {
       throw new ConflictException('Already authenticated');
-    }
-
-    if (!dto.email || !dto.password) {
-      throw new BadRequestException('Missing email or password');
     }
 
     const result = await this.authService.login(dto.email, dto.password);
@@ -47,12 +45,11 @@ export class AuthController {
   }
 
   @Post('logout')
+  @UseGuards(SessionGuard)
   @HttpCode(HttpStatus.OK)
-  async logout(@Session() session: SessionData): Promise<{ message: string }> {
-    if (!session || !session.user) {
-      throw new BadRequestException('No active session to logout');
-    }
-
+  async logout(
+    @Session() session: AuthenticatedSession,
+  ): Promise<{ message: string }> {
     return new Promise((resolve, reject) => {
       session.destroy((err?: Error) => {
         if (err) {

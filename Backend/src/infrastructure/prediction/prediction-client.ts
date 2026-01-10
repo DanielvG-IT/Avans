@@ -1,7 +1,7 @@
-import { IPredictionClient } from '@/domain/predictions/prediction-client.interface';
+import { IPredictionClient } from '@/domain/prediction/prediction-client.interface';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { firstValueFrom, timeout, Observable } from 'rxjs';
-import { LoggerService } from '@/common/logger.service';
+import { LoggerService } from '@/logger.service';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { isAxiosError } from 'axios';
@@ -9,10 +9,10 @@ import {
   PredictionMatch,
   PredictionPayload,
   PredictionResponse,
-} from '@/domain/predictions/prediction.model';
+} from '@/domain/prediction/prediction.model';
 
 @Injectable()
-export class AiHttpClient implements IPredictionClient {
+export class PredictionClient implements IPredictionClient {
   private readonly aiServiceUrl: string;
 
   constructor(
@@ -20,7 +20,7 @@ export class AiHttpClient implements IPredictionClient {
     private readonly configService: ConfigService,
     private readonly logger: LoggerService,
   ) {
-    this.logger.setContext('AiHttpClient');
+    this.logger.setContext('PredictionClient');
     // Use the config service with a fallback string to satisfy ESLint
     this.aiServiceUrl = this.configService.get<string>(
       'AI_SERVICE_URL',
@@ -40,7 +40,7 @@ export class AiHttpClient implements IPredictionClient {
     try {
       const request$: Observable<{ data: PredictionResponse }> =
         this.httpService.post<PredictionResponse>(url, payload).pipe(
-          timeout(10000), // AI services need more time (10s)
+          timeout(60000), // AI services need more time (60s)
         );
 
       const response = await firstValueFrom(request$);

@@ -5,7 +5,7 @@ export class SubmitRecommendedDto {
   @ApiProperty({
     type: [Number],
     example: [12, 34, 56],
-    description: 'List of ChoiceModule IDs the user accepts as recommended',
+    description: 'List of Module IDs the user accepts as recommended',
   })
   @IsArray()
   @ArrayUnique()

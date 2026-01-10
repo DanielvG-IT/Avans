@@ -1,132 +1,70 @@
-import { AuthService } from './application/services/auth.service';
-import { UserService } from './application/services/user.service';
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
+import { TerminusModule } from '@nestjs/terminus';
+
+// -- imports for controllers --
+import { AppController } from './presentation/controllers/app.controller';
 import { AuthController } from './presentation/controllers/auth.controller';
 import { UserController } from './presentation/controllers/user.controller';
-import { LoggerService } from './common/logger.service';
-import { RequestLoggingMiddleware } from './infrastructure/middleware/request-logging.middleware';
-import { PrismaService } from './infrastructure/database/prisma';
-import { AppController } from './presentation/controllers/app.controller';
-import { AiHttpClient } from './infrastructure/ai-service/prediction-client';
+import { ModulesController } from './presentation/controllers/modules.controller';
 import { AiController } from './presentation/controllers/ai.controller';
+
+// -- imports for services --
+import { AuthService } from './application/services/auth.service';
+import { UserService } from './application/services/user.service';
+import { ModuleService } from './application/services/module.service';
 import { AiService } from './application/services/ai.service';
 
-import { ModuleRepository } from './infrastructure/database/repositories/module.repository';
-import { UserFavoritesService } from './application/services/userfavorites.service';
-import { UserFavoritesRepository } from './infrastructure/database/repositories/userfavorites.repository';
-import { UserFavoritesController } from './presentation/controllers/userfavorites.controller';
-
-import { UserRecommendedService } from './application/services/userrecommended.service';
-import { UserRecommendedRepository } from './infrastructure/database/repositories/userrecommended.repository';
-import { UserRecommendedController } from './presentation/controllers/userrecommended.controller';
-
-import { LocationRepository } from './infrastructure/database/repositories/location.repository';
-import { LocationService } from './application/services/location.service';
-import { LocationController } from './presentation/controllers/location.controller';
-import { ModuleTagRepository } from './infrastructure/database/repositories/moduletag.repository';
-import { ModuleTagService } from './application/services/moduletag.service';
-import { ModuleTagController } from './presentation/controllers/moduletag.controller';
-
+// -- imports for repositories --
 import { UserRepository } from './infrastructure/database/repositories/user.repository';
-import { ModuleService } from './application/services/module.service';
-import { ModulesController } from './presentation/controllers/modules.controller';
+import { ModuleRepository } from './infrastructure/database/repositories/module.repository';
+import { UserModulesRepository } from './infrastructure/database/repositories/usermodules.repository';
+import { LocationRepository } from './infrastructure/database/repositories/location.repository';
+import { ModuleTagRepository } from './infrastructure/database/repositories/moduletag.repository';
 
-class SessionActivityMiddleware {
-  use(req: any, res: any, next: () => void) {
-    // no-op middleware to track session activity (placeholder implementation)
-    next();
-  }
-}
+// -- imports for infrastructure --
+import { LoggerService } from './logger.service';
+import { PrismaService } from './infrastructure/database/prisma';
+import { PredictionClient } from './infrastructure/prediction/prediction-client';
+import { RequestLoggingMiddleware } from './infrastructure/middleware/request-logging.middleware';
 
 @Module({
   imports: [
     HttpModule,
+    TerminusModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
   ],
   providers: [
+    // Common
     LoggerService,
     PrismaService,
-    {
-      provide: 'SERVICE.AUTH',
-      useClass: AuthService,
-    },
-    {
-      provide: 'SERVICE.USER',
-      useClass: UserService,
-    },
-    {
-      provide: 'REPO.USER',
-      useClass: UserRepository,
-    },
-    {
-      provide: 'REPO.MODULE',
-      useClass: ModuleRepository,
-    },
-    {
-      provide: 'SERVICE.MODULE',
-      useClass: ModuleService,
-    },
-    {
-      provide: 'SERVICE.USER_FAVORITES',
-      useClass: UserFavoritesService,
-    },
-    {
-      provide: 'REPO.USER_FAVORITES',
-      useClass: UserFavoritesRepository,
-    },
-    {
-      provide: 'SERVICE.USER_RECOMMENDED',
-      useClass: UserRecommendedService,
-    },
-    {
-      provide: 'REPO.USER_RECOMMENDED',
-      useClass: UserRecommendedRepository,
-    },
-    {
-      provide: 'REPO.LOCATION',
-      useClass: LocationRepository,
-    },
-    {
-      provide: 'SERVICE.LOCATION',
-      useClass: LocationService,
-    },
-    {
-      provide: 'REPO.MODULETAG',
-      useClass: ModuleTagRepository,
-    },
-    {
-      provide: 'SERVICE.MODULETAG',
-      useClass: ModuleTagService,
-    },
-    {
-      provide: 'SERVICE.AI',
-      useClass: AiService,
-    },
-    {
-      provide: 'HTTP.AI',
-      useClass: AiHttpClient,
-    },
+    // Services
+    { provide: 'SERVICE.AUTH', useClass: AuthService },
+    { provide: 'SERVICE.USER', useClass: UserService },
+    { provide: 'SERVICE.MODULE', useClass: ModuleService },
+    { provide: 'SERVICE.AI', useClass: AiService },
+    // Repositories
+    { provide: 'REPO.USER', useClass: UserRepository },
+    { provide: 'REPO.USER_MODULES', useClass: UserModulesRepository },
+    { provide: 'REPO.MODULE', useClass: ModuleRepository },
+    { provide: 'REPO.LOCATION', useClass: LocationRepository },
+    { provide: 'REPO.MODULETAG', useClass: ModuleTagRepository },
+    // HTTP Clients
+    { provide: 'CLIENT.PREDICTION', useClass: PredictionClient },
   ],
   controllers: [
+    AppController,
     AuthController,
     UserController,
     ModulesController,
-    AppController,
-    UserFavoritesController,
-    UserRecommendedController,
-    LocationController,
-    ModuleTagController,
     AiController,
   ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(RequestLoggingMiddleware, SessionActivityMiddleware)
-      .forRoutes('*');
+    consumer.apply(RequestLoggingMiddleware).forRoutes('*');
   }
 }

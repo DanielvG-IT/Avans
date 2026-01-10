@@ -1,6 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { LoggerService } from '../../common/logger.service';
+import { SessionData } from '@/types/session.types';
+import { LoggerService } from '../../logger.service';
 
 @Injectable()
 export class RequestLoggingMiddleware implements NestMiddleware {
@@ -11,6 +12,12 @@ export class RequestLoggingMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const start = Date.now();
     const { method, originalUrl } = req;
+
+    // Update session activity for authenticated users
+    const session = req.session as SessionData;
+    if (session && session.user) {
+      session.lastActivity = Date.now();
+    }
 
     res.on('finish', () => {
       const duration = Date.now() - start;
