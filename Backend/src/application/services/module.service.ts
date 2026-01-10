@@ -11,18 +11,14 @@ import {
 
 // -- imports for locations --
 import { ILocationRepository } from '@/domain/locations/location-repository.interface';
-import { ILocationService } from '@/application/ports/location.port';
 import { Location } from '@/domain/locations/location.model';
 
 // -- imports for module tags --
 import { IModuleTagRepository } from '@/domain/moduletags/moduletag-repository.interface';
-import { IModuleTagService } from '@/application/ports/moduletag.port';
 import { ModuleTag } from '@/domain/moduletags/moduletag.model';
 
 @Injectable()
-export class ModuleService
-  implements IModuleService, ILocationService, IModuleTagService
-{
+export class ModuleService implements IModuleService {
   constructor(
     @Inject('REPO.MODULE') private readonly moduleRepository: IModuleRepository,
     @Inject('REPO.LOCATION')

@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 
 // -- imports for modules --
-import { ModuleService } from '@/application/services/module.service';
+import { IModuleService } from '@/application/ports/module.port';
 import { moduleDetail, Module } from '@/domain/modules/module.model';
 import { Location } from '@/domain/locations/location.model';
 import { CreateModuleTagDto } from '@/presentation/dtos/moduleTag.dto';
@@ -25,7 +25,7 @@ import { ModuleTag } from '@/domain/moduletags/moduletag.model';
 @Controller('modules')
 export class ModulesController {
   constructor(
-    @Inject('SERVICE.MODULE') private readonly moduleService: ModuleService,
+    @Inject('SERVICE.MODULE') private readonly moduleService: IModuleService,
   ) {}
 
   @Get()

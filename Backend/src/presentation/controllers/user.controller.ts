@@ -18,13 +18,13 @@ import {
 // -- imports for users --
 import { User } from '@/domain/user/user.model';
 import { UserDTO } from '@/presentation/dtos/user.dto';
-import { UserService } from '@/application/services/user.service';
+import { IUserService } from '@/application/ports/user.port';
 import { SubmitRecommendedDto } from '../dtos/userrecommended.dto';
 
 @Controller('user')
 export class UserController {
   constructor(
-    @Inject('SERVICE.USER') private readonly userService: UserService,
+    @Inject('SERVICE.USER') private readonly userService: IUserService,
   ) {}
 
   @Get('profile')

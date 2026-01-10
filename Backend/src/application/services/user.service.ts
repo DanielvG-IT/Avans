@@ -8,18 +8,14 @@ import { type IUserRepository } from '@/domain/user/user-repository.interface';
 import { IUserService } from '@/application/ports/user.port';
 
 // -- imports for user favorites --
-import { IUserFavoritesService } from '@/application/ports/userfavorites.port';
 import { IUserFavoritesRepository } from '@/domain/userfavorites/userfavorites-repository.interface';
 import { UserFavorite } from '@/domain/userfavorites/userfavorites.model';
 
 // -- imports for user recommended --
-import { IUserRecommendedService } from '@/application/ports/userrecommended.port';
 import { IUserRecommendedRepository } from '@/domain/userrecommended/userrecommended-repository.interface';
 
 @Injectable()
-export class UserService
-  implements IUserService, IUserFavoritesService, IUserRecommendedService
-{
+export class UserService implements IUserService {
   constructor(
     @Inject('REPO.USER') private readonly userRepository: IUserRepository,
     @Inject('REPO.USER_FAVORITES')
