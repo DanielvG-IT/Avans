@@ -1,12 +1,12 @@
-import { SessionData } from '@/types/session.types';
+import { RequireAuth } from '../decorators/auth.decorator';
+import { SessionGuard } from '../guards/session.guard';
 import {
-  UnauthorizedException,
   BadRequestException,
   ParseIntPipe,
   Controller,
   HttpStatus,
+  UseGuards,
   HttpCode,
-  Session,
   Inject,
   Param,
   Body,
@@ -23,6 +23,7 @@ import { CreateModuleDTO } from '@/presentation/dtos/module.dto';
 import { ModuleTag } from '@/domain/moduletags/moduletag.model';
 
 @Controller('modules')
+@UseGuards(SessionGuard)
 export class ModulesController {
   constructor(
     @Inject('SERVICE.MODULE') private readonly moduleService: IModuleService,
@@ -30,13 +31,7 @@ export class ModulesController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getModules(
-    @Session() session: SessionData,
-  ): Promise<{ modules: Module[] }> {
-    if (!session || !session.user) {
-      throw new UnauthorizedException('No active session');
-    }
-
+  async getModules(): Promise<{ modules: Module[] }> {
     return {
       modules: await this.moduleService.getAllModules(),
     };
@@ -58,18 +53,11 @@ export class ModulesController {
     };
   }
   @Post('moduletags')
+  @RequireAuth('ADMIN')
   @HttpCode(HttpStatus.CREATED)
   async createModuleTag(
     @Body() dto: CreateModuleTagDto,
-    @Session() session: SessionData,
   ): Promise<{ moduleTag: ModuleTag }> {
-    if (!session || !session.user) {
-      throw new UnauthorizedException('No active session');
-    }
-    if (session.user.role === 'STUDENT') {
-      throw new UnauthorizedException('Only admins can create module tags');
-    }
-
     const moduleTag = await this.moduleService.createModuleTag(dto.tag);
     return { moduleTag };
   }
@@ -77,13 +65,8 @@ export class ModulesController {
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   async getModuleById(
-    @Session() session: SessionData,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<{ module: moduleDetail }> {
-    if (!session || !session.user) {
-      throw new UnauthorizedException('No active session');
-    }
-
     const module = await this.moduleService.findById(id);
     if (!module) {
       throw new BadRequestException('Module not found');
@@ -92,19 +75,11 @@ export class ModulesController {
     return { module };
   }
   @Post()
+  @RequireAuth('ADMIN')
   @HttpCode(HttpStatus.CREATED)
   async createModule(
-    @Session() session: SessionData,
     @Body() moduleData: CreateModuleDTO,
   ): Promise<{ module: moduleDetail }> {
-    if (!session || !session.user) {
-      throw new UnauthorizedException('No active session');
-    }
-
-    if (session.user.role === 'STUDENT') {
-      throw new UnauthorizedException('Only admins can create modules');
-    }
-
     if (moduleData.studyCredits !== 15 && moduleData.studyCredits !== 30) {
       throw new BadRequestException('Study credits must be 15 or 30');
     }

@@ -16,7 +16,7 @@ export class AppController {
 
   @Get('health')
   @HealthCheck()
-  check() {
+  public async check() {
     return this.health.check([
       // 1. Check if API can hit Google (Internet connectivity)
       () => this.http.pingCheck('google', 'https://google.com'),

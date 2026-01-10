@@ -1,10 +1,11 @@
-import { SessionData } from '@/types/session.types';
+import { AuthenticatedSession } from '@/types/session.types';
+import { SessionGuard } from '../guards/session.guard';
 import {
-  UnauthorizedException,
   NotFoundException,
   ParseIntPipe,
   Controller,
   HttpStatus,
+  UseGuards,
   HttpCode,
   Session,
   Delete,
@@ -16,12 +17,13 @@ import {
 } from '@nestjs/common';
 
 // -- imports for users --
-import { User } from '@/domain/user/user.model';
-import { UserDTO } from '@/presentation/dtos/user.dto';
-import { IUserService } from '@/application/ports/user.port';
 import { SubmitRecommendedDto } from '../dtos/userrecommended.dto';
+import { IUserService } from '@/application/ports/user.port';
+import { UserDTO } from '@/presentation/dtos/user.dto';
+import { User } from '@/domain/user/user.model';
 
 @Controller('user')
+@UseGuards(SessionGuard)
 export class UserController {
   constructor(
     @Inject('SERVICE.USER') private readonly userService: IUserService,
@@ -30,30 +32,19 @@ export class UserController {
   @Get('profile')
   @HttpCode(HttpStatus.OK)
   async getProfile(
-    @Session() session: SessionData,
+    @Session() session: AuthenticatedSession,
   ): Promise<{ user: UserDTO }> {
-    if (!session || !session.user) {
-      throw new UnauthorizedException('No active session');
-    }
-
     const result = await this.userService.findById(session.user.id);
     if (result._tag === 'Failure' || !result.data) {
       throw new NotFoundException('User not found');
     }
 
-    const freshUser = result.data;
-    session.user = freshUser;
-
-    return { user: this.toUserDto(freshUser) };
+    return { user: this.toUserDto(result.data) };
   }
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  async findFavorites(@Session() session: SessionData) {
-    if (!session || !session.user) {
-      throw new UnauthorizedException('No active session');
-    }
-
+  async findFavorites(@Session() session: AuthenticatedSession) {
     return {
       favorites: await this.userService.findFavorites(session.user.id),
     };
@@ -63,12 +54,8 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   async isModuleFavorited(
     @Param('moduleId', ParseIntPipe) moduleId: number,
-    @Session() session: SessionData,
+    @Session() session: AuthenticatedSession,
   ) {
-    if (!session || !session.user) {
-      throw new UnauthorizedException('No active session');
-    }
-
     return {
       isFavorited: await this.userService.isModuleFavorited(
         session.user.id,
@@ -81,12 +68,8 @@ export class UserController {
   @HttpCode(HttpStatus.CREATED)
   async favoriteModule(
     @Param('moduleId', ParseIntPipe) moduleId: number,
-    @Session() session: SessionData,
+    @Session() session: AuthenticatedSession,
   ) {
-    if (!session || !session.user) {
-      throw new UnauthorizedException('No active session');
-    }
-
     await this.userService.favoriteModule(session.user.id, moduleId);
     return { success: true };
   }
@@ -95,23 +78,15 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   async unfavoriteModule(
     @Param('moduleId', ParseIntPipe) moduleId: number,
-    @Session() session: SessionData,
+    @Session() session: AuthenticatedSession,
   ) {
-    if (!session || !session.user) {
-      throw new UnauthorizedException('No active session');
-    }
-
     await this.userService.unfavoriteModule(session.user.id, moduleId);
     return { success: true };
   }
 
   @Get('recommended')
   @HttpCode(HttpStatus.OK)
-  async getRecommended(@Session() session: SessionData) {
-    if (!session || !session.user) {
-      throw new UnauthorizedException('No active session');
-    }
-
+  async getRecommended(@Session() session: AuthenticatedSession) {
     const MAX_RECENT_RECOMMENDED = 5;
     const moduleIds = await this.userService.getRecommendedModuleIds(
       session.user.id,
@@ -127,12 +102,8 @@ export class UserController {
   @HttpCode(HttpStatus.CREATED)
   async submitRecommended(
     @Body() body: SubmitRecommendedDto,
-    @Session() session: SessionData,
+    @Session() session: AuthenticatedSession,
   ) {
-    if (!session || !session.user) {
-      throw new UnauthorizedException('No active session');
-    }
-
     await this.userService.setRecommendedModules(
       session.user.id,
       body.moduleIds,

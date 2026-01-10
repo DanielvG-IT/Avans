@@ -1,6 +1,6 @@
-import { SessionData } from '@/types/session.types';
+import { AuthenticatedSession } from '@/types/session.types';
+import { SessionGuard } from '../guards/session.guard';
 import {
-  UnauthorizedException,
   BadRequestException,
   Controller,
   HttpStatus,
@@ -15,7 +15,6 @@ import {
 // -- imports for ai --
 import { PredictionDto, PredictionResponseDto } from '../dtos/ai.dto';
 import { type IAiService } from '@/application/ports/ai.port';
-import { SessionGuard } from '../guards/session.guard';
 
 @Controller('ai')
 @UseGuards(SessionGuard)
@@ -25,13 +24,9 @@ export class AiController {
   @Post('predict')
   @HttpCode(HttpStatus.OK)
   async createPrediction(
-    @Session() session: SessionData,
+    @Session() session: AuthenticatedSession,
     @Body() prediction: PredictionDto,
   ): Promise<PredictionResponseDto> {
-    if (!session || !session.user) {
-      throw new UnauthorizedException('No active session');
-    }
-
     const result = await this.aiService.getPrediction(prediction);
     if (result._tag === 'Failure') {
       const errorMessage = result.error?.message || 'Failed to get predictions';

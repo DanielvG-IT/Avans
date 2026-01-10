@@ -1,9 +1,10 @@
-import { SessionData } from '@/types/session.types';
+import { SessionData, AuthenticatedSession } from '@/types/session.types';
 import {
   BadRequestException,
   ConflictException,
   Controller,
   HttpStatus,
+  UseGuards,
   HttpCode,
   Session,
   Inject,
@@ -15,6 +16,7 @@ import {
 import { type IAuthService } from '@/application/ports/auth.port';
 import { LoginDto } from '@/presentation/dtos/auth.dto';
 import { UserDTO } from '@/presentation/dtos/user.dto';
+import { SessionGuard } from '../guards/session.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -43,12 +45,11 @@ export class AuthController {
   }
 
   @Post('logout')
+  @UseGuards(SessionGuard)
   @HttpCode(HttpStatus.OK)
-  async logout(@Session() session: SessionData): Promise<{ message: string }> {
-    if (!session || !session.user) {
-      throw new BadRequestException('No active session to logout');
-    }
-
+  async logout(
+    @Session() session: AuthenticatedSession,
+  ): Promise<{ message: string }> {
     return new Promise((resolve, reject) => {
       session.destroy((err?: Error) => {
         if (err) {
