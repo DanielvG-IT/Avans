@@ -5,8 +5,21 @@ import pandas as pd
 import numpy as np
 import json
 import ast
+import hashlib
+import random
+import re
 
 import torch
+
+def get_top_5_prediction(
+    data: StudentInput,
+    metadata_path: str = "data/cleaned/cleaned_dataset_soft-NLP.csv",
+):
+    cleaned_prediction_data = clean_prediction_data(data)
+    vectorized_student_input = vectorize_student_input(cleaned_prediction_data)
+    top_5 = filter_matches_top_5(vectorized_student_input, data, metadata_path=metadata_path)
+    return add_motivation(vectorized_student_input, top_5, data, metadata_path=metadata_path)
+    
 
 def clean_prediction_data(data: StudentInput):
     big_string = ". ".join([
@@ -174,3 +187,165 @@ def filter_matches_top_5(
     }).sort_values(by="similarity_score", ascending=False).head(5)
 
     return json.loads(result.to_json(orient="records"))
+
+def add_motivation(
+    vectorized_student_input,
+    top_5_modules: list,
+    data: StudentInput,
+    metadata_path: str = "data/cleaned/cleaned_dataset_soft-NLP.csv",
+):
+    """
+    Adds motivation snippets to each recommended module by finding which parts 
+    of the student input best match the module description.
+    """
+    if not top_5_modules:
+        return []
+    
+    # Load metadata to get module descriptions
+    metadata_df = pd.read_csv(metadata_path)
+    metadata_df["id"] = metadata_df["id"].astype(int)
+    
+    # Load sentence transformer model
+    model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    
+    # Split student input into meaningful chunks
+    student_chunks = []
+    
+    # Add current study as a chunk
+    if data.current_study and data.current_study.strip():
+        student_chunks.append({
+            "text": data.current_study,
+            "category": "studie"
+        })
+    
+    # Add each interest as a separate chunk
+    for interest in data.interests:
+        if interest and interest.strip():
+            student_chunks.append({
+                "text": interest,
+                "category": "interesse"
+            })
+    
+    # Add each learning goal as a separate chunk
+    for goal in data.learning_goals:
+        if goal and goal.strip():
+            student_chunks.append({
+                "text": goal,
+                "category": "leerdoel"
+            })
+    
+    # Vectorize all student chunks
+    if student_chunks:
+        chunk_texts = [chunk["text"] for chunk in student_chunks]
+        chunk_vectors = model.encode(chunk_texts, show_progress_bar=False, device=device)
+        
+        for i, chunk in enumerate(student_chunks):
+            chunk["vector"] = chunk_vectors[i]
+    
+    # Template sentences for each category
+    templates = {
+        "interesse": [
+            "Deze module sluit goed aan bij jouw interesse in: {}",
+            "Deze module past perfect bij jouw interesse: {}",
+            "Op basis van jouw interesse in {} is deze module een goede match",
+            "Deze module komt overeen met jouw interesse: {}"
+        ],
+        "leerdoel": [
+            "Deze module helpt je met jouw leerdoel: {}",
+            "Deze module ondersteunt jouw ambitie om: {}",
+            "Op basis van jouw leerdoel '{}' is deze module relevant",
+            "Deze module draagt bij aan jouw doel: {}"
+        ],
+        "studie": [
+            "Deze module sluit aan bij jouw achtergrond in: {}",
+            "Deze module past bij jouw studie: {}",
+            "Op basis van jouw ervaring met {} is deze module interessant",
+            "Deze module bouwt voort op jouw kennis van: {}"
+        ]
+    }
+    
+    # Process each module in top 5
+    results = []
+    for module in top_5_modules:
+        module_id = module["id"]
+        
+        # Get module description from metadata
+        module_row = metadata_df[metadata_df["id"] == module_id]
+        
+        if module_row.empty:
+            results.append({
+                **module,
+                "motivation": ""
+            })
+            continue
+        
+        # Build module description from available fields
+        module_description_parts = []
+        for col in ["modulename", "description", "content", "learninggoals"]:
+            if col in module_row.columns:
+                value = module_row.iloc[0][col]
+                if pd.notna(value) and str(value).strip():
+                    module_description_parts.append(str(value))
+        
+        module_description = ". ".join(module_description_parts)
+        
+        if not module_description.strip() or not student_chunks:
+            results.append({
+                **module,
+                "motivation": ""
+            })
+            continue
+        
+        # Vectorize module description
+        module_vector = model.encode(module_description, show_progress_bar=False, device=device)
+        
+        # Calculate similarity between each student chunk and the module
+        chunk_similarities = []
+        for chunk in student_chunks:
+            similarity = cosine_similarity(
+                chunk["vector"].reshape(1, -1),
+                module_vector.reshape(1, -1)
+            )[0][0]
+            
+            chunk_similarities.append({
+                "text": chunk["text"],
+                "category": chunk["category"],
+                "relevance_score": float(similarity)
+            })
+        
+        # Sort by relevance and get the best match
+        chunk_similarities.sort(key=lambda x: x["relevance_score"], reverse=True)
+        
+        if chunk_similarities:
+            best_match = chunk_similarities[0]
+            category = best_match["category"]
+            text = best_match["text"]
+            
+            # Split text into smaller keywords/phrases
+            # Split by common delimiters: comma, semicolon, 'en', 'and'
+            text_parts = re.split(r'[,;]|\s+en\s+|\s+and\s+', text)
+            text_parts = [part.strip() for part in text_parts if part.strip()]
+            
+            # Take up to 3 most relevant parts (or all if less than 3)
+            keywords = text_parts[:min(3, len(text_parts))]
+            
+            # Format keywords with bold markdown
+            formatted_keywords = ", ".join([f"**{kw}**" for kw in keywords])
+            
+            # Select random template for this category
+            template = random.choice(templates.get(category, templates["interesse"]))
+            motivation_text = template.format(formatted_keywords)
+            
+            results.append({
+                **module,
+                "motivation": motivation_text
+            })
+        else:
+            results.append({
+                **module,
+                "motivation": ""
+            })
+    
+    return results
+
