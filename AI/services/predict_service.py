@@ -15,13 +15,13 @@ def get_top_5_prediction(
     data: StudentInput,
     metadata_path: str = "data/cleaned/cleaned_dataset_soft-NLP.csv",
 ):
-    cleaned_prediction_data = clean_prediction_data(data)
-    vectorized_student_input = vectorize_student_input(cleaned_prediction_data)
+    combined_student_input = combine_student_input(data)
+    vectorized_student_input = vectorize_student_input(combined_student_input)
     top_5 = filter_matches_top_5(vectorized_student_input, data, metadata_path=metadata_path)
     return add_motivation(vectorized_student_input, top_5, data, metadata_path=metadata_path)
     
 
-def clean_prediction_data(data: StudentInput):
+def combine_student_input(data: StudentInput):
     big_string = ". ".join([
         data.current_study,
         ". ".join(data.interests),
