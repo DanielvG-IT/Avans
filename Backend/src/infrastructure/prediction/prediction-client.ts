@@ -40,7 +40,7 @@ export class PredictionClient implements IPredictionClient {
     try {
       const request$: Observable<{ data: PredictionResponse }> =
         this.httpService.post<PredictionResponse>(url, payload).pipe(
-          timeout(10000), // AI services need more time (10s)
+          timeout(60000), // AI services need more time (60s)
         );
 
       const response = await firstValueFrom(request$);
