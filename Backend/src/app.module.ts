@@ -29,13 +29,6 @@ import { PrismaService } from './infrastructure/database/prisma';
 import { AiHttpClient } from './infrastructure/ai-service/prediction-client';
 import { RequestLoggingMiddleware } from './infrastructure/middleware/request-logging.middleware';
 
-class SessionActivityMiddleware {
-  use(req: any, res: any, next: () => void) {
-    // no-op middleware to track session activity (placeholder implementation)
-    next();
-  }
-}
-
 @Module({
   imports: [
     HttpModule,
@@ -72,8 +65,6 @@ class SessionActivityMiddleware {
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(RequestLoggingMiddleware, SessionActivityMiddleware)
-      .forRoutes('*');
+    consumer.apply(RequestLoggingMiddleware).forRoutes('*');
   }
 }
