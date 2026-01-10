@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 
 // -- imports for auth --
-import { type IAuthService } from '@/application/ports/auth.port';
+import { IAuthService } from '@/application/ports/auth.port';
 import { LoginDto } from '@/presentation/dtos/auth.dto';
 import { UserDTO } from '@/presentation/dtos/user.dto';
 import { SessionGuard } from '../guards/session.guard';
