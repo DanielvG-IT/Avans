@@ -25,7 +25,10 @@ export class UserRecommendedRepository implements IUserRecommendedRepository {
     return rows.map((r: { choiceModuleId: number }) => r.choiceModuleId);
   }
 
-  async setRecommendedModules(userId: string, moduleIds: number[]): Promise<void> {
+  async setRecommendedModules(
+    userId: string,
+    moduleIds: number[],
+  ): Promise<void> {
     const uniqueIds = Array.from(new Set(moduleIds)).filter(
       (id) => typeof id === 'number' && Number.isInteger(id) && id > 0,
     );

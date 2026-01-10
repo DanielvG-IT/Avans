@@ -1,10 +1,11 @@
-// General Imports
 import { SessionData } from '@/types/session.types';
 import {
   UnauthorizedException,
   NotFoundException,
   ParseIntPipe,
   Controller,
+  HttpStatus,
+  HttpCode,
   Session,
   Delete,
   Inject,
@@ -14,40 +15,28 @@ import {
   Get,
 } from '@nestjs/common';
 
-// Users
-import { IUserService } from '@/application/ports/user.port';
-import { UserDTO } from '@/presentation/dtos/user.dto';
+// -- imports for users --
 import { User } from '@/domain/user/user.model';
-
-// User Favorites
+import { UserDTO } from '@/presentation/dtos/user.dto';
+import { IUserService } from '@/application/ports/user.port';
+// -- imports for user favorites --
 import { IUserFavoritesService } from '@/application/ports/userfavorites.port';
-
-// User Recommended
+// -- imports for user recommended --
 import { IUserRecommendedService } from '@/application/ports/userrecommended.port';
 import { SubmitRecommendedDto } from '../dtos/userrecommended.dto';
 
-// ==========================
-// Controller
-// ==========================
 @Controller('user')
 export class UserController {
-  private readonly userService: IUserService;
-  private readonly favoritesService: IUserFavoritesService;
-  private readonly recommendedService: IUserRecommendedService;
-
   constructor(
-    @Inject('SERVICE.USER') _userService: IUserService,
-    @Inject('SERVICE.USER_FAVORITES') _favoritesService: IUserFavoritesService,
+    @Inject('SERVICE.USER') private readonly userService: IUserService,
+    @Inject('SERVICE.USER_FAVORITES')
+    private readonly favoritesService: IUserFavoritesService,
     @Inject('SERVICE.USER_RECOMMENDED')
-    _userRecommendedService: IUserRecommendedService,
-  ) {
-    this.userService = _userService;
-    this.favoritesService = _favoritesService;
-    this.recommendedService = _userRecommendedService;
-  }
+    private readonly recommendedService: IUserRecommendedService,
+  ) {}
 
-  // GET /user/me
   @Get('profile')
+  @HttpCode(HttpStatus.OK)
   async getProfile(
     @Session() session: SessionData,
   ): Promise<{ user: UserDTO }> {
@@ -66,11 +55,11 @@ export class UserController {
     return { user: this.toUserDto(freshUser) };
   }
 
-  // GET /user/favorites
   @Get()
+  @HttpCode(HttpStatus.OK)
   async findFavorites(@Session() session: SessionData) {
-    if (!session?.user) {
-      throw new Error('No active session');
+    if (!session || !session.user) {
+      throw new UnauthorizedException('No active session');
     }
 
     return {
@@ -78,14 +67,14 @@ export class UserController {
     };
   }
 
-  // GET /user/favorites/:moduleId
   @Get(':moduleId')
+  @HttpCode(HttpStatus.OK)
   async isModuleFavorited(
     @Param('moduleId', ParseIntPipe) moduleId: number,
     @Session() session: SessionData,
   ) {
-    if (!session?.user) {
-      throw new Error('No active session');
+    if (!session || !session.user) {
+      throw new UnauthorizedException('No active session');
     }
 
     return {
@@ -96,39 +85,39 @@ export class UserController {
     };
   }
 
-  // POST /user/favorites/:moduleId
   @Post(':moduleId')
+  @HttpCode(HttpStatus.CREATED)
   async favoriteModule(
     @Param('moduleId', ParseIntPipe) moduleId: number,
     @Session() session: SessionData,
   ) {
-    if (!session?.user) {
-      throw new Error('No active session');
+    if (!session || !session.user) {
+      throw new UnauthorizedException('No active session');
     }
 
     await this.favoritesService.favoriteModule(session.user.id, moduleId);
     return { success: true };
   }
 
-  // DELETE /user/favorites/:moduleId
   @Delete(':moduleId')
+  @HttpCode(HttpStatus.OK)
   async unfavoriteModule(
     @Param('moduleId', ParseIntPipe) moduleId: number,
     @Session() session: SessionData,
   ) {
-    if (!session?.user) {
-      throw new Error('No active session');
+    if (!session || !session.user) {
+      throw new UnauthorizedException('No active session');
     }
 
     await this.favoritesService.unfavoriteModule(session.user.id, moduleId);
     return { success: true };
   }
 
-  // GET /user/recommended
   @Get('recommended')
+  @HttpCode(HttpStatus.OK)
   async getRecommended(@Session() session: SessionData) {
-    if (!session?.user) {
-      throw new Error('No active session');
+    if (!session || !session.user) {
+      throw new UnauthorizedException('No active session');
     }
 
     const MAX_RECENT_RECOMMENDED = 5;
@@ -142,14 +131,14 @@ export class UserController {
     };
   }
 
-  // POST /user/recommended
   @Post('recommended')
+  @HttpCode(HttpStatus.CREATED)
   async submitRecommended(
     @Body() body: SubmitRecommendedDto,
     @Session() session: SessionData,
   ) {
-    if (!session?.user) {
-      throw new Error('No active session');
+    if (!session || !session.user) {
+      throw new UnauthorizedException('No active session');
     }
 
     await this.recommendedService.setRecommendedModules(

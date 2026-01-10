@@ -92,7 +92,7 @@ export class UserRepository implements IUserRepository {
       if (user.name !== undefined) data.name = user.name;
       if (user.email !== undefined) data.email = user.email;
       if (user.hashedPassword !== undefined)
-        (data as any).hashedPassword = user.hashedPassword;
+        data.hashedPassword = user.hashedPassword;
       if (user.role !== undefined)
         data.role = user.role as unknown as PrismaRole;
 

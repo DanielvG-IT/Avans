@@ -1,9 +1,11 @@
-// General Imports
 import { SessionData } from '@/types/session.types';
 import {
   UnauthorizedException,
+  BadRequestException,
   ParseIntPipe,
   Controller,
+  HttpStatus,
+  HttpCode,
   Session,
   Inject,
   Param,
@@ -12,44 +14,35 @@ import {
   Get,
 } from '@nestjs/common';
 
-// Modules
-import { CreateModuleDTO } from '@/presentation/dtos/choiceModule.dto';
+// -- imports for modules --
 import { ModuleService } from '@/application/services/module.service';
 import { moduleDetail, Module } from '@/domain/modules/module.model';
-
-// Locations
+// -- imports for locations --
 import { ILocationService } from '@/application/ports/location.port';
 import { Location } from '@/domain/locations/location.model';
-
-// ModuleTags
+// -- imports for module tags --
+import { CreateModuleTagDto } from '@/presentation/dtos/moduleTag.dto';
 import { IModuleTagService } from '@/application/ports/moduletag.port';
+import { CreateModuleDTO } from '@/presentation/dtos/module.dto';
 import { ModuleTag } from '@/domain/moduletags/moduletag.model';
 
-// ==========================
-// Controller
-// ==========================
 @Controller('modules')
 export class ModulesController {
-  private readonly moduleService: ModuleService;
-  private readonly locationService: ILocationService;
-  private readonly moduleTagService: IModuleTagService;
-
   constructor(
-    @Inject('SERVICE.MODULE') _moduleService: ModuleService,
-    @Inject('SERVICE.LOCATION') _locationService: ILocationService,
-    @Inject('SERVICE.MODULETAG') _moduleTagService: IModuleTagService,
-  ) {
-    this.moduleTagService = _moduleTagService;
-    this.locationService = _locationService;
-    this.moduleService = _moduleService;
-  }
+    @Inject('SERVICE.MODULE') private readonly moduleService: ModuleService,
+    @Inject('SERVICE.LOCATION')
+    private readonly locationService: ILocationService,
+    @Inject('SERVICE.MODULETAG')
+    private readonly moduleTagService: IModuleTagService,
+  ) {}
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   async getModules(
     @Session() session: SessionData,
   ): Promise<{ modules: Module[] }> {
-    if (!session) {
-      throw new Error('No active session');
+    if (!session || !session.user) {
+      throw new UnauthorizedException('No active session');
     }
 
     return {
@@ -57,114 +50,82 @@ export class ModulesController {
     };
   }
 
-  @Get('/locations')
-  async getAllLocation(): Promise<Location[]> {
-    return await this.locationService.getAllLocation();
+  @Get('locations')
+  @HttpCode(HttpStatus.OK)
+  async getAllLocation(): Promise<{ locations: Location[] }> {
+    return {
+      locations: await this.locationService.getAllLocation(),
+    };
   }
 
-  @Get('/moduletags')
-  async getAllModuleTags(): Promise<ModuleTag[]> {
-    return await this.moduleTagService.getAllModuleTags();
+  @Get('moduletags')
+  @HttpCode(HttpStatus.OK)
+  async getAllModuleTags(): Promise<{ moduleTags: ModuleTag[] }> {
+    return {
+      moduleTags: await this.moduleTagService.getAllModuleTags(),
+    };
   }
-  @Post('/moduletags')
+  @Post('moduletags')
+  @HttpCode(HttpStatus.CREATED)
   async createModuleTag(
-    @Body('tag') name: string,
+    @Body() dto: CreateModuleTagDto,
     @Session() session: SessionData,
-  ): Promise<ModuleTag> {
+  ): Promise<{ moduleTag: ModuleTag }> {
     if (!session || !session.user) {
       throw new UnauthorizedException('No active session');
     }
-    if (session.user.role == 'STUDENT') {
-      throw new UnauthorizedException('Unauthorized');
+    if (session.user.role === 'STUDENT') {
+      throw new UnauthorizedException('Only admins can create module tags');
     }
 
-    if (!name || name.trim() === '') {
-      throw new UnauthorizedException('Tag name is required');
-    }
-    console.log(name);
-    return await this.moduleTagService.createModuleTag(name);
+    const moduleTag = await this.moduleTagService.createModuleTag(dto.tag);
+    return { moduleTag };
   }
 
   @Get(':id')
+  @HttpCode(HttpStatus.OK)
   async getModuleById(
     @Session() session: SessionData,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<{ module: moduleDetail }> {
-    if (!session) {
-      throw new Error('No active session');
-    }
-
-    if (!id) {
-      throw new Error('Cannot find module without id');
+    if (!session || !session.user) {
+      throw new UnauthorizedException('No active session');
     }
 
     const module = await this.moduleService.findById(id);
     if (!module) {
-      throw new Error('Module not found');
+      throw new BadRequestException('Module not found');
     }
 
-    return {
-      module,
-    };
+    return { module };
   }
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async createModule(
     @Session() session: SessionData,
     @Body() moduleData: CreateModuleDTO,
-  ): Promise<{ module: moduleDetail } | { message: string }> {
-    if (!session) {
+  ): Promise<{ module: moduleDetail }> {
+    if (!session || !session.user) {
       throw new UnauthorizedException('No active session');
     }
 
-    if (!session.user || session.user.role === 'STUDENT') {
+    if (session.user.role === 'STUDENT') {
       throw new UnauthorizedException('Only admins can create modules');
     }
-    if (!moduleData.name || moduleData.name.trim() === '') {
-      throw new UnauthorizedException('Module name is required');
-    }
-    if (!moduleData.description || moduleData.description.trim() === '') {
-      throw new UnauthorizedException('Module description is required');
-    }
-    if (!moduleData.content || moduleData.content.trim() === '') {
-      throw new UnauthorizedException('Module content is required');
-    }
-    if (!moduleData.startDate || new Date(moduleData.startDate) < new Date()) {
-      throw new UnauthorizedException('(Valid) Module start date is required');
-    }
-    if (!moduleData.location || moduleData.location.length === 0) {
-      throw new UnauthorizedException('At least one location is required');
-    }
-    if (!moduleData.moduleTags || moduleData.moduleTags.length === 0) {
-      throw new UnauthorizedException('At least one module tag is required');
-    }
 
-    if (
-      !moduleData.learningOutcomes ||
-      moduleData.learningOutcomes.length === 0
-    ) {
-      throw new UnauthorizedException(
-        'At least one learning outcome is required',
-      );
-    }
-
-    if (
-      moduleData.studyCredits === null ||
-      (moduleData.studyCredits !== 15 && moduleData.studyCredits !== 30)
-    ) {
-      throw new UnauthorizedException('Study credits must be 15 or 30');
+    if (moduleData.studyCredits !== 15 && moduleData.studyCredits !== 30) {
+      throw new BadRequestException('Study credits must be 15 or 30');
     }
 
     if (moduleData.level !== 'NLQF5' && moduleData.level !== 'NLQF6') {
-      throw new UnauthorizedException('Level must be NLQF5 or NLQF6');
+      throw new BadRequestException('Level must be NLQF5 or NLQF6');
     }
 
     const module = await this.moduleService.createModule(moduleData);
     if (!module) {
-      return { message: 'Failed to create module' };
+      throw new BadRequestException('Failed to create module');
     }
 
-    return {
-      module,
-    };
+    return { module };
   }
 }

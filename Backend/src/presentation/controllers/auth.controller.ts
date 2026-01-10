@@ -1,6 +1,3 @@
-import { type IAuthService } from '@/application/ports/auth.port';
-import { LoginDto } from '@/presentation/dtos/auth.dto';
-import { UserDTO } from '@/presentation/dtos/user.dto';
 import { SessionData } from '@/types/session.types';
 import {
   BadRequestException,
@@ -14,13 +11,16 @@ import {
   Post,
 } from '@nestjs/common';
 
+// -- imports for auth --
+import { type IAuthService } from '@/application/ports/auth.port';
+import { LoginDto } from '@/presentation/dtos/auth.dto';
+import { UserDTO } from '@/presentation/dtos/user.dto';
+
 @Controller('auth')
 export class AuthController {
-  private readonly authService: IAuthService;
-
-  constructor(@Inject('SERVICE.AUTH') _authService: IAuthService) {
-    this.authService = _authService;
-  }
+  constructor(
+    @Inject('SERVICE.AUTH') private readonly authService: IAuthService,
+  ) {}
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -30,10 +30,6 @@ export class AuthController {
   ): Promise<{ user: UserDTO }> {
     if (session && session.user) {
       throw new ConflictException('Already authenticated');
-    }
-
-    if (!dto.email || !dto.password) {
-      throw new BadRequestException('Missing email or password');
     }
 
     const result = await this.authService.login(dto.email, dto.password);

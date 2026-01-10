@@ -1,6 +1,3 @@
-import { PredictionDto, PredictionResponseDto } from '../dtos/ai.dto';
-import { type IAiService } from '@/application/ports/ai.port';
-import { SessionGuard } from '../guards/session.guard';
 import { SessionData } from '@/types/session.types';
 import {
   UnauthorizedException,
@@ -15,14 +12,15 @@ import {
   Post,
 } from '@nestjs/common';
 
+// -- imports for ai --
+import { PredictionDto, PredictionResponseDto } from '../dtos/ai.dto';
+import { type IAiService } from '@/application/ports/ai.port';
+import { SessionGuard } from '../guards/session.guard';
+
 @Controller('ai')
 @UseGuards(SessionGuard)
 export class AiController {
-  private readonly aiService: IAiService;
-
-  constructor(@Inject('SERVICE.AI') _aiService: IAiService) {
-    this.aiService = _aiService;
-  }
+  constructor(@Inject('SERVICE.AI') private readonly aiService: IAiService) {}
 
   @Post('predict')
   @HttpCode(HttpStatus.OK)
