@@ -10,7 +10,9 @@ import {
   Inject,
   Body,
   Post,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 
 // -- imports for auth --
 import { IAuthService } from '@/application/ports/auth.port';
@@ -22,7 +24,7 @@ import { SessionGuard } from '../guards/session.guard';
 export class AuthController {
   constructor(
     @Inject('SERVICE.AUTH') private readonly authService: IAuthService,
-  ) {}
+  ) { }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -49,12 +51,14 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async logout(
     @Session() session: AuthenticatedSession,
+    @Res({ passthrough: true }) res: Response,
   ): Promise<{ message: string }> {
     return new Promise((resolve, reject) => {
       session.destroy((err?: Error) => {
         if (err) {
           reject(new BadRequestException('Failed to logout'));
         } else {
+          res.clearCookie('connect.sid');
           resolve({ message: 'Successfully logged out' });
         }
       });
