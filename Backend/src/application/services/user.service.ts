@@ -60,13 +60,25 @@ export class UserService implements IUserService {
   // User Recommended Methods
   // ==========================================
 
-  setRecommendedModules(userId: string, moduleIds: number[]): Promise<void> {
-    return this.userModulesRepository.setRecommendedModules(userId, moduleIds);
+  setRecommendedModules(
+    userId: string,
+    modules: Array<{ moduleId: number; motivation?: string }>,
+  ): Promise<void> {
+    return this.userModulesRepository.setRecommendedModules(userId, modules);
   }
 
   async getRecommendedModuleIds(userId: string): Promise<number[]> {
     const recommended =
       await this.userModulesRepository.findRecommendedByUserId(userId);
     return recommended.map((r) => r.moduleId);
+  }
+
+  async getRecommendedModules(userId: string): Promise<Array<{ moduleId: number; motivation?: string | null }>> {
+    const recommended =
+      await this.userModulesRepository.findRecommendedByUserId(userId);
+    return recommended.map((r) => ({
+      moduleId: r.moduleId,
+      motivation: r.recommendationReason,
+    }));
   }
 }

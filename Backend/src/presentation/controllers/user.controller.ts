@@ -57,13 +57,13 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   async getRecommended(@Session() session: AuthenticatedSession) {
     const MAX_RECENT_RECOMMENDED = 5;
-    const moduleIds = await this.userService.getRecommendedModuleIds(
+    const modules = await this.userService.getRecommendedModules(
       session.user.id,
     );
-    const recentIds = moduleIds.slice(0, MAX_RECENT_RECOMMENDED);
+    const recentModules = modules.slice(0, MAX_RECENT_RECOMMENDED);
 
     return {
-      recommended: recentIds.map((moduleId) => ({ moduleId })),
+      recommended: recentModules,
     };
   }
 
@@ -76,7 +76,7 @@ export class UserController {
   ) {
     await this.userService.setRecommendedModules(
       session.user.id,
-      body.moduleIds,
+      body.modules,
     );
     return { success: true };
   }

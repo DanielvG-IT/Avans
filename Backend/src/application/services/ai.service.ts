@@ -15,6 +15,7 @@ export interface PredictionWithModules {
   predictions: Array<{
     module: Module;
     score: number;
+    motivation: string;
   }>;
 }
 
@@ -75,6 +76,7 @@ export class AiService implements IAiService {
                 startDate: module.startDate,
               },
               score: match.similarity_score,
+              motivation: match.motivation,
             };
           } catch (moduleError: unknown) {
             const msg =

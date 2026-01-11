@@ -114,61 +114,70 @@ export class UserModulesRepository implements IUserModulesRepository {
       id: r.id,
       userId: r.userId,
       moduleId: r.moduleId,
+      recommendationReason: r.recommendationReason,
       createdAt: r.createdAt,
     }));
   }
 
   async setRecommendedModules(
     userId: string,
-    moduleIds: number[],
+    modules: Array<{ moduleId: number; motivation?: string }>,
   ): Promise<void> {
-    const uniqueIds = Array.from(new Set(moduleIds)).filter(
-      (id) => typeof id === 'number' && Number.isInteger(id) && id > 0,
+    const uniqueModules = Array.from(
+      new Map(
+        modules
+          .filter(
+            (m) =>
+              typeof m.moduleId === 'number' &&
+              Number.isInteger(m.moduleId) &&
+              m.moduleId > 0,
+          )
+          .map((m) => [m.moduleId, m]),
+      ).values(),
     );
 
-    await this.prisma.$transaction(async () => {
-      // 1) Create missing rows first, then update all to set recommended=true
-      if (uniqueIds.length > 0) {
-        await this.prisma.userModules.createMany({
-          data: uniqueIds.map((moduleId) => ({
-            userId,
-            moduleId,
-            recommended: true,
-          })),
-          skipDuplicates: true,
-        });
+    const uniqueIds = uniqueModules.map((m) => m.moduleId);
 
-        await this.prisma.userModules.updateMany({
-          where: { userId, moduleId: { in: uniqueIds } },
-          data: { recommended: true },
-        });
-      }
+    await this.prisma.$transaction(async (tx) => {
+      // 1) First, set all existing recommended modules to false and clear their motivation
+      await tx.userModules.updateMany({
+        where: { userId, recommended: true },
+        data: { recommended: false, recommendationReason: null },
+      });
 
-      // 2) Unset recommended for anything NOT in the submitted list
-      if (uniqueIds.length === 0) {
-        await this.prisma.userModules.updateMany({
-          where: { userId, recommended: true },
-          data: { recommended: false },
-        });
-      } else {
-        await this.prisma.userModules.updateMany({
-          where: {
-            userId,
-            recommended: true,
-            moduleId: { notIn: uniqueIds },
-          },
-          data: { recommended: false },
-        });
-      }
-
-      // 3) Cleanup rows where both flags are false
-      await this.prisma.userModules.deleteMany({
+      // 2) Delete rows where both favorited and recommended are false
+      await tx.userModules.deleteMany({
         where: {
           userId,
           favorited: false,
           recommended: false,
         },
       });
+
+      // 3) Create or update the new recommended modules with their motivations
+      if (uniqueModules.length > 0) {
+        for (const module of uniqueModules) {
+          await tx.userModules.upsert({
+            where: {
+              userId_moduleId: {
+                userId,
+                moduleId: module.moduleId,
+              },
+            },
+            create: {
+              userId,
+              moduleId: module.moduleId,
+              recommended: true,
+              recommendationReason: module.motivation || null,
+              favorited: false,
+            },
+            update: {
+              recommended: true,
+              recommendationReason: module.motivation || null,
+            },
+          });
+        }
+      }
     });
   }
 }

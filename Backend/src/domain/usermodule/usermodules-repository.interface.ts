@@ -13,5 +13,8 @@ export interface IUserModulesRepository {
 
   // Recommended methods
   findRecommendedByUserId(userId: string): Promise<UserRecommended[]>;
-  setRecommendedModules(userId: string, moduleIds: number[]): Promise<void>;
+  setRecommendedModules(
+    userId: string,
+    modules: Array<{ moduleId: number; motivation?: string }>,
+  ): Promise<void>;
 }

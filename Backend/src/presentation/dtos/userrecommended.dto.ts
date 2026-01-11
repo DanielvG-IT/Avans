@@ -1,15 +1,36 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayUnique, IsArray, IsInt, Min } from 'class-validator';
+import { ArrayUnique, IsArray, IsInt, Min, IsString, IsOptional, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class RecommendedModuleDto {
+  @ApiProperty({
+    type: Number,
+    example: 12,
+    description: 'Module ID',
+  })
+  @IsInt()
+  @Min(1)
+  moduleId!: number;
+
+  @ApiProperty({
+    type: String,
+    example: 'Deze module ondersteunt jouw ambitie om...',
+    description: 'AI-generated motivation for why this module was recommended',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  motivation?: string;
+}
 
 export class SubmitRecommendedDto {
   @ApiProperty({
-    type: [Number],
-    example: [12, 34, 56],
-    description: 'List of Module IDs the user accepts as recommended',
+    type: [RecommendedModuleDto],
+    example: [{ moduleId: 12, motivation: 'Based on your interest...' }],
+    description: 'List of recommended modules with their motivations',
   })
   @IsArray()
-  @ArrayUnique()
-  @IsInt({ each: true })
-  @Min(1, { each: true })
-  moduleIds!: number[];
+  @ValidateNested({ each: true })
+  @Type(() => RecommendedModuleDto)
+  modules!: RecommendedModuleDto[];
 }

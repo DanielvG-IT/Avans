@@ -13,6 +13,10 @@ export interface IUserService {
   unfavoriteModule(userId: string, moduleId: number): Promise<void>;
 
   // User recommended methods
-  setRecommendedModules(userId: string, moduleIds: number[]): Promise<void>;
+  setRecommendedModules(
+    userId: string,
+    modules: Array<{ moduleId: number; motivation?: string }>,
+  ): Promise<void>;
   getRecommendedModuleIds(userId: string): Promise<number[]>;
+  getRecommendedModules(userId: string): Promise<Array<{ moduleId: number; motivation?: string | null }>>;
 }

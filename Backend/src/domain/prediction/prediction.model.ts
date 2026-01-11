@@ -37,4 +37,6 @@ export interface PredictionMatch {
   id: number;
   /** Cosine similarity score (0-1) indicating match quality */
   similarity_score: number;
+  /** AI-generated motivation explaining why this module matches */
+  motivation: string;
 }
