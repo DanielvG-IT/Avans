@@ -42,6 +42,10 @@ export class ModuleService implements IModuleService {
     return await this.moduleRepository.createModule(module);
   }
 
+  async deleteModule(id: number): Promise<void> {
+    return await this.moduleRepository.deleteModule(id);
+  }
+
   // ==========================================
   // Location Methods
   // ==========================================

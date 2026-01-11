@@ -8,6 +8,7 @@ import {
   UseGuards,
   HttpCode,
   Inject,
+  Delete,
   Param,
   Body,
   Post,
@@ -82,5 +83,15 @@ export class ModulesController {
     // Repository transaction will either return module or throw error
     const module = await this.moduleService.createModule(moduleData);
     return { module };
+  }
+
+  @Delete(':id')
+  @RequireAuth('ADMIN')
+  @HttpCode(HttpStatus.OK)
+  async deleteModule(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<{ success: boolean }> {
+    await this.moduleService.deleteModule(id);
+    return { success: true };
   }
 }

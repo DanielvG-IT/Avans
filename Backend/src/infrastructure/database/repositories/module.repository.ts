@@ -137,4 +137,15 @@ export class ModuleRepository implements IModuleRepository {
       availableSpots: created.availableSpots,
     } as moduleDetail;
   }
+
+  async deleteModule(id: number): Promise<void> {
+    // Verify module exists
+    const module = await this.prisma.module.findUnique({ where: { id } });
+    if (!module) {
+      throw new Error('Module not found');
+    }
+
+    // Delete module (cascade will handle related records due to onDelete: Cascade in schema)
+    await this.prisma.module.delete({ where: { id } });
+  }
 }
