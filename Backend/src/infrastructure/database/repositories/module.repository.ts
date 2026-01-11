@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import type {
   createModule,
   Module,
@@ -9,7 +9,7 @@ import { IModuleRepository } from '@/domain/module/module-repository.interface';
 
 @Injectable()
 export class ModuleRepository implements IModuleRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async getAllModules(): Promise<Module[]> {
     const modules = await this.prisma.module.findMany({
@@ -49,7 +49,7 @@ export class ModuleRepository implements IModuleRepository {
       },
     });
     if (!mod) {
-      throw new Error('Module not found');
+      throw new NotFoundException('Module not found');
     }
     return {
       id: mod.id,
@@ -142,7 +142,7 @@ export class ModuleRepository implements IModuleRepository {
     // Verify module exists
     const module = await this.prisma.module.findUnique({ where: { id } });
     if (!module) {
-      throw new Error('Module not found');
+      throw new NotFoundException('Module not found');
     }
 
     // Delete module (cascade will handle related records due to onDelete: Cascade in schema)
