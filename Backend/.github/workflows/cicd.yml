@@ -72,15 +72,19 @@ jobs:
           password: ${{ secrets.ACR_PASSWORD }}
 
       - name: Build Docker Image
+        env:
+          ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
         run: |
           docker build \
-            -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-            -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest .
+            -t "$ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:${{ github.sha }}" \
+            -t "$ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest" .
 
       - name: Push Docker Image
+        env:
+          ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
         run: |
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
+          docker push "$ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          docker push "$ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest"
 
   deploy:
     name: Deploy to Azure Container App
@@ -95,8 +99,12 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy Container App
+        env:
+          AZURE_CONTAINER_APP_NAME: ${{ secrets.AZURE_CONTAINER_APP_NAME }}
+          AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
+          ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
         run: |
           az containerapp update \
-            --name ${{ secrets.AZURE_CONTAINER_APP_NAME }} \
-            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-            --image ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            --name "$AZURE_CONTAINER_APP_NAME" \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --image "$ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:${{ github.sha }}"
