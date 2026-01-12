@@ -15,7 +15,7 @@ export class RequestLoggingMiddleware implements NestMiddleware {
 
     // Update session activity for authenticated users
     const session = req.session as SessionData;
-    if (session && session.user) {
+    if (session?.user) {
       session.lastActivity = Date.now();
     }
 

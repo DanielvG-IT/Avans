@@ -8,8 +8,8 @@ import {
 @Controller()
 export class AppController {
   constructor(
-    private health: HealthCheckService,
-    private memory: MemoryHealthIndicator,
+    private readonly health: HealthCheckService,
+    private readonly memory: MemoryHealthIndicator,
   ) {}
 
   @Get('health')

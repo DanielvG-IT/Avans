@@ -1,7 +1,6 @@
 import { RequireAuth } from '../decorators/auth.decorator';
 import { SessionGuard } from '../guards/session.guard';
 import {
-  BadRequestException,
   ParseIntPipe,
   Controller,
   HttpStatus,
@@ -16,12 +15,12 @@ import {
 } from '@nestjs/common';
 
 // -- imports for modules --
-import { IModuleService } from '@/application/ports/module.port';
-import { moduleDetail, Module } from '@/domain/module/module.model';
-import { Location } from '@/domain/location/location.model';
 import { CreateModuleTagDto } from '@/presentation/dtos/moduleTag.dto';
+import { ModuleDetail, Module } from '@/domain/module/module.model';
+import { IModuleService } from '@/application/ports/module.port';
 import { CreateModuleDTO } from '@/presentation/dtos/module.dto';
 import { ModuleTag } from '@/domain/moduletag/moduletag.model';
+import { Location } from '@/domain/location/location.model';
 
 @Controller('modules')
 @UseGuards(SessionGuard)
@@ -67,7 +66,7 @@ export class ModulesController {
   @HttpCode(HttpStatus.OK)
   async getModuleById(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<{ module: moduleDetail }> {
+  ): Promise<{ module: ModuleDetail }> {
     // Repository throws error if module not found, no null check needed
     const module = await this.moduleService.findById(id);
     return { module };
@@ -78,7 +77,7 @@ export class ModulesController {
   @HttpCode(HttpStatus.CREATED)
   async createModule(
     @Body() moduleData: CreateModuleDTO,
-  ): Promise<{ module: moduleDetail }> {
+  ): Promise<{ module: ModuleDetail }> {
     // studyCredits and level validation now handled by DTO validators
     // Repository transaction will either return module or throw error
     const module = await this.moduleService.createModule(moduleData);

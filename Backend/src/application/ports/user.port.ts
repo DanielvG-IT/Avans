@@ -18,5 +18,7 @@ export interface IUserService {
     modules: Array<{ moduleId: number; motivation?: string }>,
   ): Promise<void>;
   getRecommendedModuleIds(userId: string): Promise<number[]>;
-  getRecommendedModules(userId: string): Promise<Array<{ moduleId: number; motivation?: string | null }>>;
+  getRecommendedModules(
+    userId: string,
+  ): Promise<Array<{ moduleId: number; motivation?: string | null }>>;
 }

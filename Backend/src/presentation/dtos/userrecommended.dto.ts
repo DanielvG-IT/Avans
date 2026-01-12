@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayUnique, IsArray, IsInt, Min, IsString, IsOptional, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
+import {
+  ValidateNested,
+  IsOptional,
+  IsString,
+  IsArray,
+  IsInt,
+  Min,
+} from 'class-validator';
 
 export class RecommendedModuleDto {
   @ApiProperty({

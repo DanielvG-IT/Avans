@@ -15,8 +15,8 @@ export class SessionGuard implements CanActivate {
   private readonly INACTIVITY_TIMEOUT: number;
 
   constructor(
-    private reflector: Reflector,
-    private configService: ConfigService,
+    private readonly reflector: Reflector,
+    private readonly configService: ConfigService,
   ) {
     // Parse INACTIVITY_TIMEOUT once during construction
     this.INACTIVITY_TIMEOUT = this.configService.get<number>(
@@ -36,7 +36,7 @@ export class SessionGuard implements CanActivate {
     const session = request.session as SessionData;
 
     // 2. Check Authentication
-    if (!session || !session.user) {
+    if (!session?.user) {
       throw new UnauthorizedException('No active session found');
     }
 

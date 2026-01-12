@@ -74,10 +74,7 @@ export class UserController {
     @Body() body: SubmitRecommendedDto,
     @Session() session: AuthenticatedSession,
   ) {
-    await this.userService.setRecommendedModules(
-      session.user.id,
-      body.modules,
-    );
+    await this.userService.setRecommendedModules(session.user.id, body.modules);
     return { success: true };
   }
 

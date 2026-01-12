@@ -13,10 +13,6 @@ concurrency:
   group: backend-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
-  packages: write
-
 env:
   NODE_VERSION: 22
   IMAGE_NAME: compassgpt-backend
@@ -26,11 +22,15 @@ jobs:
     name: Build & Test
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      packages: write
+
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -41,7 +41,6 @@ jobs:
       - name: Prisma Generate
         env:
           # Use a dummy DATABASE_URL for code generation
-          # Prisma Client generation doesn't require a live database connection
           DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
         run: npx prisma generate
 
@@ -58,18 +57,19 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/release'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - name: Azure Login
-        uses: azure/login@v1
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Login to ACR
-        run: |
-          echo ${{ secrets.ACR_PASSWORD }} | docker login \
-            ${{ secrets.ACR_LOGIN_SERVER }} \
-            -u ${{ secrets.ACR_USERNAME }} --password-stdin
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          registry: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
 
       - name: Build Docker Image
         run: |
@@ -90,7 +90,7 @@ jobs:
 
     steps:
       - name: Azure Login
-        uses: azure/login@v1
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 

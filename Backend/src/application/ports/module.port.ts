@@ -1,7 +1,7 @@
 import {
   Module,
-  moduleDetail,
-  createModule,
+  ModuleDetail,
+  CreateModule,
 } from '@/domain/module/module.model';
 import { Location } from '@/domain/location/location.model';
 import { ModuleTag } from '@/domain/moduletag/moduletag.model';
@@ -9,8 +9,8 @@ import { ModuleTag } from '@/domain/moduletag/moduletag.model';
 export interface IModuleService {
   // Module methods
   getAllModules(): Promise<Module[]>;
-  findById(id: number): Promise<moduleDetail>;
-  createModule(module: createModule): Promise<moduleDetail>;
+  findById(id: number): Promise<ModuleDetail>;
+  createModule(module: CreateModule): Promise<ModuleDetail>;
   deleteModule(id: number): Promise<void>;
 
   // Location methods

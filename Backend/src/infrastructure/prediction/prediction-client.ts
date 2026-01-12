@@ -88,15 +88,13 @@ export class PredictionClient implements IPredictionClient {
    * Extract error message from various response formats
    */
   private extractErrorMessage(responseData: unknown, status: number): string {
-    // Handle Pydantic validation errors (FastAPI format)
-    if (
-      responseData &&
-      typeof responseData === 'object' &&
-      'detail' in responseData
-    ) {
-      const detail = (responseData as Record<string, unknown>).detail;
+    // Helper to check for object property
+    const hasProp = (obj: unknown, prop: string): boolean =>
+      !!obj && typeof obj === 'object' && prop in obj;
 
-      // If detail is an array of validation errors
+    // Handle Pydantic validation errors (FastAPI format)
+    if (hasProp(responseData, 'detail')) {
+      const detail = (responseData as Record<string, unknown>).detail;
       if (Array.isArray(detail)) {
         const validationErrors = detail
           .map((err) => {
@@ -114,46 +112,24 @@ export class PredictionClient implements IPredictionClient {
           .join('; ');
         return `Validation error: ${validationErrors}`;
       }
-
-      // If detail is a string
-      if (typeof detail === 'string') {
-        return detail;
-      }
-
-      // If detail is an object
-      if (typeof detail === 'object') {
-        return JSON.stringify(detail);
-      }
+      if (typeof detail === 'string') return detail;
+      if (typeof detail === 'object') return JSON.stringify(detail);
     }
 
     // Handle generic message field
-    if (
-      responseData &&
-      typeof responseData === 'object' &&
-      'message' in responseData
-    ) {
+    if (hasProp(responseData, 'message')) {
       const msg = (responseData as Record<string, unknown>).message;
-      if (typeof msg === 'string') {
-        return msg;
-      }
+      if (typeof msg === 'string') return msg;
     }
 
     // Handle error field
-    if (
-      responseData &&
-      typeof responseData === 'object' &&
-      'error' in responseData
-    ) {
+    if (hasProp(responseData, 'error')) {
       const err = (responseData as Record<string, unknown>).error;
-      if (typeof err === 'string') {
-        return err;
-      }
+      if (typeof err === 'string') return err;
     }
 
     // Handle plain string response
-    if (typeof responseData === 'string') {
-      return responseData;
-    }
+    if (typeof responseData === 'string') return responseData;
 
     // Fallback with HTTP status code hint
     const statusText: Record<number, string> = {

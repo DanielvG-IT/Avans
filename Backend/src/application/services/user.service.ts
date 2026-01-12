@@ -73,7 +73,9 @@ export class UserService implements IUserService {
     return recommended.map((r) => r.moduleId);
   }
 
-  async getRecommendedModules(userId: string): Promise<Array<{ moduleId: number; motivation?: string | null }>> {
+  async getRecommendedModules(
+    userId: string,
+  ): Promise<Array<{ moduleId: number; motivation?: string | null }>> {
     const recommended =
       await this.userModulesRepository.findRecommendedByUserId(userId);
     return recommended.map((r) => ({

@@ -111,7 +111,7 @@ export class ModulePredictionDto {
   module!: {
     id: number;
     name: string;
-    shortdescription: string;
+    shortDescription: string;
     studyCredits: number;
     level: string;
     location: { id: number; name: string }[];

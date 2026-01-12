@@ -26,7 +26,7 @@ export class LoggerService extends ConsoleLogger {
       timestamp: new Date().toISOString(),
       level,
       context: context ?? this.contextName,
-      message: typeof message === 'string' ? message : message,
+      message,
       ...(meta ? { meta } : {}),
     };
 

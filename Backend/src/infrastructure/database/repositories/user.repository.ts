@@ -9,6 +9,26 @@ import { Result, succeed, fail } from '@/result';
 export class UserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  private toDomain(user: {
+    id: string;
+    name: string;
+    email: string;
+    hashedPassword: string;
+    role: unknown;
+    createdAt: Date;
+    updatedAt: Date;
+  }): User {
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      hashedPassword: user.hashedPassword,
+      role: user.role as UserRole,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  }
+
   async findById(id: string): Promise<Result<User>> {
     try {
       const user = await this.prisma.user.findUnique({
@@ -17,17 +37,7 @@ export class UserRepository implements IUserRepository {
 
       if (!user) return fail(new Error('User not found'));
 
-      const domainUser: User = {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        hashedPassword: user.hashedPassword,
-        role: user.role as UserRole,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      };
-
-      return succeed(domainUser);
+      return succeed(this.toDomain(user));
     } catch (error) {
       return fail(error instanceof Error ? error : new Error('Unknown error'));
     }
@@ -40,17 +50,7 @@ export class UserRepository implements IUserRepository {
 
       if (!user) return fail(new Error('User not found'));
 
-      const domainUser: User = {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        hashedPassword: user.hashedPassword,
-        role: user.role as UserRole,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      };
-
-      return succeed(domainUser);
+      return succeed(this.toDomain(user));
     } catch (error) {
       return fail(error instanceof Error ? error : new Error('Unknown error'));
     }
@@ -70,17 +70,7 @@ export class UserRepository implements IUserRepository {
         },
       });
 
-      const domainUser: User = {
-        id: createdUser.id,
-        name: createdUser.name,
-        email: createdUser.email,
-        hashedPassword: createdUser.hashedPassword,
-        role: createdUser.role as UserRole,
-        createdAt: createdUser.createdAt,
-        updatedAt: createdUser.updatedAt,
-      };
-
-      return succeed(domainUser);
+      return succeed(this.toDomain(createdUser));
     } catch (error) {
       return fail(error instanceof Error ? error : new Error('Unknown error'));
     }
@@ -101,17 +91,7 @@ export class UserRepository implements IUserRepository {
         data,
       });
 
-      const domainUser: User = {
-        id: updatedUser.id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        hashedPassword: updatedUser.hashedPassword,
-        role: updatedUser.role as UserRole,
-        createdAt: updatedUser.createdAt,
-        updatedAt: updatedUser.updatedAt,
-      };
-
-      return succeed(domainUser);
+      return succeed(this.toDomain(updatedUser));
     } catch (error) {
       return fail(error instanceof Error ? error : new Error('Unknown error'));
     }

@@ -5,8 +5,8 @@ import { type IModuleRepository } from '@/domain/module/module-repository.interf
 import { IModuleService } from '@/application/ports/module.port';
 import {
   Module,
-  moduleDetail,
-  createModule,
+  ModuleDetail,
+  CreateModule,
 } from '@/domain/module/module.model';
 
 // -- imports for locations --
@@ -34,11 +34,11 @@ export class ModuleService implements IModuleService {
     return await this.moduleRepository.getAllModules();
   }
 
-  async findById(id: number): Promise<moduleDetail> {
+  async findById(id: number): Promise<ModuleDetail> {
     return await this.moduleRepository.findById(id);
   }
 
-  async createModule(module: createModule): Promise<moduleDetail> {
+  async createModule(module: CreateModule): Promise<ModuleDetail> {
     return await this.moduleRepository.createModule(module);
   }
 

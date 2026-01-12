@@ -1,6 +1,6 @@
 import { IUserModulesRepository } from '@/domain/usermodule/usermodules-repository.interface';
-import { UserFavorite } from '@/domain/usermodule/userfavorite.model';
 import { UserRecommended } from '@/domain/usermodule/userrecommended.model';
+import { UserFavorite } from '@/domain/usermodule/userfavorite.model';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma';
 
@@ -76,18 +76,8 @@ export class UserModulesRepository implements IUserModulesRepository {
 
     if (!existing) return;
 
-    // If recommended is also false, delete the row entirely
-    if (!existing.recommended) {
-      await this.prisma.userModules.delete({
-        where: {
-          userId_moduleId: {
-            userId,
-            moduleId: moduleId,
-          },
-        },
-      });
-    } else {
-      // Otherwise just unset favorited
+    // If only favorited is false, update the row to set favorited to false
+    if (existing.recommended) {
       await this.prisma.userModules.update({
         where: {
           userId_moduleId: {
@@ -96,6 +86,17 @@ export class UserModulesRepository implements IUserModulesRepository {
           },
         },
         data: { favorited: false },
+      });
+    }
+    // If recommended is also false, delete the row entirely
+    else {
+      await this.prisma.userModules.delete({
+        where: {
+          userId_moduleId: {
+            userId,
+            moduleId: moduleId,
+          },
+        },
       });
     }
   }
@@ -135,8 +136,6 @@ export class UserModulesRepository implements IUserModulesRepository {
           .map((m) => [m.moduleId, m]),
       ).values(),
     );
-
-    const uniqueIds = uniqueModules.map((m) => m.moduleId);
 
     await this.prisma.$transaction(async (tx) => {
       // 1) First, set all existing recommended modules to false and clear their motivation

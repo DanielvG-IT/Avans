@@ -74,7 +74,7 @@ export class CreateModuleDTO {
   @ApiProperty({ description: 'Short description' })
   @IsString()
   @IsNotEmpty({ message: 'Short description is required' })
-  shortdescription!: string;
+  shortDescription!: string;
 }
 
 export class ModuleDTO {
@@ -85,7 +85,7 @@ export class ModuleDTO {
   name: string;
 
   @ApiProperty()
-  shortdescription: string;
+  shortDescription: string;
 
   @ApiProperty()
   description: string;

@@ -24,7 +24,7 @@ import { SessionGuard } from '../guards/session.guard';
 export class AuthController {
   constructor(
     @Inject('SERVICE.AUTH') private readonly authService: IAuthService,
-  ) { }
+  ) {}
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -32,7 +32,7 @@ export class AuthController {
     @Body() dto: LoginDto,
     @Session() session: SessionData,
   ): Promise<{ user: UserDTO }> {
-    if (session && session.user) {
+    if (session?.user) {
       throw new ConflictException('Already authenticated');
     }
 

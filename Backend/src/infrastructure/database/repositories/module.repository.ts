@@ -1,15 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type {
-  createModule,
+  CreateModule,
   Module,
-  moduleDetail,
+  ModuleDetail,
 } from '@/domain/module/module.model';
 import { PrismaService } from '../prisma';
 import { IModuleRepository } from '@/domain/module/module-repository.interface';
 
 @Injectable()
 export class ModuleRepository implements IModuleRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async getAllModules(): Promise<Module[]> {
     const modules = await this.prisma.module.findMany({
@@ -26,7 +26,7 @@ export class ModuleRepository implements IModuleRepository {
     return modules.map((mod) => ({
       id: mod.id,
       name: mod.name,
-      shortdescription: mod.shortDescription ?? '',
+      shortDescription: mod.shortDescription ?? '',
       studyCredits: mod.studyCredits,
       level: mod.level,
       startDate: mod.startDate,
@@ -36,7 +36,7 @@ export class ModuleRepository implements IModuleRepository {
       })),
     }));
   }
-  async findById(id: number): Promise<moduleDetail> {
+  async findById(id: number): Promise<ModuleDetail> {
     const mod = await this.prisma.module.findUnique({
       where: { id },
       include: {
@@ -54,6 +54,7 @@ export class ModuleRepository implements IModuleRepository {
     return {
       id: mod.id,
       name: mod.name,
+      shortDescription: mod.shortDescription ?? '',
       description: mod.description ?? '',
       content: mod.content ?? '',
       level: mod.level,
@@ -69,14 +70,14 @@ export class ModuleRepository implements IModuleRepository {
       })),
       learningOutcomes: mod.learningOutcomes ?? '',
       availableSpots: mod.availableSpots,
-    } as moduleDetail;
+    } as ModuleDetail;
   }
-  async createModule(module: createModule): Promise<moduleDetail> {
+  async createModule(module: CreateModule): Promise<ModuleDetail> {
     const created = await this.prisma.$transaction(async (tx) => {
       const baseModule = await tx.module.create({
         data: {
           name: module.name,
-          shortDescription: module.shortdescription,
+          shortDescription: module.shortDescription,
           description: module.description,
           content: module.content,
           level: module.level,
@@ -120,6 +121,7 @@ export class ModuleRepository implements IModuleRepository {
     return {
       id: created.id,
       name: created.name,
+      shortDescription: created.shortDescription ?? '',
       description: created.description ?? '',
       content: created.content ?? '',
       level: created.level,
@@ -135,7 +137,7 @@ export class ModuleRepository implements IModuleRepository {
       })),
       learningOutcomes: created.learningOutcomes ?? '',
       availableSpots: created.availableSpots,
-    } as moduleDetail;
+    } as ModuleDetail;
   }
 
   async deleteModule(id: number): Promise<void> {

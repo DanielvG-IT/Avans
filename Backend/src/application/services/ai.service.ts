@@ -69,7 +69,7 @@ export class AiService implements IAiService {
               module: {
                 id: module.id,
                 name: module.name,
-                shortdescription: module.description,
+                shortDescription: module.shortDescription,
                 studyCredits: module.studyCredits,
                 level: module.level,
                 location: module.location,
