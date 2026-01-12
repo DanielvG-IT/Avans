@@ -34,6 +34,10 @@ export class ModuleService implements IModuleService {
     return await this.moduleRepository.getAllModules();
   }
 
+  async findManyByIds(ids: number[]): Promise<ModuleDetail[]> {
+    return await this.moduleRepository.findManyByIds(ids);
+  }
+
   async findById(id: number): Promise<ModuleDetail> {
     return await this.moduleRepository.findById(id);
   }

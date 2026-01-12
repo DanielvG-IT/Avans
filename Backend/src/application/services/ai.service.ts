@@ -55,40 +55,33 @@ export class AiService implements IAiService {
 
       this.logger?.log(`Received ${matches.length} prediction matches`);
 
-      // Fetch full module details for each prediction
-      const predictions = await Promise.all(
-        matches.map(async (match) => {
-          try {
-            const module = await this.moduleService.findById(match.id);
-            if (!module) {
-              throw new Error(
-                `Kan de aanbevolen module (ID: ${match.id}) niet vinden in de database`,
-              );
-            }
-            return {
-              module: {
-                id: module.id,
-                name: module.name,
-                shortDescription: module.shortDescription,
-                studyCredits: module.studyCredits,
-                level: module.level,
-                location: module.location,
-                startDate: module.startDate,
-              },
-              score: match.similarity_score,
-              motivation: match.motivation,
-            };
-          } catch (moduleError: unknown) {
-            const msg =
-              moduleError instanceof Error
-                ? moduleError.message
-                : 'Onbekende fout bij ophalen module';
-            throw new Error(
-              `Kan de aanbevolen module (ID: ${match.id}) niet verwerken: ${msg}`,
-            );
-          }
-        }),
-      );
+      const ids = matches.map((match) => match.id);
+      const modules = await this.moduleService.findManyByIds(ids);
+      const moduleById = new Map(modules.map((mod) => [mod.id, mod]));
+
+      const predictions = matches.map((match) => {
+        const module = moduleById.get(match.id);
+
+        if (!module) {
+          throw new Error(
+            `Kan de aanbevolen module (ID: ${match.id}) niet vinden in de database`,
+          );
+        }
+
+        return {
+          module: {
+            id: module.id,
+            name: module.name,
+            shortDescription: module.shortDescription,
+            studyCredits: module.studyCredits,
+            level: module.level,
+            location: module.location,
+            startDate: module.startDate,
+          },
+          score: match.similarity_score,
+          motivation: match.motivation,
+        };
+      });
 
       return succeed({ predictions });
     } catch (error: unknown) {

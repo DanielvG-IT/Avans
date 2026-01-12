@@ -36,6 +36,57 @@ export class ModuleRepository implements IModuleRepository {
       })),
     }));
   }
+
+  async findManyByIds(ids: number[]): Promise<ModuleDetail[]> {
+    const uniqueIds = Array.from(
+      new Set(ids.filter((id) => Number.isInteger(id) && id > 0)),
+    );
+
+    if (uniqueIds.length === 0) return [];
+
+    const modules = await this.prisma.module.findMany({
+      where: { id: { in: uniqueIds } },
+      include: {
+        location: {
+          include: { Location: true },
+        },
+        moduleTags: {
+          include: { ModuleTag: true },
+        },
+      },
+    });
+
+    if (modules.length !== uniqueIds.length) {
+      const missing = uniqueIds.filter(
+        (id) => !modules.some((mod) => mod.id === id),
+      );
+      throw new NotFoundException(`Module(s) not found: ${missing.join(', ')}`);
+    }
+
+    return modules.map(
+      (mod) =>
+        ({
+          id: mod.id,
+          name: mod.name,
+          shortDescription: mod.shortDescription ?? '',
+          description: mod.description ?? '',
+          content: mod.content ?? '',
+          level: mod.level,
+          studyCredits: mod.studyCredits,
+          startDate: mod.startDate,
+          location: mod.location.map((cml) => ({
+            id: cml.Location.id,
+            name: cml.Location.name,
+          })),
+          moduleTags: mod.moduleTags.map((cmt) => ({
+            id: cmt.ModuleTag.id,
+            name: cmt.ModuleTag.name,
+          })),
+          learningOutcomes: mod.learningOutcomes ?? '',
+          availableSpots: mod.availableSpots,
+        }) as ModuleDetail,
+    );
+  }
   async findById(id: number): Promise<ModuleDetail> {
     const mod = await this.prisma.module.findUnique({
       where: { id },
