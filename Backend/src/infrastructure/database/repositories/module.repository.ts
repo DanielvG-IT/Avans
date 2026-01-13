@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type {
   CreateModule,
+  UpdateModule,
   Module,
   ModuleDetail,
 } from '@/domain/module/module.model';
@@ -188,6 +189,94 @@ export class ModuleRepository implements IModuleRepository {
       })),
       learningOutcomes: created.learningOutcomes ?? '',
       availableSpots: created.availableSpots,
+    } as ModuleDetail;
+  }
+
+  async updateModule(
+    id: number,
+    module: UpdateModule,
+  ): Promise<ModuleDetail> {
+    // Verify module exists
+    const existingModule = await this.prisma.module.findUnique({
+      where: { id },
+    });
+    if (!existingModule) {
+      throw new NotFoundException('Module not found');
+    }
+
+    const updated = await this.prisma.$transaction(async (tx) => {
+      // Update base module
+      const baseModule = await tx.module.update({
+        where: { id },
+        data: {
+          name: module.name,
+          shortDescription: module.shortDescription,
+          description: module.description,
+          content: module.content,
+          level: module.level,
+          studyCredits: module.studyCredits,
+          startDate: module.startDate,
+          availableSpots: module.availableSpots,
+          learningOutcomes: module.learningOutcomes,
+        },
+      });
+
+      // Delete existing locations and tags
+      await tx.moduleLocation.deleteMany({ where: { moduleId: id } });
+      await tx.moduleTags.deleteMany({ where: { moduleId: id } });
+
+      // Add new locations
+      if (module.location.length > 0) {
+        await tx.moduleLocation.createMany({
+          data: module.location.map((loc) => ({
+            moduleId: baseModule.id,
+            locationId: loc.id,
+          })),
+        });
+      }
+
+      // Add new tags
+      if (module.moduleTags.length > 0) {
+        await tx.moduleTags.createMany({
+          data: module.moduleTags.map((tag) => ({
+            moduleId: baseModule.id,
+            moduleTagId: tag.id,
+          })),
+        });
+      }
+
+      return tx.module.findUnique({
+        where: { id: baseModule.id },
+        include: {
+          location: { include: { Location: true } },
+          moduleTags: { include: { ModuleTag: true } },
+        },
+      });
+    });
+
+    if (!updated) {
+      throw new Error('Failed to update module');
+    }
+
+    return {
+      id: updated.id,
+      name: updated.name,
+      shortDescription: updated.shortDescription ?? '',
+      description: updated.description ?? '',
+      content: updated.content ?? '',
+      level: updated.level,
+      studyCredits: updated.studyCredits,
+      startDate: updated.startDate,
+      location: updated.location.map((cml) => ({
+        id: cml.Location.id,
+        name: cml.Location.name,
+      })),
+      moduleTags: updated.moduleTags.map((cmt) => ({
+        id: cmt.ModuleTag.id,
+        name: cmt.ModuleTag.name,
+      })),
+      learningOutcomes: updated.learningOutcomes ?? '',
+      availableSpots: updated.availableSpots,
     } as ModuleDetail;
   }
 

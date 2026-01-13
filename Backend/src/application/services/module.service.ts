@@ -7,6 +7,7 @@ import {
   Module,
   ModuleDetail,
   CreateModule,
+  UpdateModule,
 } from '@/domain/module/module.model';
 
 // -- imports for locations --
@@ -44,6 +45,10 @@ export class ModuleService implements IModuleService {
 
   async createModule(module: CreateModule): Promise<ModuleDetail> {
     return await this.moduleRepository.createModule(module);
+  }
+
+  async updateModule(id: number, module: UpdateModule): Promise<ModuleDetail> {
+    return await this.moduleRepository.updateModule(id, module);
   }
 
   async deleteModule(id: number): Promise<void> {

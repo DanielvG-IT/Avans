@@ -34,3 +34,5 @@ export interface CreateModule {
   startDate: string;
   shortDescription: string;
 }
+
+export type UpdateModule = CreateModule;
