@@ -13,14 +13,78 @@ concurrency:
 permissions:
   contents: read
   packages: write
+  security-events: write # For SARIF reports
 
 env:
   PYTHON_VERSION: "3.11"
   IMAGE_NAME: compassgpt-ai
 
 jobs:
+  # 1. Secret Scanning
+  secret_scan:
+    name: Detect Secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Full history for gitleaks
+
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v2
+
+  # 2. Dependency Scanning
+  sca_scan:
+    name: SCA - Dependency Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run safety check (Python dependencies)
+        run: |
+          pip install safety
+          safety check --json > safety-report.json || true
+
+      - name: Upload safety report
+        uses: actions/upload-artifact@v3
+        with:
+          name: ai-safety-report
+          path: safety-report.json
+
+  # 3. SAST Scanning with SonarQube
+  sast_scan:
+    name: SAST - SonarQube Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for better relevancy of analysis
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@master
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=compassgpt-ai
+            -Dsonar.sources=.
+            -Dsonar.exclusions=**/__pycache__/**,**/venv/**,**/.venv/**
+
+  # 4. Build & Test
   build_test:
     name: Build & Test
+    needs: [secret_scan, sca_scan]
     runs-on: ubuntu-latest
 
     steps:
@@ -65,6 +129,25 @@ jobs:
           docker build \
             -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
             -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest .
+
+      - name: Generate SBOM (syft)
+        run: |
+          # Install syft
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+          # Generate SBOM in CycloneDX format
+          syft ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            -o cyclonedx-json > sbom.cyclonedx.json
+          # Generate SBOM in SPDX format
+          syft ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            -o spdx-json > sbom.spdx.json
+
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ai-sbom
+          path: |
+            sbom.cyclonedx.json
+            sbom.spdx.json
 
       - name: Push Docker Image
         run: |
