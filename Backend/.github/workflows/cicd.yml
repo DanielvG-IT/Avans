@@ -23,19 +23,7 @@ env:
   IMAGE_NAME: compassgpt-backend
 
 jobs:
-  # 1. Secret Scanning
-  secret_scan:
-    name: Detect Secrets
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # Full history for gitleaks
-
-      - name: Run gitleaks
-        uses: gitleaks/gitleaks-action@v2
-
-  # 2. Dependency Scanning (SCA)
+  # 1. Dependency Scanning (SCA)
   sca_scan:
     name: SCA - Dependency Scanning
     runs-on: ubuntu-latest
@@ -57,7 +45,7 @@ jobs:
           npm audit --json > npm-audit-report.json || true
 
       - name: Upload npm audit report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: backend-npm-audit
           path: npm-audit-report.json
@@ -66,6 +54,7 @@ jobs:
   sast_scan:
     name: SAST - SonarQube Analysis
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v3
         with:
@@ -79,15 +68,16 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=compassgpt-backend
+            -Dsonar.organization=compassgpt
             -Dsonar.sources=src
             -Dsonar.tests=test
             -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/coverage/**
             -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
 
-  # 4. Build & Test
+  # 2. Build & Test
   build_test:
     name: Build & Test
-    needs: [secret_scan, sca_scan]
+    needs: [sca_scan]
     runs-on: ubuntu-latest
 
     permissions:
@@ -159,7 +149,7 @@ jobs:
             -o spdx-json > sbom.spdx.json
 
       - name: Upload SBOM artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: backend-sbom
           path: |

@@ -44,8 +44,8 @@ async function bootstrap() {
       saveUninitialized: false,
       rolling: true, // Reset maxAge on every request
       cookie: {
-        // For cross-site requests (frontend != backend) browsers require SameSite='None' and Secure=true
-        sameSite: isProduction ? 'none' : 'lax',
+        // Use strict SameSite in production to mitigate CSRF; keep lax in non-production
+        sameSite: isProduction ? 'strict' : 'lax',
         secure: isProduction,
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 2 // 2 hours
