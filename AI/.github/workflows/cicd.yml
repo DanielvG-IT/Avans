@@ -66,6 +66,7 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=compassgpt-ai
+            -Dsonar.organization=compassgpt
             -Dsonar.sources=.
             -Dsonar.exclusions=**/__pycache__/**,**/venv/**,**/.venv/**
 
