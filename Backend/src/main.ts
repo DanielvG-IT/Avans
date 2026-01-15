@@ -65,6 +65,16 @@ async function bootstrap() {
     }),
   );
 
+  // Ensure clients that omit the API version header still hit versioned routes
+  // If a request doesn't include `X-API-Version`, default it to '1'
+  app.use((req: any, _res: any, next: any) => {
+    if (!req.headers || !req.headers['x-api-version']) {
+      req.headers = req.headers || {};
+      req.headers['x-api-version'] = '1';
+    }
+    next();
+  });
+
   // API Versioning
   app.enableVersioning({
     type: VersioningType.HEADER,
