@@ -48,7 +48,7 @@ async function bootstrap() {
         sameSite: isProduction ? 'none' : 'lax',
         secure: isProduction,
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24, // 24 hours
+        maxAge: 1000 * 60 * 60 * 2 // 2 hours
       },
     }),
   );
