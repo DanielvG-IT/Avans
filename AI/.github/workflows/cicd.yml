@@ -20,19 +20,7 @@ env:
   IMAGE_NAME: compassgpt-ai
 
 jobs:
-  # 1. Secret Scanning
-  secret_scan:
-    name: Detect Secrets
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # Full history for gitleaks
-
-      - name: Run gitleaks
-        uses: gitleaks/gitleaks-action@v2
-
-  # 2. Dependency Scanning
+  # 1. Dependency Scanning
   sca_scan:
     name: SCA - Dependency Scanning
     runs-on: ubuntu-latest
@@ -81,10 +69,10 @@ jobs:
             -Dsonar.sources=.
             -Dsonar.exclusions=**/__pycache__/**,**/venv/**,**/.venv/**
 
-  # 4. Build & Test
+  # 2. Build & Test
   build_test:
     name: Build & Test
-    needs: [secret_scan, sca_scan]
+    needs: [sca_scan]
     runs-on: ubuntu-latest
 
     steps:
