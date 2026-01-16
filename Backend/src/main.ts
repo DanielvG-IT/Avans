@@ -44,11 +44,11 @@ async function bootstrap() {
       saveUninitialized: false,
       rolling: true, // Reset maxAge on every request
       cookie: {
-        // For cross-site requests (frontend != backend) browsers require SameSite='None' and Secure=true
-        sameSite: isProduction ? 'none' : 'lax',
+        // Use strict SameSite in production to mitigate CSRF; keep lax in non-production
+        sameSite: isProduction ? 'strict' : 'lax',
         secure: isProduction,
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24, // 24 hours
+        maxAge: 1000 * 60 * 60 * 2 // 2 hours
       },
     }),
   );
@@ -64,6 +64,16 @@ async function bootstrap() {
       },
     }),
   );
+
+  // Ensure clients that omit the API version header still hit versioned routes
+  // If a request doesn't include `X-API-Version`, default it to '1'
+  app.use((req: any, _res: any, next: any) => {
+    if (!req.headers || !req.headers['x-api-version']) {
+      req.headers = req.headers || {};
+      req.headers['x-api-version'] = '1';
+    }
+    next();
+  });
 
   // API Versioning
   app.enableVersioning({
