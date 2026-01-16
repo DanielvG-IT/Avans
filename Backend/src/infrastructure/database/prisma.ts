@@ -10,19 +10,29 @@ export class PrismaService
   implements OnModuleInit, OnModuleDestroy
 {
   constructor(private readonly logger: LoggerService) {
-    // Use individual environment variables for database connection
-    const adapter = new PrismaMariaDb({
-      host: process.env.DB_HOSTNAME || 'compassgptdatabase.mysql.database.azure.com',
-      port: Number.parseInt(process.env.DB_PORT || '3306', 10),
-      user: process.env.DB_USERNAME || 'dbadmin',
-      password: process.env.DB_PASSWORD!,
-      database: process.env.DB_NAME || 'compassgpt',
-      connectionLimit: Number.parseInt(process.env.DB_CONN_LIMIT || '20', 10),
-      connectTimeout: Number.parseInt(process.env.DB_CONNECT_TIMEOUT_MS || '30000', 10),
-      ssl: {
-        rejectUnauthorized: true,
-      },
-    });
+    // In development, use simple connection config. In production, use detailed config with SSL
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    
+    const adapter = isDevelopment
+      ? new PrismaMariaDb({
+          host: process.env.DB_HOSTNAME || 'localhost',
+          port: Number.parseInt(process.env.DB_PORT || '3306', 10),
+          user: process.env.DB_USERNAME || 'root',
+          password: process.env.DB_PASSWORD!,
+          database: process.env.DB_NAME || 'compassgpt',
+        })
+      : new PrismaMariaDb({
+          host: process.env.DB_HOSTNAME || 'compassgptdatabase.mysql.database.azure.com',
+          port: Number.parseInt(process.env.DB_PORT || '3306', 10),
+          user: process.env.DB_USERNAME || 'dbadmin',
+          password: process.env.DB_PASSWORD!,
+          database: process.env.DB_NAME || 'compassgpt',
+          connectionLimit: Number.parseInt(process.env.DB_CONN_LIMIT || '20', 10),
+          connectTimeout: Number.parseInt(process.env.DB_CONNECT_TIMEOUT_MS || '30000', 10),
+          ssl: {
+            rejectUnauthorized: true,
+          },
+        });
     super({ adapter });
 
     this.logger.setContext('PrismaService');
