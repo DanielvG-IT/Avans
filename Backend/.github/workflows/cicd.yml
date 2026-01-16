@@ -162,28 +162,3 @@ jobs:
         run: |
           docker push "$ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:${{ github.sha }}"
           docker push "$ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest"
-
-  deploy:
-    name: Deploy to Azure Container App
-    runs-on: ubuntu-latest
-    needs: [docker_build_push]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/release' && needs.docker_build_push.result == 'success'
-
-    steps:
-      - name: Azure Login
-        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Set Subscription
-        run: az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Deploy Container App
-        env:
-          AZURE_CONTAINER_APP_NAME: ${{ secrets.AZURE_CONTAINER_APP_NAME }}
-          AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
-          ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
-        run: |
-          az containerapp update \
-            --name "$AZURE_CONTAINER_APP_NAME" \
-            --resource-group "$AZURE_RESOURCE_GROUP" \
-            --image "$ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:${{ github.sha }}"
