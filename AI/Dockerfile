@@ -38,8 +38,9 @@ USER aiuser
 
 EXPOSE 8000
 
-# Health check (Note: changed to use a simple python socket check to avoid needing 'requests' installed)
+# Health check (simple python http request)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)" || exit 1
 
-CMD ["uvicorn", "AI.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Use a small boot script that ensures /app is on sys.path before importing app
+CMD ["python", "boot.py"]

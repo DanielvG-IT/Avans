@@ -1,6 +1,6 @@
 from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
-from AI.models.student_input import StudentInput
+from models.student_input import StudentInput
 import pandas as pd
 import numpy as np
 import json
