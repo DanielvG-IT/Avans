@@ -31,7 +31,7 @@ export class PredictionClient implements IPredictionClient {
   public async getPrediction(
     payload: PredictionPayload,
   ): Promise<PredictionMatch[]> {
-    const url = `${this.aiServiceUrl}/predict`;
+    const url = `${this.aiServiceUrl}/predict/`;
 
     this.logger.log(
       `Sending payload to AI service: ${JSON.stringify(payload)}`,
