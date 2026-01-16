@@ -3,38 +3,43 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Ensure application root is on Python path so top-level imports work
-ENV PYTHONPATH=/app
+# Ensure application root is on Python path
+ENV PYTHONPATH=/app \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-# Install system dependencies
+# 1. Install system dependencies (needed for scikit-learn/scipy builds)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
+# 2. OPTIMIZATION: Install heavy AI libraries FIRST and force CPU versions
+# This layer is huge but changes rarely, so it will stay cached.
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir \
+    torch --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir sentence-transformers scikit-learn
+
+# 3. Copy requirements (which should now only contain light web libraries)
 COPY requirements.txt ./
 
-# Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# 4. Install remaining dependencies
+# Because torch/sentence-transformers are already installed, pip will skip them here.
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# 5. Copy application code
 COPY . .
 
-# Create non-root user
+# 6. Security: Create non-root user
 RUN useradd -m -u 1001 aiuser && \
     chown -R aiuser:aiuser /app
-
-# Switch to non-root user
 USER aiuser
 
-# Expose port (adjust based on your application)
 EXPOSE 8000
 
-# Health check
+# Health check (Note: changed to use a simple python socket check to avoid needing 'requests' installed)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8000/health')" || exit 1
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)" || exit 1
 
-# Start application with uvicorn
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
