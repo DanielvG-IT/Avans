@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, BadRequestException } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 
 import { AiController } from '@/presentation/controllers/ai.controller';
