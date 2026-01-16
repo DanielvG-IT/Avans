@@ -1,6 +1,6 @@
 from typing import Union
 from fastapi import FastAPI
-from controllers.predict_controller import router as predict_router
+from AI.controllers.predict_controller import router as predict_router
 
 app = FastAPI()
 app.include_router(predict_router)

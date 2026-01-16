@@ -1,8 +1,8 @@
 from fastapi import APIRouter
-from models.student_input import StudentInput
+from AI.models.student_input import StudentInput
 
 # Importing services
-from services.predict_service import get_top_5_prediction
+from AI.services.predict_service import get_top_5_prediction
 
 router = APIRouter(
     prefix="/predict",
