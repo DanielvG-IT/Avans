@@ -84,14 +84,11 @@ docker-compose*.yml
 
 # Models and data (if large)
 # models/ - commented out because we need the models/ package with Python code
-*.pkl
+# Note: We need data/cleaned/ and data/processed/ for predictions, so only ignore raw data
 *.h5
 *.pth
 *.onnx
-# Only ignore the data directory, not the models source code
 data/raw/
-data/processed/
-data/cleaned/
 datasets/
 
 # Logs
