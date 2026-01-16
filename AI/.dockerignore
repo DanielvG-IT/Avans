@@ -83,12 +83,15 @@ docker-compose*.yml
 *.ipynb
 
 # Models and data (if large)
-models/
+# models/ - commented out because we need the models/ package with Python code
 *.pkl
 *.h5
 *.pth
 *.onnx
-data/
+# Only ignore the data directory, not the models source code
+data/raw/
+data/processed/
+data/cleaned/
 datasets/
 
 # Logs
