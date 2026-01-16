@@ -46,6 +46,10 @@ RUN <<EOF cat > /app/start.sh
 set -e
 echo "Starting application..."
 
+# Run database migrations
+echo "Running database migrations..."
+npx prisma migrate deploy
+
 # Check of main.js in dist of dist/src staat
 if [ -f "dist/main.js" ]; then
     node dist/main.js
@@ -71,6 +75,6 @@ EXPOSE 4000
 # Gebruik ENTRYPOINT om het script te starten
 ENTRYPOINT ["/bin/sh", "/app/start.sh"]
 
-# Gezondheidscontrole voor Azure
+# Gezondheidscontrole voor Azure (correcte poort 4000)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:3000/api/health', (r) => {process
+    CMD node -e "require('http').get('http://localhost:4000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1);}).on('error', (e) => {process.exit(1);});"
