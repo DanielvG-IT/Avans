@@ -43,7 +43,7 @@ async function bootstrap() {
   app.use(
     session({
       secret: process.env.SESSION_SECRET,
-      resave: true,
+      resave: false, // Changed: don't save session if unmodified
       saveUninitialized: false,
       rolling: true, // Reset maxAge on every request
       cookie: {
@@ -51,10 +51,22 @@ async function bootstrap() {
         sameSite: isProduction ? 'none' : 'lax',
         secure: isProduction,
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 2 // 2 hours
+        maxAge: 1000 * 60 * 60 * 2, // 2 hours
       },
+      proxy: isProduction, // Trust proxy in production (Azure Container Apps)
     }),
   );
+
+  // Debug middleware to log session info (development only)
+  if (!isProduction) {
+    app.use((req: any, _res: any, next: any) => {
+      logger.debug(
+        `Session ID: ${req.sessionID}, User: ${req.session?.user?.id || 'none'}`,
+        'SessionDebug',
+      );
+      next();
+    });
+  }
 
   // Global Validation: Whitelist and transform payloads
   app.useGlobalPipes(
