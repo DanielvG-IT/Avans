@@ -66,7 +66,7 @@ RUN chmod +x /app/start.sh && \
 USER nestjs
 
 # Expose poort (standaard NestJS poort)
-EXPOSE 3000
+EXPOSE 4000
 
 # Gebruik ENTRYPOINT om het script te starten
 ENTRYPOINT ["/bin/sh", "/app/start.sh"]
