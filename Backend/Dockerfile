@@ -43,14 +43,16 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma.config.ts ./
 
 # Create startup script as root and lock permissions (non-writable)
-RUN echo '#!/bin/sh' \
-    '\nset -e' \
-    '\necho "Running Prisma migrations..."' \
-    '\nnode -e "const {PrismaClient} = require(\\\"@prisma/client\\\"); const prisma = new PrismaClient(); (async () => { try { await prisma.$executeRawUnsafe(\\\"SELECT 1\\\"); console.log(\\\"Database connected\\\"); } catch(e) { console.error(\\\"Database not ready, continuing anyway\\\"); } finally { await prisma.$disconnect(); } })()" || true' \
-    '\necho "Starting application..."' \
-    '\nnode dist/main\n' \
-    > /app/start.sh \
-    && chmod 0555 /app/start.sh
+# Gebruik <<EOF om het script schoon weg te schrijven zonder \n gedoe
+RUN <<EOF cat > /app/start.sh
+#!/bin/sh
+set -e
+echo "Starting application..."
+node dist/main
+EOF
+
+# Maak het script uitvoerbaar
+RUN chmod +x /app/start.sh
 
 ## Switch to non-root user for runtime
 USER nestjs
