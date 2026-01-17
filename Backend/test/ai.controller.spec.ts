@@ -96,7 +96,7 @@ describe('AiController (Integration)', () => {
   // ============================
   // POST /ai/predict → Success
   // ============================
-  it('POST /ai/predict → retourneert voorspellingen', async () => {
+  it('should return module predictions when valid input is provided', async () => {
     aiService.getPrediction.mockResolvedValue({
       _tag: 'Success',
       data: mockPrediction,
@@ -115,7 +115,7 @@ describe('AiController (Integration)', () => {
   // ============================
   // POST /ai/predict → Failure
   // ============================
-  it('POST /ai/predict → faalt bij error', async () => {
+  it('should return BadRequest with details when AI service fails', async () => {
     aiService.getPrediction.mockResolvedValue({
       _tag: 'Failure',
       error: new Error('AI service unavailable'),
@@ -133,7 +133,7 @@ describe('AiController (Integration)', () => {
   // ============================
   // POST /ai/predict → lege predictions
   // ============================
-  it('POST /ai/predict → retourneert lege array', async () => {
+  it('should return empty predictions array when no matches are found', async () => {
     aiService.getPrediction.mockResolvedValue({
       _tag: 'Success',
       data: { predictions: [] },

@@ -69,7 +69,7 @@ describe('Auth Integration Test', () => {
     jest.clearAllMocks();
   });
 
-  it('should login successfully through controller → service → repository', async () => {
+  it('should return name and role when full authentication flow succeeds', async () => {
     userRepository.findByEmail.mockResolvedValue(succeed(mockUser));
     (verify as jest.Mock).mockResolvedValue(true);
 
@@ -94,7 +94,7 @@ describe('Auth Integration Test', () => {
     );
   });
 
-  it('should fail login if credentials are invalid', async () => {
+  it('should return generic error when password verification fails', async () => {
     userRepository.findByEmail.mockResolvedValue(succeed(mockUser));
     (verify as jest.Mock).mockResolvedValue(false);
 
@@ -106,7 +106,7 @@ describe('Auth Integration Test', () => {
     );
   });
 
-  it('should fail login if user does not exist', async () => {
+  it('should return generic error when user does not exist in database', async () => {
     userRepository.findByEmail.mockResolvedValue(
       fail(new Error('User not found')),
     );
@@ -114,8 +114,9 @@ describe('Auth Integration Test', () => {
     const session: any = {};
     const dto: LoginDto = { email: 'noone@test.com', password: 'password' };
 
+    // Should return generic error to prevent user enumeration
     await expect(authController.login(dto, session)).rejects.toThrow(
-      'Failed to login: User not found',
+      'Failed to login: Invalid credentials',
     );
   });
 });

@@ -55,7 +55,7 @@ describe('AuthController', () => {
   });
 
   describe('login', () => {
-    it('should login successfully', async () => {
+    it('should return name and role when valid credentials are provided', async () => {
       const session = mockSession();
       const dto: LoginDto = { email: mockUser.email, password: 'password' };
 
@@ -74,7 +74,7 @@ describe('AuthController', () => {
       expect(authService.login).toHaveBeenCalledWith(dto.email, dto.password);
     });
 
-    it('should throw BadRequestException on login failure', async () => {
+    it('should throw BadRequest when invalid credentials are provided', async () => {
       const session = mockSession();
       const dto: LoginDto = { email: 'wrong@example.com', password: '1234' };
 
@@ -87,7 +87,7 @@ describe('AuthController', () => {
       );
     });
 
-    it('should throw ConflictException if already logged in', async () => {
+    it('should throw Conflict when user is already authenticated', async () => {
       const session = mockSession();
       session.user = mockUser;
       const dto: LoginDto = { email: mockUser.email, password: 'password' };
@@ -99,7 +99,7 @@ describe('AuthController', () => {
   });
 
   describe('logout', () => {
-    it('should logout successfully', async () => {
+    it('should destroy session and clear cookie when user logs out', async () => {
       const destroyMock = jest.fn((cb) => cb());
       const session = {
         user: mockUser,
@@ -115,7 +115,7 @@ describe('AuthController', () => {
       expect(res.clearCookie).toHaveBeenCalledWith('connect.sid');
     });
 
-    it('should throw BadRequestException if destroy fails', async () => {
+    it('should throw BadRequest when session destruction fails', async () => {
       const destroyMock = jest.fn((cb) => cb(new Error('fail')));
       const session = {
         user: mockUser,

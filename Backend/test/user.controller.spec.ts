@@ -86,7 +86,7 @@ describe('UserController (Integration)', () => {
   // GET /user/profile
   // ============================
 
-  it('GET /user/profile → retourneert gebruikersprofiel', async () => {
+  it('should return user profile when authenticated user requests it', async () => {
     userService.findById.mockResolvedValue({
       _tag: 'Success',
       data: mockUser,
@@ -104,7 +104,7 @@ describe('UserController (Integration)', () => {
   // GET /user/favorites
   // ============================
 
-  it('GET /user/favorites → retourneert favorieten', async () => {
+  it('should return list of favorited modules when user requests favorites', async () => {
     userService.findFavorites.mockResolvedValue([
       { userId: 'user-1', moduleId: 1, id: 1, createdAt: new Date() },
     ]);
@@ -121,7 +121,7 @@ describe('UserController (Integration)', () => {
   // GET /user/favorites/:moduleId
   // ============================
 
-  it('GET /user/favorites/:moduleId → controleert favoriet', async () => {
+  it('should return favorite status when checking specific module', async () => {
     userService.isModuleFavorited.mockResolvedValue(true);
 
     const response = await request(app.getHttpServer())
@@ -135,7 +135,7 @@ describe('UserController (Integration)', () => {
   // POST /user/favorites/:moduleId
   // ============================
 
-  it('POST /user/favorites/:moduleId → voegt favoriet toe', async () => {
+  it('should add module to favorites when user favorites a module', async () => {
     userService.favoriteModule.mockResolvedValue(undefined);
 
     const response = await request(app.getHttpServer())
@@ -149,7 +149,7 @@ describe('UserController (Integration)', () => {
   // DELETE /user/favorites/:moduleId
   // ============================
 
-  it('DELETE /user/favorites/:moduleId → verwijdert favoriet', async () => {
+  it('should remove module from favorites when user unfavorites it', async () => {
     userService.unfavoriteModule.mockResolvedValue(undefined);
 
     const response = await request(app.getHttpServer())
@@ -163,7 +163,7 @@ describe('UserController (Integration)', () => {
   // GET /user/recommended
   // ============================
 
-  it('GET /user/recommended → retourneert max 5 modules', async () => {
+  it('should return maximum 5 recommended modules when user requests recommendations', async () => {
     userService.getRecommendedModules.mockResolvedValue([
       { moduleId: 1 },
       { moduleId: 2 },
@@ -184,7 +184,7 @@ describe('UserController (Integration)', () => {
   // POST /user/recommended
   // ============================
 
-  it('POST /user/recommended → slaat aanbevelingen op', async () => {
+  it('should save AI recommendations when user receives new predictions', async () => {
     userService.setRecommendedModules.mockResolvedValue(undefined);
 
     const response = await request(app.getHttpServer())

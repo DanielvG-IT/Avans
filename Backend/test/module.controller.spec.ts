@@ -82,7 +82,7 @@ describe('ModulesController (Integration)', () => {
   // GET /modules
   // ============================
 
-  it('GET /modules → retourneert modules', async () => {
+  it('should return list of modules when retrieving all modules', async () => {
     moduleService.getAllModules.mockResolvedValue([mockModule]);
 
     const response = await request(app.getHttpServer())
@@ -97,7 +97,7 @@ describe('ModulesController (Integration)', () => {
   // GET /modules/:id
   // ============================
 
-  it('GET /modules/:id → retourneert module detail', async () => {
+  it('should return module details when valid ID is provided', async () => {
     moduleService.findById.mockResolvedValue(mockModuleDetail as any);
 
     const response = await request(app.getHttpServer())
@@ -112,7 +112,7 @@ describe('ModulesController (Integration)', () => {
   // POST /modules
   // ============================
 
-  it('POST /modules → maakt module aan', async () => {
+  it('should create and return new module when valid data is provided', async () => {
     moduleService.createModule.mockResolvedValue(mockModuleDetail as any);
 
     const response = await request(app.getHttpServer())
@@ -139,7 +139,7 @@ describe('ModulesController (Integration)', () => {
   // PUT /modules/:id
   // ============================
 
-  it('PUT /modules/:id → werkt module bij', async () => {
+  it('should update and return module when valid ID and data are provided', async () => {
     moduleService.updateModule.mockResolvedValue(mockModuleDetail as any);
 
     const response = await request(app.getHttpServer())
@@ -156,7 +156,7 @@ describe('ModulesController (Integration)', () => {
   // DELETE /modules/:id
   // ============================
 
-  it('DELETE /modules/:id → verwijdert module', async () => {
+  it('should delete module and return success when valid ID is provided', async () => {
     moduleService.deleteModule.mockResolvedValue(undefined);
 
     const response = await request(app.getHttpServer())
@@ -170,7 +170,7 @@ describe('ModulesController (Integration)', () => {
   // GET /modules/locations
   // ============================
 
-  it('GET /modules/locations → retourneert locaties', async () => {
+  it('should return all available locations when requested', async () => {
     moduleService.getAllLocations.mockResolvedValue([
       { id: 1, name: 'Amsterdam' },
     ]);
@@ -186,7 +186,7 @@ describe('ModulesController (Integration)', () => {
   // GET /modules/moduletags
   // ============================
 
-  it('GET /modules/moduletags → retourneert module tags', async () => {
+  it('should return all module tags when requested', async () => {
     moduleService.getAllModuleTags.mockResolvedValue([{ id: 1, name: 'Web' }]);
 
     const response = await request(app.getHttpServer())
@@ -200,7 +200,7 @@ describe('ModulesController (Integration)', () => {
   // POST /modules/moduletags
   // ============================
 
-  it('POST /modules/moduletags → maakt module tag aan', async () => {
+  it('should create and return new tag when valid tag name is provided', async () => {
     moduleService.createModuleTag.mockResolvedValue({
       id: 2,
       name: 'Backend',

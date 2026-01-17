@@ -95,7 +95,8 @@ describe('AuthService', () => {
 
     expect(result._tag).toBe('Failure');
     if (result._tag === 'Failure') {
-      expect(result.error.message).toBe('User not found');
+      // Should return generic error to prevent user enumeration attack
+      expect(result.error.message).toBe('Invalid credentials');
     }
   });
 
