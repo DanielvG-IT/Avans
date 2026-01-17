@@ -12,6 +12,7 @@ import {
   Body,
   Post,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 
 // -- imports for ai --
 import { PredictionDto, PredictionResponseDto } from '../dtos/ai.dto';
@@ -25,6 +26,7 @@ export class AiController {
   @Post('predict')
   @RequireAuth('STUDENT')
   @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 2, ttl: 300000 } }) // 2 requests per 5 minutes
   async createPrediction(
     @Session() session: AuthenticatedSession,
     @Body() prediction: PredictionDto,
