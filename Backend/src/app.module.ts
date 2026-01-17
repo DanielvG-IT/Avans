@@ -2,6 +2,8 @@ import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 import { TerminusModule } from '@nestjs/terminus';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 // -- imports for controllers --
 import { AppController } from './presentation/controllers/app.controller';
@@ -36,8 +38,17 @@ import { RequestLoggingMiddleware } from './infrastructure/middleware/request-lo
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ThrottlerModule.forRoot([{
+      ttl: 60000,  // 60 seconds
+      limit: 30,   // 30 requests per minute (default for all endpoints)
+    }]),
   ],
   providers: [
+    // Global Guards
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     // Common
     LoggerService,
     PrismaService,

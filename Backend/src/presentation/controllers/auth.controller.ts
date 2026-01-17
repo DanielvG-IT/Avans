@@ -13,6 +13,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { Throttle } from '@nestjs/throttler';
 
 // -- imports for auth --
 import { IAuthService } from '@/application/ports/auth.port';
@@ -28,6 +29,7 @@ export class AuthController {
   ) {}
 
   @Post('login')
+  @Throttle({ default: { limit: 5, ttl: 60000*3 } }) // 10 login attempts per minute
   @HttpCode(HttpStatus.OK)
   async login(
     @Body() dto: LoginDto,
