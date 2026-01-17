@@ -18,6 +18,7 @@ import { Response } from 'express';
 import { IAuthService } from '@/application/ports/auth.port';
 import { LoginDto } from '@/presentation/dtos/auth.dto';
 import { UserDTO } from '@/presentation/dtos/user.dto';
+import { LoginResponseDto } from '@/presentation/dtos/auth.response.dto';
 import { SessionGuard } from '../guards/session.guard';
 
 @Controller('auth')
@@ -31,7 +32,7 @@ export class AuthController {
   async login(
     @Body() dto: LoginDto,
     @Session() session: SessionData,
-  ): Promise<{ user: UserDTO }> {
+  ): Promise<{ user: LoginResponseDto }> {
     if (session?.user) {
       throw new ConflictException('Already authenticated');
     }
@@ -43,7 +44,14 @@ export class AuthController {
 
     session.user = result.data.user;
     session.lastActivity = Date.now();
-    return { user: result.data.user };
+    
+    // Only return name and role in the response
+    return { 
+      user: {
+        name: result.data.user.name,
+        role: result.data.user.role,
+      }
+    };
   }
 
   @Post('logout')

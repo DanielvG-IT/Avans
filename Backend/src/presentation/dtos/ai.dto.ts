@@ -7,6 +7,7 @@ import {
   ArrayMaxSize,
   IsNotEmpty,
   MinLength,
+  MaxLength,
 } from 'class-validator';
 
 /**
@@ -21,6 +22,7 @@ export class PredictionDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(2)
+  @MaxLength(200, { message: 'Current study name cannot exceed 200 characters' })
   currentStudy!: string;
 
   @ApiProperty({
@@ -31,6 +33,7 @@ export class PredictionDto {
   @IsArray()
   @ArrayMinSize(1, { message: 'At least one interest is required' })
   @IsString({ each: true })
+  @MaxLength(500, { each: true, message: 'interest cannot exceed 500 characters' })
   @IsNotEmpty({ each: true })
   interests!: string[];
 
@@ -67,6 +70,7 @@ export class PredictionDto {
   @IsArray()
   @ArrayMinSize(1, { message: 'At least one learning goal is required' })
   @IsString({ each: true })
+  @MaxLength(200, { each: true, message: 'learning goal cannot exceed 200 characters' })
   @IsNotEmpty({ each: true })
   learningGoals!: string[];
 
