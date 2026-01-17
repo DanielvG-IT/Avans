@@ -34,7 +34,8 @@ export class AuthService implements IAuthService {
       const logMsg =
         repoMsg === 'User not found' ? 'Credentials not correct' : repoMsg;
       this.logger?.warn(`Failed login attempt for ${email}: ${logMsg}`);
-      return fail(result.error);
+      // Always return generic "Invalid credentials" error to prevent user enumeration
+      return fail(new Error('Invalid credentials'));
     }
 
     const user = result.data;

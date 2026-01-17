@@ -29,7 +29,7 @@ export class AuthController {
   ) {}
 
   @Post('login')
-  @Throttle({ default: { limit: 5, ttl: 60000*3 } }) // 10 login attempts per minute
+  @Throttle({ default: { limit: 5, ttl: 60000*3 } }) // 5 login attempts per 3 minutes
   @HttpCode(HttpStatus.OK)
   async login(
     @Body() dto: LoginDto,
