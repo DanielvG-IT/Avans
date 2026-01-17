@@ -78,7 +78,12 @@ describe('Auth Integration Test', () => {
 
     const result = await authController.login(dto, session);
 
-    expect(result.user.email).toBe(mockUser.email);
+    // Response should only contain name and role (security: no email or password)
+    expect(result.user.name).toBe(mockUser.name);
+    expect(result.user.role).toBe(mockUser.role);
+    expect(result.user).not.toHaveProperty('email');
+    expect(result.user).not.toHaveProperty('hashedPassword');
+    // Session should still contain full user object
     expect(session.user).toEqual(mockUser);
     expect(session.lastActivity).toBeDefined();
     expect(userRepository.findByEmail).toHaveBeenCalledWith(mockUser.email);
