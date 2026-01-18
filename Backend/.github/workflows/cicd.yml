@@ -44,6 +44,19 @@ jobs:
           # Collect audit JSON without letting npm exit the step immediately
           npm audit --json > npm-audit-report.json || true
 
+      - name: Generate human-readable npm audit report
+        run: |
+          # Generate the pretty text report (does not fail the step)
+          npm audit > npm-audit-report.txt || true
+          # Print a short preview into the run log for visibility
+          head -n 200 npm-audit-report.txt || true
+
+      - name: Upload npm audit text report
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-npm-audit-txt
+          path: npm-audit-report.txt
+
       - name: Upload npm audit report
         uses: actions/upload-artifact@v4
         with:
@@ -59,6 +72,9 @@ jobs:
           echo "High: $HIGH, Critical: $CRITICAL"
           if [ "$TOTAL" -gt 0 ]; then
             echo "Failing: found $TOTAL high/critical vulnerabilities"
+            echo "--- npm audit (text) ---"
+            cat npm-audit-report.txt || true
+            echo "--- npm audit (json) ---"
             cat npm-audit-report.json
             exit 1
           fi
