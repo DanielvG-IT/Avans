@@ -180,9 +180,9 @@ jobs:
       - name: Scan SBOM with grype (fail on high)
         run: |
           # Produce JSON report (keep output on failure for debugging)
-          grype sbom:sbom.cyclonedx.json -o json > grype-report.json || true
-          # Fail the step if any vulnerability >= high
-          grype sbom:sbom.cyclonedx.json --fail-on high || (cat grype-report.json && exit 1)
+          grype sbom:sbom.cyclonedx.json -c .grype.yaml -o json > grype-report.json || true
+          # Fail the step if any vulnerability >= high in our dependencies (ignores npm's own packages)
+          grype sbom:sbom.cyclonedx.json -c .grype.yaml --fail-on high || (cat grype-report.json && exit 1)
 
       - name: Upload grype report
         uses: actions/upload-artifact@v4
