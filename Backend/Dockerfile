@@ -1,7 +1,10 @@
 # --- STAGE 1: Build stage ---
-FROM node:22-alpine AS builder
+FROM node:22-alpine3.21 AS builder
 
 WORKDIR /app
+
+# Update Alpine packages to latest security patches
+RUN apk update && apk upgrade --no-cache
 
 # Kopieer package files en config
 COPY package*.json ./
@@ -22,9 +25,12 @@ RUN npm run db:generate
 RUN npm run build
 
 # --- STAGE 2: Production stage ---
-FROM node:22-alpine AS production
+FROM node:22-alpine3.21 AS production
 
 WORKDIR /app
+
+# Update Alpine packages to latest security patches
+RUN apk update && apk upgrade --no-cache
 
 # Maak non-root user aan
 RUN addgroup -g 1001 -S nodejs && \
