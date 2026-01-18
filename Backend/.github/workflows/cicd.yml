@@ -19,7 +19,7 @@ permissions:
   security-events: write # For SARIF reports
 
 env:
-  NODE_VERSION: 22
+  NODE_VERSION: 20
   IMAGE_NAME: compassgpt-backend
 
 jobs:

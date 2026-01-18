@@ -79,7 +79,8 @@
     "hono": "^4.11.4",
     "cross-spawn": "^7.0.5",
     "glob": "^10.5.0",
-    "tar": "^7.5.3"
+    "tar": "^7.5.3",
+    "brace-expansion": "^2.0.2"
   },
   "jest": {
     "moduleFileExtensions": [
