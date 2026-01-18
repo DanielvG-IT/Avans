@@ -39,16 +39,29 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run npm audit (SCA) and fail on high/critical
+      - name: Run npm audit (SCA) and save report
         run: |
-          # Fail the job if vulnerabilities of severity 'high' or above are present
-          npm audit --audit-level=high --json > npm-audit-report.json
+          # Collect audit JSON without letting npm exit the step immediately
+          npm audit --json > npm-audit-report.json || true
 
       - name: Upload npm audit report
         uses: actions/upload-artifact@v4
         with:
           name: backend-npm-audit
           path: npm-audit-report.json
+
+      - name: Fail on high/critical vulnerabilities (if any)
+        run: |
+          # Read vulnerability counts from the npm audit JSON metadata
+          HIGH=$(jq '.metadata.vulnerabilities.high // 0' npm-audit-report.json)
+          CRITICAL=$(jq '.metadata.vulnerabilities.critical // 0' npm-audit-report.json)
+          TOTAL=$((HIGH + CRITICAL))
+          echo "High: $HIGH, Critical: $CRITICAL"
+          if [ "$TOTAL" -gt 0 ]; then
+            echo "Failing: found $TOTAL high/critical vulnerabilities"
+            cat npm-audit-report.json
+            exit 1
+          fi
 
   # 3. SAST Scanning with SonarQube
   sast_scan:
