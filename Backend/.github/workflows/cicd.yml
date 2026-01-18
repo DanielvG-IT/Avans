@@ -76,7 +76,7 @@ jobs:
   # 2. Build & Test
   build_test:
     name: Build & Test
-    needs: [sca_scan]
+    needs: [sca_scan, sast_scan]
     runs-on: ubuntu-latest
 
     permissions:
