@@ -8,7 +8,6 @@ import { AuthenticatedSession } from '@/types/session.types';
 
 describe('User Integration Test', () => {
   let userController: UserController;
-  let userService: UserService;
   let mockUserRepository: any;
   let mockUserModulesRepository: any;
 
@@ -57,7 +56,6 @@ describe('User Integration Test', () => {
       .compile();
 
     userController = module.get<UserController>(UserController);
-    userService = module.get<UserService>('SERVICE.USER');
   });
 
   afterEach(() => {

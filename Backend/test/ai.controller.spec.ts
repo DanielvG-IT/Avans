@@ -5,14 +5,8 @@ import request from 'supertest';
 import { AiController } from '@/presentation/controllers/ai.controller';
 import { IAiService } from '@/application/ports/ai.port';
 import { SessionGuard } from '@/presentation/guards/session.guard';
-import {
-  PredictionDto,
-  PredictionResponseDto,
-} from '@/presentation/dtos/ai.dto';
-import {
-  AiService,
-  PredictionWithModules,
-} from '@/application/services/ai.service';
+import { PredictionDto } from '@/presentation/dtos/ai.dto';
+import { PredictionWithModules } from '@/application/services/ai.service';
 
 // ============================
 // Mock SessionGuard

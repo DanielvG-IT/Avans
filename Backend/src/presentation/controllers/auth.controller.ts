@@ -18,7 +18,6 @@ import { Throttle } from '@nestjs/throttler';
 // -- imports for auth --
 import { IAuthService } from '@/application/ports/auth.port';
 import { LoginDto } from '@/presentation/dtos/auth.dto';
-import { UserDTO } from '@/presentation/dtos/user.dto';
 import { LoginResponseDto } from '@/presentation/dtos/auth.response.dto';
 import { SessionGuard } from '../guards/session.guard';
 
@@ -29,7 +28,7 @@ export class AuthController {
   ) {}
 
   @Post('login')
-  @Throttle({ default: { limit: 5, ttl: 60000*3 } }) // 5 login attempts per 3 minutes
+  @Throttle({ default: { limit: 5, ttl: 60000 * 3 } }) // 5 login attempts per 3 minutes
   @HttpCode(HttpStatus.OK)
   async login(
     @Body() dto: LoginDto,
@@ -46,13 +45,13 @@ export class AuthController {
 
     session.user = result.data.user;
     session.lastActivity = Date.now();
-    
+
     // Only return name and role in the response
-    return { 
+    return {
       user: {
         name: result.data.user.name,
         role: result.data.user.role,
-      }
+      },
     };
   }
 

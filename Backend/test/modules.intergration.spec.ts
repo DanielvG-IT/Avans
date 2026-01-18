@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ModulesController } from '@/presentation/controllers/modules.controller';
-import { ModuleService } from '@/application/services/module.service';
+
 import { SessionGuard } from '@/presentation/guards/session.guard';
 import { Module, ModuleDetail } from '@/domain/module/module.model';
 import { Location } from '@/domain/location/location.model';
@@ -13,7 +13,6 @@ import {
 
 describe('Modules Integration Test', () => {
   let modulesController: ModulesController;
-  let moduleService: ModuleService;
 
   const mockModuleService = {
     getAllModules: jest.fn(),
@@ -37,7 +36,6 @@ describe('Modules Integration Test', () => {
       .compile();
 
     modulesController = module.get<ModulesController>(ModulesController);
-    moduleService = module.get<ModuleService>('SERVICE.MODULE');
   });
 
   afterEach(() => {

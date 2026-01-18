@@ -27,7 +27,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'https://ambitious-ocean-0430ab003.4.azurestaticapps.net',
-      ...(process.env.ALLOWED_ORIGINS?.split(',') || [])
+      ...(process.env.ALLOWED_ORIGINS?.split(',') || []),
     ],
     credentials: true,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
@@ -115,7 +115,6 @@ async function bootstrap() {
   app.enableShutdownHooks();
 
   const port = process.env.PUBLIC_PORT ?? 4000;
-  // await app.listen(port);
   await app.listen(port, '0.0.0.0');
   logger.log(`Application is running on: ${await app.getUrl()}`, 'Bootstrap');
 }

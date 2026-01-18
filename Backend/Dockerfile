@@ -29,11 +29,9 @@ FROM node:22-alpine3.21 AS production
 
 WORKDIR /app
 
-# Update Alpine packages to latest security patches
-RUN apk update && apk upgrade --no-cache
-
-# Maak non-root user aan
-RUN addgroup -g 1001 -S nodejs && \
+# Update Alpine packages to latest security patches and create non-root user
+RUN apk update && apk upgrade --no-cache && \
+    addgroup -g 1001 -S nodejs && \
     adduser -S nestjs -u 1001
 
 # Kopieer package files en installeer alleen production dependencies

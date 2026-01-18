@@ -1,12 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  AiService,
-  PredictionWithModules,
-} from '@/application/services/ai.service';
+import { AiService } from '@/application/services/ai.service';
 import { IPredictionClient } from '@/domain/prediction/prediction-client.interface';
 import { IModuleService } from '@/application/ports/module.port';
 import { PredictionDto } from '@/presentation/dtos/ai.dto';
-import { Result } from '@/result';
+
 import { LoggerService } from '@/logger.service';
 
 describe('AiService', () => {

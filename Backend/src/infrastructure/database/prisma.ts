@@ -12,7 +12,7 @@ export class PrismaService
   constructor(private readonly logger: LoggerService) {
     // In development, use simple connection config. In production, use detailed config with SSL
     const isDevelopment = process.env.NODE_ENV === 'development';
-    
+
     const adapter = isDevelopment
       ? new PrismaMariaDb({
           host: process.env.DB_HOSTNAME || 'localhost',
@@ -22,13 +22,21 @@ export class PrismaService
           database: process.env.DB_NAME || 'compassgpt',
         })
       : new PrismaMariaDb({
-          host: process.env.DB_HOSTNAME || 'compassgptdatabase.mysql.database.azure.com',
+          host:
+            process.env.DB_HOSTNAME ||
+            'compassgptdatabase.mysql.database.azure.com',
           port: Number.parseInt(process.env.DB_PORT || '3306', 10),
           user: process.env.DB_USERNAME || 'dbadmin',
           password: process.env.DB_PASSWORD!,
           database: process.env.DB_NAME || 'compassgpt',
-          connectionLimit: Number.parseInt(process.env.DB_CONN_LIMIT || '20', 10),
-          connectTimeout: Number.parseInt(process.env.DB_CONNECT_TIMEOUT_MS || '30000', 10),
+          connectionLimit: Number.parseInt(
+            process.env.DB_CONN_LIMIT || '20',
+            10,
+          ),
+          connectTimeout: Number.parseInt(
+            process.env.DB_CONNECT_TIMEOUT_MS || '30000',
+            10,
+          ),
           ssl: {
             rejectUnauthorized: true,
           },
@@ -50,7 +58,8 @@ export class PrismaService
       const maskParams = (params: unknown) => {
         try {
           if (params == null) return params;
-          const parsed = typeof params === 'string' ? JSON.parse(params) : params;
+          const parsed =
+            typeof params === 'string' ? JSON.parse(params) : params;
           const redact = (obj: any) => {
             if (obj && typeof obj === 'object') {
               for (const k of Object.keys(obj)) {
@@ -65,7 +74,10 @@ export class PrismaService
           redact(parsed);
           return JSON.stringify(parsed);
         } catch {
-          return String(params).replace(/("?(password|pass|token|secret|api[_-]?key)"?\s*:\s*)".*?"/gi, '$1"***REDACTED***"');
+          return String(params).replaceAll(
+            /("?(password|pass|token|secret|api[_-]?key)"?\s*:\s*)".*?"/gi,
+            '$1"***REDACTED***"',
+          );
         }
       };
 
@@ -88,13 +100,19 @@ export class PrismaService
 
       // Detailed query logging only in non-production environments
       if (!isProd) {
-        client.$on('query', (e: { query: string; params?: string; duration?: number }) => {
-          this.logger.debug(`Prisma Query: ${e.query}`, 'Prisma');
-          this.logger.debug(`Prisma Params: ${maskParams(e.params)}`, 'Prisma');
-          if (e.duration !== undefined) {
-            this.logger.debug(`Prisma Duration: ${e.duration}ms`, 'Prisma');
-          }
-        });
+        client.$on(
+          'query',
+          (e: { query: string; params?: string; duration?: number }) => {
+            this.logger.debug(`Prisma Query: ${e.query}`, 'Prisma');
+            this.logger.debug(
+              `Prisma Params: ${maskParams(e.params)}`,
+              'Prisma',
+            );
+            if (e.duration !== undefined) {
+              this.logger.debug(`Prisma Duration: ${e.duration}ms`, 'Prisma');
+            }
+          },
+        );
       }
     } catch {
       // Listening may fail in some runtime builds; safely ignore

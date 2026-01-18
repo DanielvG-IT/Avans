@@ -8,7 +8,6 @@ import { SessionGuard } from '@/presentation/guards/session.guard';
 
 describe('AI Integration Test', () => {
   let aiController: AiController;
-  let aiService: AiService;
 
   const mockLogger = {
     setContext: jest.fn(),
@@ -66,7 +65,6 @@ describe('AI Integration Test', () => {
       .compile();
 
     aiController = module.get<AiController>(AiController);
-    aiService = module.get<AiService>('SERVICE.AI');
   });
 
   afterEach(() => {
