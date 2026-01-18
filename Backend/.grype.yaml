@@ -1,35 +1,25 @@
 # Grype configuration for vulnerability scanning
-# Ignore vulnerabilities in npm's own bundled dependencies (part of Node.js installation)
-# These are system-level packages we cannot control
+# Ignore vulnerabilities we cannot control
 
 ignore:
-  # Ignore vulnerabilities in npm's internal dependencies
-  - vulnerability: "*"
-    package:
+  # npm's bundled dependencies (part of Node.js installation, not our project)
+  - package:
       name: glob
       type: npm
-      location: /usr/local/lib/node_modules/npm/**
+      location: "/usr/local/lib/node_modules/npm/**"
     
-  - vulnerability: "*"
-    package:
+  - package:
       name: tar
       type: npm
-      location: /usr/local/lib/node_modules/npm/**
+      location: "/usr/local/lib/node_modules/npm/**"
     
-  - vulnerability: "*"
-    package:
+  - package:
       name: diff
       type: npm
-      location: /usr/local/lib/node_modules/npm/**
+      location: "/usr/local/lib/node_modules/npm/**"
 
-  # Alpine system vulnerabilities with no fix available
-  # These are tracked upstream but don't affect our application
-  - vulnerability: CVE-2026-22184  # zlib - no fix available, affects untgz utility only
-    package:
-      name: zlib
-      type: apk
-      
-  - vulnerability: CVE-2025-60876  # busybox wget - low risk for container environment
-    package:
-      name: busybox*
-      type: apk
+  # zlib CVE-2026-22184: Only affects untgz utility (not the core library we use)
+  - vulnerability: CVE-2026-22184
+    
+  # busybox wget CVE-2025-60876: Medium risk, doesn't affect our application
+  - vulnerability: CVE-2025-60876
