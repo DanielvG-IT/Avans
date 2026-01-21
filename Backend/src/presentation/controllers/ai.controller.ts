@@ -26,7 +26,7 @@ export class AiController {
   @Post('predict')
   @RequireAuth('STUDENT')
   @HttpCode(HttpStatus.OK)
-  @Throttle({ default: { limit: 2, ttl: 300000 } }) // 2 requests per 5 minutes
+  @Throttle({ default: { limit: 5, ttl: 300000 } }) // 5 requests per 5 minutes **LESS STRICT FOR PRESENTATION PURPOSES
   async createPrediction(
     @Session() session: AuthenticatedSession,
     @Body() prediction: PredictionDto,
