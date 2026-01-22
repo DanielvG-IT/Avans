@@ -25,10 +25,7 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: [
-      'https://ambitious-ocean-0430ab003.4.azurestaticapps.net',
-      ...(process.env.ALLOWED_ORIGINS?.split(',') || []),
-    ],
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || [],
     credentials: true,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   });
