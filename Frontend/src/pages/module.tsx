@@ -1,0 +1,187 @@
+import { useParams, useNavigate, Link } from "react-router";
+import { useModule } from "../hooks/useModule";
+import { useFavoriteModule } from "../hooks/useFavorites";
+import { useAuth } from "../hooks/useAuth";
+import { useBackend } from "../hooks/useBackend";
+import { ModuleDetailSkeleton } from "../components/skeleton";
+import keuzemoduleFallback from "../images/keuzemodule_fallback_16-9.webp";
+import { useState } from "react";
+
+export function ModulePage() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const backend = useBackend();
+
+  const { module, isLoading, error } = useModule(id || "");
+
+  const {
+    isFavorited,
+    toggleFavorite,
+    isLoading: isFavoriteLoading,
+  } = useFavoriteModule(id ? parseInt(id, 10) : undefined);
+
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const handleDelete = async () => {
+    if (!id || !window.confirm("Weet je zeker dat je deze module wilt verwijderen?")) {
+      return;
+    }
+
+    setIsDeleting(true);
+    setDeleteError(null);
+
+    try {
+      await backend.delete(`/modules/${id}`);
+      navigate("/modules");
+    } catch (err) {
+      console.error("Failed to delete module:", err);
+      setDeleteError(err instanceof Error ? err.message : "Verwijderen mislukt");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  if (isLoading) {
+    return <ModuleDetailSkeleton />;
+  }
+
+  if (error) {
+    return <div>Error loading module: {error}</div>;
+  }
+
+  if (!module) {
+    return <div>Module not found.</div>;
+  }
+
+  return (
+    <div className="w-full min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 py-8 px-4 sm:px-6">
+      <div className="max-w-5xl mx-auto space-y-6">
+        <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+          <div className="flex justify-between items-start">
+            <h1 className="text-2xl font-bold">{module.name}</h1>
+            {user?.role === "ADMIN" && (
+              <div className="flex gap-2">
+                <Link
+                  to={`/modules/${id}/edit`}
+                  className="p-2 rounded-lg transition-colors bg-blue-50 dark:bg-blue-900/30 text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900/50"
+                  title="Bewerk module">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
+                </Link>
+                <button
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="p-2 rounded-lg transition-colors bg-red-50 dark:bg-red-900/30 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Verwijder module">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
+          {deleteError && (
+            <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-800 dark:text-red-300 text-sm">
+              {deleteError}
+            </div>
+          )}
+          <div className="mt-4">
+            <h2 className="text-lg font-semibold">Dit is wat je gaat leren</h2>
+            <p>{module.learningOutcomes}</p>
+          </div>
+          <div className="flex flex-nowrap gap-2 mt-4 p-4 items-center">
+            <button
+              className="px-3 py-2 text-xs sm:text-sm font-semibold rounded-full border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+              type="button">
+              Aanmelden via Osiris
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M14 3h7v7m0-7L10 14"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 5v14h14"
+                />
+              </svg>
+            </button>
+            <button
+              onClick={() => toggleFavorite()}
+              disabled={isFavoriteLoading}
+              className={`p-2 rounded-lg transition-colors ${
+                isFavorited
+                  ? "bg-red-50 dark:bg-red-900/30 text-red-500"
+                  : "border border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30"
+              }`}
+              title={
+                isFavorited
+                  ? "Verwijder van favorieten"
+                  : "Voeg toe aan favorieten"
+              }>
+              <svg
+                className="w-5 h-5"
+                fill={isFavorited ? "currentColor" : "none"}
+                stroke="currentColor"
+                viewBox="0 0 20 20">
+                <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="mb-4 w-full md:w-1/2">
+              <img
+                src={keuzemoduleFallback}
+                alt="Afbeelding van de module"
+                className="w-full h-auto rounded object-cover"
+              />
+            </div>
+            <div className="flex-1 place-self-center space-y-2">
+              <h2 className="text-lg font-semibold">Waar en wanneer?</h2>
+              <p>
+                {module.startDate}{" "}
+                {module.location.map((location) => location.name).join(", ")}
+              </p>
+              <h2 className="text-lg font-semibold">Beschrijving</h2>
+              <p>{module.description}</p>
+            </div>
+          </div>
+          <div className="mt-4">
+            <h2 className="text-lg font-semibold">Inhoud van de module</h2>
+            <p>{module.content}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

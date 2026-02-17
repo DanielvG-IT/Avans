@@ -1,0 +1,160 @@
+name: Frontend Enterprise CI/CD
+
+on:
+  push:
+    branches:
+      - release
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - main
+
+env:
+  NODE_VERSION: 22
+
+jobs:
+  # 1. Dependency Scanning (SCA)
+  sca_scan:
+    name: SCA - Dependency Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run npm audit (SCA)
+        continue-on-error: true
+        run: |
+          npm audit --json > npm-audit-report.json || true
+
+      - name: Upload npm audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-npm-audit
+          path: npm-audit-report.json
+
+  # 3. SAST Scanning with SonarQube
+  sast_scan:
+    name: SAST - SonarQube Analysis
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for better relevancy of analysis
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@884b79409bbd464b2a59edc326a4b77dc56b2195 # v2.3.0
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=CompassGPT_Frontend
+            -Dsonar.organization=compassgpt
+            -Dsonar.sources=src
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/*.spec.ts
+            
+
+  # 2. Build and Test Job
+  build_and_test:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    needs: [sca_scan, sast_scan]
+    runs-on: ubuntu-latest
+    name: Build and Test
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Tests
+        run: npm run test:ci
+
+      - name: Build Application
+        run: npm run build
+
+  # 5. Deploy Job - Only deploy to production on push to main
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/release'
+    needs: build_and_test # Ensure tests pass before deploying
+    runs-on: ubuntu-latest
+    name: Deploy to Azure
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+          lfs: false
+
+      - name: Build And Deploy
+        id: builddeploy
+        uses: Azure/static-web-apps-deploy@v1
+        env:
+          VITE_BACKEND_URL: ${{ secrets.BACKEND_URL }}
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_ZEALOUS_STONE_0F6CC0A03 }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "/"
+          output_location: "dist"
+
+  # 7. Generate SBOM for Frontend (as artifact)
+  sbom_generation:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/release'
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    name: Generate SBOM
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Install syft
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Generate SBOM (CycloneDX)
+        run: |
+          syft . -o cyclonedx-json > sbom.cyclonedx.json
+          syft . -o spdx-json > sbom.spdx.json
+
+      - name: Install Grype
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Scan SBOM for CVEs
+        continue-on-error: true
+        run: |
+          grype sbom:sbom.cyclonedx.json -o json > vulnerabilities.json
+          grype sbom:sbom.cyclonedx.json -o table
+
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-sbom
+          path: |
+            sbom.cyclonedx.json
+            sbom.spdx.json
+            vulnerabilities.json

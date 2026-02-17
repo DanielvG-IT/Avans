@@ -1,0 +1,230 @@
+import { useNavigate } from "react-router";
+import { useCallback, useMemo } from "react";
+import { createApiUrl } from "../lib/api";
+import type { ApiError } from "../types/api.types";
+
+export interface FetchOptions extends Omit<RequestInit, "body"> {
+  body?: unknown;
+}
+
+/**
+ * Custom hook for making API requests to the backend
+ * Handles authentication, error handling, and JSON serialization
+ *
+ * NOTE: This hook returns a stable memoized object via useMemo, which means
+ * the returned backend object reference will not change between renders.
+ * Therefore, when using `backend` in useCallback or useEffect dependencies,
+ * you can safely exclude it from the dependency array to avoid unnecessary
+ * effect re-runs. Mark these with:
+ *
+ *   // eslint-disable-next-line react-hooks/exhaustive-deps
+ *   // NOTE: backend is excluded because useBackend returns a stable memoized object
+ */
+export const useBackend = () => {
+  const navigate = useNavigate();
+  /**
+   * Make an API request with automatic JSON handling and credentials
+   */
+  const request = useCallback(
+    async <T>(endpoint: string, options: FetchOptions = {}): Promise<T> => {
+      const url = createApiUrl(endpoint);
+      const { body, headers = {}, ...restOptions } = options;
+
+      const config: RequestInit = {
+        ...restOptions,
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Version": "1",
+          ...headers,
+        },
+        credentials: "include", // Important: Include cookies for session management
+      };
+
+      // Serialize body to JSON if present
+      if (body) {
+        config.body = JSON.stringify(body);
+      }
+
+      try {
+        const response = await fetch(url, config);
+
+        // Handle non-2xx responses
+        if (!response.ok) {
+          let errorData: ApiError;
+          try {
+            errorData = await response.json();
+          } catch {
+            errorData = {
+              statusCode: response.status,
+              message: response.statusText || "An error occurred",
+            };
+          }
+
+          // Extract the full error message, preferring 'details' if available
+          let fullMessage = errorData.message || "Request failed";
+          if (
+            errorData &&
+            typeof errorData === "object" &&
+            "details" in errorData &&
+            typeof errorData.details === "string"
+          ) {
+            fullMessage = errorData.details;
+          }
+
+          const error = new BackendError(
+            fullMessage,
+            errorData.statusCode,
+            errorData
+          );
+
+          // Handle 401 Unauthorized - redirect to login
+          if (error.isAuthError()) {
+            console.warn(
+              "Session expired or unauthorized - redirecting to login"
+            );
+            navigate("/auth/login", {
+              replace: true,
+              state: { message: fullMessage },
+            });
+          }
+
+          throw error;
+        }
+
+        // Handle empty responses
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          return {} as T;
+        }
+
+        return await response.json();
+      } catch (error) {
+        if (error instanceof BackendError) {
+          throw error;
+        }
+        throw new BackendError(
+          error instanceof Error ? error.message : "Network error",
+          0
+        );
+      }
+    },
+    [navigate]
+  );
+
+  /**
+   * Make a GET request
+   */
+  const get = useCallback(
+    <T = unknown>(endpoint: string, options?: FetchOptions): Promise<T> => {
+      return request<T>(endpoint, { ...options, method: "GET" });
+    },
+    [request]
+  );
+
+  /**
+   * Make a POST request
+   */
+  const post = useCallback(
+    <T = unknown>(
+      endpoint: string,
+      body?: unknown,
+      options?: FetchOptions
+    ): Promise<T> => {
+      return request<T>(endpoint, { ...options, method: "POST", body });
+    },
+    [request]
+  );
+
+  /**
+   * Make a PUT request
+   */
+  const put = useCallback(
+    <T = unknown>(
+      endpoint: string,
+      body?: unknown,
+      options?: FetchOptions
+    ): Promise<T> => {
+      return request<T>(endpoint, { ...options, method: "PUT", body });
+    },
+    [request]
+  );
+
+  /**
+   * Make a PATCH request
+   */
+  const patch = useCallback(
+    <T = unknown>(
+      endpoint: string,
+      body?: unknown,
+      options?: FetchOptions
+    ): Promise<T> => {
+      return request<T>(endpoint, { ...options, method: "PATCH", body });
+    },
+    [request]
+  );
+
+  /**
+   * Make a DELETE request
+   */
+  const del = useCallback(
+    <T>(endpoint: string, options?: FetchOptions): Promise<T> => {
+      return request<T>(endpoint, { ...options, method: "DELETE" });
+    },
+    [request]
+  );
+
+  return useMemo(
+    () => ({
+      request,
+      get,
+      post,
+      put,
+      patch,
+      delete: del,
+    }),
+    [request, get, post, put, patch, del]
+  );
+};
+
+/**
+ * Custom error class for backend API errors
+ */
+export class BackendError extends Error {
+  public readonly statusCode: number;
+  public readonly data?: ApiError;
+
+  constructor(message: string, statusCode: number, data?: ApiError) {
+    super(message);
+    this.name = "BackendError";
+    this.statusCode = statusCode;
+    this.data = data;
+  }
+
+  /**
+   * Check if the error is an authentication error
+   */
+  isAuthError(): boolean {
+    return this.statusCode === 401;
+  }
+
+  /**
+   * Check if the error is a validation error
+   */
+  isValidationError(): boolean {
+    return this.statusCode === 400;
+  }
+
+  /**
+   * Check if the error is a not found error
+   */
+  isNotFoundError(): boolean {
+    return this.statusCode === 404;
+  }
+
+  /**
+   * Check if the error is a server error
+   */
+  isServerError(): boolean {
+    return this.statusCode >= 500;
+  }
+}
