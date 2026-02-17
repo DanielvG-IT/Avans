@@ -1,0 +1,205 @@
+name: Backend Enterprise CI/CD
+
+on:
+  push:
+    branches:
+      - release
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - main
+
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  security-events: write # For SARIF reports
+
+env:
+  NODE_VERSION: 20
+  IMAGE_NAME: compassgpt-backend
+
+jobs:
+  # 1. Dependency Scanning (SCA)
+  sca_scan:
+    name: SCA - Dependency Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit (SCA) and save report
+        run: |
+          # Collect audit JSON without letting npm exit the step immediately
+          npm audit --json > npm-audit-report.json || true
+
+      - name: Generate human-readable npm audit report
+        run: |
+          # Generate the pretty text report (does not fail the step)
+          npm audit > npm-audit-report.txt || true
+          # Print a short preview into the run log for visibility
+          head -n 200 npm-audit-report.txt || true
+
+      - name: Upload npm audit text report
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-npm-audit-txt
+          path: npm-audit-report.txt
+
+      - name: Upload npm audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-npm-audit
+          path: npm-audit-report.json
+
+      - name: Fail on high/critical vulnerabilities (if any)
+        run: |
+          # Read vulnerability counts from the npm audit JSON metadata
+          HIGH=$(jq '.metadata.vulnerabilities.high // 0' npm-audit-report.json)
+          CRITICAL=$(jq '.metadata.vulnerabilities.critical // 0' npm-audit-report.json)
+          TOTAL=$((HIGH + CRITICAL))
+          echo "High: $HIGH, Critical: $CRITICAL"
+          if [ "$TOTAL" -gt 0 ]; then
+            echo "Failing: found $TOTAL high/critical vulnerabilities"
+            echo "--- npm audit (text) ---"
+            cat npm-audit-report.txt || true
+            echo "--- npm audit (json) ---"
+            cat npm-audit-report.json
+            exit 1
+          fi
+
+  # 3. SAST Scanning with SonarQube
+  sast_scan:
+    name: SAST - SonarQube Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for better relevancy of analysis
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@a31c9398be7ace6bbfaf30c0bd5d415f843d45e9
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=CompassGPT_Backend
+            -Dsonar.organization=compassgpt
+            -Dsonar.sources=src
+            -Dsonar.tests=test
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/coverage/**
+            -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
+
+  # 2. Build & Test
+  build_test:
+    name: Build & Test
+    needs: [sca_scan, sast_scan]
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prisma Generate
+        env:
+          # Use a dummy DATABASE_URL for code generation
+          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
+        run: npx prisma generate
+
+      - name: Run tests
+        run: npm run test:ci
+
+      - name: Build NestJS
+        run: npm run build
+
+  docker_build_push:
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+    needs: build_test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/release'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Login to ACR
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef
+        with:
+          registry: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build Docker Image
+        env:
+          ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+        run: |
+          docker build \
+            -t "$ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:${{ github.sha }}" \
+            -t "$ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest" .
+
+      - name: Generate SBOM (syft)
+        env:
+          ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+        run: |
+          # Install syft
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+          # Generate SBOM in CycloneDX format
+          syft "$ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:${{ github.sha }}" \
+            -o cyclonedx-json > sbom.cyclonedx.json
+          # Generate SBOM in SPDX format
+          syft "$ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:${{ github.sha }}" \
+            -o spdx-json > sbom.spdx.json
+
+      - name: Install grype
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Scan SBOM with grype (fail on high)
+        run: |
+          # Produce JSON report (keep output on failure for debugging)
+          grype sbom:sbom.cyclonedx.json -c .grype.yaml -o json > grype-report.json || true
+          # Fail the step if any vulnerability >= high in our dependencies (ignores npm's own packages)
+          grype sbom:sbom.cyclonedx.json -c .grype.yaml --fail-on high || (cat grype-report.json && exit 1)
+
+      - name: Upload grype report
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-grype-report
+          path: grype-report.json
+
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-sbom
+          path: |
+            sbom.cyclonedx.json
+            sbom.spdx.json
+
+      - name: Push Docker Image
+        env:
+          ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+        run: |
+          docker push "$ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          docker push "$ACR_LOGIN_SERVER/${{ env.IMAGE_NAME }}:latest"

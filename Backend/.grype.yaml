@@ -1,0 +1,25 @@
+# Grype configuration for vulnerability scanning
+# Ignore vulnerabilities we cannot control
+
+ignore:
+  # npm's bundled dependencies (part of Node.js installation, not our project)
+  - package:
+      name: glob
+      type: npm
+      location: "/usr/local/lib/node_modules/npm/**"
+    
+  - package:
+      name: tar
+      type: npm
+      location: "/usr/local/lib/node_modules/npm/**"
+    
+  - package:
+      name: diff
+      type: npm
+      location: "/usr/local/lib/node_modules/npm/**"
+
+  # zlib CVE-2026-22184: Only affects untgz utility (not the core library we use)
+  - vulnerability: CVE-2026-22184
+    
+  # busybox wget CVE-2025-60876: Medium risk, doesn't affect our application
+  - vulnerability: CVE-2025-60876

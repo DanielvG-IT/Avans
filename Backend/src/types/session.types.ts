@@ -1,0 +1,19 @@
+import { User } from '@/domain/user/user.model';
+import { Session as ExpressSession } from 'express-session';
+
+/**
+ * Extended session interface that includes our custom properties
+ */
+export interface SessionData extends ExpressSession {
+  user?: User;
+  lastActivity?: number;
+}
+
+/**
+ * Authenticated session type - user is guaranteed to exist
+ * Use this in controllers after SessionGuard validation
+ */
+export interface AuthenticatedSession extends ExpressSession {
+  user: User;
+  lastActivity?: number;
+}

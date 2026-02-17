@@ -1,0 +1,101 @@
+datasource db {
+  provider = "mysql"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+// Hier kan je nieuwe databaseschema's toevoegen. run "npx prisma generate" om de changes door te voeren.
+
+model User {
+  id             String @id @default(uuid())
+  name           String
+  email          String @unique
+  hashedPassword String
+  role           Role   @default(STUDENT)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userModules UserModules[]
+}
+
+model Module {
+  id               Int                    @id @default(autoincrement())
+  name             String
+  shortDescription String?
+  description      String?                @db.Text
+  content          String?                @db.Text
+  studyCredits     Int
+  //contactId     Int
+  level            String
+  learningOutcomes String?                @db.Text
+  //interestsMatchScore Float
+  //popularityScore       Int
+  //estimatedDifficulty  Int
+  availableSpots   Int
+  startDate        String
+  location         ModuleLocation[]
+  moduleTags       ModuleTags[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userModules UserModules[]
+}
+
+model Location {
+  id      Int              @id @default(autoincrement())
+  name    String           @unique
+  modules ModuleLocation[]
+}
+
+model ModuleLocation {
+  Module     Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  moduleId   Int
+  Location   Location @relation(fields: [locationId], references: [id])
+  locationId Int
+
+  @@id([moduleId, locationId])
+}
+
+model ModuleTag {
+  id      Int          @id @default(autoincrement())
+  name    String       @unique
+  modules ModuleTags[]
+}
+
+model ModuleTags {
+  Module       Module    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  moduleId     Int
+  ModuleTag    ModuleTag @relation(fields: [moduleTagId], references: [id])
+  moduleTagId  Int
+
+  @@id([moduleId, moduleTagId])
+}
+
+model UserModules {
+  id       Int    @id @default(autoincrement())
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  moduleId Int
+  module   Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  favorited   Boolean @default(false)
+  recommended Boolean @default(false)
+
+  recommendationReason String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, moduleId])
+}
