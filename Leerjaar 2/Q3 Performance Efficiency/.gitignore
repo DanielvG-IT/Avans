@@ -1,0 +1,104 @@
+# =========================================================
+# Dependencies / Package Managers
+# =========================================================
+node_modules
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# =========================================================
+# Build Output / Caches
+# =========================================================
+# Next.js
+.next/
+out/
+
+# Python caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Python virtual envs
+.venv/
+venv/
+env/
+
+# Generic builds
+build
+coverage
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# =========================================================
+# Environment / Deployment
+# =========================================================
+.env*
+.vercel
+
+# =========================================================
+# Logs / Debug
+# =========================================================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# =========================================================
+# OS / Editor / Misc
+# =========================================================
+.DS_Store
+*.pem
+temp
+*.tmp
+*.temp
+*.bak
+*~
+*.swp
+*.swo
+
+# =========================================================
+# LaTeX
+# =========================================================
+paper/*.log
+paper/*.pdf
+poster/*.log
+poster/*.pdf
+*.aux
+*.bbl
+*.bcf
+*.brf
+*.blg
+*.fdb_latexmk
+*.fls
+*.idx
+*.ilg
+*.ind
+*.lof
+*.lot
+*.nav
+*.out
+*.run.xml
+*.snm
+*.synctex.gz
+*.toc
+*.xdv
+*.dvi
+
+# =========================================================
+# Images (kept tracked by default)
+# =========================================================
+!*.png
+!*.jpg
+!*.jpeg
+!*.svg
+!docs/*.pdf

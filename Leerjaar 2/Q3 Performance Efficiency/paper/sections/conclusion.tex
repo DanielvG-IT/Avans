@@ -1,0 +1,6 @@
+\newpage
+\section{Conclusion}
+
+This study compared SSR and CSR within one comparable Next.js prototype, with the main focus on client-side energy use in a mobile context. In the corrected battery-powered wireless benchmark, SSR produced lower median total energy in all three scenarios, with the clearest support appearing in the \textit{static} and \textit{massive} cases. CSR, however, consistently showed a smaller measured navigation response and in the \textit{dynamic} scenario showed lower paint-related timings.
+
+The main conclusion is therefore not that one rendering strategy is always better, but that the choice involves a trade-off. In this prototype, shifting the heavy data-processing step to the server reduced client-side energy use and, in the largest workload, also reduced browser memory pressure. CSR remained competitive on some browser-side timing metrics, but those advantages did not consistently translate into lower total client energy. The conclusions in this paper should therefore be read primarily in relation to the corrected battery-powered wireless run, while broader generalisation would require additional devices, workloads, and measurement setups.

@@ -1,0 +1,23 @@
+\section{Research Gap and Questions}
+
+Existing comparisons between SSR and CSR often focus on loading performance, SEO, or developer experience. Fewer studies treat mobile client-side resource efficiency as the primary outcome, and direct energy measurements are especially uncommon. This leaves limited controlled evidence on how rendering strategy affects client-side energy use when the application stack, interface, and workload are otherwise kept comparable.
+
+This study addresses that gap by comparing SSR and CSR in a controlled Next.js prototype while holding the application structure constant and varying where the main data-processing workload is performed.
+
+\subsection{Main Question}
+
+How does the choice between server-side rendering (SSR) and client-side rendering (CSR) affect mobile client-side energy use and selected browser-side metrics in a comparable Next.js web application?
+
+\subsection{Sub-questions}
+
+\begin{enumerate}
+	\item How are the SSR and CSR variants implemented in the prototype, and how does this change where the main computation is performed?
+	\item How do direct battery-derived energy measurements differ between SSR and CSR across the \textit{static}, \textit{dynamic}, and \textit{massive} scenarios?
+	\item How do selected browser-side metrics and the JavaScript heap sample differ between SSR and CSR under the same conditions?
+	\item How do these browser-side metrics relate to any observed differences in mobile energy use?
+	\item What trade-offs between latency, browser-side resource use, and total energy use can be identified from the results?
+\end{enumerate}
+
+\subsection*{Working Expectation}
+
+The working expectation of this study is that SSR will tend to reduce client-side energy use when more of the data-processing workload is completed before delivery to the browser, particularly as the browser-side workload grows. At the same time, CSR may still perform favourably on some browser-facing metrics. The expectation is therefore not that one strategy will be universally superior, but that the results will show a trade-off between latency-related outcomes and mobile client-side efficiency.

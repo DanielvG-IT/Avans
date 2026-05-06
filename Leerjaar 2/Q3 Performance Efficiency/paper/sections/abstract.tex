@@ -1,0 +1,8 @@
+\begin{abstract}
+This study investigates how server-side rendering (SSR) and client-side rendering (CSR) affect mobile client-side energy use within one comparable Next.js prototype. Although these rendering strategies are often discussed in terms of speed, interactivity, and search visibility, direct energy-oriented comparison in a controlled mobile setting remains limited.
+
+To address this gap, one storefront application was implemented in two functionally comparable variants: an SSR route and a CSR route that shared the same interface, data model, and scenario structure. The final benchmark was executed on a Samsung Galaxy A53 under battery-powered wireless conditions, with 60 randomised runs across three dataset scenarios and two rendering conditions. Battery-derived energy was estimated by integrating current and voltage samples over time, while browser-side metrics such as LCP, FCP, TTFB, navigation response size, and a JavaScript heap sample were collected through the Chrome DevTools Protocol.
+
+The corrected final dataset shows that SSR produced lower median total energy in all three scenarios, with the clearest support in the static and massive workloads. CSR, however, showed a smaller measured navigation response size in every scenario and showed lower paint-related timings in the dynamic case. The main contribution of this report is therefore not a universal winner, but a clearer account of the trade-off between server-shifted and client-shifted work when mobile energy efficiency is treated as a primary concern.
+
+\end{abstract}

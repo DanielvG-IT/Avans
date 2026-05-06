@@ -1,0 +1,7 @@
+\section{Introduction}
+
+Modern front-end applications commonly use either client-side rendering (CSR) or server-side rendering (SSR). In practice, this choice is often discussed in terms of loading speed, interactivity, and search engine optimisation (SEO). For mobile use, however, resource efficiency is also important because sustained CPU and memory pressure can affect both battery life and device responsiveness.
+
+Existing comparisons between SSR and CSR still focus mainly on performance as speed \citep{nordstrom2023,clapton2025,ojala2025,gaddam2025}. Fewer studies evaluate performance as resource efficiency, and fewer still do so in a controlled mobile context \citep{thiagarajan2012,kalliola2025}. As a result, it remains unclear which rendering strategy places less total computational burden on the client device during page delivery and rendering.
+
+This report addresses that gap by comparing SSR and CSR within one shared Next.js prototype. The analysis centres on client-side energy use in a mobile benchmark, complemented by selected browser-side metrics and a JavaScript heap sample. The aim is to provide evidence-based guidance for choosing a rendering strategy when mobile resource efficiency matters alongside user-facing performance.

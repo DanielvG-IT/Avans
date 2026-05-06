@@ -1,0 +1,36 @@
+* text=auto eol=lf
+
+# Research document source
+*.tex text eol=lf diff=tex
+*.bib text eol=lf
+*.cls text eol=lf
+*.sty text eol=lf
+*.bst text eol=lf
+
+# Common docs
+*.md text eol=lf
+*.txt text eol=lf
+*.csv text eol=lf
+
+# Binary assets
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.tif binary
+*.tiff binary
+*.bmp binary
+*.ico binary
+
+# Archives and compiled outputs
+*.zip binary
+*.tar binary
+*.gz binary
+*.7z binary
+*.rar binary
+
+# Benchmark artifacts
+*.perfetto-trace binary
+*.pbtxt text eol=lf

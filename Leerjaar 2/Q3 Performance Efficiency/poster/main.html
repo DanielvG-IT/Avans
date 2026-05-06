@@ -1,0 +1,1172 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Waar Gebeurt het Werk? — Daniël van Ginneken</title>
+    <style>
+      @page {
+        size: 16in 9in;
+        margin: 0;
+      }
+
+      :root {
+        --ink: #122034;
+        --ink-soft: #39495f;
+        --canvas: #f6efe7;
+        --paper: #fffdfa;
+        --white: #ffffff;
+        --navy: #16243b;
+        --navy-2: #213552;
+        --teal: #1f6b65;
+        --teal-soft: #dcefed;
+        --blue-soft: #e8f0f8;
+        --gold: #b89b45;
+        --gold-soft: #f8f1d6;
+        --rose: #c97882;
+        --rose-soft: #f8e7ea;
+        --avans-red: #cf1f2d;
+        --line: rgba(18, 32, 52, 0.1);
+        --line-strong: rgba(18, 32, 52, 0.18);
+        --shadow: 0 18px 38px rgba(18, 32, 52, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        width: 16in;
+        height: 9in;
+        font-family: "Avenir Next", "Aptos", "Segoe UI", Arial, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(
+            circle at 100% 0,
+            rgba(31, 107, 101, 0.08) 0 170px,
+            transparent 170px
+          ),
+          radial-gradient(
+            circle at 0 100%,
+            rgba(207, 31, 45, 0.08) 0 200px,
+            transparent 200px
+          ),
+          linear-gradient(
+            90deg,
+            rgba(207, 31, 45, 0.1) 0 10px,
+            transparent 10px calc(100% - 10px),
+            rgba(207, 31, 45, 0.1) calc(100% - 10px) 100%
+          ),
+          var(--canvas);
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .poster {
+        width: 100%;
+        height: 100%;
+        padding: 20px 22px;
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        grid-template-rows: 1fr;
+        gap: 16px;
+        overflow: hidden;
+      }
+
+      .rail {
+        position: relative;
+        border-radius: 30px;
+        padding: 20px 22px;
+        overflow: hidden;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        color: white;
+        background:
+          radial-gradient(
+            circle at 82% 14%,
+            rgba(91, 166, 159, 0.16) 0 72px,
+            transparent 72px
+          ),
+          radial-gradient(
+            circle at 10% 92%,
+            rgba(184, 155, 69, 0.15) 0 68px,
+            transparent 68px
+          ),
+          linear-gradient(145deg, var(--navy) 0%, var(--navy-2) 100%);
+        box-shadow: var(--shadow);
+      }
+
+      .rail::before {
+        content: "";
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 8px;
+        background: linear-gradient(
+          180deg,
+          #f15b68 0%,
+          var(--avans-red) 52%,
+          #7a1620 100%
+        );
+      }
+
+      .rail-kicker {
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #ecd986;
+      }
+
+      .rail-title {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 44px;
+        line-height: 0.92;
+        letter-spacing: -0.05em;
+      }
+
+      .rail-subtitle {
+        font-size: 14px;
+        line-height: 1.42;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .thesis-card,
+      .rail-card {
+        position: relative;
+        border-radius: 20px;
+        padding: 13px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .rail-label {
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #a7ddd8;
+        margin-bottom: 6px;
+      }
+
+      .thesis-card strong,
+      .rail-card strong {
+        color: white;
+      }
+
+      .thesis-copy {
+        font-size: 16px;
+        line-height: 1.22;
+        font-weight: 800;
+      }
+
+      .thesis-note,
+      .rail-copy {
+        margin-top: 7px;
+        font-size: 11.5px;
+        line-height: 1.36;
+        color: rgba(255, 255, 255, 0.76);
+      }
+
+      .author-name {
+        font-size: 22px;
+        line-height: 1.02;
+        font-weight: 900;
+        margin-bottom: 5px;
+      }
+
+      .author-meta {
+        font-size: 12px;
+        line-height: 1.34;
+        color: rgba(255, 255, 255, 0.74);
+      }
+
+      .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-content: start;
+      }
+
+      .chip {
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .chip.red {
+        background: rgba(207, 31, 45, 0.18);
+        color: #ffd1d5;
+      }
+
+      .chip.teal {
+        background: rgba(122, 189, 183, 0.18);
+        color: #d9f2ef;
+      }
+
+      .chip.gold {
+        background: rgba(184, 155, 69, 0.2);
+        color: #f3e4ac;
+      }
+
+      .rail-list {
+        list-style: none;
+        margin-top: 6px;
+      }
+
+      .rail-list li {
+        position: relative;
+        padding-left: 14px;
+        margin-bottom: 7px;
+        font-size: 11px;
+        line-height: 1.3;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .rail-list li::before {
+        content: "▶";
+        position: absolute;
+        left: 0;
+        top: 1px;
+        font-size: 7px;
+        color: #ecd986;
+      }
+
+      .rail-footer {
+        margin-top: auto;
+        padding-top: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        font-size: 10px;
+        line-height: 1.34;
+        color: rgba(255, 255, 255, 0.56);
+      }
+
+      .stage {
+        height: 100%;
+        min-height: 0;
+        display: grid;
+        grid-template-rows: 204px 1fr;
+        gap: 16px;
+      }
+
+      .row {
+        min-height: 0;
+        display: grid;
+        gap: 16px;
+      }
+
+      .row-top {
+        grid-template-columns: 1.1fr 0.9fr;
+      }
+
+      .row-main {
+        min-height: 0;
+        grid-template-columns: 1.34fr 0.96fr;
+      }
+
+      .side-stack {
+        min-height: 0;
+        display: grid;
+        grid-template-rows: 148px 1fr;
+        gap: 16px;
+      }
+
+      .card {
+        min-height: 0;
+        border-radius: 28px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.96),
+          rgba(255, 253, 249, 0.96)
+        );
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .card-head {
+        padding: 11px 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: white;
+        background: linear-gradient(90deg, var(--navy), #27425f);
+      }
+
+      .card-head.teal {
+        background: linear-gradient(90deg, var(--teal), #2d7a73);
+      }
+
+      .card-head.gold {
+        background: linear-gradient(90deg, #9c8440, var(--gold));
+      }
+
+      .card-index {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        font-size: 11px;
+        font-weight: 900;
+      }
+
+      .card-head h2 {
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .card-body {
+        min-height: 0;
+        flex: 1;
+        padding: 13px 15px 14px;
+      }
+
+      .eyebrow {
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #76849a;
+        margin-bottom: 4px;
+      }
+
+      .lede {
+        font-size: 17px;
+        line-height: 1.18;
+        font-weight: 800;
+        color: var(--ink);
+      }
+
+      .copy {
+        font-size: 12px;
+        line-height: 1.36;
+        color: var(--ink-soft);
+      }
+
+      .story-layout {
+        height: 100%;
+        display: grid;
+        grid-template-columns: 1.06fr 0.94fr;
+        gap: 12px;
+      }
+
+      .story-main,
+      .story-side {
+        min-height: 0;
+        display: grid;
+        align-content: start;
+        gap: 8px;
+      }
+
+      .story-side .story-unit + .story-unit {
+        padding-top: 8px;
+        border-top: 1px solid var(--line);
+      }
+
+      .story-main .lede {
+        font-size: 15px;
+      }
+
+      .story-main .copy,
+      .story-side .copy {
+        font-size: 11px;
+        line-height: 1.32;
+      }
+
+      .methods-layout {
+        height: 100%;
+        display: grid;
+        grid-template-rows: auto 1fr;
+        gap: 10px;
+      }
+
+      .methods-summary {
+        font-size: 13px;
+        line-height: 1.3;
+        font-weight: 700;
+        color: var(--ink);
+      }
+
+      .method-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+
+      .method-tile {
+        padding: 10px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: linear-gradient(180deg, #ffffff, var(--blue-soft));
+      }
+
+      .method-tile.teal {
+        background: linear-gradient(180deg, #ffffff, var(--teal-soft));
+      }
+
+      .method-top {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 5px;
+      }
+
+      .method-badge {
+        width: 28px;
+        height: 28px;
+        flex: 0 0 auto;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: white;
+        border: 2px solid rgba(31, 107, 101, 0.28);
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--teal);
+      }
+
+      .method-title {
+        font-size: 12px;
+        line-height: 1.18;
+        font-weight: 900;
+        color: var(--ink);
+      }
+
+      .method-note {
+        font-size: 10px;
+        line-height: 1.24;
+        color: var(--ink-soft);
+      }
+
+      .results-layout {
+        height: 100%;
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        gap: 10px;
+      }
+
+      .results-top {
+        display: block;
+      }
+
+      .results-kicker {
+        display: none;
+      }
+
+      .result-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+
+      .result-card {
+        padding: 10px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+      }
+
+      .result-card.teal {
+        background: linear-gradient(180deg, #ffffff, var(--teal-soft));
+      }
+
+      .result-card.blue {
+        background: linear-gradient(180deg, #ffffff, var(--blue-soft));
+      }
+
+      .result-card.rose {
+        background: linear-gradient(180deg, #ffffff, var(--rose-soft));
+      }
+
+      .result-label {
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #7b879b;
+        margin-bottom: 5px;
+      }
+
+      .result-stat {
+        font-size: 15px;
+        line-height: 1.18;
+        font-weight: 900;
+        color: var(--ink);
+      }
+
+      .result-note {
+        margin-top: 4px;
+        font-size: 11px;
+        line-height: 1.24;
+        color: var(--ink-soft);
+      }
+
+      .results-visual {
+        min-height: 0;
+        display: grid;
+        grid-template-columns: 1.18fr 0.62fr;
+        gap: 10px;
+      }
+
+      .figure {
+        width: 100%;
+        display: block;
+        border-radius: 18px;
+        border: 1px solid rgba(18, 32, 52, 0.08);
+        background: white;
+        object-fit: contain;
+      }
+
+      .main-chart {
+        height: 100%;
+      }
+
+      .results-side {
+        min-height: 0;
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .focus-card {
+        padding: 10px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: linear-gradient(180deg, #ffffff, #f9fbfd);
+      }
+
+      .focus-card.gold {
+        background: linear-gradient(180deg, #fffef9, var(--gold-soft));
+      }
+
+      .focus-card.red {
+        background: linear-gradient(180deg, #fffef9, #fdecef);
+      }
+
+      .focus-big {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 28px;
+        line-height: 1;
+        letter-spacing: -0.04em;
+        color: var(--ink);
+        margin-bottom: 6px;
+      }
+
+      .focus-card .copy strong {
+        color: var(--ink);
+      }
+
+      .bullet-list {
+        list-style: none;
+        margin-top: 4px;
+      }
+
+      .bullet-list li {
+        position: relative;
+        padding-left: 14px;
+        margin-bottom: 5px;
+        font-size: 11px;
+        line-height: 1.28;
+        color: var(--ink-soft);
+      }
+
+      .bullet-list li::before {
+        content: "▶";
+        position: absolute;
+        left: 0;
+        top: 1px;
+        font-size: 7px;
+        color: var(--teal);
+      }
+
+      .arch-layout {
+        height: 100%;
+        display: grid;
+        grid-template-rows: auto 1fr;
+        gap: 6px;
+      }
+
+      .arch-copy {
+        font-size: 11px;
+        line-height: 1.28;
+        color: var(--ink-soft);
+      }
+
+      .pipeline-grid {
+        min-height: 0;
+        display: grid;
+        gap: 6px;
+      }
+
+      .pipeline-row {
+        display: grid;
+        grid-template-columns: 46px 1fr 1fr 1fr;
+        gap: 6px;
+        align-items: center;
+      }
+
+      .pipe-label {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 14px;
+        line-height: 1;
+        text-align: center;
+      }
+
+      .pipe-label.ssr {
+        color: var(--teal);
+      }
+
+      .pipe-label.csr {
+        color: var(--rose);
+      }
+
+      .pipe-step {
+        padding: 7px 6px;
+        border-radius: 999px;
+        border: 1px solid var(--line-strong);
+        background: white;
+        font-size: 9px;
+        line-height: 1.15;
+        font-weight: 900;
+        color: var(--ink);
+        text-align: center;
+      }
+
+      .pipe-step.teal {
+        background: var(--teal-soft);
+        color: var(--teal);
+        border-color: rgba(31, 107, 101, 0.24);
+      }
+
+      .pipe-step.rose {
+        background: var(--rose-soft);
+        color: #96454f;
+        border-color: rgba(201, 120, 130, 0.24);
+      }
+
+      .evidence-layout {
+        height: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .evidence-card {
+        min-height: 0;
+        padding: 9px;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: linear-gradient(180deg, #ffffff, #fbfcfd);
+        display: grid;
+        align-content: start;
+        gap: 4px;
+      }
+
+      .evidence-copy {
+        font-size: 10.5px;
+        line-height: 1.25;
+        color: var(--ink-soft);
+      }
+
+      .evidence-strong {
+        font-size: 15px;
+        line-height: 1.14;
+        font-weight: 800;
+        color: var(--ink);
+      }
+
+      .conclusion-layout {
+        height: 100%;
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 10px;
+        align-content: start;
+      }
+
+      .conclusion-col {
+        min-height: 0;
+        display: grid;
+        align-content: start;
+        gap: 8px;
+      }
+
+      .conclusion-col.right {
+        grid-template-rows: auto 1fr;
+      }
+
+      .recommend-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .recommend-card {
+        padding: 8px;
+        border-radius: 16px;
+        border: 1px solid var(--line);
+      }
+
+      .recommend-card.teal {
+        background: linear-gradient(180deg, #ffffff, var(--teal-soft));
+      }
+
+      .recommend-card.blue {
+        background: linear-gradient(180deg, #ffffff, var(--blue-soft));
+      }
+
+      .recommend-title {
+        font-size: 10px;
+        font-weight: 900;
+        margin-bottom: 4px;
+        color: var(--ink);
+      }
+
+      .recommend-card ul {
+        padding-left: 13px;
+      }
+
+      .recommend-card li {
+        margin-bottom: 3px;
+        font-size: 11px;
+        line-height: 1.2;
+        color: var(--ink-soft);
+      }
+
+      .future-box,
+      .discussion-box {
+        padding: 8px 9px;
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        background: linear-gradient(180deg, #ffffff, #fbfcfd);
+      }
+
+      .discussion-box {
+        background: linear-gradient(180deg, #fffdf8, #fef1d0);
+        border-color: rgba(184, 155, 69, 0.24);
+        color: #5d5331;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .future-box ul {
+        list-style: none;
+        margin-top: 3px;
+      }
+
+      .future-box li {
+        position: relative;
+        padding-left: 13px;
+        margin-bottom: 4px;
+        font-size: 11px;
+        line-height: 1.24;
+        color: var(--ink-soft);
+      }
+
+      .future-box li::before {
+        content: "▶";
+        position: absolute;
+        left: 0;
+        top: 1px;
+        font-size: 7px;
+        color: var(--avans-red);
+      }
+
+      .tiny {
+        font-size: 11px;
+        line-height: 1.3;
+        color: var(--ink-soft);
+      }
+
+      .closing-banner {
+        grid-column: 1 / -1;
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: linear-gradient(
+          100deg,
+          var(--navy) 0%,
+          #254060 62%,
+          var(--teal) 100%
+        );
+        color: white;
+        display: grid;
+        grid-template-columns: 148px 1fr;
+        gap: 14px;
+        align-items: center;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      }
+
+      .closing-badge {
+        padding: 12px 10px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        text-align: center;
+      }
+
+      .closing-badge-label {
+        font-size: 9px;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.74);
+        margin-bottom: 4px;
+      }
+
+      .closing-badge-value {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 34px;
+        line-height: 0.95;
+        letter-spacing: -0.04em;
+      }
+
+      .closing-copy {
+        font-size: 15px;
+        line-height: 1.24;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.94);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="poster">
+      <aside class="rail">
+        <div class="rail-kicker">
+          Research Poster · Avans Hogeschool · Performance Efficiency
+        </div>
+
+        <div class="rail-title">Waar Gebeurt<br />het Werk?</div>
+
+        <div class="rail-subtitle">
+          SSR versus CSR in een mobiele Next.js-benchmark, bekeken vanuit
+          energie en echte device-cost.
+        </div>
+
+        <section class="thesis-card">
+          <div class="rail-label">Kerninzicht</div>
+          <div class="thesis-copy">
+            SSR is hier de betere default als <strong>batterij</strong>,
+            <strong>geheugen</strong> en <strong>device-cost</strong> echt
+            meetellen.
+          </div>
+          <div class="thesis-note">
+            Nuance: in Dynamisch voelde <strong>CSR</strong> eerder sneller, maar
+            <strong>SSR</strong> bleef over de hele run zuiniger.
+          </div>
+        </section>
+
+        <section class="rail-card">
+          <div class="author-name">Daniël van Ginneken</div>
+          <div class="author-meta">
+            Avans Hogeschool<br />Performance Efficiency · April 2026
+          </div>
+          <div class="rail-copy">
+            <strong>Benchmark:</strong> Galaxy A53, battery-powered runs, drie
+            workloads, zelfde storefront.
+          </div>
+        </section>
+
+        <section class="rail-card">
+          <div class="rail-label">Onderzoeksopzet</div>
+          <div class="chip-row">
+            <div class="chip teal">60 valide runs</div>
+            <div class="chip gold">Galaxy A53</div>
+            <div class="chip red">72 / 6.000 / 24.000 records</div>
+            <div class="chip teal">Zelfde prototype</div>
+          </div>
+        </section>
+
+        <section class="rail-card">
+          <div class="rail-label">Openingsvraag voor discussie</div>
+          <div class="rail-copy">
+            Wat weegt zwaarder: een snelle eerste indruk of lagere totale
+            device-cost?
+          </div>
+        </section>
+
+        <div class="rail-footer">
+          Introductie, research gap, methode, resultaten, conclusie en
+          vervolgonderzoek in één slide.
+        </div>
+      </aside>
+
+      <section class="stage">
+        <div class="row row-top">
+          <article class="card">
+            <div class="card-head">
+              <div class="card-index">01</div>
+              <h2>Introductie, eerder onderzoek & vraag</h2>
+            </div>
+            <div class="card-body">
+              <div class="story-layout">
+                <div class="story-main">
+                  <div class="lede">
+                    De meeste SSR/CSR-vergelijkingen kijken naar snelheid. Deze
+                    studie kijkt naar wat het <strong>device</strong> zelf moet
+                    doen.
+                  </div>
+                  <div class="copy">
+                    Twee functioneel gelijke Next.js-varianten zijn vergeleken
+                    op een echte smartphone, met energie, browser-metrics en
+                    geheugen als gecombineerde uitkomst.
+                  </div>
+                </div>
+
+                <div class="story-side">
+                  <div class="story-unit">
+                    <div class="eyebrow">Eerder onderzoek</div>
+                    <div class="copy">
+                      <strong>SSR</strong> helpt vaker bij zwaardere pagina’s;
+                      <strong>CSR</strong> blijft interessant voor shell-first
+                      gedrag.
+                    </div>
+                  </div>
+
+                  <div class="story-unit">
+                    <div class="eyebrow">Research gap + onderzoeksvraag</div>
+                    <div class="copy">
+                      Mobiele client-side energie is zelden de hoofd-uitkomst.
+                      Vraag: wat verandert er op het device tussen
+                      <strong>SSR</strong> en <strong>CSR</strong>?
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-head teal">
+              <div class="card-index">02</div>
+              <h2>Methode</h2>
+            </div>
+            <div class="card-body">
+              <div class="methods-layout">
+                <div class="methods-summary">
+                  Eén app, twee renderpaden en metingen op een echt toestel.
+                </div>
+
+                <div class="method-grid">
+                  <div class="method-tile teal">
+                    <div class="method-top">
+                      <div class="method-badge">1</div>
+                      <div class="method-title">Zelfde prototype</div>
+                    </div>
+                    <div class="method-note">Zelfde UI, andere verwerking.</div>
+                  </div>
+
+                  <div class="method-tile">
+                    <div class="method-top">
+                      <div class="method-badge">60</div>
+                      <div class="method-title">Runs op A53</div>
+                    </div>
+                    <div class="method-note">3 workloads + median/IQR.</div>
+                  </div>
+                </div>
+
+                <div class="copy">
+                  Analyse: U-test met Bonferroni-correctie.
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="row row-main">
+          <article class="card">
+            <div class="card-head teal">
+              <div class="card-index">03</div>
+              <h2>Resultaten</h2>
+            </div>
+            <div class="card-body">
+              <div class="results-layout">
+                <div class="results-top">
+                  <div class="lede">
+                    SSR verbruikte in alle drie scenario’s minder totale
+                    client-side energie dan CSR.
+                  </div>
+                </div>
+
+                <div class="result-grid">
+                  <div class="result-card teal">
+                    <div class="result-label">Statisch</div>
+                    <div class="result-stat">SSR 5743 mJ<br />CSR 7960 mJ</div>
+                    <div class="result-note">28% lagere mediane energie</div>
+                  </div>
+
+                  <div class="result-card blue">
+                    <div class="result-label">Dynamisch</div>
+                    <div class="result-stat">SSR 6372 mJ<br />CSR 7040 mJ</div>
+                    <div class="result-note">
+                      kleinste marge, zelfde richting
+                    </div>
+                  </div>
+
+                  <div class="result-card rose">
+                    <div class="result-label">Massief</div>
+                    <div class="result-stat">SSR 5770 mJ<br />CSR 9048 mJ</div>
+                    <div class="result-note">
+                      grootste verschil in zware workload
+                    </div>
+                  </div>
+                </div>
+
+                <div class="results-visual">
+                  <img
+                    class="figure main-chart"
+                    src="figures/energy-medians.png"
+                    alt="Grafiek van mediane totale energie voor SSR en CSR per scenario" />
+
+                  <div class="results-side">
+                    <div class="focus-card red">
+                      <div class="eyebrow">Concreet voorbeeld</div>
+                      <div class="focus-big">9048 vs 5770 mJ</div>
+                      <div class="copy">
+                        In de zwaarste workload kostte <strong>CSR</strong> veel
+                        meer energie dan <strong>SSR</strong>, bij dezelfde app.
+                      </div>
+                    </div>
+
+                    <div class="focus-card gold">
+                      <div class="eyebrow">Wat dit betekent</div>
+                      <ul class="bullet-list">
+                        <li>
+                          Meer clientwerk maakt het energievoordeel van SSR
+                          groter.
+                        </li>
+                        <li>
+                          De snelste eerste indruk is niet altijd de zuinigste
+                          keuze.
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <div class="side-stack">
+            <article class="card">
+              <div class="card-head">
+                <div class="card-index">04</div>
+                <h2>Architectuurverschil</h2>
+              </div>
+              <div class="card-body">
+                <div class="arch-layout">
+                  <div class="arch-copy">
+                    Zelfde interface; alleen de plek van de verwerking
+                    verschuift.
+                  </div>
+
+                  <div class="pipeline-grid">
+                    <div class="pipeline-row">
+                      <div class="pipe-label ssr">SSR</div>
+                      <div class="pipe-step">Request</div>
+                      <div class="pipe-step teal">Server verwerkt</div>
+                      <div class="pipe-step">HTML klaar</div>
+                    </div>
+
+                    <div class="pipeline-row">
+                      <div class="pipe-label csr">CSR</div>
+                      <div class="pipe-step">Request</div>
+                      <div class="pipe-step">Shell + hydration</div>
+                      <div class="pipe-step rose">Client verwerkt</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="card-head gold">
+                <div class="card-index">05</div>
+                <h2>Conclusie, aanbevelingen & vervolg</h2>
+              </div>
+              <div class="card-body">
+                <div class="conclusion-layout">
+                  <div class="conclusion-col">
+                    <div>
+                      <div class="eyebrow">Conclusie</div>
+                      <div class="copy">
+                        <strong>SSR</strong> is hier de beste default wanneer
+                        lage client-side energie en device-cost centraal staan.
+                      </div>
+                    </div>
+
+                    <div class="future-box">
+                      <div class="eyebrow">Belangrijke nuance</div>
+                      <div class="tiny">
+                        <strong>CSR</strong> voelde in Dynamisch eerder snel, maar
+                        <strong>SSR</strong> bleef zuiniger over de hele run.
+                      </div>
+                    </div>
+
+                    <div class="recommend-grid">
+                      <div class="recommend-card teal">
+                        <div class="recommend-title">Kies SSR als</div>
+                        <ul>
+                          <li>batterij en device-cost zwaar wegen</li>
+                        </ul>
+                      </div>
+
+                      <div class="recommend-card blue">
+                        <div class="recommend-title">Kies CSR als</div>
+                        <ul>
+                          <li>shell-first gedrag belangrijker is</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="conclusion-col right">
+                    <div class="future-box">
+                      <div class="eyebrow">Vervolgonderzoek</div>
+                      <ul>
+                        <li>Herhaal op meerdere devices en netwerken.</li>
+                      </ul>
+                    </div>
+
+                    <div class="discussion-box">
+                      <div class="eyebrow">Discussie openen</div>
+                      <div class="tiny">
+                        Wanneer kies jij voor een snellere eerste paint, ook als
+                        de totale device-cost hoger uitvalt?
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="closing-banner">
+                    <div class="closing-badge">
+                      <div class="closing-badge-label">Beste Default</div>
+                      <div class="closing-badge-value">SSR</div>
+                    </div>
+                    <div class="closing-copy">
+                      Meet niet alleen wat snel voelt. Meet ook wat het device
+                      echt kost.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
