@@ -1,0 +1,43 @@
+\section{Research Design \& Methods}
+
+This study followed a design-oriented research approach in which literature-based analysis, prototyping, and benchmark testing were combined. The goal was to investigate how server-side rendering (SSR) and client-side rendering (CSR) affect mobile client-side efficiency in a controlled setting. Rather than comparing different frameworks or unrelated architectures, the study used one comparable web application and varied primarily where the main computation took place.
+
+Following the ICT Research Methods framework, the methodological process combined \textit{library}, \textit{field}, \textit{workshop}, \textit{lab}, and \textit{showroom} activities. A literature study and best-practices analysis were first used to position the work within existing SSR/CSR research and to identify how a fair comparison could be designed. This was followed by problem analysis and domain modelling, in which the central research problem was defined as client-side resource efficiency on a mobile device rather than loading speed alone. On that basis, a prototype was constructed and subsequently evaluated through repeated benchmark testing and statistical analysis. Table~\ref{tab:method-overview-2026} summarises the methods used in the project.
+
+The prototype was implemented in Next.js and contained two routes: an SSR route and a CSR route. Both routes rendered the same storefront interface, used the same mock inventory model, and exposed the same controls for scenario, search term, category, sort order, and pagination. The key design choice was that the two variants remained within one shared stack so that the comparison isolated rendering strategy rather than framework differences.
+
+The deliberate difference between the variants was where the expensive data preparation occurred. In the SSR variant, the server read the selected scenario, loaded the inventory, and performed filtering, sorting, pagination, product decoration, and summary construction before returning the rendered page. In the CSR variant, the browser first loaded the page shell, then fetched the raw inventory from an API endpoint after hydration, after which the client performed the equivalent filtering, sorting, pagination, decoration, and summary construction locally. This design kept the resulting interface comparable while shifting the main computational burden between server and client.
+
+Three dataset scenarios were implemented in the prototype. The \textit{static} scenario contained 72 records and represented a small editorial catalogue. The \textit{dynamic} scenario contained 6{,}000 records and represented a medium-sized live catalogue. The \textit{massive} scenario contained 24{,}000 records and represented a larger marketplace-style stress case. Combined with the two rendering strategies, this yielded six benchmark conditions: SSR-static, SSR-dynamic, SSR-massive, CSR-static, CSR-dynamic, and CSR-massive.
+
+The prototype was evaluated through a controlled benchmark procedure. The experiment was orchestrated through shell and analysis scripts in the repository. For each benchmark session, the Next.js application was built and started locally, exposed to the Android device through \texttt{adb reverse}, and exercised through an automated Puppeteer-based scenario over the Chrome DevTools Protocol. Runs were randomised across all six conditions to reduce ordering effects. The final wireless benchmark used \texttt{RUNS=10} across three scenarios and two rendering conditions, resulting in 60 total runs. Between runs, Chrome was force-stopped, the device was returned to a neutral state, and a cooldown period of 45 seconds was applied.
+
+Measurements were collected on a Samsung Galaxy A53 (SM-A536B). Browser metrics for the initial page load included time to first byte (TTFB), first contentful paint (FCP), largest contentful paint (LCP), total blocking time (TBT), cumulative layout shift (CLS), navigation response size, and a JavaScript heap sample. The navigation response size came from the browser's navigation entry and therefore represents the initial document response rather than the full amount of data transferred during the complete CSR lifecycle. Likewise, the heap metric was a post-load \texttt{usedJSHeapSize} sample rather than a session-wide peak. Battery-derived energy was estimated from repeated battery polling via \texttt{adb dumpsys battery}, integrating absolute current and voltage over time. In the final wireless dataset, battery polling occurred every 0.25 seconds. Device temperature was logged before each run to monitor thermal stability, and screen brightness was fixed to reduce measurement variation.
+
+An important methodological correction was made during the study. Earlier USB-connected runs were useful for validating the tooling and general collection stability, but USB power could contaminate battery-current measurements. For that reason, the final energy analysis is based on the battery-powered wireless run. This should be understood as a measurement limitation that was identified and corrected during the research process rather than as a failure of the overall design.
+
+The resulting run data were processed with repository analysis scripts that extracted per-run energy metrics, aggregated browser measurements, and generated descriptive and inferential statistics. A run was treated as battery-valid only when the extracted battery series contained sufficient non-zero current samples for integration; all 60 runs in the final dataset met this validity check. Because the final wireless dataset contained visible energy outliers, medians and interquartile ranges were treated as the primary descriptive statistics. To compare SSR and CSR within each scenario, a Mann-Whitney U test was used. Because the final analysis covered 27 within-scenario comparisons, the interpretation threshold was tightened with a Bonferroni correction to $\alpha = 0.0019$. Finally, peer review was used as a showroom-oriented validation step to assess whether the methodological choices and interpretation were consistent and defensible.
+
+\begin{table}[H]
+\centering
+\caption{Method overview used in this study.}
+\label{tab:method-overview-2026}
+{\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{@{}>{\RaggedRight\arraybackslash}p{2.3cm}>{\RaggedRight\arraybackslash}p{2.6cm}>{\RaggedRight\arraybackslash}p{1.9cm}>{\RaggedRight\arraybackslash}X@{}}
+\toprule
+\tablehead{Phase} & \tablehead{Method} & \tablehead{Type} & \tablehead{Purpose} \\
+\midrule
+Orientation & Literature study & Library & Establishing the known SSR and CSR performance landscape \\
+Orientation & Best-practices analysis & Library & Identifying practical optimization factors for fair implementation \\
+Analysis & Problem analysis & Field & Defining performance as resource efficiency instead of only speed \\
+Analysis & Domain modelling & Field & Mapping how server-side and client-side computation differ within one shared stack \\
+Design & Prototyping & Workshop & Building one storefront prototype with SSR and CSR variants across three dataset scenarios \\
+Test phase & Benchmark test & Lab & Measuring battery-derived energy, browser metrics, and thermal stability under controlled conditions \\
+Analysis & Descriptive statistics & Field & Summarising distributions with medians and interquartile ranges \\
+Analysis & Inferential statistics & Lab & Comparing conditions with Mann-Whitney U and Bonferroni correction \\
+Validation & Peer review & Showroom & Checking method quality and interpretation consistency \\
+\bottomrule
+\end{tabularx}
+}
+\end{table}

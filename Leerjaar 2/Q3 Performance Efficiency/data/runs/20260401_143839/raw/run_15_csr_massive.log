@@ -1,0 +1,3 @@
+  [puppeteer] 1/1 → http://localhost:3000/csr?scenario=massive
+  [puppeteer]   LCP=3260ms  FCP=3260ms  TBT=0ms  TTFB=233ms
+  [puppeteer] ✓ Saved → /Users/danielvginneken/Desktop/Research_Paper/data/runs/20260401_143839/raw/run_15_csr_massive.json

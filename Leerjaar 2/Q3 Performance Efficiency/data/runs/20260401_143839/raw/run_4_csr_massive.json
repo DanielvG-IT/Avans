@@ -1,0 +1,144 @@
+{
+  "meta": {
+    "run": 4,
+    "condition": "csr",
+    "scenario": "massive",
+    "url": "http://localhost:3000",
+    "timestamp": "2026-04-01T12:43:07.993Z",
+    "pages_tested": [
+      "/csr?scenario=massive"
+    ],
+    "protocol_mode": "cdp",
+    "browser_metrics_available": true
+  },
+  "pages": [
+    {
+      "page_index": 0,
+      "path": "/csr?scenario=massive",
+      "nav_ms": 4856,
+      "metrics": {
+        "ttfb": 157.8999999910593,
+        "domContentLoaded": 3130.8999999910593,
+        "loadComplete": 3189.7000000029802,
+        "transferSize": 4024,
+        "firstPaint": 3288,
+        "firstContentfulPaint": 3288,
+        "lcp": 3288,
+        "tbt": 0,
+        "cls": 0,
+        "resources": [
+          {
+            "name": "media/797e433ab948586e-s.p.0.q-h669a_dqa.woff2",
+            "type": "link",
+            "size_kb": 0,
+            "duration": 58
+          },
+          {
+            "name": "media/caa3a2e1cccd8315-s.p.16t1db8_9y2o~.woff2",
+            "type": "link",
+            "size_kb": 0,
+            "duration": 57
+          },
+          {
+            "name": "chunks/0g40ftabox1r_.css",
+            "type": "link",
+            "size_kb": 0,
+            "duration": 51
+          },
+          {
+            "name": "chunks/0ht900cau6_ur.js",
+            "type": "link",
+            "size_kb": 0,
+            "duration": 54
+          },
+          {
+            "name": "chunks/0p5.qr0b94vxo.js",
+            "type": "script",
+            "size_kb": 0,
+            "duration": 60
+          },
+          {
+            "name": "chunks/16g.ca89g7fib.js",
+            "type": "script",
+            "size_kb": 0,
+            "duration": 64
+          },
+          {
+            "name": "chunks/turbopack-0mbyzpf8xm.r7.js",
+            "type": "script",
+            "size_kb": 0,
+            "duration": 60
+          },
+          {
+            "name": "chunks/0dbhjjzl8qfwv.js",
+            "type": "script",
+            "size_kb": 0,
+            "duration": 60
+          },
+          {
+            "name": "chunks/0hpjitp934nc2.js",
+            "type": "script",
+            "size_kb": 0,
+            "duration": 63
+          },
+          {
+            "name": "api/inventory?scenario=massive",
+            "type": "fetch",
+            "size_kb": 3773,
+            "duration": 684
+          }
+        ],
+        "jsHeap": {
+          "used_mb": 13.6,
+          "total_mb": 23.4
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "diagnostics": {
+    "adbForwardList": {
+      "ok": true,
+      "stdout": "adb-RZCT401NHBN-1Sq5vG._adb-tls-connect._tcp tcp:9222 localabstract:chrome_devtools_remote"
+    },
+    "chromeSocket": {
+      "ok": false,
+      "stdout": "",
+      "stderr": "Command failed: adb -s \"adb-RZCT401NHBN-1Sq5vG._adb-tls-connect._tcp\" shell cat /proc/net/unix | grep chrome_devtools_remote"
+    },
+    "chromeLaunch": {
+      "ok": true,
+      "stdout": "Starting: Intent { act=android.intent.action.VIEW dat=about: }"
+    },
+    "versionProbe": {
+      "ok": true,
+      "status": 200,
+      "body": "{\n   \"Android-Package\": \"com.android.chrome\",\n   \"Browser\": \"Chrome/146.0.7680.164\",\n   \"Protocol-Version\": \"1.3\",\n   \"User-Agent\": \"Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Mobile Safari/537.36\",\n   \"V8-Version\": \"14.6.202.26\",\n   \"WebKit-Version\": \"537.36 (@bbd8c5dd25fb2f569d98e626a9517cf2171abdff)\",\n   \"webSocketDebuggerUrl\": \"ws://localhost:9222/devtools/browser\"\n}\n"
+    },
+    "puppeteerConnect": {
+      "ok": true
+    }
+  },
+  "energy": {
+    "trace_path": "/Users/danielvginneken/Desktop/Research_Paper/data/runs/20260401_143839/raw/run_4_csr_massive.perfetto-trace",
+    "battery_csv_path": "/Users/danielvginneken/Desktop/Research_Paper/data/runs/20260401_143839/raw/run_4_csr_massive.battery.csv",
+    "energy_total_mj": 30445.64,
+    "battery_energy_valid": true,
+    "battery_current_nonzero_samples": 17,
+    "battery_current_nonzero_ratio": 1.0,
+    "avg_current_ma": 965.18,
+    "avg_voltage_v": 3.759,
+    "duration_s": 8.3,
+    "sample_count": 17,
+    "avg_power_mw": 3657.1,
+    "avg_cpu_freq_mhz": null,
+    "cpu_big_core_pct": null,
+    "cpu_freq_residency_ghz_s": null,
+    "cpu_energy_proxy_score": null,
+    "cpu_energy_proxy_per_s": null,
+    "peak_memory_rss_kb": null,
+    "frame_janks": null,
+    "energy_method": "adb_dumpsys_battery_polling",
+    "parse_error": null
+  }
+}

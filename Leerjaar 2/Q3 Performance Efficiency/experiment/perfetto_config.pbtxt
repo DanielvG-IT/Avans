@@ -1,0 +1,53 @@
+# perfetto_config.pbtxt
+#
+# Optimised for Samsung SM-A536B (Galaxy A53) running Android 16
+#
+# IMPORTANT: This device does NOT expose hardware power rails via PowerStats HAL.
+
+buffers {
+  size_kb: 131072
+  fill_policy: RING_BUFFER
+}
+
+# ── CPU frequency + scheduling (energy proxy) ───────────────────
+data_sources {
+  config {
+    name: "linux.ftrace"
+    ftrace_config {
+      ftrace_events: "power/cpu_frequency"
+      ftrace_events: "power/cpu_idle"
+      ftrace_events: "sched/sched_switch"
+      ftrace_events: "sched/sched_waking"
+    }
+  }
+}
+
+# ── Process stats (Chrome focus) ────────────────────────────────
+data_sources {
+  config {
+    name: "linux.process_stats"
+    process_stats_config {
+      scan_all_processes_on_start: true
+      proc_stats_poll_ms: 1000
+      record_thread_names: true
+    }
+  }
+}
+
+# ── Frame timing (UX metric) ────────────────────────────────────
+data_sources {
+  config {
+    name: "android.surfaceflinger.frame_timeline"
+  }
+}
+
+# ── Android power counters (if exposed by device/vendor) ─────────
+# On some devices this emits batt.current_ua / batt.voltage_uv.
+# If not available, run.sh records dumpsys battery polling as fallback.
+data_sources {
+  config {
+    name: "android.power"
+  }
+}
+
+duration_ms: 30000
